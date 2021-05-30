@@ -1,7 +1,7 @@
 ---
 AWSTemplateFormatVersion: '2010-09-09'
 
-Description: Core network and IAM resouces for M1 Project container service
+Description: Core network and IAM resources for M1 Project container service
 
 Mappings:
 
@@ -253,104 +253,95 @@ Resources:
       
   # IAM Roles
 
-#   EcsServiceRole:
-#     Type: AWS::IAM::Role
-#     Properties:
-#       AssumeRolePolicyDocument:
-#         Statement:
-#         - Effect: Allow
-#           Principal:
-#             Service:
-#             - ecs.amazonaws.com
-#             - ecs-tasks.amazonaws.com
-#           Action:
-#           - sts:AssumeRole
-#       Path: /
-#       Policies:
-#       - PolicyName: ecs-service
-#         PolicyDocument:
-#           Statement:
-#           - Effect: Allow
-#             Action:
-#               # Rules which allow ECS to attach network interfaces to instances
-#               # on your behalf in order for awsvpc networking mode to work right
-#               - 'ec2:AttachNetworkInterface'
-#               - 'ec2:CreateNetworkInterface'
-#               - 'ec2:CreateNetworkInterfacePermission'
-#               - 'ec2:DeleteNetworkInterface'
-#               - 'ec2:DeleteNetworkInterfacePermission'
-#               - 'ec2:Describe*'
-#               - 'ec2:DetachNetworkInterface'
+  ECSServiceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      Tags: 
+      - Key: Name
+        Value: 'm1-ecs-service-role'
+      RoleName: m1-ecs-service-role
+      AssumeRolePolicyDocument:
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service:
+            - ecs.amazonaws.com
+            - ecs-tasks.amazonaws.com
+          Action:
+          - sts:AssumeRole
+      Path: /
+      Policies:
+      - PolicyName: m1-ecs-service-policy
+        PolicyDocument:
+          Statement:
+          - Effect: Allow
+            Action:
+              # Network Interface actions for awsvpc networking mode
+              - 'ec2:AttachNetworkInterface'
+              - 'ec2:CreateNetworkInterface'
+              - 'ec2:CreateNetworkInterfacePermission'
+              - 'ec2:DeleteNetworkInterface'
+              - 'ec2:DeleteNetworkInterfacePermission'
+              - 'ec2:Describe*'
+              - 'ec2:DetachNetworkInterface'
+              # ELB
+              - 'elasticloadbalancing:DeregisterInstancesFromLoadBalancer'
+              - 'elasticloadbalancing:DeregisterTargets'
+              - 'elasticloadbalancing:Describe*'
+              - 'elasticloadbalancing:RegisterInstancesWithLoadBalancer'
+              - 'elasticloadbalancing:RegisterTargets'
+              # Allow ECS to run tasks that have IAM roles assigned to them
+              - 'iam:PassRole'
+              # Allow ECS interact with container images
+              - 'ecr:GetAuthorizationToken'
+              - 'ecr:BatchCheckLayerAvailability'
+              - 'ecr:GetDownloadUrlForLayer'
+              - 'ecr:BatchGetImage'
+              # Allow ECS create and push logs to CloudWatch
+              - 'logs:DescribeLogStreams'
+              - 'logs:CreateLogStream'
+              - 'logs:CreateLogGroup'
+              - 'logs:PutLogEvents'
+            Resource: '*'
 
-#               # Rules which allow ECS to update load balancers on your behalf
-#               # with the information sabout how to send traffic to your containers
-#               - 'elasticloadbalancing:DeregisterInstancesFromLoadBalancer'
-#               - 'elasticloadbalancing:DeregisterTargets'
-#               - 'elasticloadbalancing:Describe*'
-#               - 'elasticloadbalancing:RegisterInstancesWithLoadBalancer'
-#               - 'elasticloadbalancing:RegisterTargets'
-
-#               # Rules which allow ECS to run tasks that have IAM roles assigned to them.
-#               - 'iam:PassRole'
-
-#               # Rules that let ECS interact with container images.
-#               - 'ecr:GetAuthorizationToken'
-#               - 'ecr:BatchCheckLayerAvailability'
-#               - 'ecr:GetDownloadUrlForLayer'
-#               - 'ecr:BatchGetImage'
-
-#               # Rules that let ECS create and push logs to CloudWatch.
-#               - 'logs:DescribeLogStreams'
-#               - 'logs:CreateLogStream'
-#               - 'logs:CreateLogGroup'
-#               - 'logs:PutLogEvents'
-
-#             Resource: '*'
-
-#   # This is a role which is used by the ECS tasks. Tasks in Amazon ECS define
-#   # the containers that should be deployed togehter and the resources they
-#   # require from a compute/memory perspective. So, the policies below will define
-#   # the IAM permissions that our Mythical Mysfits docker containers will have.
-#   # If you attempted to write any code for the Mythical Mysfits service that
-#   # interacted with different AWS service APIs, these roles would need to include
-#   # those as allowed actions.
-#   ECSTaskRole:
-#     Type: AWS::IAM::Role
-#     Properties:
-#       AssumeRolePolicyDocument:
-#         Statement:
-#         - Effect: Allow
-#           Principal:
-#             Service: [ecs-tasks.amazonaws.com]
-#           Action: ['sts:AssumeRole']
-#       Path: /
-#       Policies:
-#         - PolicyName: AmazonECSTaskRolePolicy
-#           PolicyDocument:
-#             Statement:
-#             - Effect: Allow
-#               Action:
-#                 # Allow the ECS Tasks to download images from ECR
-#                 - 'ecr:GetAuthorizationToken'
-#                 - 'ecr:BatchCheckLayerAvailability'
-#                 - 'ecr:GetDownloadUrlForLayer'
-#                 - 'ecr:BatchGetImage'
-
-#                 # Allow the ECS tasks to upload logs to CloudWatch
-#                 - 'logs:CreateLogStream'
-#                 - 'logs:CreateLogGroup'
-#                 - 'logs:PutLogEvents'
-#               Resource: '*'
-
-#             - Effect: Allow
-#               Action:
-#                 # Allows the ECS tasks to interact with only the MysfitsTable
-#                 # in DynamoDB
-#                 - 'dynamodb:Scan'
-#                 - 'dynamodb:Query'
-#                 - 'dynamodb:UpdateItem'
-#                 - 'dynamodb:GetItem'
-#               Resource: 'arn:aws:dynamodb:*:*:table/MysfitsTable*'
+  ECSTaskRole:
+    Type: AWS::IAM::Role
+    Properties:
+      Tags: 
+      - Key: Name
+        Value: 'm1-ecs-task-role'
+      RoleName: m1-ecs-task-role
+      AssumeRolePolicyDocument:
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service: [ecs-tasks.amazonaws.com]
+          Action: ['sts:AssumeRole']
+      Path: /
+      Policies:
+        - PolicyName: m1-ecs-task-policy
+          PolicyDocument:
+            Statement:
+            - Effect: Allow
+              Action:
+                # Allow ECS Tasks to download images from ECR
+                - 'ecr:GetAuthorizationToken'
+                - 'ecr:BatchCheckLayerAvailability'
+                - 'ecr:GetDownloadUrlForLayer'
+                - 'ecr:BatchGetImage'
+                # Allow ECS tasks to upload logs to CloudWatch
+                - 'logs:CreateLogStream'
+                - 'logs:CreateLogGroup'
+                - 'logs:PutLogEvents'
+              Resource: '*'
+            - Effect: Allow
+              Action:
+                # Allows ECS tasks to interact only with m1-table in DynamoDB
+                - 'dynamodb:Scan'
+                - 'dynamodb:Query'
+                - 'dynamodb:UpdateItem'
+                - 'dynamodb:GetItem'
+              Resource: 'arn:aws:dynamodb:*:*:table/m1-table*'
 
 #   # An IAM role that allows the AWS CodePipeline service to perform it's
 #   # necessary actions. We have intentionally left permissions on this role
