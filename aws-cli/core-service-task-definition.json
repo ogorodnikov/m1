@@ -1,0 +1,32 @@
+{
+  "family": "m1-core-service",
+  "cpu": "256",
+  "memory": "512",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": [
+    "FARGATE"
+  ],
+  "executionRoleArn": "arn:aws:iam::196332284574:role/m1-ecs-role",
+  "taskRoleArn": "arn:aws:iam::196332284574:role/m1-ecs-task-role",
+  "containerDefinitions": [
+    {
+      "name": "m1-core-service",
+      "image": "196332284574.dkr.ecr.us-east-1.amazonaws.com/m1-core-service:latest",
+      "portMappings": [
+        {
+          "containerPort": 8080,
+          "protocol": "http"
+        }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "m1-core-service-log-group",
+          "awslogs-region": "us-east-1",
+          "awslogs-stream-prefix": "awslogs-m1-core-service"
+        }
+      },
+      "essential": true
+    }
+  ]
+}
