@@ -253,13 +253,13 @@ Resources:
       
   # IAM Roles
 
-  ECSServiceRole:
+  ECSRole:
     Type: AWS::IAM::Role
     Properties:
       Tags: 
       - Key: Name
-        Value: 'm1-ecs-service-role'
-      RoleName: m1-ecs-service-role
+        Value: 'm1-ecs-role'
+      RoleName: m1-ecs-role
       AssumeRolePolicyDocument:
         Statement:
         - Effect: Allow
@@ -271,7 +271,7 @@ Resources:
           - sts:AssumeRole
       Path: /
       Policies:
-      - PolicyName: m1-ecs-service-policy
+      - PolicyName: m1-ecs-policy
         PolicyDocument:
           Statement:
           - Effect: Allow
@@ -343,168 +343,155 @@ Resources:
                 - 'dynamodb:GetItem'
               Resource: 'arn:aws:dynamodb:*:*:table/m1-table*'
 
-#   # An IAM role that allows the AWS CodePipeline service to perform it's
-#   # necessary actions. We have intentionally left permissions on this role
-#   # that will not be used by the CodePipeline service during this workshop.
-#   # This will allow you to more simply use CodePipeline in the future should
-#   # you want to use the service for Pipelines that interact with different
-#   # AWS services than the ones used in this workshop.
-#   MythicalMysfitsServiceCodePipelineServiceRole:
-#     Type: AWS::IAM::Role
-#     Properties:
-#       RoleName: MythicalMysfitsServiceCodePipelineServiceRole
-#       AssumeRolePolicyDocument:
-#         Statement:
-#         - Effect: Allow
-#           Principal:
-#             Service:
-#             - codepipeline.amazonaws.com
-#           Action:
-#           - sts:AssumeRole
-#       Path: "/"
-#       Policies:
-#       - PolicyName: MythicalMysfitsService-codepipeline-service-policy
-#         PolicyDocument:
-#           Statement:
-#           - Action:
-#             - codecommit:GetBranch
-#             - codecommit:GetCommit
-#             - codecommit:UploadArchive
-#             - codecommit:GetUploadArchiveStatus
-#             - codecommit:CancelUploadArchive
-#             Resource: "*"
-#             Effect: Allow
-#           - Action:
-#             - s3:GetObject
-#             - s3:GetObjectVersion
-#             - s3:GetBucketVersioning
-#             Resource: "*"
-#             Effect: Allow
-#           - Action:
-#             - s3:PutObject
-#             Resource:
-#             - arn:aws:s3:::*
-#             Effect: Allow
-#           - Action:
-#             - elasticloadbalancing:*
-#             - autoscaling:*
-#             - cloudwatch:*
-#             - ecs:*
-#             - codebuild:*
-#             - iam:PassRole
-#             Resource: "*"
-#             Effect: Allow
-#           Version: "2012-10-17"
+  CodePipelineRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: m1-codepipeline-role
+      AssumeRolePolicyDocument:
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service:
+            - codepipeline.amazonaws.com
+          Action:
+          - sts:AssumeRole
+      Path: "/"
+      Policies:
+      - PolicyName: m1-codepipeline-policy
+        PolicyDocument:
+          Statement:
+          - Action:
+            - codecommit:GetBranch
+            - codecommit:GetCommit
+            - codecommit:UploadArchive
+            - codecommit:GetUploadArchiveStatus
+            - codecommit:CancelUploadArchive
+            - s3:GetObject
+            - s3:GetObjectVersion
+            - s3:GetBucketVersioning
+            - elasticloadbalancing:*
+            - autoscaling:*
+            - cloudwatch:*
+            - ecs:*
+            - codebuild:*
+            - iam:PassRole
+            Resource: "*"
+            Effect: Allow
+          - Action:
+            - s3:PutObject
+            Resource:
+            - arn:aws:s3:::*
+            Effect: Allow
+          Version: "2012-10-17"
 
-#   # An IAM role that allows the AWS CodeBuild service to perform the actions
-#   # required to complete a build of our source code retrieved from CodeCommit,
-#   # and push the created image to ECR.
-#   MythicalMysfitsServiceCodeBuildServiceRole:
-#     Type: AWS::IAM::Role
-#     Properties:
-#       RoleName: MythicalMysfitsServiceCodeBuildServiceRole
-#       AssumeRolePolicyDocument:
-#         Version: "2012-10-17"
-#         Statement:
-#           Effect: Allow
-#           Principal:
-#             Service: codebuild.amazonaws.com
-#           Action: sts:AssumeRole
-#       Policies:
-#       - PolicyName: "MythicalMysfitsService-CodeBuildServicePolicy"
-#         PolicyDocument:
-#           Version: "2012-10-17"
-#           Statement:
-#           - Effect: "Allow"
-#             Action:
-#             - "codecommit:ListBranches"
-#             - "codecommit:ListRepositories"
-#             - "codecommit:BatchGetRepositories"
-#             - "codecommit:Get*"
-#             - "codecommit:GitPull"
-#             Resource:
-#             - Fn::Sub: arn:aws:codecommit:${AWS::Region}:${AWS::AccountId}:MythicalMysfitsServiceRepository
-#           - Effect: "Allow"
-#             Action:
-#             - "logs:CreateLogGroup"
-#             - "logs:CreateLogStream"
-#             - "logs:PutLogEvents"
-#             Resource: "*"
-#           - Effect: "Allow"
-#             Action:
-#             - "s3:PutObject"
-#             - "s3:GetObject"
-#             - "s3:GetObjectVersion"
-#             - "s3:ListBucket"
-#             Resource: "*"
-#           - Effect: "Allow"
-#             Action:
-#             - "ecr:InitiateLayerUpload"
-#             - "ecr:GetAuthorizationToken"
-#             Resource: "*"
+  CodeBuildRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: m1-codebuild-role
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          Effect: Allow
+          Principal:
+            Service: codebuild.amazonaws.com
+          Action: sts:AssumeRole
+      Policies:
+      - PolicyName: m1-codebuild-policy
+        PolicyDocument:
+          Version: "2012-10-17"
+          Statement:
+          - Effect: "Allow"
+            Action:
+            - "codecommit:ListBranches"
+            - "codecommit:ListRepositories"
+            - "codecommit:BatchGetRepositories"
+            - "codecommit:Get*"
+            - "codecommit:GitPull"
+            Resource:
+            - !Sub arn:aws:codecommit:${AWS::Region}:${AWS::AccountId}:m1-repository
+          - Effect: "Allow"
+            Action:
+            - "logs:CreateLogGroup"
+            - "logs:CreateLogStream"
+            - "logs:PutLogEvents"
+            - "s3:PutObject"
+            - "s3:GetObject"
+            - "s3:GetObjectVersion"
+            - "s3:ListBucket"
+            - "ecr:InitiateLayerUpload"
+            - "ecr:GetAuthorizationToken"
+            Resource: "*"
 
+Outputs:
 
-# # These are the values output by the CloudFormation template. Be careful
-# # about changing any of them, because of them are exported with specific
-# # names so that the other task related CF templates can use them.
-# Outputs:
-#   CurrentRegion:
-#     Description: REPLACE_ME_REGION
-#     Value: !Ref AWS::Region
-#     Export:
-#       Name: !Join [ ':', [ !Ref 'AWS::StackName', 'CurrentRegion' ] ]
-#   CurrentAccount:
-#     Description: REPLACE_ME_ACCOUNT_ID
-#     Value: !Ref AWS::AccountId
-#     Export:
-#       Name: !Join [ ':', [ !Ref 'AWS::StackName', 'CurrentAccount' ] ]
-#   EcsServiceRole:
-#     Description: REPLACE_ME_ECS_SERVICE_ROLE_ARN
-#     Value: !GetAtt 'EcsServiceRole.Arn'
-#     Export:
-#       Name: !Join [ ':', [ !Ref 'AWS::StackName', 'EcsServiceRole' ] ]
-#   ECSTaskRole:
-#     Description: REPLACE_ME_ECS_TASK_ROLE_ARN
-#     Value: !GetAtt 'ECSTaskRole.Arn'
-#     Export:
-#       Name: !Join [ ':', [ !Ref 'AWS::StackName', 'ECSTaskRole' ] ]
-#   VPCId:
-#     Description: REPLACE_ME_VPC_ID
-#     Value: !Ref 'VPC'
-#     Export:
-#       Name: !Join [ ':', [ !Ref 'AWS::StackName', 'VPCId' ] ]
-#   PublicSubnetOne:
-#     Description: REPLACE_ME_PUBLIC_SUBNET_ONE
-#     Value: !Ref 'PublicSubnetOne'
-#     Export:
-#       Name: !Join [ ':', [ !Ref 'AWS::StackName', 'PublicSubnetOne' ] ]
-#   PublicSubnetTwo:
-#     Description: REPLACE_ME_PUBLIC_SUBNET_TWO
-#     Value: !Ref 'PublicSubnetTwo'
-#     Export:
-#       Name: !Join [ ':', [ !Ref 'AWS::StackName', 'PublicSubnetTwo' ] ]
-#   PrivateSubnetOne:
-#     Description: REPLACE_ME_PRIVATE_SUBNET_ONE
-#     Value: !Ref 'PrivateSubnetOne'
-#     Export:
-#       Name: !Join [ ':', [ !Ref 'AWS::StackName', 'PrivateSubnetOne' ] ]
-#   PrivateSubnetTwo:
-#     Description: REPLACE_ME_PRIVATE_SUBNET_TWO
-#     Value: !Ref 'PrivateSubnetTwo'
-#     Export:
-#       Name: !Join [ ':', [ !Ref 'AWS::StackName', 'PrivateSubnetTwo' ] ]
-#   FargateContainerSecurityGroup:
-#     Description: REPLACE_ME_SECURITY_GROUP_ID
-#     Value: !Ref 'FargateContainerSecurityGroup'
-#     Export:
-#       Name: !Join [ ':', [ !Ref 'AWS::StackName', 'FargateContainerSecurityGroup' ] ]
-#   CodeBuildRole:
-#     Description: REPLACE_ME_CODEBUILD_ROLE_ARN
-#     Value: !GetAtt 'MythicalMysfitsServiceCodeBuildServiceRole.Arn'
-#     Export:
-#       Name: !Join [ ':', [ !Ref 'AWS::StackName', 'MythicalMysfitsServiceCodeBuildServiceRole' ] ]
-#   CodePipelineRole:
-#     Description: REPLACE_ME_CODEPIPELINE_ROLE_ARN
-#     Value: !GetAtt 'MythicalMysfitsServiceCodePipelineServiceRole.Arn'
-#     Export:
-#       Name: !Join [ ':', [ !Ref 'AWS::StackName', 'MythicalMysfitsServiceCodePipelineServiceRole' ] ]
+  CurrentRegion:
+    Description: M1 Region
+    Value: !Ref AWS::Region
+    Export:
+      Name: !Sub ${AWS::StackName}:CurrentRegion
+      
+  CurrentAccount:
+    Description: M1 Account
+    Value: !Ref AWS::AccountId
+    Export:
+      Name: !Sub ${AWS::StackName}:CurrentAccount
+      
+  ECSRole:
+    Description: M1 ECS Role
+    Value: !GetAtt 'ECSRole.Arn'
+    Export:
+      Name: !Sub ${AWS::StackName}:ECSRole
+      
+  ECSTaskRole:
+    Description: M1 ECS Task Role
+    Value: !GetAtt 'ECSTaskRole.Arn'
+    Export:
+      Name: !Sub ${AWS::StackName}:ECSTaskRole
+      
+  VPCId:
+    Description: M1 VPC Id
+    Value: !Ref 'VPC'
+    Export:
+      Name: !Sub ${AWS::StackName}:VPCId
+      
+  PublicSubnetOne:
+    Description: M1 Public Subnet One
+    Value: !Ref 'PublicSubnetOne'
+    Export:
+      Name: !Sub ${AWS::StackName}:PublicSubnetOne
+      
+  PublicSubnetTwo:
+    Description: M1 Public Subnet Two
+    Value: !Ref 'PublicSubnetTwo'
+    Export:
+      Name: !Sub ${AWS::StackName}:PublicSubnetTwo
+      
+  PrivateSubnetOne:
+    Description: M1 Private Subnet One
+    Value: !Ref 'PrivateSubnetOne'
+    Export:
+      Name: !Sub ${AWS::StackName}:PrivateSubnetOne
+      
+  PrivateSubnetTwo:
+    Description: M1 Private Subnet Two
+    Value: !Ref 'PrivateSubnetTwo'
+    Export:
+      Name: !Sub ${AWS::StackName}:PrivateSubnetTwo
+      
+  FargateContainerSecurityGroup:
+    Description: M1 Fargate Container Security Group
+    Value: !Ref 'FargateContainerSecurityGroup'
+    Export:
+      Name: !Sub ${AWS::StackName}:FargateContainerSecurityGroup
+      
+  CodeBuildRole:
+    Description: M1 Codebuild Role ARN
+    Value: !GetAtt 'CodeBuildRole.Arn'
+    Export:
+      Name: !Sub ${AWS::StackName}:CodeBuildRole
+      
+  CodePipelineRole:
+    Description: M1 Codepipeline Role ARN
+    Value: !GetAtt 'CodePipelineRole.Arn'
+    Export:
+      Name: !Sub ${AWS::StackName}:CodePipelineRole
