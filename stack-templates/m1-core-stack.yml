@@ -23,8 +23,8 @@ Resources:
     Type: AWS::EC2::VPC
     Properties:
       Tags: 
-      - Key: "Name"
-        Value: "m1-core-vpc"
+      - Key: Name
+        Value: 'm1-core-vpc'
       EnableDnsSupport: true
       EnableDnsHostnames: true
       CidrBlock: !FindInMap ['SubnetConfig', 'VPC', 'CIDR']
@@ -35,8 +35,8 @@ Resources:
     Type: AWS::EC2::Subnet
     Properties:
       Tags: 
-      - Key: "Name"
-        Value: "m1-public1-subnet"
+      - Key: Name
+        Value: 'm1-public1-subnet'
       AvailabilityZone:
          Fn::Select:
          - 0
@@ -49,8 +49,8 @@ Resources:
     Type: AWS::EC2::Subnet
     Properties:
       Tags: 
-      - Key: "Name"
-        Value: "m1-public2-subnet"
+      - Key: Name
+        Value: 'm1-public2-subnet'
       AvailabilityZone:
          Fn::Select:
          - 1
@@ -63,8 +63,8 @@ Resources:
     Type: AWS::EC2::Subnet
     Properties:
       Tags: 
-      - Key: "Name"
-        Value: "m1-private1-subnet"
+      - Key: Name
+        Value: 'm1-private1-subnet'
       AvailabilityZone:
          Fn::Select:
          - 0
@@ -76,8 +76,8 @@ Resources:
     Type: AWS::EC2::Subnet
     Properties:
       Tags: 
-      - Key: "Name"
-        Value: "m1-private2-subnet"
+      - Key: Name
+        Value: 'm1-private2-subnet'
       AvailabilityZone:
          Fn::Select:
          - 1
@@ -91,8 +91,8 @@ Resources:
     Type: AWS::EC2::InternetGateway
     Properties:
       Tags: 
-      - Key: "Name"
-        Value: "m1-igw"
+      - Key: Name
+        Value: 'm1-igw'
     
   GatewayAttachement:
     Type: AWS::EC2::VPCGatewayAttachment
@@ -104,8 +104,8 @@ Resources:
     Type: AWS::EC2::RouteTable
     Properties:
       Tags: 
-      - Key: "Name"
-        Value: "m1-public-routetable"
+      - Key: Name
+        Value: 'm1-public-rt'
       VpcId: !Ref 'VPC'
       
   PublicRoute:
@@ -128,35 +128,75 @@ Resources:
       SubnetId: !Ref PublicSubnetTwo
       RouteTableId: !Ref PublicRouteTable
 
-  # NAT
+  # Security Groups
   
-  NatGatewayOneAttachment:
-    Type: AWS::EC2::EIP
-    DependsOn: GatewayAttachement
+  FargateContainerSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
     Properties:
-        Domain: vpc
-
-  NatGatewayTwoAttachment:
-    Type: AWS::EC2::EIP
-    DependsOn: GatewayAttachement
-    Properties:
-        Domain: vpc
-
-  NatGatewayOne:
-    Type: AWS::EC2::NatGateway
-    Properties:
-      AllocationId: !GetAtt NatGatewayOneAttachment.AllocationId
-      SubnetId: !Ref PublicSubnetOne
+      Tags: 
+      - Key: Name
+        Value: 'm1-fargate-sg'
+      GroupName: m1-fargate-sg
+      GroupDescription: Access to the Fargate containers from M1 VPC
+      VpcId: !Ref 'VPC'
+      SecurityGroupIngress:
+      - CidrIp: !FindInMap ['SubnetConfig', 'VPC', 'CIDR']
+        IpProtocol: -1
   
-  NatGatewayTwo:
-    Type: AWS::EC2::NatGateway
+  NATSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
     Properties:
-      AllocationId: !GetAtt NatGatewayTwoAttachment.AllocationId
-      SubnetId: !Ref PublicSubnetTwo
+      Tags: 
+      - Key: Name
+        Value: 'm1-nat-sg'
+      GroupName: m1-nat-sg
+      GroupDescription: Access to NAT Instances
+      VpcId: !Ref 'VPC'
+      SecurityGroupIngress:
+      - SourceSecurityGroupId: !GetAtt FargateContainerSecurityGroup.GroupId
+        IpProtocol: -1
+        
+  # NAT Instances
+  
+  NATInstanceOne:
+    Type: AWS::EC2::Instance
+    Properties:
+      Tags:
+      - Key: Name
+        Value: 'm1-public1-nat-instance'
+      ImageId: ami-00a9d4a05375b2763
+      InstanceType: t2.micro
+      NetworkInterfaces:
+      - DeviceIndex: '0'
+        SubnetId: !Ref PublicSubnetOne
+        AssociatePublicIpAddress: true
+        GroupSet: [!Ref NATSecurityGroup]
+      SourceDestCheck: false
+
+  NATInstanceTwo:
+    Type: AWS::EC2::Instance
+    Properties:
+      Tags:
+      - Key: Name
+        Value: 'm1-public2-nat-instance'
+      ImageId: ami-00a9d4a05375b2763
+      InstanceType: t2.micro
+      NetworkInterfaces:
+      - DeviceIndex: '0'
+        SubnetId: !Ref PublicSubnetTwo
+        AssociatePublicIpAddress: true
+        GroupSet: [!Ref NATSecurityGroup]
+      SourceDestCheck: false
+
+        
+  # Private Routing
   
   PrivateRouteTableOne:
     Type: AWS::EC2::RouteTable
     Properties:
+      Tags:
+      - Key: Name
+        Value: 'm1-private1-rt'
       VpcId: !Ref 'VPC'
   
   PrivateRouteOne:
@@ -164,17 +204,20 @@ Resources:
     Properties:
       RouteTableId: !Ref PrivateRouteTableOne
       DestinationCidrBlock: 0.0.0.0/0
-      NatGatewayId: !Ref NatGatewayOne
+      InstanceId: !Ref NATInstanceOne
   
   PrivateRouteTableOneAssociation:
     Type: AWS::EC2::SubnetRouteTableAssociation
     Properties:
       RouteTableId: !Ref PrivateRouteTableOne
       SubnetId: !Ref PrivateSubnetOne
-  
+      
   PrivateRouteTableTwo:
     Type: AWS::EC2::RouteTable
     Properties:
+      Tags:
+      - Key: Name
+        Value: 'm1-private2-rt'
       VpcId: !Ref 'VPC'
   
   PrivateRouteTwo:
@@ -182,7 +225,7 @@ Resources:
     Properties:
       RouteTableId: !Ref PrivateRouteTableTwo
       DestinationCidrBlock: 0.0.0.0/0
-      NatGatewayId: !Ref NatGatewayTwo
+      InstanceId: !Ref NATInstanceTwo
   
   PrivateRouteTableTwoAssociation:
     Type: AWS::EC2::SubnetRouteTableAssociation
@@ -207,291 +250,270 @@ Resources:
         - !Ref 'PrivateRouteTableTwo'
       ServiceName: !Sub com.amazonaws.${AWS::Region}.dynamodb
       VpcId: !Ref 'VPC'
+      
+  # IAM Roles
+
+#   EcsServiceRole:
+#     Type: AWS::IAM::Role
+#     Properties:
+#       AssumeRolePolicyDocument:
+#         Statement:
+#         - Effect: Allow
+#           Principal:
+#             Service:
+#             - ecs.amazonaws.com
+#             - ecs-tasks.amazonaws.com
+#           Action:
+#           - sts:AssumeRole
+#       Path: /
+#       Policies:
+#       - PolicyName: ecs-service
+#         PolicyDocument:
+#           Statement:
+#           - Effect: Allow
+#             Action:
+#               # Rules which allow ECS to attach network interfaces to instances
+#               # on your behalf in order for awsvpc networking mode to work right
+#               - 'ec2:AttachNetworkInterface'
+#               - 'ec2:CreateNetworkInterface'
+#               - 'ec2:CreateNetworkInterfacePermission'
+#               - 'ec2:DeleteNetworkInterface'
+#               - 'ec2:DeleteNetworkInterfacePermission'
+#               - 'ec2:Describe*'
+#               - 'ec2:DetachNetworkInterface'
+
+#               # Rules which allow ECS to update load balancers on your behalf
+#               # with the information sabout how to send traffic to your containers
+#               - 'elasticloadbalancing:DeregisterInstancesFromLoadBalancer'
+#               - 'elasticloadbalancing:DeregisterTargets'
+#               - 'elasticloadbalancing:Describe*'
+#               - 'elasticloadbalancing:RegisterInstancesWithLoadBalancer'
+#               - 'elasticloadbalancing:RegisterTargets'
+
+#               # Rules which allow ECS to run tasks that have IAM roles assigned to them.
+#               - 'iam:PassRole'
+
+#               # Rules that let ECS interact with container images.
+#               - 'ecr:GetAuthorizationToken'
+#               - 'ecr:BatchCheckLayerAvailability'
+#               - 'ecr:GetDownloadUrlForLayer'
+#               - 'ecr:BatchGetImage'
+
+#               # Rules that let ECS create and push logs to CloudWatch.
+#               - 'logs:DescribeLogStreams'
+#               - 'logs:CreateLogStream'
+#               - 'logs:CreateLogGroup'
+#               - 'logs:PutLogEvents'
+
+#             Resource: '*'
+
+#   # This is a role which is used by the ECS tasks. Tasks in Amazon ECS define
+#   # the containers that should be deployed togehter and the resources they
+#   # require from a compute/memory perspective. So, the policies below will define
+#   # the IAM permissions that our Mythical Mysfits docker containers will have.
+#   # If you attempted to write any code for the Mythical Mysfits service that
+#   # interacted with different AWS service APIs, these roles would need to include
+#   # those as allowed actions.
+#   ECSTaskRole:
+#     Type: AWS::IAM::Role
+#     Properties:
+#       AssumeRolePolicyDocument:
+#         Statement:
+#         - Effect: Allow
+#           Principal:
+#             Service: [ecs-tasks.amazonaws.com]
+#           Action: ['sts:AssumeRole']
+#       Path: /
+#       Policies:
+#         - PolicyName: AmazonECSTaskRolePolicy
+#           PolicyDocument:
+#             Statement:
+#             - Effect: Allow
+#               Action:
+#                 # Allow the ECS Tasks to download images from ECR
+#                 - 'ecr:GetAuthorizationToken'
+#                 - 'ecr:BatchCheckLayerAvailability'
+#                 - 'ecr:GetDownloadUrlForLayer'
+#                 - 'ecr:BatchGetImage'
+
+#                 # Allow the ECS tasks to upload logs to CloudWatch
+#                 - 'logs:CreateLogStream'
+#                 - 'logs:CreateLogGroup'
+#                 - 'logs:PutLogEvents'
+#               Resource: '*'
+
+#             - Effect: Allow
+#               Action:
+#                 # Allows the ECS tasks to interact with only the MysfitsTable
+#                 # in DynamoDB
+#                 - 'dynamodb:Scan'
+#                 - 'dynamodb:Query'
+#                 - 'dynamodb:UpdateItem'
+#                 - 'dynamodb:GetItem'
+#               Resource: 'arn:aws:dynamodb:*:*:table/MysfitsTable*'
+
+#   # An IAM role that allows the AWS CodePipeline service to perform it's
+#   # necessary actions. We have intentionally left permissions on this role
+#   # that will not be used by the CodePipeline service during this workshop.
+#   # This will allow you to more simply use CodePipeline in the future should
+#   # you want to use the service for Pipelines that interact with different
+#   # AWS services than the ones used in this workshop.
+#   MythicalMysfitsServiceCodePipelineServiceRole:
+#     Type: AWS::IAM::Role
+#     Properties:
+#       RoleName: MythicalMysfitsServiceCodePipelineServiceRole
+#       AssumeRolePolicyDocument:
+#         Statement:
+#         - Effect: Allow
+#           Principal:
+#             Service:
+#             - codepipeline.amazonaws.com
+#           Action:
+#           - sts:AssumeRole
+#       Path: "/"
+#       Policies:
+#       - PolicyName: MythicalMysfitsService-codepipeline-service-policy
+#         PolicyDocument:
+#           Statement:
+#           - Action:
+#             - codecommit:GetBranch
+#             - codecommit:GetCommit
+#             - codecommit:UploadArchive
+#             - codecommit:GetUploadArchiveStatus
+#             - codecommit:CancelUploadArchive
+#             Resource: "*"
+#             Effect: Allow
+#           - Action:
+#             - s3:GetObject
+#             - s3:GetObjectVersion
+#             - s3:GetBucketVersioning
+#             Resource: "*"
+#             Effect: Allow
+#           - Action:
+#             - s3:PutObject
+#             Resource:
+#             - arn:aws:s3:::*
+#             Effect: Allow
+#           - Action:
+#             - elasticloadbalancing:*
+#             - autoscaling:*
+#             - cloudwatch:*
+#             - ecs:*
+#             - codebuild:*
+#             - iam:PassRole
+#             Resource: "*"
+#             Effect: Allow
+#           Version: "2012-10-17"
+
+#   # An IAM role that allows the AWS CodeBuild service to perform the actions
+#   # required to complete a build of our source code retrieved from CodeCommit,
+#   # and push the created image to ECR.
+#   MythicalMysfitsServiceCodeBuildServiceRole:
+#     Type: AWS::IAM::Role
+#     Properties:
+#       RoleName: MythicalMysfitsServiceCodeBuildServiceRole
+#       AssumeRolePolicyDocument:
+#         Version: "2012-10-17"
+#         Statement:
+#           Effect: Allow
+#           Principal:
+#             Service: codebuild.amazonaws.com
+#           Action: sts:AssumeRole
+#       Policies:
+#       - PolicyName: "MythicalMysfitsService-CodeBuildServicePolicy"
+#         PolicyDocument:
+#           Version: "2012-10-17"
+#           Statement:
+#           - Effect: "Allow"
+#             Action:
+#             - "codecommit:ListBranches"
+#             - "codecommit:ListRepositories"
+#             - "codecommit:BatchGetRepositories"
+#             - "codecommit:Get*"
+#             - "codecommit:GitPull"
+#             Resource:
+#             - Fn::Sub: arn:aws:codecommit:${AWS::Region}:${AWS::AccountId}:MythicalMysfitsServiceRepository
+#           - Effect: "Allow"
+#             Action:
+#             - "logs:CreateLogGroup"
+#             - "logs:CreateLogStream"
+#             - "logs:PutLogEvents"
+#             Resource: "*"
+#           - Effect: "Allow"
+#             Action:
+#             - "s3:PutObject"
+#             - "s3:GetObject"
+#             - "s3:GetObjectVersion"
+#             - "s3:ListBucket"
+#             Resource: "*"
+#           - Effect: "Allow"
+#             Action:
+#             - "ecr:InitiateLayerUpload"
+#             - "ecr:GetAuthorizationToken"
+#             Resource: "*"
 
 
-
-  # The security group for our service containers to be hosted in Fargate.
-  # Even though traffic from users will pass through a Network Load Balancer,
-  # that traffic is purely TCP passthrough, without security group inspection.
-  # Therefore, we will allow for traffic from the Internet to be accepted by our
-  # containers.  But, because the containers will only have Private IP addresses,
-  # the only traffic that will reach the containers is traffic that is routed
-  # to them by the public load balancer on the specific ports that we configure.
-  FargateContainerSecurityGroup:
-    Type: AWS::EC2::SecurityGroup
-    Properties:
-      GroupDescription: Access to the fargate containers from the Internet
-      VpcId: !Ref 'VPC'
-      SecurityGroupIngress:
-          # Allow access to NLB from anywhere on the internet
-          - CidrIp: !FindInMap ['SubnetConfig', 'VPC', 'CIDR']
-            IpProtocol: -1
-
-  # This is an IAM role which authorizes ECS to manage resources on your
-  # account on your behalf, such as updating your load balancer with the
-  # details of where your containers are, so that traffic can reach your
-  # containers.
-  EcsServiceRole:
-    Type: AWS::IAM::Role
-    Properties:
-      AssumeRolePolicyDocument:
-        Statement:
-        - Effect: Allow
-          Principal:
-            Service:
-            - ecs.amazonaws.com
-            - ecs-tasks.amazonaws.com
-          Action:
-          - sts:AssumeRole
-      Path: /
-      Policies:
-      - PolicyName: ecs-service
-        PolicyDocument:
-          Statement:
-          - Effect: Allow
-            Action:
-              # Rules which allow ECS to attach network interfaces to instances
-              # on your behalf in order for awsvpc networking mode to work right
-              - 'ec2:AttachNetworkInterface'
-              - 'ec2:CreateNetworkInterface'
-              - 'ec2:CreateNetworkInterfacePermission'
-              - 'ec2:DeleteNetworkInterface'
-              - 'ec2:DeleteNetworkInterfacePermission'
-              - 'ec2:Describe*'
-              - 'ec2:DetachNetworkInterface'
-
-              # Rules which allow ECS to update load balancers on your behalf
-              # with the information sabout how to send traffic to your containers
-              - 'elasticloadbalancing:DeregisterInstancesFromLoadBalancer'
-              - 'elasticloadbalancing:DeregisterTargets'
-              - 'elasticloadbalancing:Describe*'
-              - 'elasticloadbalancing:RegisterInstancesWithLoadBalancer'
-              - 'elasticloadbalancing:RegisterTargets'
-
-              # Rules which allow ECS to run tasks that have IAM roles assigned to them.
-              - 'iam:PassRole'
-
-              # Rules that let ECS interact with container images.
-              - 'ecr:GetAuthorizationToken'
-              - 'ecr:BatchCheckLayerAvailability'
-              - 'ecr:GetDownloadUrlForLayer'
-              - 'ecr:BatchGetImage'
-
-              # Rules that let ECS create and push logs to CloudWatch.
-              - 'logs:DescribeLogStreams'
-              - 'logs:CreateLogStream'
-              - 'logs:CreateLogGroup'
-              - 'logs:PutLogEvents'
-
-            Resource: '*'
-
-  # This is a role which is used by the ECS tasks. Tasks in Amazon ECS define
-  # the containers that should be deployed togehter and the resources they
-  # require from a compute/memory perspective. So, the policies below will define
-  # the IAM permissions that our Mythical Mysfits docker containers will have.
-  # If you attempted to write any code for the Mythical Mysfits service that
-  # interacted with different AWS service APIs, these roles would need to include
-  # those as allowed actions.
-  ECSTaskRole:
-    Type: AWS::IAM::Role
-    Properties:
-      AssumeRolePolicyDocument:
-        Statement:
-        - Effect: Allow
-          Principal:
-            Service: [ecs-tasks.amazonaws.com]
-          Action: ['sts:AssumeRole']
-      Path: /
-      Policies:
-        - PolicyName: AmazonECSTaskRolePolicy
-          PolicyDocument:
-            Statement:
-            - Effect: Allow
-              Action:
-                # Allow the ECS Tasks to download images from ECR
-                - 'ecr:GetAuthorizationToken'
-                - 'ecr:BatchCheckLayerAvailability'
-                - 'ecr:GetDownloadUrlForLayer'
-                - 'ecr:BatchGetImage'
-
-                # Allow the ECS tasks to upload logs to CloudWatch
-                - 'logs:CreateLogStream'
-                - 'logs:CreateLogGroup'
-                - 'logs:PutLogEvents'
-              Resource: '*'
-
-            - Effect: Allow
-              Action:
-                # Allows the ECS tasks to interact with only the MysfitsTable
-                # in DynamoDB
-                - 'dynamodb:Scan'
-                - 'dynamodb:Query'
-                - 'dynamodb:UpdateItem'
-                - 'dynamodb:GetItem'
-              Resource: 'arn:aws:dynamodb:*:*:table/MysfitsTable*'
-
-  # An IAM role that allows the AWS CodePipeline service to perform it's
-  # necessary actions. We have intentionally left permissions on this role
-  # that will not be used by the CodePipeline service during this workshop.
-  # This will allow you to more simply use CodePipeline in the future should
-  # you want to use the service for Pipelines that interact with different
-  # AWS services than the ones used in this workshop.
-  MythicalMysfitsServiceCodePipelineServiceRole:
-    Type: AWS::IAM::Role
-    Properties:
-      RoleName: MythicalMysfitsServiceCodePipelineServiceRole
-      AssumeRolePolicyDocument:
-        Statement:
-        - Effect: Allow
-          Principal:
-            Service:
-            - codepipeline.amazonaws.com
-          Action:
-          - sts:AssumeRole
-      Path: "/"
-      Policies:
-      - PolicyName: MythicalMysfitsService-codepipeline-service-policy
-        PolicyDocument:
-          Statement:
-          - Action:
-            - codecommit:GetBranch
-            - codecommit:GetCommit
-            - codecommit:UploadArchive
-            - codecommit:GetUploadArchiveStatus
-            - codecommit:CancelUploadArchive
-            Resource: "*"
-            Effect: Allow
-          - Action:
-            - s3:GetObject
-            - s3:GetObjectVersion
-            - s3:GetBucketVersioning
-            Resource: "*"
-            Effect: Allow
-          - Action:
-            - s3:PutObject
-            Resource:
-            - arn:aws:s3:::*
-            Effect: Allow
-          - Action:
-            - elasticloadbalancing:*
-            - autoscaling:*
-            - cloudwatch:*
-            - ecs:*
-            - codebuild:*
-            - iam:PassRole
-            Resource: "*"
-            Effect: Allow
-          Version: "2012-10-17"
-
-  # An IAM role that allows the AWS CodeBuild service to perform the actions
-  # required to complete a build of our source code retrieved from CodeCommit,
-  # and push the created image to ECR.
-  MythicalMysfitsServiceCodeBuildServiceRole:
-    Type: AWS::IAM::Role
-    Properties:
-      RoleName: MythicalMysfitsServiceCodeBuildServiceRole
-      AssumeRolePolicyDocument:
-        Version: "2012-10-17"
-        Statement:
-          Effect: Allow
-          Principal:
-            Service: codebuild.amazonaws.com
-          Action: sts:AssumeRole
-      Policies:
-      - PolicyName: "MythicalMysfitsService-CodeBuildServicePolicy"
-        PolicyDocument:
-          Version: "2012-10-17"
-          Statement:
-          - Effect: "Allow"
-            Action:
-            - "codecommit:ListBranches"
-            - "codecommit:ListRepositories"
-            - "codecommit:BatchGetRepositories"
-            - "codecommit:Get*"
-            - "codecommit:GitPull"
-            Resource:
-            - Fn::Sub: arn:aws:codecommit:${AWS::Region}:${AWS::AccountId}:MythicalMysfitsServiceRepository
-          - Effect: "Allow"
-            Action:
-            - "logs:CreateLogGroup"
-            - "logs:CreateLogStream"
-            - "logs:PutLogEvents"
-            Resource: "*"
-          - Effect: "Allow"
-            Action:
-            - "s3:PutObject"
-            - "s3:GetObject"
-            - "s3:GetObjectVersion"
-            - "s3:ListBucket"
-            Resource: "*"
-          - Effect: "Allow"
-            Action:
-            - "ecr:InitiateLayerUpload"
-            - "ecr:GetAuthorizationToken"
-            Resource: "*"
-
-
-# These are the values output by the CloudFormation template. Be careful
-# about changing any of them, because of them are exported with specific
-# names so that the other task related CF templates can use them.
-Outputs:
-  CurrentRegion:
-    Description: REPLACE_ME_REGION
-    Value: !Ref AWS::Region
-    Export:
-      Name: !Join [ ':', [ !Ref 'AWS::StackName', 'CurrentRegion' ] ]
-  CurrentAccount:
-    Description: REPLACE_ME_ACCOUNT_ID
-    Value: !Ref AWS::AccountId
-    Export:
-      Name: !Join [ ':', [ !Ref 'AWS::StackName', 'CurrentAccount' ] ]
-  EcsServiceRole:
-    Description: REPLACE_ME_ECS_SERVICE_ROLE_ARN
-    Value: !GetAtt 'EcsServiceRole.Arn'
-    Export:
-      Name: !Join [ ':', [ !Ref 'AWS::StackName', 'EcsServiceRole' ] ]
-  ECSTaskRole:
-    Description: REPLACE_ME_ECS_TASK_ROLE_ARN
-    Value: !GetAtt 'ECSTaskRole.Arn'
-    Export:
-      Name: !Join [ ':', [ !Ref 'AWS::StackName', 'ECSTaskRole' ] ]
-  VPCId:
-    Description: REPLACE_ME_VPC_ID
-    Value: !Ref 'VPC'
-    Export:
-      Name: !Join [ ':', [ !Ref 'AWS::StackName', 'VPCId' ] ]
-  PublicSubnetOne:
-    Description: REPLACE_ME_PUBLIC_SUBNET_ONE
-    Value: !Ref 'PublicSubnetOne'
-    Export:
-      Name: !Join [ ':', [ !Ref 'AWS::StackName', 'PublicSubnetOne' ] ]
-  PublicSubnetTwo:
-    Description: REPLACE_ME_PUBLIC_SUBNET_TWO
-    Value: !Ref 'PublicSubnetTwo'
-    Export:
-      Name: !Join [ ':', [ !Ref 'AWS::StackName', 'PublicSubnetTwo' ] ]
-  PrivateSubnetOne:
-    Description: REPLACE_ME_PRIVATE_SUBNET_ONE
-    Value: !Ref 'PrivateSubnetOne'
-    Export:
-      Name: !Join [ ':', [ !Ref 'AWS::StackName', 'PrivateSubnetOne' ] ]
-  PrivateSubnetTwo:
-    Description: REPLACE_ME_PRIVATE_SUBNET_TWO
-    Value: !Ref 'PrivateSubnetTwo'
-    Export:
-      Name: !Join [ ':', [ !Ref 'AWS::StackName', 'PrivateSubnetTwo' ] ]
-  FargateContainerSecurityGroup:
-    Description: REPLACE_ME_SECURITY_GROUP_ID
-    Value: !Ref 'FargateContainerSecurityGroup'
-    Export:
-      Name: !Join [ ':', [ !Ref 'AWS::StackName', 'FargateContainerSecurityGroup' ] ]
-  CodeBuildRole:
-    Description: REPLACE_ME_CODEBUILD_ROLE_ARN
-    Value: !GetAtt 'MythicalMysfitsServiceCodeBuildServiceRole.Arn'
-    Export:
-      Name: !Join [ ':', [ !Ref 'AWS::StackName', 'MythicalMysfitsServiceCodeBuildServiceRole' ] ]
-  CodePipelineRole:
-    Description: REPLACE_ME_CODEPIPELINE_ROLE_ARN
-    Value: !GetAtt 'MythicalMysfitsServiceCodePipelineServiceRole.Arn'
-    Export:
-      Name: !Join [ ':', [ !Ref 'AWS::StackName', 'MythicalMysfitsServiceCodePipelineServiceRole' ] ]
+# # These are the values output by the CloudFormation template. Be careful
+# # about changing any of them, because of them are exported with specific
+# # names so that the other task related CF templates can use them.
+# Outputs:
+#   CurrentRegion:
+#     Description: REPLACE_ME_REGION
+#     Value: !Ref AWS::Region
+#     Export:
+#       Name: !Join [ ':', [ !Ref 'AWS::StackName', 'CurrentRegion' ] ]
+#   CurrentAccount:
+#     Description: REPLACE_ME_ACCOUNT_ID
+#     Value: !Ref AWS::AccountId
+#     Export:
+#       Name: !Join [ ':', [ !Ref 'AWS::StackName', 'CurrentAccount' ] ]
+#   EcsServiceRole:
+#     Description: REPLACE_ME_ECS_SERVICE_ROLE_ARN
+#     Value: !GetAtt 'EcsServiceRole.Arn'
+#     Export:
+#       Name: !Join [ ':', [ !Ref 'AWS::StackName', 'EcsServiceRole' ] ]
+#   ECSTaskRole:
+#     Description: REPLACE_ME_ECS_TASK_ROLE_ARN
+#     Value: !GetAtt 'ECSTaskRole.Arn'
+#     Export:
+#       Name: !Join [ ':', [ !Ref 'AWS::StackName', 'ECSTaskRole' ] ]
+#   VPCId:
+#     Description: REPLACE_ME_VPC_ID
+#     Value: !Ref 'VPC'
+#     Export:
+#       Name: !Join [ ':', [ !Ref 'AWS::StackName', 'VPCId' ] ]
+#   PublicSubnetOne:
+#     Description: REPLACE_ME_PUBLIC_SUBNET_ONE
+#     Value: !Ref 'PublicSubnetOne'
+#     Export:
+#       Name: !Join [ ':', [ !Ref 'AWS::StackName', 'PublicSubnetOne' ] ]
+#   PublicSubnetTwo:
+#     Description: REPLACE_ME_PUBLIC_SUBNET_TWO
+#     Value: !Ref 'PublicSubnetTwo'
+#     Export:
+#       Name: !Join [ ':', [ !Ref 'AWS::StackName', 'PublicSubnetTwo' ] ]
+#   PrivateSubnetOne:
+#     Description: REPLACE_ME_PRIVATE_SUBNET_ONE
+#     Value: !Ref 'PrivateSubnetOne'
+#     Export:
+#       Name: !Join [ ':', [ !Ref 'AWS::StackName', 'PrivateSubnetOne' ] ]
+#   PrivateSubnetTwo:
+#     Description: REPLACE_ME_PRIVATE_SUBNET_TWO
+#     Value: !Ref 'PrivateSubnetTwo'
+#     Export:
+#       Name: !Join [ ':', [ !Ref 'AWS::StackName', 'PrivateSubnetTwo' ] ]
+#   FargateContainerSecurityGroup:
+#     Description: REPLACE_ME_SECURITY_GROUP_ID
+#     Value: !Ref 'FargateContainerSecurityGroup'
+#     Export:
+#       Name: !Join [ ':', [ !Ref 'AWS::StackName', 'FargateContainerSecurityGroup' ] ]
+#   CodeBuildRole:
+#     Description: REPLACE_ME_CODEBUILD_ROLE_ARN
+#     Value: !GetAtt 'MythicalMysfitsServiceCodeBuildServiceRole.Arn'
+#     Export:
+#       Name: !Join [ ':', [ !Ref 'AWS::StackName', 'MythicalMysfitsServiceCodeBuildServiceRole' ] ]
+#   CodePipelineRole:
+#     Description: REPLACE_ME_CODEPIPELINE_ROLE_ARN
+#     Value: !GetAtt 'MythicalMysfitsServiceCodePipelineServiceRole.Arn'
+#     Export:
+#       Name: !Join [ ':', [ !Ref 'AWS::StackName', 'MythicalMysfitsServiceCodePipelineServiceRole' ] ]
