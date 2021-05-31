@@ -1,5 +1,5 @@
 {
-  "family": "m1-core-service",
+  "family": "m1-core-task-definition",
   "cpu": "256",
   "memory": "512",
   "networkMode": "awsvpc",

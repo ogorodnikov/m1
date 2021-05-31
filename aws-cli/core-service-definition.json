@@ -1,0 +1,30 @@
+{
+  "serviceName": "m1-core-service",
+  "cluster": "m1-core-cluster",
+  "launchType": "FARGATE",
+  "deploymentConfiguration": {
+    "maximumPercent": 200,
+    "minimumHealthyPercent": 0
+  },
+  "desiredCount": 1,
+  "networkConfiguration": {
+    "awsvpcConfiguration": {
+      "assignPublicIp": "DISABLED",
+      "securityGroups": [
+        "sg-04e94219a90a7f694"
+      ],
+      "subnets": [
+        "subnet-0c0a78f59c25942ff",
+        "subnet-0279a58ef95907733"
+      ]
+    }
+  },
+  "taskDefinition": "m1-core-task-definition",
+  "loadBalancers": [
+    {
+      "containerName": "m1-core-service",
+      "containerPort": 8080,
+      "targetGroupArn": "arn:aws:elasticloadbalancing:us-east-1:196332284574:targetgroup/m1-core-targetgroup/da4e9cb4f75c57a8"
+    }
+  ]
+}
