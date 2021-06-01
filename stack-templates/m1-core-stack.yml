@@ -454,30 +454,32 @@ Resources:
           Resource:
           - !Sub ${CoreAftifactsBucket.Arn}
           - !Sub ${CoreAftifactsBucket.Arn}/*
-
           
-          
-  # CoreAftifactsBucketPolicy:
-  #   Type: AWS::S3::BucketPolicy
-  #   Properties:
-  #     Bucket: !Ref CoreAftifactsBucket
-  #     PolicyDocument:
-  #       Version: "2012-10-17"
-  #       Statement:
-  #       - Effect: "Allow"
-  #         Principal: '*'
-  #           # AWS:
-  #           # - !Ref CodeBuildRole
-  #           # - !Ref CodePipelineRole
-  #         Action:
-  #         - "s3:GetObject"
-  #         - "s3:GetObjectVersion"
-  #         - "s3:GetBucketVersioning"
-  #         Resource: '*'
-  #         # - !Sub arn:aws:s3:::${CoreAftifactsBucket}
-  #         # - !Sub arn:aws:s3:::${CoreAftifactsBucket}/*
-
-            
+  CodeCommitRepository:   
+    Type: AWS::CodeCommit::Repository
+    Properties:
+      RepositoryName: m1-core-codecommit-repository
+      
+  CodeBuildProject:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Name: m1-core-codebuild-project
+      Artifacts:
+        Type: no_artifacts
+      Environment:
+        Type: LINUX_CONTAINER
+        ComputeType: BUILD_GENERAL1_SMALL
+        Image: aws/codebuild/python:3.5.2
+        PrivilegedMode: true
+        EnvironmentVariables:
+        - Name: AWS_ACCOUNT_ID
+          Value: !Ref AWS::AccountId
+        - Name: AWS_DEFAULT_REGION
+          Value: !Ref AWS::Region
+      ServiceRole: !GetAtt CodeBuildRole.Arn
+      Source:
+        Type: CODECOMMIT
+        Location: !Sub https://git-codecommit.${AWS::Region}.amazonaws.com/v1/repos/${CodeCommitRepository.Name}
 
 Outputs:
 
@@ -564,3 +566,9 @@ Outputs:
     Value: !GetAtt 'CodePipelineRole.Arn'
     Export:
       Name: !Sub ${AWS::StackName}:CodePipelineRole
+      
+  # Test:
+  #   Description: Test
+  #   Value: !Sub https://git-codecommit.${AWS::Region}.amazonaws.com/v1/repos/${CodeCommitRepository.Name}
+  #   Export:
+  #     Name: Test
