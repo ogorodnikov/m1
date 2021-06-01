@@ -428,15 +428,15 @@ Resources:
             - "ecr:GetAuthorizationToken"
             Resource: "*"
             
-  CoreAftifactsBucket:
+  CoreArtifactsBucket:
     Type: 'AWS::S3::Bucket'
     Properties:
-      BucketName: m1-core-artifacts-bucket
+      BucketName: m1-core-artifacts-cicd-bucket
       
-  CoreAftifactsBucketPolicy:
+  CoreArtifactsBucketPolicy:
     Type: 'AWS::S3::BucketPolicy'
     Properties:
-      Bucket: !Ref CoreAftifactsBucket
+      Bucket: !Ref CoreArtifactsBucket
       PolicyDocument:
         Version: "2012-10-17"
         Statement:
@@ -452,8 +452,10 @@ Resources:
           - "s3:GetBucketVersioning"
           - "s3:PutObject"
           Resource:
-          - !Sub ${CoreAftifactsBucket.Arn}
-          - !Sub ${CoreAftifactsBucket.Arn}/*
+          - !Sub ${CoreArtifactsBucket.Arn}
+          - !Sub ${CoreArtifactsBucket.Arn}/*
+          
+  # CI/CD
           
   CodeCommitRepository:   
     Type: AWS::CodeCommit::Repository
@@ -480,6 +482,65 @@ Resources:
       Source:
         Type: CODECOMMIT
         Location: !Sub https://git-codecommit.${AWS::Region}.amazonaws.com/v1/repos/${CodeCommitRepository.Name}
+        
+  CodePipeline: 
+    Type: AWS::CodePipeline::Pipeline 
+    Properties:
+      Name: m1-core-codepipeline-pipeline
+      RoleArn: !GetAtt CodePipelineRole.Arn
+      Stages:
+      
+      - Name: Source
+        Actions: 
+        - Name: SourceAction
+          ActionTypeId: 
+            Category: Source 
+            Owner: AWS 
+            Version: 1 
+            Provider: CodeCommit 
+          OutputArtifacts: 
+          - Name: m1-core-source-artifact 
+          Configuration: 
+            BranchName: master
+            RepositoryName: !GetAtt CodeCommitRepository.Name
+          RunOrder: 1
+          
+      - Name: Build 
+        Actions: 
+        - Name: BuildAction 
+          InputArtifacts: 
+          - Name: m1-core-source-artifact 
+          ActionTypeId: 
+            Category: Build 
+            Owner: AWS 
+            Version: 1 
+            Provider: CodeBuild
+          OutputArtifacts: 
+          - Name: m1-core-build-artifact 
+          Configuration: 
+            ProjectName: !Ref CodeBuildProject
+          RunOrder: 1
+          
+      - Name: Deploy
+        Actions: 
+        - Name: DeployAction
+          InputArtifacts: 
+          - Name: m1-core-build-artifact 
+          ActionTypeId: 
+            Category: Deploy 
+            Owner: AWS 
+            Version: 1
+            Provider: ECS 
+          Configuration: 
+            ClusterName: m1-core-cluster
+            ServiceName: m1-core-service
+            FileName: imagedefinitions.json 
+          RunOrder: 1
+            
+      ArtifactStore: 
+        Type: S3 
+        Location: !Ref CoreArtifactsBucket
+
 
 Outputs:
 
