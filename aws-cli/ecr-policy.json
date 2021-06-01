@@ -5,7 +5,7 @@
       "Effect": "Allow",
       "Principal": {
         "AWS": [
-         "REPLACE_ME_CODEBUILD_ROLE_ARN"
+         "arn:aws:iam::196332284574:role/m1-codebuild-role"
         ]
       },
       "Action": [

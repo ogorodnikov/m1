@@ -431,7 +431,7 @@ Resources:
   CoreArtifactsBucket:
     Type: 'AWS::S3::Bucket'
     Properties:
-      BucketName: m1-core-artifacts-cicd-bucket
+      BucketName: m1-core-artifacts-bucket
       
   CoreArtifactsBucketPolicy:
     Type: 'AWS::S3::BucketPolicy'
@@ -478,6 +478,7 @@ Resources:
           Value: !Ref AWS::AccountId
         - Name: AWS_DEFAULT_REGION
           Value: !Ref AWS::Region
+        # Docker Login
       ServiceRole: !GetAtt CodeBuildRole.Arn
       Source:
         Type: CODECOMMIT
@@ -534,7 +535,7 @@ Resources:
           Configuration: 
             ClusterName: m1-core-cluster
             ServiceName: m1-core-service
-            FileName: imagedefinitions.json 
+            FileName: m1-core-image-definitions.json 
           RunOrder: 1
             
       ArtifactStore: 
