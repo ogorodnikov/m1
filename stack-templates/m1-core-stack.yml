@@ -425,73 +425,85 @@ Resources:
 Outputs:
 
   CurrentRegion:
-    Description: M1 Region
+    Description: Region
     Value: !Ref AWS::Region
     Export:
       Name: !Sub ${AWS::StackName}:CurrentRegion
       
   CurrentAccount:
-    Description: M1 Account
+    Description: Account
     Value: !Ref AWS::AccountId
     Export:
       Name: !Sub ${AWS::StackName}:CurrentAccount
       
   ECSRole:
-    Description: M1 ECS Role
+    Description: ECS Role
     Value: !GetAtt 'ECSRole.Arn'
     Export:
       Name: !Sub ${AWS::StackName}:ECSRole
       
   ECSTaskRole:
-    Description: M1 ECS Task Role
+    Description: ECS Task Role
     Value: !GetAtt 'ECSTaskRole.Arn'
     Export:
       Name: !Sub ${AWS::StackName}:ECSTaskRole
       
   VPCId:
-    Description: M1 VPC Id
+    Description: VPC Id
     Value: !Ref 'VPC'
     Export:
       Name: !Sub ${AWS::StackName}:VPCId
       
   PublicSubnetOne:
-    Description: M1 Public Subnet One
+    Description: Public Subnet One
     Value: !Ref 'PublicSubnetOne'
     Export:
       Name: !Sub ${AWS::StackName}:PublicSubnetOne
       
   PublicSubnetTwo:
-    Description: M1 Public Subnet Two
+    Description: Public Subnet Two
     Value: !Ref 'PublicSubnetTwo'
     Export:
       Name: !Sub ${AWS::StackName}:PublicSubnetTwo
       
   PrivateSubnetOne:
-    Description: M1 Private Subnet One
+    Description: Private Subnet One
     Value: !Ref 'PrivateSubnetOne'
     Export:
       Name: !Sub ${AWS::StackName}:PrivateSubnetOne
       
   PrivateSubnetTwo:
-    Description: M1 Private Subnet Two
+    Description: Private Subnet Two
     Value: !Ref 'PrivateSubnetTwo'
     Export:
       Name: !Sub ${AWS::StackName}:PrivateSubnetTwo
       
+  NATInstanceOne:
+    Description: NAT Instance One
+    Value: !Ref 'NATInstanceOne'
+    Export:
+      Name: !Sub ${AWS::StackName}:NATInstanceOne      
+
+  NATInstanceTwo:
+    Description: NAT Instance Two
+    Value: !Ref 'NATInstanceTwo'
+    Export:
+      Name: !Sub ${AWS::StackName}:NATInstanceTwo  
+      
   FargateContainerSecurityGroup:
-    Description: M1 Fargate Container Security Group
+    Description: Fargate Container Security Group
     Value: !Ref 'FargateContainerSecurityGroup'
     Export:
       Name: !Sub ${AWS::StackName}:FargateContainerSecurityGroup
       
   CodeBuildRole:
-    Description: M1 Codebuild Role ARN
+    Description: Codebuild Role ARN
     Value: !GetAtt 'CodeBuildRole.Arn'
     Export:
       Name: !Sub ${AWS::StackName}:CodeBuildRole
       
   CodePipelineRole:
-    Description: M1 Codepipeline Role ARN
+    Description: Codepipeline Role ARN
     Value: !GetAtt 'CodePipelineRole.Arn'
     Export:
       Name: !Sub ${AWS::StackName}:CodePipelineRole
