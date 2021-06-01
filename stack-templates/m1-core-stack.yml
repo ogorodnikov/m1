@@ -17,6 +17,12 @@ Mappings:
     PrivateTwo:
       CIDR: '10.0.3.0/24'
       
+Parameters:
+  
+  NATAMI:
+    Type: String
+    Default: ami-00a9d4a05375b2763
+      
 Resources:
 
   VPC:
@@ -164,7 +170,7 @@ Resources:
       Tags:
       - Key: Name
         Value: 'm1-public1-nat-instance'
-      ImageId: ami-00a9d4a05375b2763
+      ImageId: !Ref NATAMI
       InstanceType: t2.micro
       NetworkInterfaces:
       - DeviceIndex: '0'
@@ -179,7 +185,7 @@ Resources:
       Tags:
       - Key: Name
         Value: 'm1-public2-nat-instance'
-      ImageId: ami-00a9d4a05375b2763
+      ImageId: !Ref NATAMI
       InstanceType: t2.micro
       NetworkInterfaces:
       - DeviceIndex: '0'
@@ -421,6 +427,57 @@ Resources:
             - "ecr:InitiateLayerUpload"
             - "ecr:GetAuthorizationToken"
             Resource: "*"
+            
+  CoreAftifactsBucket:
+    Type: 'AWS::S3::Bucket'
+    Properties:
+      BucketName: m1-core-artifacts-bucket
+      
+  CoreAftifactsBucketPolicy:
+    Type: 'AWS::S3::BucketPolicy'
+    Properties:
+      Bucket: !Ref CoreAftifactsBucket
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+        - Sid: "Whitelisted S3 Get and Put"
+          Effect: "Allow"
+          Principal:
+            AWS:
+            - !GetAtt CodeBuildRole.Arn
+            - !GetAtt CodePipelineRole.Arn
+          Action:
+          - "s3:GetObject"
+          - "s3:GetObjectVersion"
+          - "s3:GetBucketVersioning"
+          - "s3:PutObject"
+          Resource:
+          - !Sub ${CoreAftifactsBucket.Arn}
+          - !Sub ${CoreAftifactsBucket.Arn}/*
+
+          
+          
+  # CoreAftifactsBucketPolicy:
+  #   Type: AWS::S3::BucketPolicy
+  #   Properties:
+  #     Bucket: !Ref CoreAftifactsBucket
+  #     PolicyDocument:
+  #       Version: "2012-10-17"
+  #       Statement:
+  #       - Effect: "Allow"
+  #         Principal: '*'
+  #           # AWS:
+  #           # - !Ref CodeBuildRole
+  #           # - !Ref CodePipelineRole
+  #         Action:
+  #         - "s3:GetObject"
+  #         - "s3:GetObjectVersion"
+  #         - "s3:GetBucketVersioning"
+  #         Resource: '*'
+  #         # - !Sub arn:aws:s3:::${CoreAftifactsBucket}
+  #         # - !Sub arn:aws:s3:::${CoreAftifactsBucket}/*
+
+            
 
 Outputs:
 
