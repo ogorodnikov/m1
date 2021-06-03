@@ -478,7 +478,7 @@ Resources:
           Value: !Ref AWS::AccountId
         - Name: AWS_DEFAULT_REGION
           Value: !Ref AWS::Region
-        # Docker Login
+        # Docker Log
       ServiceRole: !GetAtt CodeBuildRole.Arn
       Source:
         Type: CODECOMMIT
