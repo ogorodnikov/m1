@@ -22,6 +22,13 @@ Parameters:
   NATAMI:
     Type: String
     Default: ami-00a9d4a05375b2763
+    
+  CreateAWSServiceRoleForECS:
+    Type: String
+    Default: true
+    
+Conditions:
+  CreateAWSServiceRoleForECS: !Not [!Equals [!Ref CreateAWSServiceRoleForECS, true]]
       
 Resources:
 
@@ -166,6 +173,7 @@ Resources:
   
   NATInstanceOne:
     Type: AWS::EC2::Instance
+    DependsOn: GatewayAttachement
     Properties:
       Tags:
       - Key: Name
@@ -181,6 +189,7 @@ Resources:
 
   NATInstanceTwo:
     Type: AWS::EC2::Instance
+    DependsOn: GatewayAttachement
     Properties:
       Tags:
       - Key: Name
@@ -454,7 +463,84 @@ Resources:
           Resource:
           - !Sub ${CoreArtifactsBucket.Arn}
           - !Sub ${CoreArtifactsBucket.Arn}/*
-          
+  
+  # Load Balancer
+  
+  CoreLoadBalancer:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Name: test-core-nlb
+      Scheme: internet-facing
+      Type: network
+      Subnets:
+      - !Ref PublicSubnetOne
+      - !Ref PublicSubnetTwo
+
+  CoreTargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      Name: test-core-targetgroup
+      Port: 8080
+      Protocol: TCP
+      TargetType: ip
+      VpcId: !Ref VPC
+      HealthCheckIntervalSeconds: 10
+      HealthCheckPath: /
+      HealthCheckProtocol: HTTP
+      HealthyThresholdCount: 3
+      UnhealthyThresholdCount: 3
+
+  CoreListener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      LoadBalancerArn: !Ref CoreLoadBalancer
+      DefaultActions:
+      - Type: forward
+        TargetGroupArn: !Ref CoreTargetGroup
+      Port: 80
+      Protocol: TCP
+
+  # ECS
+  
+  ECSServiceLinkedRole:
+    Type: AWS::IAM::ServiceLinkedRole
+    Condition: CreateAWSServiceRoleForECS
+    Properties:
+      AWSServiceName: ecs.amazonaws.com
+  
+  CoreImageRepository: 
+    Type: AWS::ECR::Repository
+    Properties: 
+      RepositoryName: m1-core-image
+      
+  CoreLogGroup: 
+    Type: AWS::Logs::LogGroup
+    Properties: 
+      LogGroupName: test-core-log-group
+      
+  CoreCluster:
+    Type: 'AWS::ECS::Cluster'
+    Properties:
+      ClusterName: test-core-cluster
+
+  # service:
+  # Type: AWS::ECS::Service
+  # DependsOn:
+  # - ECSAutoScalingGroup
+  # Properties:
+  #   Cluster:
+  #     Ref: ECSCluster
+  #   DesiredCount: 1
+  #   LoadBalancers:
+  #   - ContainerName: simple-app
+  #     ContainerPort: 80
+  #     LoadBalancerName:
+  #       Ref: EcsElasticLoadBalancer
+  #   Role:
+  #     Ref: ECSServiceRole
+  #   TaskDefinition:
+  #     Ref: taskdefinition
+  
   # CI/CD
           
   CodeCommitRepository:   
@@ -478,7 +564,7 @@ Resources:
           Value: !Ref AWS::AccountId
         - Name: AWS_DEFAULT_REGION
           Value: !Ref AWS::Region
-        # Docker Log
+        # Possibly - Docker Credentials
       ServiceRole: !GetAtt CodeBuildRole.Arn
       Source:
         Type: CODECOMMIT
