@@ -20,12 +20,21 @@ Mappings:
 Parameters:
   
   NATAMI:
-    Type: String
+    Type: AWS::EC2::Image::Id
     Default: ami-00a9d4a05375b2763
+    
+  LatestECSOptimizedAMI:
+    Description: AMI ID
+    Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
+    Default: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
     
   CreateAWSServiceRoleForECS:
     Type: String
     Default: true
+    
+  # LatestAMI:
+  #   Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
+  #   Default: /aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2
     
 Conditions:
   CreateAWSServiceRoleForECS: !Not [!Equals [!Ref CreateAWSServiceRoleForECS, true]]
@@ -580,9 +589,6 @@ Resources:
         # LoadBalancerName
       # Role
 
-
-
-  
   # CI/CD
           
   CodeCommitRepository:   
@@ -669,6 +675,54 @@ Resources:
       ArtifactStore: 
         Type: S3 
         Location: !Ref CoreArtifactsBucket
+        
+  # Container EC2 Instance
+  
+  ContainerEC2Role:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: test-container-ec2-role
+      AssumeRolePolicyDocument:
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service: 
+            - ec2.amazonaws.com
+          Action:
+          - sts:AssumeRole
+      Path: /
+      ManagedPolicyArns:
+      - arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore
+      - arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role
+      
+  ContainerEC2RoleInstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Path: /
+      Roles: 
+      - !Ref ContainerEC2Role
+
+  ContainerEC2Instance:
+    Type: AWS::EC2::Instance
+    DependsOn: GatewayAttachement
+    Properties:
+      Tags:
+      - Key: Name
+        Value: test-container-ec2-instance
+      ImageId: !Ref LatestECSOptimizedAMI
+      IamInstanceProfile: !Ref ContainerEC2RoleInstanceProfile
+      InstanceType: t2.micro
+      NetworkInterfaces:
+      - DeviceIndex: '0'
+        SubnetId: !Ref PrivateSubnetOne
+        AssociatePublicIpAddress: false
+        GroupSet: 
+        - !Ref FargateContainerSecurityGroup
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          echo ECS_CLUSTER=${CoreCluster} >> /etc/ecs/ecs.config
+
 
 
 Outputs:
@@ -759,6 +813,9 @@ Outputs:
       
   # Test:
   #   Description: Test
-  #   Value: !Sub https://git-codecommit.${AWS::Region}.amazonaws.com/v1/repos/${CodeCommitRepository.Name}
+  #   Value: 
+  #     Fn::Base64: !Sub |
+  #       #!/bin/bash
+  #       echo ECS_CLUSTER=${CoreCluster} >> /etc/ecs/ecs.config
   #   Export:
   #     Name: Test
