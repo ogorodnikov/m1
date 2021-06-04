@@ -500,13 +500,15 @@ Resources:
       Port: 80
       Protocol: TCP
 
-  # ECS
+  # ECS Service Linked Role
   
   ECSServiceLinkedRole:
     Type: AWS::IAM::ServiceLinkedRole
     Condition: CreateAWSServiceRoleForECS
     Properties:
       AWSServiceName: ecs.amazonaws.com
+  
+  # ECS
   
   CoreImageRepository: 
     Type: AWS::ECR::Repository
@@ -522,24 +524,64 @@ Resources:
     Type: 'AWS::ECS::Cluster'
     Properties:
       ClusterName: test-core-cluster
+      
+  CoreTaskDefinition:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family: test-core-task-definition
+      Cpu: 256
+      Memory: 512
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+      - FARGATE
+      TaskRoleArn: !Ref ECSTaskRole
+      ExecutionRoleArn: !Ref ECSRole
+      
+      ContainerDefinitions:
+      
+      - Name: m1-core-image
+        PortMappings: 
+        - ContainerPort: 8080
+          Protocol: http
+        Image: !Sub ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${CoreImageRepository}:latest
 
-  # service:
-  # Type: AWS::ECS::Service
-  # DependsOn:
-  # - ECSAutoScalingGroup
-  # Properties:
-  #   Cluster:
-  #     Ref: ECSCluster
-  #   DesiredCount: 1
-  #   LoadBalancers:
-  #   - ContainerName: simple-app
-  #     ContainerPort: 80
-  #     LoadBalancerName:
-  #       Ref: EcsElasticLoadBalancer
-  #   Role:
-  #     Ref: ECSServiceRole
-  #   TaskDefinition:
-  #     Ref: taskdefinition
+        LogConfiguration:
+          LogDriver: awslogs
+          Options:
+            awslogs-group: !Ref CoreLogGroup
+            awslogs-region: !Ref AWS::Region
+            awslogs-stream-prefix: awslogs-test-core
+
+        Essential: true
+
+  CoreService:
+    Type: AWS::ECS::Service
+    Properties:
+      ServiceName: test-core-service
+      Cluster: !Ref CoreCluster
+      LaunchType: FARGATE
+      DeploymentConfiguration:
+        MaximumPercent: 200
+        MinimumHealthyPercent: 0
+      DesiredCount: 1
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          AssignPublicIp: DISABLED
+          SecurityGroups:
+          - !Ref FargateContainerSecurityGroup
+          Subnets:
+          - !Ref PrivateSubnetOne
+          - !Ref PrivateSubnetTwo
+      TaskDefinition: !Ref CoreTaskDefinition
+      LoadBalancers:
+      - ContainerName: m1-core-image
+        ContainerPort: 8080
+        TargetGroupArn: !Ref CoreTargetGroup
+        # LoadBalancerName
+      # Role
+
+
+
   
   # CI/CD
           
