@@ -442,8 +442,12 @@ Resources:
             - "s3:GetObject"
             - "s3:GetObjectVersion"
             - "s3:ListBucket"
-            - "ecr:InitiateLayerUpload"
             - "ecr:GetAuthorizationToken"
+            - "ecr:InitiateLayerUpload"
+            - "ecr:UploadLayerPart"
+            - "ecr:CompleteLayerUpload"
+            - "ecr:PutImage"
+            - "ecr:BatchCheckLayerAvailability"
             Resource: "*"
             
   CoreArtifactsBucket:
@@ -533,6 +537,7 @@ Resources:
       
   CoreCluster:
     Type: 'AWS::ECS::Cluster'
+    DependsOn: CoreListener
     Properties:
       ClusterName: m1-core-cluster
       
@@ -664,9 +669,7 @@ Resources:
 
   CoreContainerEC2Instance:
     Type: AWS::EC2::Instance
-    DependsOn: 
-    - GatewayAttachement
-    - CoreCluster
+    DependsOn: GatewayAttachement
     Properties:
       Tags:
       - Key: Name
@@ -760,8 +763,8 @@ Resources:
             Version: 1
             Provider: ECS 
           Configuration: 
-            ClusterName: m1-core-cluster
-            ServiceName: m1-core-service
+            ClusterName: !Ref CoreCluster
+            ServiceName: !GetAtt CoreFargateService.Name
             FileName: m1-core-image-definitions.json 
           RunOrder: 1
       ArtifactStore: 
