@@ -23,18 +23,17 @@ Parameters:
     Type: AWS::EC2::Image::Id
     Default: ami-00a9d4a05375b2763
     
+  LatestLinuxAMI:
+    Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
+    Default: /aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2
+    
   LatestECSOptimizedAMI:
-    Description: AMI ID
     Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
     Default: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
     
   CreateAWSServiceRoleForECS:
     Type: String
     Default: true
-    
-  # LatestAMI:
-  #   Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
-  #   Default: /aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2
     
 Conditions:
   CreateAWSServiceRoleForECS: !Not [!Equals [!Ref CreateAWSServiceRoleForECS, true]]
@@ -212,6 +211,44 @@ Resources:
         GroupSet: [!Ref NATSecurityGroup]
       SourceDestCheck: false
 
+  NATInstanceUserData:
+    Type: AWS::EC2::Instance
+    DependsOn:
+    - GatewayAttachement
+    - PublicRoute
+    Properties:
+      Tags:
+      - Key: Name
+        Value: 'm1-public2-nat-user-data-instance'
+      ImageId: !Ref LatestLinuxAMI
+      InstanceType: t2.micro
+      NetworkInterfaces:
+      - DeviceIndex: '0'
+        SubnetId: !Ref PublicSubnetOne
+        AssociatePublicIpAddress: true
+        GroupSet:
+        - !Ref NATSecurityGroup
+      SourceDestCheck: false
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          yum -y update
+          yum install -y aws-cfn-bootstrap
+          echo 1 > /proc/sys/net/ipv4/ip_forward
+          echo 0 > /proc/sys/net/ipv4/conf/eth0/send_redirects
+          /sbin/iptables -t nat -A POSTROUTING -o eth0 -s 0.0.0.0/0 -j MASQUERADE
+          /sbin/iptables-save > /etc/sysconfig/iptables
+          mkdir -p /etc/sysctl.d/
+          cat << NatConfFileMarker > /etc/sysctl.d/nat.conf
+          net.ipv4.ip_forward = 1
+          net.ipv4.conf.eth0.send_redirects = 0
+          NatConfFileMarker
+          /opt/aws/bin/cfn-signal -e 0 --resource NATInstanceUserData --stack ${AWS::StackName} --region ${AWS::Region}
+    CreationPolicy:
+      ResourceSignal:
+        Count: 1
+        Timeout: PT5M
+
         
   # Private Routing
   
@@ -228,7 +265,7 @@ Resources:
     Properties:
       RouteTableId: !Ref PrivateRouteTableOne
       DestinationCidrBlock: 0.0.0.0/0
-      InstanceId: !Ref NATInstanceOne
+      InstanceId: !Ref NATInstanceUserData
   
   PrivateRouteTableOneAssociation:
     Type: AWS::EC2::SubnetRouteTableAssociation
@@ -859,9 +896,6 @@ Outputs:
       
   # Test:
   #   Description: Test
-  #   Value: 
-  #     Fn::Base64: !Sub |
-  #       #!/bin/bash
-  #       echo ECS_CLUSTER=${CoreCluster} >> /etc/ecs/ecs.config
+  #   Value: !Ref LatestLinuxAMI
   #   Export:
   #     Name: Test
