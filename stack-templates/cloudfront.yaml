@@ -1,0 +1,166 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: ACFS3 - S3 Static site with CF and ACM (uksb-1qnk6ni7b) (version:v0.5)
+Metadata:
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+    - Label:
+        default: Domain
+      Parameters:
+      - SubDomain
+      - DomainName
+Mappings:
+  Solution:
+    Constants:
+      Version: v0.5
+Parameters:
+  SubDomain:
+    Description: The part of a website address before your DomainName - e.g. www or
+      img
+    Type: String
+    Default: www
+    AllowedPattern: ^[^.]*$
+  DomainName:
+    Description: The part of a website address after your SubDomain - e.g. example.com
+    Type: String
+  CreateApex:
+    Description: Create an Apex Alias in CloudFront distribution - yes/no
+    Type: String
+    Default: 'no'
+    AllowedValues:
+    - 'yes'
+    - 'no'
+Resources:
+  CustomResourceStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: https://s3.amazonaws.com/solution-builders-us-east-1/amazon-cloudfront-secure-static-site/v0.5/af2c1d250e85e4f25a82dd894d7c10e1.template
+      Tags:
+      - Key: Solution
+        Value: ACFS3
+  AcmCertificateStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: https://s3.amazonaws.com/solution-builders-us-east-1/amazon-cloudfront-secure-static-site/v0.5/54343629157101ef22bab8b3da218407.template
+      Parameters:
+        SubDomain:
+          Ref: SubDomain
+        DomainName:
+          Ref: DomainName
+        CFNCustomProvider:
+          Fn::GetAtt:
+          - CustomResourceStack
+          - Outputs.CFNCustomProvider
+        CopyFunction:
+          Fn::GetAtt:
+          - CustomResourceStack
+          - Outputs.CopyFunction
+        CreateApex:
+          Ref: CreateApex
+      Tags:
+      - Key: Solution
+        Value: ACFS3
+  CloudFrontStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: https://s3.amazonaws.com/solution-builders-us-east-1/amazon-cloudfront-secure-static-site/v0.5/281bdd7adb70788986849cf7f3676dcb.template
+      Parameters:
+        CertificateArn:
+          Fn::GetAtt:
+          - AcmCertificateStack
+          - Outputs.CertificateArn
+        DomainName:
+          Ref: DomainName
+        SubDomain:
+          Ref: SubDomain
+        CreateApex:
+          Ref: CreateApex
+        S3BucketRoot:
+          Fn::GetAtt:
+          - CustomResourceStack
+          - Outputs.S3BucketRoot
+        S3BucketRootName:
+          Fn::GetAtt:
+          - CustomResourceStack
+          - Outputs.S3BucketRootName
+        S3BucketRootArn:
+          Fn::GetAtt:
+          - CustomResourceStack
+          - Outputs.S3BucketRootArn
+        S3BucketLogs:
+          Fn::GetAtt:
+          - CustomResourceStack
+          - Outputs.S3BucketLogs
+        S3BucketLogsName:
+          Fn::GetAtt:
+          - CustomResourceStack
+          - Outputs.S3BucketLogsName
+      Tags:
+      - Key: Solution
+        Value: ACFS3
+Outputs:
+  SolutionVersion:
+    Value:
+      Fn::FindInMap:
+      - Solution
+      - Constants
+      - Version
+  CFNCustomProvider:
+    Description: ACM helper function
+    Value:
+      Fn::GetAtt:
+      - CustomResourceStack
+      - Outputs.CFNCustomProvider
+  CopyFunction:
+    Description: S3 helper function
+    Value:
+      Fn::GetAtt:
+      - CustomResourceStack
+      - Outputs.CopyFunction
+  S3BucketLogs:
+    Description: Logging bucket
+    Value:
+      Fn::GetAtt:
+      - CustomResourceStack
+      - Outputs.S3BucketLogs
+  S3BucketRoot:
+    Description: Website bucket
+    Value:
+      Fn::GetAtt:
+      - CustomResourceStack
+      - Outputs.S3BucketRoot
+  S3BucketLogsName:
+    Description: Logging bucket name
+    Value:
+      Fn::GetAtt:
+      - CustomResourceStack
+      - Outputs.S3BucketLogsName
+  S3BucketRootName:
+    Description: Website bucket name
+    Value:
+      Fn::GetAtt:
+      - CustomResourceStack
+      - Outputs.S3BucketRootName
+  CertificateArn:
+    Description: Issued certificate
+    Value:
+      Fn::GetAtt:
+      - AcmCertificateStack
+      - Outputs.CertificateArn
+  CFDistributionName:
+    Description: CloudFront distribution
+    Value:
+      Fn::GetAtt:
+      - CloudFrontStack
+      - Outputs.CloudFrontDistribution
+  LambdaEdgeFunctionVersion:
+    Description: Security Lambda version
+    Value:
+      Fn::GetAtt:
+      - CloudFrontStack
+      - Outputs.LambdaEdgeFunctionVersion
+  CloudFrontDomainName:
+    Description: Website address
+    Value:
+      Fn::GetAtt:
+      - CloudFrontStack
+      - Outputs.CloudFrontDomainName
