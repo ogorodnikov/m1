@@ -378,12 +378,12 @@ Resources:
               Resource: '*'
             - Effect: Allow
               Action:
-                # Allows ECS tasks to interact only with m1-table in DynamoDB
-                - dynamodb:Scan
-                - dynamodb:Query
-                - dynamodb:UpdateItem
-                - dynamodb:GetItem
-              Resource: arn:aws:dynamodb:*:*:table/m1-table*
+              # Allows ECS tasks to interact with particular DynamoDB table
+              - dynamodb:Scan
+              - dynamodb:Query
+              - dynamodb:UpdateItem
+              - dynamodb:GetItem
+              Resource: arn:aws:dynamodb:*:*:table/m1-algorithms-table*
 
   CodePipelineRole:
     Type: AWS::IAM::Role
@@ -787,7 +787,7 @@ Resources:
         Type: S3 
         Location: !Ref CoreArtifactsBucket
 
-  ### VPC Endpoint - DynamoDB
+  ### DynamoDB
 
   DynamoDBEndpoint:
     Type: AWS::EC2::VPCEndpoint
@@ -804,8 +804,45 @@ Resources:
       - !Ref PrivateRouteTableTwo
       ServiceName: !Sub com.amazonaws.${AWS::Region}.dynamodb
       VpcId: !Ref VPC
+      
+  AlgorithmsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: m1-algorithms-table
+      ProvisionedThroughput:
+        ReadCapacityUnits: 1
+        WriteCapacityUnits: 1
 
-  ### Outputs
+      AttributeDefinitions:
+      - AttributeName: algorithm-id
+        AttributeType: N
+      - AttributeName: algorithm-type
+        AttributeType: S
+      # - AttributeName: algorithm-code
+      #   AttributeType: S
+      # - AttributeName: algorithm-image
+      #   AttributeType: B
+        
+      KeySchema:
+      - AttributeName: algorithm-id
+        KeyType: HASH
+     
+      GlobalSecondaryIndexes:
+      - IndexName: algorithm-type-index
+        KeySchema:
+        - AttributeName: algorithm-type
+          KeyType: HASH
+        - AttributeName: algorithm-id
+          KeyType: RANGE
+        Projection:
+          ProjectionType: ALL
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+
+
+
+### Outputs
 
 Outputs:
 
