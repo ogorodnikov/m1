@@ -1,28 +1,24 @@
 ---
-AWSTemplateFormatVersion: '2010-09-09'
+AWSTemplateFormatVersion: 2010-09-09
 
-Description: Core network and IAM resources for M1 Project container service
+Description: M1 Core Stack
 
 Mappings:
 
   SubnetConfig:
     VPC:
-      CIDR: '10.0.0.0/16'
+      CIDR: 10.0.0.0/16
     PublicOne:
-      CIDR: '10.0.0.0/24'
+      CIDR: 10.0.0.0/24
     PublicTwo:
-      CIDR: '10.0.1.0/24'
+      CIDR: 10.0.1.0/24
     PrivateOne:
-      CIDR: '10.0.2.0/24'
+      CIDR: 10.0.2.0/24
     PrivateTwo:
-      CIDR: '10.0.3.0/24'
+      CIDR: 10.0.3.0/24
       
 Parameters:
   
-  NATAMI:
-    Type: AWS::EC2::Image::Id
-    Default: ami-00a9d4a05375b2763
-    
   LatestLinuxAMI:
     Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
     Default: /aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2
@@ -45,10 +41,23 @@ Resources:
     Properties:
       Tags: 
       - Key: Name
-        Value: 'm1-core-vpc'
+        Value: m1-core-vpc
       EnableDnsSupport: true
       EnableDnsHostnames: true
-      CidrBlock: !FindInMap ['SubnetConfig', 'VPC', 'CIDR']
+      CidrBlock: !FindInMap [SubnetConfig, VPC, CIDR]
+      
+  InternetGateway:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags: 
+      - Key: Name
+        Value: m1-igw
+    
+  GatewayAttachement:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId: !Ref VPC
+      InternetGatewayId: !Ref InternetGateway
       
   # Subnets
 
@@ -57,13 +66,13 @@ Resources:
     Properties:
       Tags: 
       - Key: Name
-        Value: 'm1-public1-subnet'
+        Value: m1-public1-subnet
       AvailabilityZone:
-         Fn::Select:
-         - 0
-         - Fn::GetAZs: {Ref: 'AWS::Region'}
-      VpcId: !Ref 'VPC'
-      CidrBlock: !FindInMap ['SubnetConfig', 'PublicOne', 'CIDR']
+        Fn::Select:
+        - 0
+        - Fn::GetAZs: !Ref AWS::Region
+      VpcId: !Ref VPC
+      CidrBlock: !FindInMap [SubnetConfig, PublicOne, CIDR]
       MapPublicIpOnLaunch: true
       
   PublicSubnetTwo:
@@ -71,13 +80,13 @@ Resources:
     Properties:
       Tags: 
       - Key: Name
-        Value: 'm1-public2-subnet'
+        Value: m1-public2-subnet
       AvailabilityZone:
-         Fn::Select:
-         - 1
-         - Fn::GetAZs: {Ref: 'AWS::Region'}
-      VpcId: !Ref 'VPC'
-      CidrBlock: !FindInMap ['SubnetConfig', 'PublicTwo', 'CIDR']
+        Fn::Select:
+        - 1
+        - Fn::GetAZs: !Ref AWS::Region
+      VpcId: !Ref VPC
+      CidrBlock: !FindInMap [SubnetConfig, PublicTwo, CIDR]
       MapPublicIpOnLaunch: true
 
   PrivateSubnetOne:
@@ -85,57 +94,44 @@ Resources:
     Properties:
       Tags: 
       - Key: Name
-        Value: 'm1-private1-subnet'
+        Value: m1-private1-subnet
       AvailabilityZone:
-         Fn::Select:
-         - 0
-         - Fn::GetAZs: {Ref: 'AWS::Region'}
-      VpcId: !Ref 'VPC'
-      CidrBlock: !FindInMap ['SubnetConfig', 'PrivateOne', 'CIDR']
+        Fn::Select:
+        - 0
+        - Fn::GetAZs: !Ref AWS::Region
+      VpcId: !Ref VPC
+      CidrBlock: !FindInMap [SubnetConfig, PrivateOne, CIDR]
       
   PrivateSubnetTwo:
     Type: AWS::EC2::Subnet
     Properties:
       Tags: 
       - Key: Name
-        Value: 'm1-private2-subnet'
+        Value: m1-private2-subnet
       AvailabilityZone:
-         Fn::Select:
-         - 1
-         - Fn::GetAZs: {Ref: 'AWS::Region'}
-      VpcId: !Ref 'VPC'
-      CidrBlock: !FindInMap ['SubnetConfig', 'PrivateTwo', 'CIDR']
+        Fn::Select:
+        - 1
+        - Fn::GetAZs: !Ref AWS::Region
+      VpcId: !Ref VPC
+      CidrBlock: !FindInMap [SubnetConfig, PrivateTwo, CIDR]
       
   # Routing
 
-  InternetGateway:
-    Type: AWS::EC2::InternetGateway
-    Properties:
-      Tags: 
-      - Key: Name
-        Value: 'm1-igw'
-    
-  GatewayAttachement:
-    Type: AWS::EC2::VPCGatewayAttachment
-    Properties:
-      VpcId: !Ref 'VPC'
-      InternetGatewayId: !Ref 'InternetGateway'
-      
   PublicRouteTable:
     Type: AWS::EC2::RouteTable
     Properties:
       Tags: 
       - Key: Name
-        Value: 'm1-public-rt'
-      VpcId: !Ref 'VPC'
+        Value: m1-public-rt
+      VpcId: !Ref VPC
       
   PublicRoute:
     Type: AWS::EC2::Route
     DependsOn: GatewayAttachement
     Properties:
-      RouteTableId: !Ref 'PublicRouteTable'
-      DestinationCidrBlock: '0.0.0.0/0'
-      GatewayId: !Ref 'InternetGateway'
+      RouteTableId: !Ref PublicRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref InternetGateway
       
   PublicSubnetOneRouteTableAssociation:
     Type: AWS::EC2::SubnetRouteTableAssociation
@@ -151,17 +147,17 @@ Resources:
 
   # Security Groups
   
-  FargateContainerSecurityGroup:
+  ClusterSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
       Tags: 
       - Key: Name
-        Value: 'm1-fargate-sg'
-      GroupName: m1-fargate-sg
-      GroupDescription: Access to the Fargate containers from M1 VPC
-      VpcId: !Ref 'VPC'
+        Value: m1-cluster-sg
+      GroupName: m1-cluster-sg
+      GroupDescription: Access to ECS Cluster from VPC range
+      VpcId: !Ref VPC
       SecurityGroupIngress:
-      - CidrIp: !FindInMap ['SubnetConfig', 'VPC', 'CIDR']
+      - CidrIp: !FindInMap [SubnetConfig, VPC, CIDR]
         IpProtocol: -1
   
   NATSecurityGroup:
@@ -169,48 +165,16 @@ Resources:
     Properties:
       Tags: 
       - Key: Name
-        Value: 'm1-nat-sg'
+        Value: m1-nat-sg
       GroupName: m1-nat-sg
       GroupDescription: Access to NAT Instances
-      VpcId: !Ref 'VPC'
+      VpcId: !Ref VPC
       SecurityGroupIngress:
-      - SourceSecurityGroupId: !GetAtt FargateContainerSecurityGroup.GroupId
+      - SourceSecurityGroupId: !GetAtt ClusterSecurityGroup.GroupId
         IpProtocol: -1
         
   # NAT Instances
   
-  # NATInstanceOne:
-  #   Type: AWS::EC2::Instance
-  #   DependsOn: GatewayAttachement
-  #   Properties:
-  #     Tags:
-  #     - Key: Name
-  #       Value: 'm1-public1-nat-instance'
-  #     ImageId: !Ref NATAMI
-  #     InstanceType: t2.micro
-  #     NetworkInterfaces:
-  #     - DeviceIndex: '0'
-  #       SubnetId: !Ref PublicSubnetOne
-  #       AssociatePublicIpAddress: true
-  #       GroupSet: [!Ref NATSecurityGroup]
-  #     SourceDestCheck: false
-
-  # NATInstanceTwo:
-  #   Type: AWS::EC2::Instance
-  #   DependsOn: GatewayAttachement
-  #   Properties:
-  #     Tags:
-  #     - Key: Name
-  #       Value: 'm1-public2-nat-instance'
-  #     ImageId: !Ref NATAMI
-  #     InstanceType: t2.micro
-  #     NetworkInterfaces:
-  #     - DeviceIndex: '0'
-  #       SubnetId: !Ref PublicSubnetTwo
-  #       AssociatePublicIpAddress: true
-  #       GroupSet: [!Ref NATSecurityGroup]
-  #     SourceDestCheck: false
-
   NATInstanceOne:
     Type: AWS::EC2::Instance
     DependsOn: PublicRoute
@@ -221,7 +185,7 @@ Resources:
       ImageId: !Ref LatestLinuxAMI
       InstanceType: t2.micro
       NetworkInterfaces:
-      - DeviceIndex: '0'
+      - DeviceIndex: 0
         SubnetId: !Ref PublicSubnetOne
         AssociatePublicIpAddress: true
         GroupSet:
@@ -241,11 +205,11 @@ Resources:
           net.ipv4.ip_forward = 1
           net.ipv4.conf.eth0.send_redirects = 0
           NatConfFileMarker
-          /opt/aws/bin/cfn-signal -e 0 --resource NATInstanceOne --stack ${AWS::StackName} --region ${AWS::Region}
-    CreationPolicy:
-      ResourceSignal:
-        Count: 1
-        Timeout: PT5M
+    #       /opt/aws/bin/cfn-signal -e 0 --resource NATInstanceOne --stack ${AWS::StackName} --region ${AWS::Region}
+    # CreationPolicy:
+    #   ResourceSignal:
+    #     Count: 1
+    #     Timeout: PT5M
 
   NATInstanceTwo:
     Type: AWS::EC2::Instance
@@ -257,7 +221,7 @@ Resources:
       ImageId: !Ref LatestLinuxAMI
       InstanceType: t2.micro
       NetworkInterfaces:
-      - DeviceIndex: '0'
+      - DeviceIndex: 0
         SubnetId: !Ref PublicSubnetTwo
         AssociatePublicIpAddress: true
         GroupSet:
@@ -277,11 +241,11 @@ Resources:
           net.ipv4.ip_forward = 1
           net.ipv4.conf.eth0.send_redirects = 0
           NatConfFileMarker
-          /opt/aws/bin/cfn-signal -e 0 --resource NATInstanceTwo --stack ${AWS::StackName} --region ${AWS::Region}
-    CreationPolicy:
-      ResourceSignal:
-        Count: 1
-        Timeout: PT5M
+    #       /opt/aws/bin/cfn-signal -e 0 --resource NATInstanceTwo --stack ${AWS::StackName} --region ${AWS::Region}
+    # CreationPolicy:
+    #   ResourceSignal:
+    #     Count: 1
+    #     Timeout: PT5M
         
   # Private Routing
   
@@ -290,8 +254,8 @@ Resources:
     Properties:
       Tags:
       - Key: Name
-        Value: 'm1-private1-rt'
-      VpcId: !Ref 'VPC'
+        Value: m1-private1-rt
+      VpcId: !Ref VPC
   
   PrivateRouteOne:
     Type: AWS::EC2::Route
@@ -311,8 +275,8 @@ Resources:
     Properties:
       Tags:
       - Key: Name
-        Value: 'm1-private2-rt'
-      VpcId: !Ref 'VPC'
+        Value: m1-private2-rt
+      VpcId: !Ref VPC
   
   PrivateRouteTwo:
     Type: AWS::EC2::Route
@@ -327,32 +291,14 @@ Resources:
       RouteTableId: !Ref PrivateRouteTableTwo
       SubnetId: !Ref PrivateSubnetTwo
 
-  # VPC Endpoint - DynamoDB
-
-  DynamoDBEndpoint:
-    Type: AWS::EC2::VPCEndpoint
-    Properties:
-      PolicyDocument:
-        Version: "2012-10-17"
-        Statement:
-          - Effect: Allow
-            Action: "*"
-            Principal: "*"
-            Resource: "*"
-      RouteTableIds:
-        - !Ref 'PrivateRouteTableOne'
-        - !Ref 'PrivateRouteTableTwo'
-      ServiceName: !Sub com.amazonaws.${AWS::Region}.dynamodb
-      VpcId: !Ref 'VPC'
-      
-  # IAM Roles
+  ### Roles
 
   ECSRole:
     Type: AWS::IAM::Role
     Properties:
       Tags: 
       - Key: Name
-        Value: 'm1-ecs-role'
+        Value: m1-ecs-role
       RoleName: m1-ecs-role
       AssumeRolePolicyDocument:
         Statement:
@@ -370,32 +316,32 @@ Resources:
           Statement:
           - Effect: Allow
             Action:
-              # Network Interface actions for awsvpc networking mode
-              - 'ec2:AttachNetworkInterface'
-              - 'ec2:CreateNetworkInterface'
-              - 'ec2:CreateNetworkInterfacePermission'
-              - 'ec2:DeleteNetworkInterface'
-              - 'ec2:DeleteNetworkInterfacePermission'
-              - 'ec2:Describe*'
-              - 'ec2:DetachNetworkInterface'
-              # ELB
-              - 'elasticloadbalancing:DeregisterInstancesFromLoadBalancer'
-              - 'elasticloadbalancing:DeregisterTargets'
-              - 'elasticloadbalancing:Describe*'
-              - 'elasticloadbalancing:RegisterInstancesWithLoadBalancer'
-              - 'elasticloadbalancing:RegisterTargets'
-              # Allow ECS to run tasks that have IAM roles assigned to them
-              - 'iam:PassRole'
-              # Allow ECS interact with container images
-              - 'ecr:GetAuthorizationToken'
-              - 'ecr:BatchCheckLayerAvailability'
-              - 'ecr:GetDownloadUrlForLayer'
-              - 'ecr:BatchGetImage'
-              # Allow ECS create and push logs to CloudWatch
-              - 'logs:DescribeLogStreams'
-              - 'logs:CreateLogStream'
-              - 'logs:CreateLogGroup'
-              - 'logs:PutLogEvents'
+            # Network Interface actions for awsvpc networking mode
+            - ec2:AttachNetworkInterface
+            - ec2:CreateNetworkInterface
+            - ec2:CreateNetworkInterfacePermission
+            - ec2:DeleteNetworkInterface
+            - ec2:DeleteNetworkInterfacePermission
+            - ec2:Describe*
+            - ec2:DetachNetworkInterface
+            # ELB
+            - elasticloadbalancing:DeregisterInstancesFromLoadBalancer
+            - elasticloadbalancing:DeregisterTargets
+            - elasticloadbalancing:Describe*
+            - elasticloadbalancing:RegisterInstancesWithLoadBalancer
+            - elasticloadbalancing:RegisterTargets
+            # Allow ECS to run tasks that have IAM roles assigned to them
+            - iam:PassRole
+            # Allow ECS interact with container images
+            - ecr:GetAuthorizationToken
+            - ecr:BatchCheckLayerAvailability
+            - ecr:GetDownloadUrlForLayer
+            - ecr:BatchGetImage
+            # Allow ECS create and push logs to CloudWatch
+            - logs:DescribeLogStreams
+            - logs:CreateLogStream
+            - logs:CreateLogGroup
+            - logs:PutLogEvents
             Resource: '*'
 
   ECSTaskRole:
@@ -403,14 +349,16 @@ Resources:
     Properties:
       Tags: 
       - Key: Name
-        Value: 'm1-ecs-task-role'
+        Value: m1-ecs-task-role
       RoleName: m1-ecs-task-role
       AssumeRolePolicyDocument:
         Statement:
         - Effect: Allow
           Principal:
-            Service: [ecs-tasks.amazonaws.com]
-          Action: ['sts:AssumeRole']
+            Service:
+            - ecs-tasks.amazonaws.com
+          Action:
+          - sts:AssumeRole
       Path: /
       Policies:
         - PolicyName: m1-ecs-task-policy
@@ -418,24 +366,24 @@ Resources:
             Statement:
             - Effect: Allow
               Action:
-                # Allow ECS Tasks to download images from ECR
-                - 'ecr:GetAuthorizationToken'
-                - 'ecr:BatchCheckLayerAvailability'
-                - 'ecr:GetDownloadUrlForLayer'
-                - 'ecr:BatchGetImage'
-                # Allow ECS tasks to upload logs to CloudWatch
-                - 'logs:CreateLogStream'
-                - 'logs:CreateLogGroup'
-                - 'logs:PutLogEvents'
+              # Allow ECS Tasks to download images from ECR
+              - ecr:GetAuthorizationToken
+              - ecr:BatchCheckLayerAvailability
+              - ecr:GetDownloadUrlForLayer
+              - ecr:BatchGetImage
+              # Allow ECS tasks to upload logs to CloudWatch
+              - logs:CreateLogStream
+              - logs:CreateLogGroup
+              - logs:PutLogEvents
               Resource: '*'
             - Effect: Allow
               Action:
                 # Allows ECS tasks to interact only with m1-table in DynamoDB
-                - 'dynamodb:Scan'
-                - 'dynamodb:Query'
-                - 'dynamodb:UpdateItem'
-                - 'dynamodb:GetItem'
-              Resource: 'arn:aws:dynamodb:*:*:table/m1-table*'
+                - dynamodb:Scan
+                - dynamodb:Query
+                - dynamodb:UpdateItem
+                - dynamodb:GetItem
+              Resource: arn:aws:dynamodb:*:*:table/m1-table*
 
   CodePipelineRole:
     Type: AWS::IAM::Role
@@ -449,7 +397,7 @@ Resources:
             - codepipeline.amazonaws.com
           Action:
           - sts:AssumeRole
-      Path: "/"
+      Path: /
       Policies:
       - PolicyName: m1-codepipeline-policy
         PolicyDocument:
@@ -469,21 +417,21 @@ Resources:
             - ecs:*
             - codebuild:*
             - iam:PassRole
-            Resource: "*"
+            Resource: '*'
             Effect: Allow
           - Action:
             - s3:PutObject
             Resource:
             - arn:aws:s3:::*
             Effect: Allow
-          Version: "2012-10-17"
+          Version: 2012-10-17
 
   CodeBuildRole:
     Type: AWS::IAM::Role
     Properties:
       RoleName: m1-codebuild-role
       AssumeRolePolicyDocument:
-        Version: "2012-10-17"
+        Version: 2012-10-17
         Statement:
           Effect: Allow
           Principal:
@@ -492,61 +440,64 @@ Resources:
       Policies:
       - PolicyName: m1-codebuild-policy
         PolicyDocument:
-          Version: "2012-10-17"
+          Version: 2012-10-17
           Statement:
-          - Effect: "Allow"
+          - Effect: Allow
             Action:
-            - "codecommit:ListBranches"
-            - "codecommit:ListRepositories"
-            - "codecommit:BatchGetRepositories"
-            - "codecommit:Get*"
-            - "codecommit:GitPull"
+            - codecommit:ListBranches
+            - codecommit:ListRepositories
+            - codecommit:BatchGetRepositories
+            - codecommit:Get*
+            - codecommit:GitPull
             Resource:
             - !Sub arn:aws:codecommit:${AWS::Region}:${AWS::AccountId}:m1-repository
-          - Effect: "Allow"
+          - Effect: Allow
             Action:
-            - "logs:CreateLogGroup"
-            - "logs:CreateLogStream"
-            - "logs:PutLogEvents"
-            - "s3:PutObject"
-            - "s3:GetObject"
-            - "s3:GetObjectVersion"
-            - "s3:ListBucket"
-            - "ecr:GetAuthorizationToken"
-            - "ecr:InitiateLayerUpload"
-            - "ecr:UploadLayerPart"
-            - "ecr:CompleteLayerUpload"
-            - "ecr:PutImage"
-            - "ecr:BatchCheckLayerAvailability"
-            Resource: "*"
+            - logs:CreateLogGroup
+            - logs:CreateLogStream
+            - logs:PutLogEvents
+            - s3:PutObject
+            - s3:GetObject
+            - s3:GetObjectVersion
+            - s3:ListBucket
+            - ecr:GetAuthorizationToken
+            - ecr:InitiateLayerUpload
+            - ecr:UploadLayerPart
+            - ecr:CompleteLayerUpload
+            - ecr:PutImage
+            - ecr:BatchCheckLayerAvailability
+            Resource: '*'
             
-  CoreArtifactsBucket:
-    Type: 'AWS::S3::Bucket'
+  ECSServiceLinkedRole:
+    Type: AWS::IAM::ServiceLinkedRole
+    Condition: CreateAWSServiceRoleForECS
     Properties:
-      BucketName: m1-core-artifacts-bucket
+      AWSServiceName: ecs.amazonaws.com
       
-  CoreArtifactsBucketPolicy:
-    Type: 'AWS::S3::BucketPolicy'
+  CoreContainerEC2Role:
+    Type: AWS::IAM::Role
     Properties:
-      Bucket: !Ref CoreArtifactsBucket
-      PolicyDocument:
-        Version: "2012-10-17"
+      RoleName: m1-core-container-ec2-role
+      AssumeRolePolicyDocument:
         Statement:
-        - Sid: "Whitelisted S3 Get and Put"
-          Effect: "Allow"
+        - Effect: Allow
           Principal:
-            AWS:
-            - !GetAtt CodeBuildRole.Arn
-            - !GetAtt CodePipelineRole.Arn
+            Service: 
+            - ec2.amazonaws.com
           Action:
-          - "s3:GetObject"
-          - "s3:GetObjectVersion"
-          - "s3:GetBucketVersioning"
-          - "s3:PutObject"
-          Resource:
-          - !Sub ${CoreArtifactsBucket.Arn}
-          - !Sub ${CoreArtifactsBucket.Arn}/*
-  
+          - sts:AssumeRole
+      Path: /
+      ManagedPolicyArns:
+      - arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore
+      - arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role
+      
+  CoreContainerEC2RoleInstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Path: /
+      Roles: 
+      - !Ref CoreContainerEC2Role
+            
   # Load Balancer
   
   CoreLoadBalancer:
@@ -583,15 +534,7 @@ Resources:
       Port: 80
       Protocol: TCP
 
-  # ECS Service Linked Role
-  
-  ECSServiceLinkedRole:
-    Type: AWS::IAM::ServiceLinkedRole
-    Condition: CreateAWSServiceRoleForECS
-    Properties:
-      AWSServiceName: ecs.amazonaws.com
-  
-  # ECR and Logs
+  ### ECR and Logs
   
   CoreImageRepository: 
     Type: AWS::ECR::Repository
@@ -606,7 +549,7 @@ Resources:
   ### ECS
       
   CoreCluster:
-    Type: 'AWS::ECS::Cluster'
+    Type: AWS::ECS::Cluster
     DependsOn: CoreListener
     Properties:
       ClusterName: m1-core-cluster
@@ -652,7 +595,7 @@ Resources:
         AwsvpcConfiguration:
           AssignPublicIp: DISABLED
           SecurityGroups:
-          - !Ref FargateContainerSecurityGroup
+          - !Ref ClusterSecurityGroup
           Subnets:
           - !Ref PrivateSubnetOne
           - !Ref PrivateSubnetTwo
@@ -703,7 +646,7 @@ Resources:
         AwsvpcConfiguration:
           AssignPublicIp: DISABLED
           SecurityGroups:
-          - !Ref FargateContainerSecurityGroup
+          - !Ref ClusterSecurityGroup
           Subnets:
           - !Ref PrivateSubnetOne
           - !Ref PrivateSubnetTwo
@@ -712,30 +655,6 @@ Resources:
       - ContainerName: m1-core-image
         ContainerPort: 8080
         TargetGroupArn: !Ref CoreTargetGroup
-        
-  CoreContainerEC2Role:
-    Type: AWS::IAM::Role
-    Properties:
-      RoleName: m1-core-container-ec2-role
-      AssumeRolePolicyDocument:
-        Statement:
-        - Effect: Allow
-          Principal:
-            Service: 
-            - ec2.amazonaws.com
-          Action:
-          - sts:AssumeRole
-      Path: /
-      ManagedPolicyArns:
-      - arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore
-      - arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role
-      
-  CoreContainerEC2RoleInstanceProfile:
-    Type: AWS::IAM::InstanceProfile
-    Properties:
-      Path: /
-      Roles: 
-      - !Ref CoreContainerEC2Role
 
   CoreContainerEC2Instance:
     Type: AWS::EC2::Instance
@@ -748,22 +667,49 @@ Resources:
       IamInstanceProfile: !Ref CoreContainerEC2RoleInstanceProfile
       InstanceType: t2.micro
       NetworkInterfaces:
-      - DeviceIndex: '0'
+      - DeviceIndex: 0
         SubnetId: !Ref PrivateSubnetOne
         AssociatePublicIpAddress: false
         GroupSet: 
-        - !Ref FargateContainerSecurityGroup
+        - !Ref ClusterSecurityGroup
       UserData:
         Fn::Base64: !Sub |
           #!/bin/bash
           echo ECS_CLUSTER=${CoreCluster} >> /etc/ecs/ecs.config
 
-  # CI/CD
+  ### CI/CD
           
   CodeCommitRepository:   
     Type: AWS::CodeCommit::Repository
     Properties:
       RepositoryName: m1-core-codecommit-repository
+
+  CoreArtifactsBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: m1-core-artifacts-bucket
+      
+  CoreArtifactsBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref CoreArtifactsBucket
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+        - Sid: Whitelisted S3 Get and Put
+          Effect: Allow
+          Principal:
+            AWS:
+            - !GetAtt CodeBuildRole.Arn
+            - !GetAtt CodePipelineRole.Arn
+          Action:
+          - s3:GetObject
+          - s3:GetObjectVersion
+          - s3:GetBucketVersioning
+          - s3:PutObject
+          Resource:
+          - !Sub ${CoreArtifactsBucket.Arn}
+          - !Sub ${CoreArtifactsBucket.Arn}/*
       
   CodeBuildProject:
     Type: AWS::CodeBuild::Project
@@ -840,92 +786,73 @@ Resources:
       ArtifactStore: 
         Type: S3 
         Location: !Ref CoreArtifactsBucket
-        
+
+  ### VPC Endpoint - DynamoDB
+
+  DynamoDBEndpoint:
+    Type: AWS::EC2::VPCEndpoint
+    Properties:
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+        - Effect: Allow
+          Action: '*'
+          Principal: '*'
+          Resource: '*'
+      RouteTableIds:
+      - !Ref PrivateRouteTableOne
+      - !Ref PrivateRouteTableTwo
+      ServiceName: !Sub com.amazonaws.${AWS::Region}.dynamodb
+      VpcId: !Ref VPC
+
+  ### Outputs
+
 Outputs:
 
-  CurrentRegion:
-    Description: Region
+  Region:
     Value: !Ref AWS::Region
     Export:
-      Name: !Sub ${AWS::StackName}:CurrentRegion
+      Name: !Sub ${AWS::StackName}:Region
       
-  CurrentAccount:
-    Description: Account
+  AccountId:
     Value: !Ref AWS::AccountId
     Export:
-      Name: !Sub ${AWS::StackName}:CurrentAccount
-      
-  ECSRole:
-    Description: ECS Role
-    Value: !GetAtt 'ECSRole.Arn'
-    Export:
-      Name: !Sub ${AWS::StackName}:ECSRole
-      
-  ECSTaskRole:
-    Description: ECS Task Role
-    Value: !GetAtt 'ECSTaskRole.Arn'
-    Export:
-      Name: !Sub ${AWS::StackName}:ECSTaskRole
+      Name: !Sub ${AWS::StackName}:AccountId
       
   VPCId:
-    Description: VPC Id
-    Value: !Ref 'VPC'
+    Value: !Ref VPC
     Export:
       Name: !Sub ${AWS::StackName}:VPCId
       
   PublicSubnetOne:
-    Description: Public Subnet One
-    Value: !Ref 'PublicSubnetOne'
+    Value: !Ref PublicSubnetOne
     Export:
       Name: !Sub ${AWS::StackName}:PublicSubnetOne
       
   PublicSubnetTwo:
-    Description: Public Subnet Two
-    Value: !Ref 'PublicSubnetTwo'
+    Value: !Ref PublicSubnetTwo
     Export:
       Name: !Sub ${AWS::StackName}:PublicSubnetTwo
       
   PrivateSubnetOne:
-    Description: Private Subnet One
-    Value: !Ref 'PrivateSubnetOne'
+    Value: !Ref PrivateSubnetOne
     Export:
       Name: !Sub ${AWS::StackName}:PrivateSubnetOne
       
   PrivateSubnetTwo:
-    Description: Private Subnet Two
-    Value: !Ref 'PrivateSubnetTwo'
+    Value: !Ref PrivateSubnetTwo
     Export:
       Name: !Sub ${AWS::StackName}:PrivateSubnetTwo
       
   NATInstanceOne:
-    Description: NAT Instance One
-    Value: !Ref 'NATInstanceOne'
+    Value: !Ref NATInstanceOne
     Export:
       Name: !Sub ${AWS::StackName}:NATInstanceOne      
 
   NATInstanceTwo:
-    Description: NAT Instance Two
-    Value: !Ref 'NATInstanceTwo'
+    Value: !Ref NATInstanceTwo
     Export:
       Name: !Sub ${AWS::StackName}:NATInstanceTwo  
-      
-  FargateContainerSecurityGroup:
-    Description: Fargate Container Security Group
-    Value: !Ref 'FargateContainerSecurityGroup'
-    Export:
-      Name: !Sub ${AWS::StackName}:FargateContainerSecurityGroup
-      
-  CodeBuildRole:
-    Description: Codebuild Role ARN
-    Value: !GetAtt 'CodeBuildRole.Arn'
-    Export:
-      Name: !Sub ${AWS::StackName}:CodeBuildRole
-      
-  CodePipelineRole:
-    Description: Codepipeline Role ARN
-    Value: !GetAtt 'CodePipelineRole.Arn'
-    Export:
-      Name: !Sub ${AWS::StackName}:CodePipelineRole
       
   # Test:
   #   Description: Test
