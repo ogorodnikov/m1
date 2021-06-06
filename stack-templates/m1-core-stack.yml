@@ -852,7 +852,19 @@ Outputs:
   NATInstanceTwo:
     Value: !Ref NATInstanceTwo
     Export:
-      Name: !Sub ${AWS::StackName}:NATInstanceTwo  
+      Name: !Sub ${AWS::StackName}:NATInstanceTwo
+      
+  CoreContainerEC2Instance:
+    Description: EC2 Instance to host M1 Core container in ECS
+    Value: !Ref CoreContainerEC2Instance
+    Export:
+      Name: !Sub ${AWS::StackName}:CoreContainerEC2Instance  
+      
+  CodeRepositoryURL:
+    Description: HTTPS Clone URL for CodeCommit Repository 
+    Value: !GetAtt CodeCommitRepository.CloneUrlHttp
+    Export:
+      Name: !Sub ${AWS::StackName}:CodeRepositoryURL
       
   # Test:
   #   Description: Test

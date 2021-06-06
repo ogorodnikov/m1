@@ -12,7 +12,7 @@ CORS(app)
 @app.route("/")
 def health_check_response():
     
-    return jsonify({"message" : "Test ok) Try /m1"})
+    return jsonify({"message" : "Test V.4 ok) Try /m1"})
 
 
 @app.route("/m1")
