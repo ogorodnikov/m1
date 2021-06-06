@@ -179,47 +179,45 @@ Resources:
         
   # NAT Instances
   
+  # NATInstanceOne:
+  #   Type: AWS::EC2::Instance
+  #   DependsOn: GatewayAttachement
+  #   Properties:
+  #     Tags:
+  #     - Key: Name
+  #       Value: 'm1-public1-nat-instance'
+  #     ImageId: !Ref NATAMI
+  #     InstanceType: t2.micro
+  #     NetworkInterfaces:
+  #     - DeviceIndex: '0'
+  #       SubnetId: !Ref PublicSubnetOne
+  #       AssociatePublicIpAddress: true
+  #       GroupSet: [!Ref NATSecurityGroup]
+  #     SourceDestCheck: false
+
+  # NATInstanceTwo:
+  #   Type: AWS::EC2::Instance
+  #   DependsOn: GatewayAttachement
+  #   Properties:
+  #     Tags:
+  #     - Key: Name
+  #       Value: 'm1-public2-nat-instance'
+  #     ImageId: !Ref NATAMI
+  #     InstanceType: t2.micro
+  #     NetworkInterfaces:
+  #     - DeviceIndex: '0'
+  #       SubnetId: !Ref PublicSubnetTwo
+  #       AssociatePublicIpAddress: true
+  #       GroupSet: [!Ref NATSecurityGroup]
+  #     SourceDestCheck: false
+
   NATInstanceOne:
     Type: AWS::EC2::Instance
-    DependsOn: GatewayAttachement
+    DependsOn: PublicRoute
     Properties:
       Tags:
       - Key: Name
-        Value: 'm1-public1-nat-instance'
-      ImageId: !Ref NATAMI
-      InstanceType: t2.micro
-      NetworkInterfaces:
-      - DeviceIndex: '0'
-        SubnetId: !Ref PublicSubnetOne
-        AssociatePublicIpAddress: true
-        GroupSet: [!Ref NATSecurityGroup]
-      SourceDestCheck: false
-
-  NATInstanceTwo:
-    Type: AWS::EC2::Instance
-    DependsOn: GatewayAttachement
-    Properties:
-      Tags:
-      - Key: Name
-        Value: 'm1-public2-nat-instance'
-      ImageId: !Ref NATAMI
-      InstanceType: t2.micro
-      NetworkInterfaces:
-      - DeviceIndex: '0'
-        SubnetId: !Ref PublicSubnetTwo
-        AssociatePublicIpAddress: true
-        GroupSet: [!Ref NATSecurityGroup]
-      SourceDestCheck: false
-
-  NATInstanceUserData:
-    Type: AWS::EC2::Instance
-    DependsOn:
-    - GatewayAttachement
-    - PublicRoute
-    Properties:
-      Tags:
-      - Key: Name
-        Value: 'm1-public2-nat-user-data-instance'
+        Value: m1-public1-nat-instance
       ImageId: !Ref LatestLinuxAMI
       InstanceType: t2.micro
       NetworkInterfaces:
@@ -243,12 +241,47 @@ Resources:
           net.ipv4.ip_forward = 1
           net.ipv4.conf.eth0.send_redirects = 0
           NatConfFileMarker
-          /opt/aws/bin/cfn-signal -e 0 --resource NATInstanceUserData --stack ${AWS::StackName} --region ${AWS::Region}
+          /opt/aws/bin/cfn-signal -e 0 --resource NATInstanceOne --stack ${AWS::StackName} --region ${AWS::Region}
     CreationPolicy:
       ResourceSignal:
         Count: 1
         Timeout: PT5M
 
+  NATInstanceTwo:
+    Type: AWS::EC2::Instance
+    DependsOn: PublicRoute
+    Properties:
+      Tags:
+      - Key: Name
+        Value: m1-public2-nat-instance
+      ImageId: !Ref LatestLinuxAMI
+      InstanceType: t2.micro
+      NetworkInterfaces:
+      - DeviceIndex: '0'
+        SubnetId: !Ref PublicSubnetTwo
+        AssociatePublicIpAddress: true
+        GroupSet:
+        - !Ref NATSecurityGroup
+      SourceDestCheck: false
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          yum -y update
+          yum install -y aws-cfn-bootstrap
+          echo 1 > /proc/sys/net/ipv4/ip_forward
+          echo 0 > /proc/sys/net/ipv4/conf/eth0/send_redirects
+          /sbin/iptables -t nat -A POSTROUTING -o eth0 -s 0.0.0.0/0 -j MASQUERADE
+          /sbin/iptables-save > /etc/sysconfig/iptables
+          mkdir -p /etc/sysctl.d/
+          cat << NatConfFileMarker > /etc/sysctl.d/nat.conf
+          net.ipv4.ip_forward = 1
+          net.ipv4.conf.eth0.send_redirects = 0
+          NatConfFileMarker
+          /opt/aws/bin/cfn-signal -e 0 --resource NATInstanceTwo --stack ${AWS::StackName} --region ${AWS::Region}
+    CreationPolicy:
+      ResourceSignal:
+        Count: 1
+        Timeout: PT5M
         
   # Private Routing
   
@@ -265,7 +298,7 @@ Resources:
     Properties:
       RouteTableId: !Ref PrivateRouteTableOne
       DestinationCidrBlock: 0.0.0.0/0
-      InstanceId: !Ref NATInstanceUserData
+      InstanceId: !Ref NATInstanceOne
   
   PrivateRouteTableOneAssociation:
     Type: AWS::EC2::SubnetRouteTableAssociation
