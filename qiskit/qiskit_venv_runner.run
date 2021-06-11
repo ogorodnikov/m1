@@ -1,0 +1,40 @@
+// This file overrides the built-in Python 3 runner
+// For more information see http://docs.aws.amazon.com/console/cloud9/change-runner
+//
+// AWS Cloud9 Venv Runner:
+// https://stackoverflow.com/questions/33183992/cloud9-ide-to-run-python3-with-venv
+
+{
+  "script": [
+    "if [ \"$debug\" == true ]; then ",
+    "    /home/ec2-user/environment/qiskit/qiskit/bin/python -m ikp3db -ik_p=15471 -ik_cwd=$project_path \"$file\" $args",
+    "else",
+    "   /home/ec2-user/environment/qiskit/qiskit/bin/python \"$file\" $args",
+    "fi",
+    "checkExitCode() {",
+    "    if [ $1 ] && [ \"$debug\" == true ]; then ",
+    "        /home/ec2-user/environment/qiskit/qiskit/bin/python -m ikp3db 2>&1 | grep -q 'No module' && echo '",
+    "    To use python debugger install ikpdb by running: ",
+    "        sudo yum update;",
+    "        sudo yum install python36-devel;",
+    "        sudo source /home/ec2-user/environment/qiskit/qiskit/bin activate",
+    "        sudo pip-3.6 install ikp3db;",
+    "        sudo deactivate",
+    "        '",
+    "    fi",
+    "   return $1",
+    "}",
+    "checkExitCode $?"
+  ],
+  "python_version": "/home/ec2-user/environment/qiskit/qiskit/bin/python",
+  "working_dir": "$project_path",
+  "debugport": 15471,
+  "$debugDefaultState": false,
+  "debugger": "ikpdb",
+  "selector": "^.*\\.(py)$",
+  "env": {
+    "PYTHONPATH": "$python_path"
+  },
+  "trackId": "/home/ec2-user/environment/qiskit/qiskit/bin/python",
+  "info" : "Running in Qiskit Venv:\n"
+}
