@@ -1,34 +1,49 @@
 from qiskit import *
 
-import matplotlib.pyplot as plt
+# from matplotlib import pyplot as plt
+# from qiskit.tools.visualization import plot_histogram
 
-from qiskit.tools.visualization import plot_histogram
 
+HIDDEN_DIGITS = '101001'
 
 
 print("Hello BernVaz")
 
-secret_number = '101001'
+hidden_len = len(HIDDEN_DIGITS)
 
-circuit = QuantumCircuit(7, 6)
+input_qubit_indices = range(hidden_len)
+measure_bits_indices = input_qubit_indices
 
-circuit.x(6)
-circuit.h(range(7))
+output_qubit_index = hidden_len
+
+all_qubit_indices = range(hidden_len + 1)
+
+
+circuit = QuantumCircuit(hidden_len + 1, hidden_len)
+
+circuit.x(output_qubit_index)
+circuit.h(all_qubit_indices)
 
 circuit.barrier()
 
-for i, digit in reversed(tuple(enumerate(reversed(secret_number)))):
+for input_qubit_index, digit in enumerate(reversed(HIDDEN_DIGITS)):
     if digit == '1':
-        circuit.cx(i, 6)
+        circuit.cx(input_qubit_index, output_qubit_index)
         
 circuit.barrier()
         
-circuit.h(range(6))
+circuit.h(input_qubit_indices)
 
-circuit.measure(range(6), range(6))
+circuit.measure(input_qubit_indices, measure_bits_indices)
 
 # circuit.draw(output='mpl')
-
 # circuit.draw()
 
 print(circuit)
+
+simulator = Aer.get_backend('qasm_simulator')
+result = execute(circuit, backend=simulator, shots=1).result()
+
+counts = result.get_counts()
+
+print("Possible hidden digits:", counts)
