@@ -4,10 +4,9 @@ from qiskit import *
 # from qiskit.tools.visualization import plot_histogram
 
 
-HIDDEN_DIGITS = '101001'
+HIDDEN_DIGITS = '10111010'
 
-
-print("Hello BernVaz")
+print("Circuit:")
 
 hidden_len = len(HIDDEN_DIGITS)
 
