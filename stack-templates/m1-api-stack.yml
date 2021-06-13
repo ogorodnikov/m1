@@ -1,0 +1,59 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Description: M1 API Stack
+
+# Mappings:
+
+#   SubnetConfig:
+#     VPC:
+#       CIDR: 10.0.0.0/16
+#     PublicOne:
+#       CIDR: 10.0.0.0/24
+#     PublicTwo:
+#       CIDR: 10.0.1.0/24
+#     PrivateOne:
+#       CIDR: 10.0.2.0/24
+#     PrivateTwo:
+#       CIDR: 10.0.3.0/24
+      
+# Parameters:
+  
+#   LatestLinuxAMI:
+#     Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
+#     Default: /aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2
+    
+#   LatestECSOptimizedAMI:
+#     Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
+#     Default: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
+    
+#   CreateAWSServiceRoleForECS:
+#     Type: String
+#     Default: true
+    
+# Conditions:
+#   CreateAWSServiceRoleForECS: !Not [!Equals [!Ref CreateAWSServiceRoleForECS, true]]
+      
+Resources:
+
+  UserPool:
+    Type: AWS::Cognito::UserPool
+    Properties:
+      Tags: 
+      - Key: Name
+        Value: m1-user-pool
+      AutoVerifiedAttributes:
+      - email
+
+# Outputs:
+
+#   Region:
+#     Value: !Ref AWS::Region
+#     Export:
+#       Name: !Sub ${AWS::StackName}:Region
+      
+ 
+  # Test:
+  #   Description: Test
+  #   Value: !Ref LatestLinuxAMI
+  #   Export:
+  #     Name: Test
