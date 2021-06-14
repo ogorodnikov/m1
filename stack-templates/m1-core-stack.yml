@@ -510,15 +510,15 @@ Resources:
       - !Ref PublicSubnetOne
       - !Ref PublicSubnetTwo
       
-  InternalLoadBalancer:
-    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
-    Properties:
-      Name: m1-internal-nlb
-      Scheme: internal
-      Type: network
-      Subnets:
-      - !Ref PrivateSubnetOne
-      - !Ref PrivateSubnetTwo
+  # InternalLoadBalancer:
+  #   Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+  #   Properties:
+  #     Name: m1-internal-nlb
+  #     Scheme: internal
+  #     Type: network
+  #     Subnets:
+  #     - !Ref PrivateSubnetOne
+  #     - !Ref PrivateSubnetTwo
 
   CoreTargetGroup:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
@@ -918,6 +918,11 @@ Outputs:
     Export:
       Name: !Sub ${AWS::StackName}:CoreLoadBalancer
       
+  CoreLoadBalancerDNSName:
+    Value: !GetAtt CoreLoadBalancer.DNSName
+    Export:
+      Name: !Sub ${AWS::StackName}:CoreLoadBalancerDNSName
+
   # Test:
   #   Description: Test
   #   Value: !Ref LatestLinuxAMI
