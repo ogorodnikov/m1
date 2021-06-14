@@ -56,30 +56,30 @@ Resources:
             #       "200"
 
             get:
-              # responses:
-              #   "200":
-              #     description: "Default response for CORS method"
-              #     headers:
-              #       Access-Control-Allow-Headers:
-              #         type: "string"
-              #       Access-Control-Allow-Methods:
-              #         type: "string"
-              #       Access-Control-Allow-Origin:
-              #         type: "string"
+              responses:
+                "200":
+                  description: Default response for CORS method
+                  headers:
+                    Access-Control-Allow-Headers:
+                      type: string
+                    Access-Control-Allow-Methods:
+                      type: string
+                    Access-Control-Allow-Origin:
+                      type: string
                       
               x-amazon-apigateway-integration:
-                connectionType: "VPC_LINK"
+                connectionType: VPC_LINK
                 responses: 
                   default:
-                    statusCode: "200"
-                    # responseParameters:
-                    #   method.response.header.Access-Control-Allow-Headers: 'Content-Type,X-Amz-Date,Authorization,X-Api-Key'
-                    #   method.response.header.Access-Control-Allow-Methods: '*'
-                    #   method.response.header.Access-Control-Allow-Origin: '*'
-                connectionId: "f4u314"
-                httpMethod: "GET"
-                type: "HTTP_PROXY"
-                uri: "http://m1-core-nlb-97744d9745ff1c16.elb.us-east-1.amazonaws.com/"
+                    statusCode: 200
+                    responseParameters:
+                      method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
+                      method.response.header.Access-Control-Allow-Methods: "'*'"
+                      method.response.header.Access-Control-Allow-Origin: "'*'"
+                connectionId: !Ref APIGatewayVPCLink
+                httpMethod: GET
+                type: HTTP_PROXY
+                uri: http://m1-core-nlb-97744d9745ff1c16.elb.us-east-1.amazonaws.com/
                 
                 
       EndpointConfiguration: 
