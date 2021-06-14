@@ -24,7 +24,7 @@ Resources:
       - !ImportValue m1-core-stack:CoreLoadBalancer
       
       
-  API:
+  RESTAPI:
     Type: AWS::ApiGateway::RestApi
     Properties:
       Name: m1-api
@@ -46,27 +46,28 @@ Resources:
         
         paths:
           /:
-            # x-amazon-apigateway-any-method:
-            #     parameters:
-            #     - name: "proxy"
-            #       in: "path"
-            #       required: true
-            #       type: "string"
-            #     responses:
-            #       "200"
+          
+          # /algorithms:
+              # get
+          
+          # /algorithms/{algorithmId}
+              # get:
+              #   parameters:
+              #   - name: algorithmId
+              #     in: path
+              #     required: true
+              #     type: string
+              
+          # /algorithms/{algorithmId}/run
+          # /algorithms/{algorithmId}/like
+              # post:
+              #   parameters:
+              #   - name: algorithmId
+              #     in: path
+              #     required: true
+              #     type: string
 
             get:
-              responses:
-                "200":
-                  description: Default response for CORS method
-                  headers:
-                    Access-Control-Allow-Headers:
-                      type: string
-                    Access-Control-Allow-Methods:
-                      type: string
-                    Access-Control-Allow-Origin:
-                      type: string
-                      
               x-amazon-apigateway-integration:
                 connectionType: VPC_LINK
                 responses: 
@@ -79,26 +80,67 @@ Resources:
                 connectionId: !Ref APIGatewayVPCLink
                 httpMethod: GET
                 type: HTTP_PROXY
-                uri: http://m1-core-nlb-97744d9745ff1c16.elb.us-east-1.amazonaws.com/
-                
+                uri: !Join ["", ["http://", !ImportValue m1-core-stack:CoreLoadBalancerDNSName, "/"]]
+              responses:
+                "200":
+                  description: Default response for CORS method
+                  headers:
+                    Access-Control-Allow-Headers:
+                      type: string
+                    Access-Control-Allow-Methods:
+                      type: string
+                    Access-Control-Allow-Origin:
+                      type: string
+  
+            options: 
+              summary: CORS support
+              description: Enable CORS by returning correct headers
+              consumes:
+              - application/json
+              produces:
+              - application/json
+              tags:
+              - CORS
+              x-amazon-apigateway-integration:
+                type: mock
+                requestTemplates:
+                  application/json: "{\n  \"statusCode\" : 200\n}\n"
+                responses:
+                  default:
+                    statusCode: 200
+                    responseParameters:
+                      method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
+                      method.response.header.Access-Control-Allow-Methods: "'*'"
+                      method.response.header.Access-Control-Allow-Origin: "'*'"
+                    responseTemplates:
+                      application/json: "{}\n"
+              responses:
+                "200":
+                  description: Default response for CORS method
+                  headers:
+                    Access-Control-Allow-Headers:
+                      type: string
+                    Access-Control-Allow-Methods:
+                      type: string
+                    Access-Control-Allow-Origin:
+                      type: string
                 
       EndpointConfiguration: 
         Types: 
         - REGIONAL
       FailOnWarnings: true
+      
+      
+  # APIDeployment:
+  #   Type: AWS::ApiGateway::Deployment
+  #   Properties: 
+  #     RestApiId: !Ref RESTAPI
+  #     StageName: m1-stage
 
 # Outputs:
 
-Outputs:
-
-#   Region:
-#     Value: !Ref AWS::Region
+#   Test:
+#     Description: Test
+#     Value: !Join ["", ["http://", !ImportValue m1-core-stack:CoreLoadBalancerDNSName, "/"]]
 #     Export:
-#       Name: !Sub ${AWS::StackName}:Region
-      
- 
-   Test:
-     Description: Test
-     Value: !Ref APIGatewayVPCLink
-     Export:
-       Name: Test
+#       Name: Test
