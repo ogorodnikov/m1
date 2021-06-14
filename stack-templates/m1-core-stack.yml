@@ -509,6 +509,16 @@ Resources:
       Subnets:
       - !Ref PublicSubnetOne
       - !Ref PublicSubnetTwo
+      
+  InternalLoadBalancer:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Name: m1-internal-nlb
+      Scheme: internal
+      Type: network
+      Subnets:
+      - !Ref PrivateSubnetOne
+      - !Ref PrivateSubnetTwo
 
   CoreTargetGroup:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
@@ -902,6 +912,11 @@ Outputs:
     Value: !GetAtt CodeCommitRepository.CloneUrlHttp
     Export:
       Name: !Sub ${AWS::StackName}:CodeRepositoryURL
+      
+  CoreLoadBalancer:
+    Value: !Ref CoreLoadBalancer
+    Export:
+      Name: !Sub ${AWS::StackName}:CoreLoadBalancer
       
   # Test:
   #   Description: Test
