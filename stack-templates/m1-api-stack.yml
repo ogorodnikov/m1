@@ -131,11 +131,11 @@ Resources:
       FailOnWarnings: true
       
       
-  # APIDeployment:
-  #   Type: AWS::ApiGateway::Deployment
-  #   Properties: 
-  #     RestApiId: !Ref RESTAPI
-  #     StageName: m1-stage
+  APIDeployment:
+    Type: AWS::ApiGateway::Deployment
+    Properties: 
+      RestApiId: !Ref RESTAPI
+      StageName: m1-api-stage-prod
 
 # Outputs:
 
