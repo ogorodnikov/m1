@@ -499,16 +499,6 @@ Resources:
             
   # Load Balancer
   
-  # CoreLoadBalancer:
-  #   Type: AWS::ElasticLoadBalancingV2::LoadBalancer
-  #   Properties:
-  #     Name: m1-core-nlb
-  #     Scheme: internet-facing
-  #     Type: network
-  #     Subnets:
-  #     - !Ref PublicSubnetOne
-  #     - !Ref PublicSubnetTwo
-      
   CoreLoadBalancer:
     Type: AWS::ElasticLoadBalancingV2::LoadBalancer
     Properties:
