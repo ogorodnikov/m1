@@ -814,7 +814,7 @@ Resources:
 
       AttributeDefinitions:
       - AttributeName: algorithm-id
-        AttributeType: N
+        AttributeType: S
       - AttributeName: algorithm-type
         AttributeType: S
       # - AttributeName: algorithm-code
