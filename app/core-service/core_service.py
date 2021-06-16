@@ -1,6 +1,7 @@
 from flask import Flask, jsonify, json, Response, request, render_template
 from flask_cors import CORS
 import table_client
+import runner
 # import os
 
 app = Flask(__name__)
@@ -24,10 +25,6 @@ def test_response():
 
     # return response
     
-    # open("test-response.json", "rb")
-    
-    # return 
-    
     return render_template("index.html")
     
 
@@ -43,7 +40,7 @@ def get_algorithms():
         query_parameters = {'filter': filter_category,
                             'value': filter_value}
                       
-        service_response = table_client.get_filtered_algorithms(query_parameters)
+        service_response = table_client.query_algorithms(query_parameters)
         
     else:
 
@@ -77,6 +74,19 @@ def like_algorithm(algorithm_id):
     return flask_response
     
 
+@app.route("/m1/<algorithm_id>/state", methods=['POST'])
+def run_algorithm(algorithm_id):
+    
+    state = request.args.get('state')
+    
+    service_response = table_client.set_algorithm_state(state)
+        
+    flask_response = Response(service_response)
+    flask_response.headers["Content-Type"] = "application/json"
+
+    return flask_response
+    
+
 @app.route("/m1/<algorithm_id>/run", methods=['POST'])
 def run_algorithm(algorithm_id):
     
@@ -84,11 +94,11 @@ def run_algorithm(algorithm_id):
     
     if run_values is not None:
         
-        service_response = table_client.run_with_values(run_values)
+        service_response = runner.run_with_values(run_values)
         
     else:
 
-        service_response = table_client.run_default()
+        service_response = runner.run_default()
 
     flask_response = Response(service_response)
     flask_response.headers["Content-Type"] = "application/json"
