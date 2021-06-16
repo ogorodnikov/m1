@@ -26,7 +26,7 @@ def test_response():
     
     # open("test-response.json", "rb")
     
-    # return os.getcwd()
+    # return 
     
     return render_template("index.html")
     

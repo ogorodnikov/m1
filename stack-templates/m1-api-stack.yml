@@ -7,13 +7,14 @@ Resources:
   UserPool:
     Type: AWS::Cognito::UserPool
     Properties:
+      UserPoolName: m1-user-pool
       AutoVerifiedAttributes:
       - email
   
   UserPoolClient:  
     Type: AWS::Cognito::UserPoolClient
     Properties: 
-      ClientName: m1-api-user-pool-client
+      ClientName: m1-user-pool-client
       UserPoolId: !Ref UserPool
       
   APIGatewayVPCLink:
