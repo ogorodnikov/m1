@@ -45,31 +45,28 @@ Resources:
               - !Sub arn:aws:cognito-idp:${AWS::Region}:${AWS::AccountId}:userpool/${UserPool}
         
         paths:
+        
           /:
           
-          # /algorithms:
-              # get
-          
-          # /algorithms/{algorithmId}
-              # get:
-              #   parameters:
-              #   - name: algorithmId
-              #     in: path
-              #     required: true
-              #     type: string
-              
-          # /algorithms/{algorithmId}/run
-          # /algorithms/{algorithmId}/like
-              # post:
-              #   parameters:
-              #   - name: algorithmId
-              #     in: path
-              #     required: true
-              #     type: string
-
             get:
+            
+              responses:
+                "200":
+                  description: Default response for CORS method
+                  headers:
+                    Access-Control-Allow-Headers:
+                      type: string
+                    Access-Control-Allow-Methods:
+                      type: string
+                    Access-Control-Allow-Origin:
+                      type: string
+            
               x-amazon-apigateway-integration:
                 connectionType: VPC_LINK
+                connectionId: !Ref APIGatewayVPCLink
+                httpMethod: GET
+                type: HTTP_PROXY
+                uri: !Join ["", ["http://", !ImportValue m1-core-stack:CoreLoadBalancerDNSName, "/"]]
                 responses: 
                   default:
                     statusCode: 200
@@ -77,10 +74,12 @@ Resources:
                       method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
                       method.response.header.Access-Control-Allow-Methods: "'*'"
                       method.response.header.Access-Control-Allow-Origin: "'*'"
-                connectionId: !Ref APIGatewayVPCLink
-                httpMethod: GET
-                type: HTTP_PROXY
-                uri: !Join ["", ["http://", !ImportValue m1-core-stack:CoreLoadBalancerDNSName, "/"]]
+
+
+          /m1:
+          
+            get:
+            
               responses:
                 "200":
                   description: Default response for CORS method
@@ -91,29 +90,31 @@ Resources:
                       type: string
                     Access-Control-Allow-Origin:
                       type: string
-  
-            options: 
-              summary: CORS support
-              description: Enable CORS by returning correct headers
-              consumes:
-              - application/json
-              produces:
-              - application/json
-              tags:
-              - CORS
+                      
               x-amazon-apigateway-integration:
-                type: mock
-                requestTemplates:
-                  application/json: "{\n  \"statusCode\" : 200\n}\n"
-                responses:
+                connectionType: VPC_LINK
+                connectionId: !Ref APIGatewayVPCLink
+                httpMethod: GET
+                type: HTTP_PROXY
+                uri: !Join ["", ["http://", !ImportValue m1-core-stack:CoreLoadBalancerDNSName, "/m1"]]
+                responses: 
                   default:
                     statusCode: 200
                     responseParameters:
                       method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
                       method.response.header.Access-Control-Allow-Methods: "'*'"
                       method.response.header.Access-Control-Allow-Origin: "'*'"
-                    responseTemplates:
-                      application/json: "{}\n"
+                      
+
+          /m1/{algorithm-id}:
+          
+            get:
+            
+              parameters:
+              - name: algorithm-id
+                in: path
+                required: true
+                type: string
               responses:
                 "200":
                   description: Default response for CORS method
@@ -124,6 +125,98 @@ Resources:
                       type: string
                     Access-Control-Allow-Origin:
                       type: string
+                      
+              x-amazon-apigateway-integration:
+                connectionType: VPC_LINK
+                connectionId: !Ref APIGatewayVPCLink
+                httpMethod: GET
+                type: HTTP_PROXY
+                uri: !Join ["", ["http://", !ImportValue m1-core-stack:CoreLoadBalancerDNSName, "/m1/{algorithm-id}"]]
+                responses: 
+                  default:
+                    statusCode: 200
+                    responseParameters:
+                      method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
+                      method.response.header.Access-Control-Allow-Methods: "'*'"
+                      method.response.header.Access-Control-Allow-Origin: "'*'"
+
+                requestParameters:
+                  integration.request.path.algorithm-id: method.request.path.algorithm-id
+                      
+
+          /m1/{algorithm-id}/like:
+          
+            post:
+
+              parameters:
+              - name: algorithm-id
+                in: path
+                required: true
+                type: string
+                
+              security:
+              - m1-user-pool-authorizer: []
+                
+              responses:
+                "200":
+                  description: Default response for CORS method
+                  headers:
+                    Access-Control-Allow-Headers:
+                      type: string
+                    Access-Control-Allow-Methods:
+                      type: string
+                    Access-Control-Allow-Origin:
+                      type: string
+                      
+              x-amazon-apigateway-integration:
+                connectionType: VPC_LINK
+                connectionId: !Ref APIGatewayVPCLink
+                httpMethod: GET
+                type: HTTP_PROXY
+                uri: !Join ["", ["http://", !ImportValue m1-core-stack:CoreLoadBalancerDNSName, "/m1/{algorithm-id}/like"]]
+                responses: 
+                  default:
+                    statusCode: 200
+                    responseParameters:
+                      method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
+                      method.response.header.Access-Control-Allow-Methods: "'*'"
+                      method.response.header.Access-Control-Allow-Origin: "'*'"
+                      
+                requestParameters:
+                  integration.request.path.algorithm-id: method.request.path.algorithm-id
+                      
+            # options: 
+            #   summary: CORS support
+            #   description: Enable CORS by returning correct headers
+            #   consumes:
+            #   - application/json
+            #   produces:
+            #   - application/json
+            #   tags:
+            #   - CORS
+            #   x-amazon-apigateway-integration:
+            #     type: mock
+            #     requestTemplates:
+            #       application/json: "{\n  \"statusCode\" : 200\n}\n"
+            #     responses:
+            #       default:
+            #         statusCode: 200
+            #         responseParameters:
+            #           method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
+            #           method.response.header.Access-Control-Allow-Methods: "'*'"
+            #           method.response.header.Access-Control-Allow-Origin: "'*'"
+            #         responseTemplates:
+            #           application/json: "{}\n"
+            #   responses:
+            #     "200":
+            #       description: Default response for CORS method
+            #       headers:
+            #         Access-Control-Allow-Headers:
+            #           type: string
+            #         Access-Control-Allow-Methods:
+            #           type: string
+            #         Access-Control-Allow-Origin:
+            #           type: string
                 
       EndpointConfiguration: 
         Types: 
