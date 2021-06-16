@@ -12,19 +12,19 @@ CORS(app)
 @app.route("/")
 def health_check_response():
     
-    return jsonify({"message" : "Test V.4 ok) Try /m1"})
+    return jsonify({"message" : "M1 Core Service V.9"})
 
 
-@app.route("/m1")
+@app.route("/test")
 def test_response():
 
     response = Response(open("test-response.json", "rb").read())
-
     response.headers["Content-Type"]= "application/json"
 
     return response
     
-@app.route("/algorithms")
+
+@app.route("/m1", methods=['GET'])
 def get_algorithms():
 
     filter_category = request.args.get('filter')
@@ -36,18 +36,58 @@ def get_algorithms():
         query_parameters = {'filter': filter_category,
                             'value': filter_value}
                       
-        service_response = algorithms_table_client.query_algorithms(query_parameters)
+        service_response = table_client.get_filtered_algorithms(query_parameters)
         
     else:
 
-        service_response = algorithms_table_client.get_all_algorithms()
+        service_response = table_client.get_all_algorithms()
 
     flask_response = Response(service_response)
-    
     flask_response.headers["Content-Type"] = "application/json"
 
     return flask_response
+    
+    
+@app.route("/m1/<algorithm_id>", methods=['GET'])
+def get_algorithm(algorithm_id):
+    
+    service_response = table_client.get_algorithm(algorithm_id)
 
+    flask_response = Response(service_response)
+    flask_response.headers["Content-Type"] = "application/json"
+
+    return flask_response
+    
+
+@app.route("/m1/<algorithm_id>/like", methods=['POST'])
+def like_algorithm(algorithm_id):
+    
+    service_response = table_client.like_algorithm(algorithm_id)
+
+    flask_response = Response(service_response)
+    flask_response.headers["Content-Type"] = "application/json"
+
+    return flask_response
+    
+
+@app.route("/m1/<algorithm_id>/run", methods=['POST'])
+def run_algorithm(algorithm_id):
+    
+    run_values = request.args.get('values')
+    
+    if run_values is not None:
+        
+        service_response = table_client.run_with_values(run_values)
+        
+    else:
+
+        service_response = table_client.run_default()
+
+    flask_response = Response(service_response)
+    flask_response.headers["Content-Type"] = "application/json"
+
+    return flask_response
+    
 
 if __name__ == "__main__":
     
