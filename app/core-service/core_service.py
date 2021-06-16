@@ -1,6 +1,7 @@
-from flask import Flask, jsonify, json, Response, request
+from flask import Flask, jsonify, json, Response, request, render_template
 from flask_cors import CORS
-import algorithms_table_client
+import table_client
+# import os
 
 app = Flask(__name__)
 
@@ -18,10 +19,16 @@ def health_check_response():
 @app.route("/test")
 def test_response():
 
-    response = Response(open("test-response.json", "rb").read())
-    response.headers["Content-Type"]= "application/json"
+    # response = Response(open("test-response.json", "rb").read())
+    # response.headers["Content-Type"]= "application/json"
 
-    return response
+    # return response
+    
+    # open("test-response.json", "rb")
+    
+    # return os.getcwd()
+    
+    return render_template("index.html")
     
 
 @app.route("/m1", methods=['GET'])
