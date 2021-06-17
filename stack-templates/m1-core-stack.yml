@@ -204,11 +204,11 @@ Resources:
           net.ipv4.ip_forward = 1
           net.ipv4.conf.eth0.send_redirects = 0
           NatConfFileMarker
-    #       /opt/aws/bin/cfn-signal -e 0 --resource NATInstanceOne --stack ${AWS::StackName} --region ${AWS::Region}
-    # CreationPolicy:
-    #   ResourceSignal:
-    #     Count: 1
-    #     Timeout: PT5M
+          /opt/aws/bin/cfn-signal -e 0 --resource NATInstanceOne --stack ${AWS::StackName} --region ${AWS::Region}
+    CreationPolicy:
+      ResourceSignal:
+        Count: 1
+        Timeout: PT5M
 
   NATInstanceTwo:
     Type: AWS::EC2::Instance
@@ -240,11 +240,11 @@ Resources:
           net.ipv4.ip_forward = 1
           net.ipv4.conf.eth0.send_redirects = 0
           NatConfFileMarker
-    #       /opt/aws/bin/cfn-signal -e 0 --resource NATInstanceTwo --stack ${AWS::StackName} --region ${AWS::Region}
-    # CreationPolicy:
-    #   ResourceSignal:
-    #     Count: 1
-    #     Timeout: PT5M
+          /opt/aws/bin/cfn-signal -e 0 --resource NATInstanceTwo --stack ${AWS::StackName} --region ${AWS::Region}
+    CreationPolicy:
+      ResourceSignal:
+        Count: 1
+        Timeout: PT5M
         
   # Private Routing
   

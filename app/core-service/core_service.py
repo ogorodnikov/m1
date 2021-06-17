@@ -28,6 +28,21 @@ def test_response():
     return render_template("index.html")
     
 
+@app.route("/login")
+def login():
+    domain_name = 'm1.ogoro.me'
+    region = 'us-east-1'
+
+    loginendpoint = 'https://' + domain_name + '.auth.' + region + '.amazoncognito.com/oauth2/authorize?'
+    response_type = 'code'
+    scope = 'openid profile'
+    
+    loginurl = loginendpoint + 'response_type=' + response_type + '&client_id=' + clint_id + '&scope=' + scope + '&redirect_uri=' + redirect_uri
+
+    return redirect(loginurl)
+
+    
+
 @app.route("/m1", methods=['GET'])
 def get_algorithms():
 
