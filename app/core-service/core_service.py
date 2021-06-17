@@ -43,82 +43,82 @@ def login():
 
     
 
-@app.route("/m1", methods=['GET'])
-def get_algorithms():
+# @app.route("/m1", methods=['GET'])
+# def get_algorithms():
 
-    filter_category = request.args.get('filter')
+#     filter_category = request.args.get('filter')
     
-    if filter_category is not None:
+#     if filter_category is not None:
         
-        filter_value = request.args.get('value')
+#         filter_value = request.args.get('value')
         
-        query_parameters = {'filter': filter_category,
-                            'value': filter_value}
+#         query_parameters = {'filter': filter_category,
+#                             'value': filter_value}
                       
-        service_response = table_client.query_algorithms(query_parameters)
+#         service_response = table_client.query_algorithms(query_parameters)
         
-    else:
+#     else:
 
-        service_response = table_client.get_all_algorithms()
+#         service_response = table_client.get_all_algorithms()
 
-    flask_response = Response(service_response)
-    flask_response.headers["Content-Type"] = "application/json"
+#     flask_response = Response(service_response)
+#     flask_response.headers["Content-Type"] = "application/json"
 
-    return flask_response
+#     return flask_response
     
     
-@app.route("/m1/<algorithm_id>", methods=['GET'])
-def get_algorithm(algorithm_id):
+# @app.route("/m1/<algorithm_id>", methods=['GET'])
+# def get_algorithm(algorithm_id):
     
-    service_response = table_client.get_algorithm(algorithm_id)
+#     service_response = table_client.get_algorithm(algorithm_id)
 
-    flask_response = Response(service_response)
-    flask_response.headers["Content-Type"] = "application/json"
+#     flask_response = Response(service_response)
+#     flask_response.headers["Content-Type"] = "application/json"
 
-    return flask_response
-    
-
-@app.route("/m1/<algorithm_id>/like", methods=['POST'])
-def like_algorithm(algorithm_id):
-    
-    service_response = table_client.like_algorithm(algorithm_id)
-
-    flask_response = Response(service_response)
-    flask_response.headers["Content-Type"] = "application/json"
-
-    return flask_response
+#     return flask_response
     
 
-@app.route("/m1/<algorithm_id>/state", methods=['POST'])
-def run_algorithm(algorithm_id):
+# @app.route("/m1/<algorithm_id>/like", methods=['POST'])
+# def like_algorithm(algorithm_id):
     
-    state = request.args.get('state')
+#     service_response = table_client.like_algorithm(algorithm_id)
+
+#     flask_response = Response(service_response)
+#     flask_response.headers["Content-Type"] = "application/json"
+
+#     return flask_response
     
-    service_response = table_client.set_algorithm_state(state)
+
+# @app.route("/m1/<algorithm_id>/state", methods=['POST'])
+# def set_algorithm_state(algorithm_id):
+    
+#     state = request.args.get('state')
+    
+#     service_response = table_client.set_algorithm_state(state)
         
-    flask_response = Response(service_response)
-    flask_response.headers["Content-Type"] = "application/json"
+#     flask_response = Response(service_response)
+#     flask_response.headers["Content-Type"] = "application/json"
 
-    return flask_response
+#     return flask_response
     
 
-@app.route("/m1/<algorithm_id>/run", methods=['POST'])
-def run_algorithm(algorithm_id):
+# @app.route("/m1/<algorithm_id>/run", methods=['POST'])
+# def run_algorithm(algorithm_id):
     
-    run_values = request.args.get('values')
+#     run_values = request.args.get('values')
     
-    if run_values is not None:
+#     if run_values is not None:
         
-        service_response = runner.run_with_values(run_values)
+#         service_response = runner.run_with_values(run_values)
         
-    else:
+#     else:
 
-        service_response = runner.run_default()
+#         service_response = runner.run_default()
 
-    flask_response = Response(service_response)
-    flask_response.headers["Content-Type"] = "application/json"
+#     flask_response = Response(service_response)
+#     flask_response.headers["Content-Type"] = "application/json"
 
-    return flask_response
+#     return flask_response
     
 
 if __name__ == "__main__":

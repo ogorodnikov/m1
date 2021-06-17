@@ -1,1 +1,17 @@
-Test
+<!doctype html>
+<html lang="en">
+<head>
+    <title>M1 Login</title>
+</head>
+
+<body>
+<h1>Welcome to M1</h1>
+
+        <form action="{{ url_for('login') }}" method="POST">
+            <p>Enter login:</p>
+            <p><input type="text" name="login" value="ogoro"/></p>
+            <p><input type="submit" value="Submit"/></p>    
+        </form>
+        
+<img src="{{url_for('static', filename='sych.jpg')}}" alt="Welcome" width="100%"/>
+</body>
