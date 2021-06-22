@@ -12,9 +12,9 @@ items = [{'id': 'bernvaz',
           'description': 'Determines hidden message encoded in black-box function.\n' +
                          'Classical algorith complexity is O(n) while quantum is O(1).',
           'link': 'https://en.wikipedia.org/wiki/Bernstein%E2%80%93Vazirani_algorithm',
-          'image': '1010',
+          'image': b'1010',
           'parameters': ['secret'],
-          'likes': '0',
+          'likes': 0,
           'enabled': True},
           
           {'id': 'egcd',
@@ -22,9 +22,9 @@ items = [{'id': 'bernvaz',
           'type': 'classic',
           'description': 'Calculates GCD (Greatest common divisor) and Bézout coefficents.',
           'link': 'https://en.wikipedia.org/wiki/Extended_Euclidean_algorithm',
-          'image': '1010',
+          'image': b'1010',
           'parameters': ['a', 'b'],
-          'likes': '0',
+          'likes': 0,
           'enabled': True}]
           
 
@@ -38,7 +38,7 @@ def get_all_algorithms():
     
     response = table.scan()
 
-    return json.dumps(response['Items'], indent=2, sort_keys=True)
+    return response['Items']
     
 
 def query_algorithms(query_parameters):
@@ -55,14 +55,14 @@ def query_algorithms(query_parameters):
     response = table.query(IndexName='type-index',
                            KeyConditions=key_conditions)
     
-    return json.dumps(response['Items'], indent=2, sort_keys=True)
+    return response['Items']
 
 
 def get_algorithm(algorithm_id):
 
     response = table.get_item(Key={'id': algorithm_id})
     
-    return json.dumps(response['Item'], indent=2, sort_keys=True)
+    return response['Item']
 
 
 def like_algorithm(algorithm_id):
@@ -75,7 +75,7 @@ def like_algorithm(algorithm_id):
         
     status_code = response['ResponseMetadata']['HTTPStatusCode']
         
-    return json.dumps({'status_code': status_code})
+    return {'status_code': status_code}
     
 
 def set_algorithm_state(algorithm_id, state):
@@ -88,4 +88,4 @@ def set_algorithm_state(algorithm_id, state):
 
     status_code = response['ResponseMetadata']['HTTPStatusCode']
         
-    return json.dumps({'status_code': status_code})
+    return {'status_code': status_code}

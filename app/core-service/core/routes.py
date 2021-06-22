@@ -6,7 +6,6 @@ from flask_login import login_user, logout_user, login_required, current_user
 from flask_login import UserMixin
 
 import botocore.exceptions
-import json
 
 
 @login_manager.user_loader
@@ -29,14 +28,15 @@ def get_algorithms():
     
     if not request.args:
         
-        items = json.loads(models.get_all_algorithms())
+        items = models.get_all_algorithms()
     
     else:
         
         try:
-            items = json.loads(models.query_algorithms(request.args))
+            items = models.query_algorithms(request.args)
+            
         except botocore.exceptions.ClientError:
-            items = json.loads(models.get_all_algorithms())
+            items = models.get_all_algorithms()
         
     return render_template("algorithms.html", items=items)
     
@@ -44,20 +44,20 @@ def get_algorithms():
 @app.route('/algorithms/<algorithm_id>')
 def get_algorithm(algorithm_id):
     
-    item = json.loads(models.get_algorithm(algorithm_id))
+    item = models.get_algorithm(algorithm_id)
     
     return render_template("algorithm.html", item=item)
     
     
-# @app.route("/m1/<algorithm_id>/like", methods=['POST'])
-# def like_algorithm(algorithm_id):
+@app.route("/algorithms/<algorithm_id>/like", methods=['GET', 'POST'])
+# @login_required
+def like_algorithm(algorithm_id):
     
-#     service_response = table_client.like_algorithm(algorithm_id)
+    response = models.like_algorithm(algorithm_id)
 
-#     flask_response = Response(service_response)
-#     flask_response.headers["Content-Type"] = "application/json"
+    print(response)
 
-#     return flask_response
+    return response
     
 
 # @app.route("/login")

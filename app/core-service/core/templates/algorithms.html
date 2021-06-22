@@ -35,12 +35,22 @@ Algorithms
                <td>
                   <img class="img-thumbnail" src="https://indulgeyourpet.com/wp-content/uploads/Bombay.png" style="max-width:60px;width:100%" alt="image">
                </td>
+               
                <td>
-                  <a class="btn btn-info" href={{ url_for('get_algorithm', algorithm_id=item.id) }} 
-                     role="button" target="_blank" rel="noopener noreferrer">Open</a>
-                  <button class="btn btn-success" href="{{ url_for('test') }}">Like</button>
+                  <a class="btn btn-info" 
+                     href={{ url_for('get_algorithm', algorithm_id=item.id) }} 
+                     role="button" 
+                     target="_blank" rel="noopener noreferrer">Open</a>
+                     
+                  <!--<button type="button" class="btn btn-success" href={{ url_for('like_algorithm', algorithm_id=item.id) }}>Like</button>-->
+                  
+                  <a type="button" href={{ url_for('like_algorithm', algorithm_id=item.id) }} class="btn btn-info" role="button">Link Button</a>
+                  
+                  <!--<form action={{ url_for('like_algorithm', algorithm_id=item.id) }} method="post">-->
+                  <!--    <button type="submit" name="like_button" value="Like" class="btn btn-success">Go</button>-->
+                  <!--</form>-->
+                  
                   <a class="btn btn-dark" href="{{ item.link }}" role="button" target="_blank" rel="noopener noreferrer">Wiki</a>
-
                </td>
 
             </tr>
