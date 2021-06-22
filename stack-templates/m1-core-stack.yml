@@ -813,25 +813,21 @@ Resources:
         WriteCapacityUnits: 1
 
       AttributeDefinitions:
-      - AttributeName: algorithm-id
+      - AttributeName: id
         AttributeType: S
-      - AttributeName: algorithm-type
+      - AttributeName: type
         AttributeType: S
-      # - AttributeName: algorithm-code
-      #   AttributeType: S
-      # - AttributeName: algorithm-image
-      #   AttributeType: B
         
       KeySchema:
-      - AttributeName: algorithm-id
+      - AttributeName: id
         KeyType: HASH
      
       GlobalSecondaryIndexes:
-      - IndexName: algorithm-type-index
+      - IndexName: type-index
         KeySchema:
-        - AttributeName: algorithm-type
+        - AttributeName: type
           KeyType: HASH
-        - AttributeName: algorithm-id
+        - AttributeName: id
           KeyType: RANGE
         Projection:
           ProjectionType: ALL

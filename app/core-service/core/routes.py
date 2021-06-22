@@ -6,6 +6,8 @@ from flask_login import login_user, logout_user, login_required, current_user
 from flask_login import UserMixin
 
 
+
+
 @login_manager.user_loader
 def load_user(user_id):
     return "dummy_user_id"
@@ -27,7 +29,12 @@ def test():
 # @login_required
 def get_algorithms():
     
-    return render_template("algorithms.html")
+    item = {}
+    item['id'] = 1
+    
+    items = [item]
+    
+    return render_template("algorithms.html", items=items)
     
 
 # @app.route("/login")

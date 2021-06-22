@@ -7,8 +7,7 @@ Algorithms
 {% block content %}
 
 <div class="row" style="margin-top:20px; margin-left:20px">
-       <h2>Available algorithms:</h2>
-       <p>Chose one please)</p>
+       <h5>Available algorithms:</h5>
        <br>
       <table class="table table-hover table-dark">
          <thead>
@@ -16,28 +15,35 @@ Algorithms
                <!-- Your Columns HERE -->
                <th scope="col">ID</th>
                <th scope="col">Name</th>
-               <th scope="col">Barcode</th>
-               <th scope="col">Price</th>
-               <th scope="col">Options</th>
+               <th scope="col">Type</th>
+               <th scope="col">Description</th>
+               <th scope="col">Image</th>
             </tr>
          </thead>
          <tbody>
-            <!-- Your rows inside the table HERE: -->
-            <!--{% for item in items %}-->
-            <!--{% include 'includes/items_modals.html' %}-->
-            <!--<tr>-->
-            <!--   <td>{{ item.id }}</td>-->
-            <!--   <td>{{ item.name }}</td>-->
-            <!--   <td>{{ item.barcode }}</td>-->
-            <!--   <td>{{ item.price }}$</td>-->
-            <!--   <td>-->
-            <!--      <button class="btn btn-outline btn-info" data-toggle="modal" data-target="#Modal-MoreInfo-{{ item.id }}">More Info</button>-->
-            <!--      <button class="btn btn-outline btn-success" data-toggle="modal" data-target="#Modal-PurchaseConfirm-{{ item.id }}">Purchase this Item</button>-->
-            <!--   </td>-->
-            <!--</tr>-->
-            <!--{% endfor %}-->
+             <!--Your rows inside the table HERE: -->
+            {% for item in items %}
+            <tr>
+               
+               <td>{{ item.id }}</td>
+               <td>{{ item.name }}</td>
+               <td>{{ item.type }}</td>
+               <td>{{ item.description }}</td>
+               <td>
+                  <img class="img-thumbnail" src="https://indulgeyourpet.com/wp-content/uploads/Bombay.png" style="max-width:75px;width:100%" alt="image">
+               </td>
+               <td>
+                  <button class="btn btn-outline btn-info" href="{{ url_for('test') }}">Open</button>
+                  <button class="btn btn-outline btn-success" href="{{ url_for('test') }}">Like</button>
+               </td>
+
+            </tr>
+            {% endfor %}
          </tbody>
       </table>
 
 </div>
+
 {% endblock %}
+
+
