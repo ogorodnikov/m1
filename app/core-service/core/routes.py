@@ -1,11 +1,12 @@
-from core import app, login_manager
+from core import app, login_manager, models
 
 from flask import render_template, redirect, url_for, flash, request, jsonify
 
 from flask_login import login_user, logout_user, login_required, current_user
 from flask_login import UserMixin
 
-
+import botocore.exceptions
+import json
 
 
 @login_manager.user_loader
@@ -14,27 +15,49 @@ def load_user(user_id):
 
 
 @app.route("/")
-def health_check_response():
-    
-    return jsonify({"message" : "M1 Core Service V.11"})
-
-
-@app.route("/test")
+@app.route("/home")
 def test():
+    
+    # return jsonify({"message" : "M1 Core Service V.11"})
 
-    return render_template("test.html")
+    return render_template("home.html")
     
     
-@app.route('/algorithms', methods=['GET', 'POST'])
+@app.route('/algorithms')
 # @login_required
 def get_algorithms():
     
-    item = {}
-    item['id'] = 1
+    if not request.args:
+        
+        items = json.loads(models.get_all_algorithms())
     
-    items = [item]
-    
+    else:
+        
+        try:
+            items = json.loads(models.query_algorithms(request.args))
+        except botocore.exceptions.ClientError:
+            items = json.loads(models.get_all_algorithms())
+        
     return render_template("algorithms.html", items=items)
+    
+    
+@app.route('/algorithms/<algorithm_id>')
+def get_algorithm(algorithm_id):
+    
+    item = json.loads(models.get_algorithm(algorithm_id))
+    
+    return render_template("algorithm.html", item=item)
+    
+    
+# @app.route("/m1/<algorithm_id>/like", methods=['POST'])
+# def like_algorithm(algorithm_id):
+    
+#     service_response = table_client.like_algorithm(algorithm_id)
+
+#     flask_response = Response(service_response)
+#     flask_response.headers["Content-Type"] = "application/json"
+
+#     return flask_response
     
 
 # @app.route("/login")
@@ -76,26 +99,10 @@ def get_algorithms():
 #     return flask_response
     
     
-# @app.route("/m1/<algorithm_id>", methods=['GET'])
-# def get_algorithm(algorithm_id):
-    
-#     service_response = table_client.get_algorithm(algorithm_id)
 
-#     flask_response = Response(service_response)
-#     flask_response.headers["Content-Type"] = "application/json"
-
-#     return flask_response
     
 
-# @app.route("/m1/<algorithm_id>/like", methods=['POST'])
-# def like_algorithm(algorithm_id):
-    
-#     service_response = table_client.like_algorithm(algorithm_id)
 
-#     flask_response = Response(service_response)
-#     flask_response.headers["Content-Type"] = "application/json"
-
-#     return flask_response
     
 
 # @app.route("/m1/<algorithm_id>/state", methods=['POST'])

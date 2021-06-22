@@ -10,21 +10,21 @@ items = [{'id': 'bernvaz',
           'name': 'Bernstein Vazirani',
           'type': 'quantum',
           'description': 'Determines hidden message encoded in black-box function.\n' +
-                         'Classical algorith complexity is O(n) while quantum is O(1):\n' +
-                         'https://en.wikipedia.org/wiki/Bernstein%E2%80%93Vazirani_algorithm',
+                         'Classical algorith complexity is O(n) while quantum is O(1).',
+          'link': 'https://en.wikipedia.org/wiki/Bernstein%E2%80%93Vazirani_algorithm',
           'image': '1010',
           'parameters': ['secret'],
-          'likes': 0,
+          'likes': '0',
           'enabled': True},
           
           {'id': 'egcd',
           'name': 'Extended Euclidean',
           'type': 'classic',
-          'description': 'Calculates GCD (Greatest common divisor) and Bézout coefficents.\n' +
-                         'https://en.wikipedia.org/wiki/Extended_Euclidean_algorithm',
+          'description': 'Calculates GCD (Greatest common divisor) and Bézout coefficents.',
+          'link': 'https://en.wikipedia.org/wiki/Extended_Euclidean_algorithm',
           'image': '1010',
           'parameters': ['a', 'b'],
-          'likes': 0,
+          'likes': '0',
           'enabled': True}]
           
 
@@ -43,17 +43,14 @@ def get_all_algorithms():
 
 def query_algorithms(query_parameters):
 
-    # query_parameters = [{'filter': 'type', 'value': 'quantum'}]
+    # query_parameters = [{'filter': 'value'}]
     
     key_conditions = {}
     
-    for query_parameter in query_parameters:
+    for filter, value in query_parameters.items():
         
-        filter_name = query_parameter['filter']
-        filter_value = query_parameter['value']
-    
-        key_conditions[filter_name] = {'AttributeValueList': [filter_value], 
-                                       'ComparisonOperator': "EQ"}
+        key_conditions[filter] = {'AttributeValueList': [value], 
+                                  'ComparisonOperator': "EQ"}
     
     response = table.query(IndexName='type-index',
                            KeyConditions=key_conditions)

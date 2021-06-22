@@ -22,19 +22,25 @@ Algorithms
          </thead>
          <tbody>
              <!--Your rows inside the table HERE: -->
+             
             {% for item in items %}
+            
             <tr>
                
                <td>{{ item.id }}</td>
                <td>{{ item.name }}</td>
                <td>{{ item.type }}</td>
                <td>{{ item.description }}</td>
+
                <td>
-                  <img class="img-thumbnail" src="https://indulgeyourpet.com/wp-content/uploads/Bombay.png" style="max-width:75px;width:100%" alt="image">
+                  <img class="img-thumbnail" src="https://indulgeyourpet.com/wp-content/uploads/Bombay.png" style="max-width:60px;width:100%" alt="image">
                </td>
                <td>
-                  <button class="btn btn-outline btn-info" href="{{ url_for('test') }}">Open</button>
-                  <button class="btn btn-outline btn-success" href="{{ url_for('test') }}">Like</button>
+                  <a class="btn btn-info" href={{ url_for('get_algorithm', algorithm_id=item.id) }} 
+                     role="button" target="_blank" rel="noopener noreferrer">Open</a>
+                  <button class="btn btn-success" href="{{ url_for('test') }}">Like</button>
+                  <a class="btn btn-dark" href="{{ item.link }}" role="button" target="_blank" rel="noopener noreferrer">Wiki</a>
+
                </td>
 
             </tr>

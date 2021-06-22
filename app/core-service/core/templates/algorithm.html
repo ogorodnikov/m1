@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block title %}
+{{ item.name }}
+{% endblock %}
+
+{% block content %}
+
+<div class="row" style="margin-top:20px; margin-left:20px">
+   
+   <tbody>   
+      <tr>
+         <h5>{{ item.name }}:</h5>
+      </tr>
+
+      <tr>{{ item.description }}</tr>
+
+   <img class="img-thumbnail" src="https://indulgeyourpet.com/wp-content/uploads/Bombay.png" style="max-width:60px;width:100%" alt="image">
+
+   <td>
+      <button class="btn btn-warning" href="{{ url_for('test') }}">Run</button>
+      <button class="btn btn-success" href="{{ url_for('test') }}">Like</button>
+   </td>
+   
+   </tbody>
+
+</div>
+
+{% endblock %}
+
+
