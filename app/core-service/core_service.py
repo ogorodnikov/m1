@@ -4,7 +4,7 @@ import table_client
 import runner
 # import os
 
-app = Flask(__name__)
+app = Flask(__name__, static_url_path="")
 
 app.config['JSONIFY_PRETTYPRINT_REGULAR'] = False
 
@@ -14,7 +14,7 @@ CORS(app)
 @app.route("/")
 def health_check_response():
     
-    return jsonify({"message" : "M1 Core Service V.9"})
+    return jsonify({"message" : "M1 Core Service V.10"})
 
 
 @app.route("/test")
@@ -123,4 +123,4 @@ def login():
 
 if __name__ == "__main__":
     
-    app.run(host="0.0.0.0", port=8080)
+    app.run(host="0.0.0.0", port=8080, debug=True)
