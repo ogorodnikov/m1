@@ -1,51 +1,53 @@
 {% extends 'base.html' %}
 
 {% block title %}
-{{ item.name }}
+  {{ item.name }}
 {% endblock %}
 
 {% block content %}
 
-<div class="container-fluid">
-   
-  <div class="row">
-    <div class="col p-3">
-      <h5>{{ item.name }}:</h5>
-    </div>
-
-  </div>
-  
-  <div class="row">
-    <div class="col-6">
-      {{ item.description }}
-    </div>
-    <div class="col-3">
-      <img class="img-thumbnail" src="https://indulgeyourpet.com/wp-content/uploads/Bombay.png" style="max-width:600px;width:100%" alt="image">
-    </div>
-    <div class="col">
-      3 of 3
-    </div>
-  </div>
-  
-  
-  <div class="row">
+  <div class="container-fluid">
      
-    <button class="btn btn-warning" href="{{ url_for('home') }}">Run</button>
-    <button class="btn btn-info" href="{{ url_for('home') }}">Like</button>
-    
-    <div class="col">
-
+    <div class="row">
+      
+      <div class="col p-3">
+        <h5>{{ item.name }}:</h5>
+      </div>
+      
     </div>
     
-    <div class="col">
-
+    
+    <div class="row">
+      
+      <div class="col">
+        {{ item.description }}
+        
+        <div class="col px-0 py-3">
+          <img class="img-thumbnail" src="https://indulgeyourpet.com/wp-content/uploads/Bombay.png" style="max-width:600px;width:100%" alt="image">
+        </div>
+        
+      </div>
+      
     </div>
+    
+    
+    <div class="row">
 
+      <div class="col">
+        <button class="btn btn-warning" href="{{ url_for('home') }}">Run</button>
+        
+        <a href={{ url_for('like_algorithm', algorithm_id=item.id) }}
+           class="btn btn-info"
+           role="button">
+           Like
+        </a>
+        
+      </div>
+  
+    </div>
+    
   </div>
   
-</div>
-
-<!--<div class="row" style="margin-top:20px; margin-left:20px">-->
 
 {% endblock %}
 
