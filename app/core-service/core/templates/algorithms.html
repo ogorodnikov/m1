@@ -6,9 +6,10 @@ Algorithms
 
 {% block content %}
 
-<div class="row" style="margin-top:20px; margin-left:20px">
-       <h5>Available algorithms:</h5>
-       <br>
+<div class="row justify-content-center m-3">
+   
+      <h5>Available algorithms:</h5>
+      
       <table class="table table-hover table-dark">
          <thead>
             <tr>
@@ -37,21 +38,27 @@ Algorithms
                </td>
                
                <td>
-                  <a class="btn btn-info" 
-                     href={{ url_for('get_algorithm', algorithm_id=item.id) }} 
+                  <a href={{ url_for('get_algorithm', algorithm_id=item.id) }}
+                     class="btn btn-success" 
                      role="button" 
-                     target="_blank" rel="noopener noreferrer">Open</a>
+                     target="_blank" rel="noopener noreferrer">
+                     Open
+                  </a>
                      
-                  <!--<button type="button" class="btn btn-success" href={{ url_for('like_algorithm', algorithm_id=item.id) }}>Like</button>-->
+                  <a href={{ url_for('like_algorithm', algorithm_id=item.id) }}
+                     class="btn btn-info"
+                     role="button">
+                     Like
+                  </a>
                   
-                  <a type="button" href={{ url_for('like_algorithm', algorithm_id=item.id) }} class="btn btn-info" role="button">Link Button</a>
-                  
-                  <!--<form action={{ url_for('like_algorithm', algorithm_id=item.id) }} method="post">-->
-                  <!--    <button type="submit" name="like_button" value="Like" class="btn btn-success">Go</button>-->
-                  <!--</form>-->
-                  
-                  <a class="btn btn-dark" href="{{ item.link }}" role="button" target="_blank" rel="noopener noreferrer">Wiki</a>
-               </td>
+                  <a href={{ item.link }}
+                     class="btn btn-dark"
+                     role="button"
+                     target="_blank" rel="noopener noreferrer">
+                     Wiki
+                  </a>
+                     
+              </td>
 
             </tr>
             {% endfor %}

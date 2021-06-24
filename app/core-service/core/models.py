@@ -5,6 +5,10 @@ dynamodb = boto3.resource('dynamodb')
 
 table = dynamodb.Table('m1-algorithms-table')
 
+table.scan()
+
+print("Connected to 'm1-algorithms-table'")
+
 
 items = [{'id': 'bernvaz',
           'name': 'Bernstein Vazirani',

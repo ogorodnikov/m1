@@ -15,7 +15,7 @@ def load_user(user_id):
 
 @app.route("/")
 @app.route("/home")
-def test():
+def home():
     
     # return jsonify({"message" : "M1 Core Service V.11"})
 
@@ -54,11 +54,9 @@ def get_algorithm(algorithm_id):
 def like_algorithm(algorithm_id):
     
     response = models.like_algorithm(algorithm_id)
-
-    print(response)
-
-    return response
     
+    return response, 204
+
 
 # @app.route("/login")
 # def login():

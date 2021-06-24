@@ -6,25 +6,46 @@
 
 {% block content %}
 
-<div class="row" style="margin-top:20px; margin-left:20px">
+<div class="container-fluid">
    
-   <tbody>   
-      <tr>
-         <h5>{{ item.name }}:</h5>
-      </tr>
+  <div class="row">
+    <div class="col p-3">
+      <h5>{{ item.name }}:</h5>
+    </div>
 
-      <tr>{{ item.description }}</tr>
+  </div>
+  
+  <div class="row">
+    <div class="col-6">
+      {{ item.description }}
+    </div>
+    <div class="col-3">
+      <img class="img-thumbnail" src="https://indulgeyourpet.com/wp-content/uploads/Bombay.png" style="max-width:600px;width:100%" alt="image">
+    </div>
+    <div class="col">
+      3 of 3
+    </div>
+  </div>
+  
+  
+  <div class="row">
+     
+    <button class="btn btn-warning" href="{{ url_for('home') }}">Run</button>
+    <button class="btn btn-info" href="{{ url_for('home') }}">Like</button>
+    
+    <div class="col">
 
-   <img class="img-thumbnail" src="https://indulgeyourpet.com/wp-content/uploads/Bombay.png" style="max-width:60px;width:100%" alt="image">
+    </div>
+    
+    <div class="col">
 
-   <td>
-      <button class="btn btn-warning" href="{{ url_for('test') }}">Run</button>
-      <button class="btn btn-success" href="{{ url_for('test') }}">Like</button>
-   </td>
-   
-   </tbody>
+    </div>
 
+  </div>
+  
 </div>
+
+<!--<div class="row" style="margin-top:20px; margin-left:20px">-->
 
 {% endblock %}
 
