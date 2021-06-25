@@ -26,6 +26,10 @@ Parameters:
     Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
     Default: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
     
+  NATAMI:
+    Type: String
+    Default: ami-00a9d4a05375b2763    
+    
   CreateAWSServiceRoleForECS:
     Type: String
     Default: true
@@ -181,7 +185,7 @@ Resources:
       Tags:
       - Key: Name
         Value: m1-public1-nat-instance
-      ImageId: !Ref LatestLinuxAMI
+      ImageId: !Ref NATAMI
       InstanceType: t2.micro
       NetworkInterfaces:
       - DeviceIndex: 0
@@ -190,25 +194,6 @@ Resources:
         GroupSet:
         - !Ref NATSecurityGroup
       SourceDestCheck: false
-      UserData:
-        Fn::Base64: !Sub |
-          #!/bin/bash
-          yum -y update
-          yum install -y aws-cfn-bootstrap
-          echo 1 > /proc/sys/net/ipv4/ip_forward
-          echo 0 > /proc/sys/net/ipv4/conf/eth0/send_redirects
-          /sbin/iptables -t nat -A POSTROUTING -o eth0 -s 0.0.0.0/0 -j MASQUERADE
-          /sbin/iptables-save > /etc/sysconfig/iptables
-          mkdir -p /etc/sysctl.d/
-          cat << NatConfFileMarker > /etc/sysctl.d/nat.conf
-          net.ipv4.ip_forward = 1
-          net.ipv4.conf.eth0.send_redirects = 0
-          NatConfFileMarker
-          /opt/aws/bin/cfn-signal -e 0 --resource NATInstanceOne --stack ${AWS::StackName} --region ${AWS::Region}
-    CreationPolicy:
-      ResourceSignal:
-        Count: 1
-        Timeout: PT5M
 
   NATInstanceTwo:
     Type: AWS::EC2::Instance
@@ -217,7 +202,7 @@ Resources:
       Tags:
       - Key: Name
         Value: m1-public2-nat-instance
-      ImageId: !Ref LatestLinuxAMI
+      ImageId: !Ref NATAMI
       InstanceType: t2.micro
       NetworkInterfaces:
       - DeviceIndex: 0
@@ -226,25 +211,78 @@ Resources:
         GroupSet:
         - !Ref NATSecurityGroup
       SourceDestCheck: false
-      UserData:
-        Fn::Base64: !Sub |
-          #!/bin/bash
-          yum -y update
-          yum install -y aws-cfn-bootstrap
-          echo 1 > /proc/sys/net/ipv4/ip_forward
-          echo 0 > /proc/sys/net/ipv4/conf/eth0/send_redirects
-          /sbin/iptables -t nat -A POSTROUTING -o eth0 -s 0.0.0.0/0 -j MASQUERADE
-          /sbin/iptables-save > /etc/sysconfig/iptables
-          mkdir -p /etc/sysctl.d/
-          cat << NatConfFileMarker > /etc/sysctl.d/nat.conf
-          net.ipv4.ip_forward = 1
-          net.ipv4.conf.eth0.send_redirects = 0
-          NatConfFileMarker
-          /opt/aws/bin/cfn-signal -e 0 --resource NATInstanceTwo --stack ${AWS::StackName} --region ${AWS::Region}
-    CreationPolicy:
-      ResourceSignal:
-        Count: 1
-        Timeout: PT5M
+  
+  # NATInstanceOne:
+  #   Type: AWS::EC2::Instance
+  #   DependsOn: PublicRoute
+  #   Properties:
+  #     Tags:
+  #     - Key: Name
+  #       Value: m1-public1-nat-instance
+  #     ImageId: !Ref LatestLinuxAMI
+  #     InstanceType: t2.micro
+  #     NetworkInterfaces:
+  #     - DeviceIndex: 0
+  #       SubnetId: !Ref PublicSubnetOne
+  #       AssociatePublicIpAddress: true
+  #       GroupSet:
+  #       - !Ref NATSecurityGroup
+  #     SourceDestCheck: false
+  #     UserData:
+  #       Fn::Base64: !Sub |
+  #         #!/bin/bash
+  #         yum -y update
+  #         yum install -y aws-cfn-bootstrap
+  #         echo 1 > /proc/sys/net/ipv4/ip_forward
+  #         echo 0 > /proc/sys/net/ipv4/conf/eth0/send_redirects
+  #         /sbin/iptables -t nat -A POSTROUTING -o eth0 -s 0.0.0.0/0 -j MASQUERADE
+  #         /sbin/iptables-save > /etc/sysconfig/iptables
+  #         mkdir -p /etc/sysctl.d/
+  #         cat << NatConfFileMarker > /etc/sysctl.d/nat.conf
+  #         net.ipv4.ip_forward = 1
+  #         net.ipv4.conf.eth0.send_redirects = 0
+  #         NatConfFileMarker
+  #         /opt/aws/bin/cfn-signal -e 0 --resource NATInstanceOne --stack ${AWS::StackName} --region ${AWS::Region}
+  #   CreationPolicy:
+  #     ResourceSignal:
+  #       Count: 1
+  #       Timeout: PT5M
+
+  # NATInstanceTwo:
+  #   Type: AWS::EC2::Instance
+  #   DependsOn: PublicRoute
+  #   Properties:
+  #     Tags:
+  #     - Key: Name
+  #       Value: m1-public2-nat-instance
+  #     ImageId: !Ref LatestLinuxAMI
+  #     InstanceType: t2.micro
+  #     NetworkInterfaces:
+  #     - DeviceIndex: 0
+  #       SubnetId: !Ref PublicSubnetTwo
+  #       AssociatePublicIpAddress: true
+  #       GroupSet:
+  #       - !Ref NATSecurityGroup
+  #     SourceDestCheck: false
+  #     UserData:
+  #       Fn::Base64: !Sub |
+  #         #!/bin/bash
+  #         yum -y update
+  #         yum install -y aws-cfn-bootstrap
+  #         echo 1 > /proc/sys/net/ipv4/ip_forward
+  #         echo 0 > /proc/sys/net/ipv4/conf/eth0/send_redirects
+  #         /sbin/iptables -t nat -A POSTROUTING -o eth0 -s 0.0.0.0/0 -j MASQUERADE
+  #         /sbin/iptables-save > /etc/sysconfig/iptables
+  #         mkdir -p /etc/sysctl.d/
+  #         cat << NatConfFileMarker > /etc/sysctl.d/nat.conf
+  #         net.ipv4.ip_forward = 1
+  #         net.ipv4.conf.eth0.send_redirects = 0
+  #         NatConfFileMarker
+  #         /opt/aws/bin/cfn-signal -e 0 --resource NATInstanceTwo --stack ${AWS::StackName} --region ${AWS::Region}
+  #   CreationPolicy:
+  #     ResourceSignal:
+  #       Count: 1
+  #       Timeout: PT5M
         
   # Private Routing
   
@@ -382,6 +420,7 @@ Resources:
               - dynamodb:Query
               - dynamodb:UpdateItem
               - dynamodb:GetItem
+              - dynamodb:BatchWriteItem
               Resource: arn:aws:dynamodb:*:*:table/m1-algorithms-table*
 
   CodePipelineRole:
@@ -498,6 +537,16 @@ Resources:
       - !Ref CoreContainerEC2Role
             
   # Load Balancer
+  
+  # CoreLoadBalancer:
+  # Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+  # Properties:
+  #   Name: m1-core-nlb
+  #   Scheme: internet-facing
+  #   Type: network
+  #   Subnets:
+  #   - !Ref PrivateSubnetOne
+  #   - !Ref PrivateSubnetTwo
   
   CoreLoadBalancer:
     Type: AWS::ElasticLoadBalancingV2::LoadBalancer

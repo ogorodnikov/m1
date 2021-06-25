@@ -49,7 +49,7 @@ def get_algorithm(algorithm_id):
     return render_template("algorithm.html", item=item)
     
     
-@app.route("/algorithms/<algorithm_id>/like", methods=['GET', 'POST'])
+@app.route("/algorithms/<algorithm_id>/like")
 # @login_required
 def like_algorithm(algorithm_id):
     
