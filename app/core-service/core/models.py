@@ -8,38 +8,44 @@ dynamodb = boto3.resource('dynamodb')
 
 table = dynamodb.Table('m1-algorithms-table')
 
-table.scan()
+# table.scan()
 
-print("Connected to 'm1-algorithms-table'")
+# print("Connected to 'm1-algorithms-table'")
+
+def add_test_data():
+
+    items = [{'id': 'bernvaz',
+              'name': 'Bernstein Vazirani',
+              'type': 'quantum',
+              'description': 'Determines hidden message encoded in black-box function.\n' +
+                             'Classical algorith complexity is O(n) while quantum is O(1).',
+              'link': 'https://en.wikipedia.org/wiki/Bernstein%E2%80%93Vazirani_algorithm',
+              'image': b'1010',
+              'parameters': ['secret'],
+              'likes': 0,
+              'enabled': True},
+              
+              {'id': 'egcd',
+              'name': 'Extended Euclidean',
+              'type': 'classic',
+              'description': 'Calculates GCD (Greatest common divisor) and Bézout coefficents.',
+              'link': 'https://en.wikipedia.org/wiki/Extended_Euclidean_algorithm',
+              'image': b'1010',
+              'parameters': ['a', 'b'],
+              'likes': 0,
+              'enabled': True}]
+              
+    
+    with table.batch_writer(overwrite_by_pkeys=['id']) as batch:
+        for item in items:
+            batch.put_item(item)
+         
+            
+# add_test_data()
+
+# print("Test data added to 'm1-algorithms-table'")
 
 
-items = [{'id': 'bernvaz',
-          'name': 'Bernstein Vazirani',
-          'type': 'quantum',
-          'description': 'Determines hidden message encoded in black-box function.\n' +
-                         'Classical algorith complexity is O(n) while quantum is O(1).',
-          'link': 'https://en.wikipedia.org/wiki/Bernstein%E2%80%93Vazirani_algorithm',
-          'image': b'1010',
-          'parameters': ['secret'],
-          'likes': 0,
-          'enabled': True},
-          
-          {'id': 'egcd',
-          'name': 'Extended Euclidean',
-          'type': 'classic',
-          'description': 'Calculates GCD (Greatest common divisor) and Bézout coefficents.',
-          'link': 'https://en.wikipedia.org/wiki/Extended_Euclidean_algorithm',
-          'image': b'1010',
-          'parameters': ['a', 'b'],
-          'likes': 0,
-          'enabled': True}]
-          
-
-with table.batch_writer(overwrite_by_pkeys=['id']) as batch:
-    for item in items:
-        batch.put_item(item)
-        
-        
 
 def get_all_algorithms():
     

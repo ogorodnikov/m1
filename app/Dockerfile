@@ -1,4 +1,5 @@
-FROM ubuntu:latest
+# FROM ubuntu:latest
+FROM public.ecr.aws/lts/ubuntu:latest
 RUN echo Updating existing packages, installing and upgrading python and pip.
 RUN apt-get update -y
 RUN apt-get install -y python3-pip python3-dev build-essential
