@@ -34,13 +34,22 @@
     <div class="row">
 
       <div class="col">
-        <button class="btn btn-warning" href="{{ url_for('home') }}">Run</button>
+        
+        <a href=#
+           class="btn btn-warning"
+           role="button">
+           Run
+        </a>
         
         <a href={{ url_for('like_algorithm', algorithm_id=item.id) }}
            class="btn btn-info"
            role="button">
            Like
+          <span class="badge bg-light text-dark rounded-pill align-text-bottom">
+            {{ item.likes }}
+          </span>
         </a>
+        
         
       </div>
   
