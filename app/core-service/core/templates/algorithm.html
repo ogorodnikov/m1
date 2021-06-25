@@ -31,29 +31,84 @@
     </div>
     
     
-    <div class="row">
-
-      <div class="col">
-        
-        <a href=#
-           class="btn btn-warning"
-           role="button">
-           Run
-        </a>
-        
-        <a href={{ url_for('like_algorithm', algorithm_id=item.id) }}
-           class="btn btn-info"
-           role="button">
-           Like
-          <span class="badge bg-light text-dark rounded-pill align-text-bottom">
-            {{ item.likes }}
-          </span>
-        </a>
-        
-        
+    <!-- Parameters -->
+    
+    <form action={{ url_for('run_algorithm', algorithm_id=item.id) }} method="get">
+      
+      <label for="parameters" class="form-label">Parameters:</label>
+      
+      <!--<input type="text" name="number" class="form-control text-light bg-dark mb-3" placeholder="please input value">-->
+      
+      {% for parameter in item.parameters %}
+      
+        <div class="input-group mb-1">
+          
+          <span class="input-group-text" id="parameter">{{ parameter }}:</span>
+          
+          <input class="form-control text-light bg-dark"
+                 name={{ parameter }}
+                 type="text" 
+                 placeholder="please input value"
+                 aria-label="Parameter"
+                 aria-describedby="parameters" 
+                 style="max-width:565px;width:100%">
+        </div>
+      
+      {% endfor %}
+      
+      <br>
+      
+      <div class="row">
+        <div class="col">
+          
+          <button type="submit"
+             class="btn btn-warning">
+             Run
+          </button>
+          
+          <a href={{ url_for('like_algorithm', algorithm_id=item.id) }}
+             class="btn btn-info"
+             role="button">
+             Like
+            <span class="badge bg-light text-dark rounded-pill align-text-bottom">
+              {{ item.likes }}
+            </span>
+          </a>
+          
+        </div>
       </div>
-  
-    </div>
+      
+    </form>
+
+
+    
+
+    
+    <!-- Buttons -->
+    
+    <!--<div class="row">-->
+
+    <!--  <div class="col">-->
+        
+    <!--    <a href=#-->
+    <!--       class="btn btn-warning"-->
+    <!--       role="button">-->
+    <!--       Run-->
+    <!--    </a>-->
+        
+    <!--    <a href={{ url_for('like_algorithm', algorithm_id=item.id) }}-->
+    <!--       class="btn btn-info"-->
+    <!--       role="button">-->
+    <!--       Like-->
+    <!--      <span class="badge bg-light text-dark rounded-pill align-text-bottom">-->
+    <!--        {{ item.likes }}-->
+    <!--      </span>-->
+    <!--    </a>-->
+        
+        
+    <!--  </div>-->
+    <!--</div>-->
+    
     
   </div>
   
