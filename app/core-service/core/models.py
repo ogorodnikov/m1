@@ -4,6 +4,12 @@ import boto3, json
 # os.environ['AWS_PROFILE'] = "default"
 # os.environ['AWS_DEFAULT_REGION'] = "us-east-1"
 
+
+print("Profiles:", boto3.session.Session().available_profiles)
+
+boto3.setup_default_session(profile_name='default')
+
+
 dynamodb = boto3.resource('dynamodb')
 
 table = dynamodb.Table('m1-algorithms-table')
