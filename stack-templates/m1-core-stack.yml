@@ -17,6 +17,14 @@ Mappings:
       CIDR: 10.0.3.0/24
       
 Parameters:
+
+  KeyPair:
+    Type: String
+    Default: m1-key
+    
+  CreateAWSServiceRoleForECS:
+    Type: String
+    Default: true
   
   LatestLinuxAMI:
     Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
@@ -30,9 +38,6 @@ Parameters:
     Type: String
     Default: ami-00a9d4a05375b2763    
     
-  CreateAWSServiceRoleForECS:
-    Type: String
-    Default: true
     
 Conditions:
   CreateAWSServiceRoleForECS: !Not [!Equals [!Ref CreateAWSServiceRoleForECS, true]]
@@ -530,7 +535,7 @@ Resources:
       # - arn:aws:iam::aws:policy/AmazonSSMDirectoryServiceAccess
       # - arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy
       - arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role
-      
+  
   CoreContainerEC2RoleInstanceProfile:
     Type: AWS::IAM::InstanceProfile
     Properties:
@@ -706,6 +711,7 @@ Resources:
       ImageId: !Ref LatestECSOptimizedAMI
       IamInstanceProfile: !Ref CoreContainerEC2RoleInstanceProfile
       InstanceType: t2.micro
+      KeyName: !Ref KeyPair
       NetworkInterfaces:
       - DeviceIndex: 0
         SubnetId: !Ref PrivateSubnetOne
@@ -716,6 +722,7 @@ Resources:
         Fn::Base64: !Sub |
           #!/bin/bash
           echo ECS_CLUSTER=${CoreCluster} >> /etc/ecs/ecs.config
+          
 
   ### CI/CD
           

@@ -20,6 +20,9 @@ Resources:
       GroupDescription: Access to Bastion Host
       VpcId: !ImportValue m1-core-stack:VPCId
       GroupName: m1-bastion-sg
+      Tags:
+      - Key: Name
+        Value: m1-bastion-sg
       SecurityGroupIngress:
       - IpProtocol: tcp
         FromPort: 22
@@ -43,8 +46,8 @@ Resources:
       AutoScalingGroupName: m1-bastion-asg
       LaunchConfigurationName: !Ref BastionLaunchConfig
       VPCZoneIdentifier:
-      - !ImportValue m1-core-stack:PrivateSubnetOne
-      - !ImportValue m1-core-stack:PrivateSubnetTwo
+      - !ImportValue m1-core-stack:PublicSubnetOne
+      - !ImportValue m1-core-stack:PublicSubnetTwo
       MinSize: 0
       DesiredCapacity: 1
       MaxSize: 1

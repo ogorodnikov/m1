@@ -1,5 +1,3 @@
-print("Routes")
-
 from core import app, login_manager, models, egcd
 
 from flask import render_template, redirect, url_for, flash, request, jsonify
@@ -9,13 +7,11 @@ from flask_login import UserMixin
 
 import botocore.exceptions
 
-print("Routes2")
 
 @login_manager.user_loader
 def load_user(user_id):
     return "dummy_user_id"
 
-print("Routes3")
 
 @app.route("/")
 @app.route("/home")
@@ -148,5 +144,3 @@ def run_algorithm(algorithm_id):
 #     flask_response.headers["Content-Type"] = "application/json"
 
 #     return flask_response
-
-print("Routes4")
