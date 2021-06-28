@@ -11,7 +11,7 @@
     "    To use python debugger install ikpdb by running: ",
     "        sudo yum update;",
     "        sudo yum install python36-devel;",
-    "        sudo source /home/ec2-user/environment/qiskit/qiskit/bin activate",
+    "        sudo source /home/ec2-user/environment/flask-env/bin activate",
     "        sudo pip-3.6 install ikp3db;",
     "        sudo deactivate",
     "        '",

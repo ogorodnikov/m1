@@ -1,0 +1,54 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Description: M1 Bastion Stack
+
+Parameters:
+
+  KeyPair:
+    Type: String
+    Default: m1-key
+  
+  LatestLinuxAMI:
+    Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
+    Default: /aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2
+    
+Resources:
+
+  BastionSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Access to Bastion Host
+      VpcId: !ImportValue m1-core-stack:VPCId
+      GroupName: m1-bastion-sg
+      SecurityGroupIngress:
+      - IpProtocol: tcp
+        FromPort: 22
+        ToPort: 22
+        CidrIp: 0.0.0.0/0
+        
+  BastionLaunchConfig:
+    Type: AWS::AutoScaling::LaunchConfiguration
+    Properties:
+      LaunchConfigurationName: m1-bastion-launchconfig
+      AssociatePublicIpAddress: true
+      ImageId: !Ref LatestLinuxAMI
+      InstanceType: t2.micro
+      KeyName: !Ref KeyPair
+      SecurityGroups:
+      - !Ref BastionSecurityGroup
+
+  BastionAutoScalingGroup:
+    Type: AWS::AutoScaling::AutoScalingGroup
+    Properties:
+      AutoScalingGroupName: m1-bastion-asg
+      LaunchConfigurationName: !Ref BastionLaunchConfig
+      VPCZoneIdentifier:
+      - !ImportValue m1-core-stack:PrivateSubnetOne
+      - !ImportValue m1-core-stack:PrivateSubnetTwo
+      MinSize: 0
+      DesiredCapacity: 1
+      MaxSize: 1
+      Tags:
+      - Key: Name
+        Value: m1-bastion-host
+        PropagateAtLaunch: true
