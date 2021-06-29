@@ -7,6 +7,7 @@ from flask_login import UserMixin
 
 import botocore.exceptions
 import requests
+import base64
 
 
 @login_manager.user_loader
@@ -25,12 +26,26 @@ domain_name = 'ogoro'
 region = 'us-east-1'
 
 # login_endpoint = f'https://{domain_name}.auth.{region}.amazoncognito.com/login?'
+
 login_endpoint = 'https://auth.ogoro.me/login?'
+token_endpoint = 'https://auth.ogoro.me/oauth2/token'
 
 
-client_id = '19a0cvebjtej10gesr5r94qfqv'
-redirect_logged_in = 'https://9bca7b3479d64496983d362806a38873.vfs.cloud9.us-east-1.amazonaws.com/logged-in'
+### m1-user-pool
 
+# client_id = '19a0cvebjtej10gesr5r94qfqv'
+# client_secret = ''
+
+
+### m1-user-pool2
+
+client_id = 'o7onq15ivu5terh6sajs4mq9'
+client_secret = '1drvkg92suec576ebsdcq0sjv1vqfb17ph5krfnu0v81l94rbp0k'
+### bzdvbnExNWl2dTV0ZXJoNnNhanM0bXE5OjFkcnZrZzkyc3VlYzU3NmVic2RjcTBzanYxdnFmYjE3cGg1a3JmbnUwdjgxbDk0cmJwMGs=
+
+url_root = 'https://9bca7b3479d64496983d362806a38873.vfs.cloud9.us-east-1.amazonaws.com'
+redirect_logged_in = url_root + '/logged-in'
+redirect_home = url_root + '/home'
 
 response_type = 'code'
 scope = 'email+openid'
@@ -47,33 +62,38 @@ def login():
                 f'scope={scope}&' + \
                 f'state={state}'
                 
-    print("Login URL:", login_url)
-    
+    print('>>>> Login URL:', login_url)
+
     return redirect(login_url)
     
 
 @app.route("/logged-in")
 def logged_in():
     
-    client_id = '19a0cvebjtej10gesr5r94qfqv'
-    redirect_home = 'https://9bca7b3479d64496983d362806a38873.vfs.cloud9.us-east-1.amazonaws.com/home'
-    
-    print("Request args:", request.args)
-    
     code, state = map(request.args.get, ('code', 'state'))
     
-
-    # Authorization=Basic aSdxd892iujendek328uedj
-
-    # response = requests.post('https://auth.ogoro.me.us-east-1.amazoncognito.com/oauth2/token',
+    auth_base = base64.b64encode(f'{client_id}:{client_secret}'.encode())
     
-    #             {'Content-Type':'application/x-www-form-urlencoded',
-    #              'grant_type': 'authorization_code',
-    #              'client_id': client_id,
-    #              'code': code,
-    #              'redirect_uri': redirect_home})
+    authorization = 'Basic ' + auth_base.decode()
+    
+    print('  Token endpoint:', token_endpoint)
+    print('  Authorization:', authorization)
+    print('  Code:', code)
+    print('  Client ID:', client_id) 
+    print('  Redirect Home:', redirect_home)
+    
+
+    response = requests.post(token_endpoint,
+    
+                {'Content-Type':'application/x-www-form-urlencoded',
+                 'Authorization': authorization,
+                #  'client_secret': client_secret,
+                 'grant_type': 'authorization_code',
+                 'client_id': client_id,
+                 'code': code,
+                 'redirect_uri': redirect_home})
                  
-    # print('Logged-in response:', response.json())
+    print('Logged-in response:', response.json())
     
     
     # POST https://auth.ogoro.me.us-east-1.amazoncognito.com/oauth2/token&
