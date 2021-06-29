@@ -2,14 +2,18 @@ from core import app, login_manager, models, egcd
 
 from flask import render_template, redirect, url_for, flash, request, jsonify
 
+import botocore.exceptions
+
 from flask_login import login_user, logout_user, login_required, current_user
 from flask_login import UserMixin
 
-import botocore.exceptions
-
-
 @login_manager.user_loader
 def load_user(user_id):
+    
+    print("Loading user")
+    
+    quit()
+    
     return "dummy_user_id"
 
 
@@ -20,6 +24,46 @@ def home():
     # return jsonify({"message" : "M1 Core Service V.11"})
 
     return render_template("home.html")
+    
+    
+@app.route("/login")
+def login():
+    
+    domain_name = 'ogoro'
+    region = 'us-east-1'
+    
+    # login_endpoint = f'https://{domain_name}.auth.{region}.amazoncognito.com/login?'
+    login_endpoint = 'https://auth.ogoro.me/login?'
+    
+    client_id = '19a0cvebjtej10gesr5r94qfqv'
+    redirect_uri = 'https://9bca7b3479d64496983d362806a38873.vfs.cloud9.us-east-1.amazonaws.com/home'
+    
+    response_type = 'code'
+    scope = 'email+openid'
+    state = 'login_ok'
+    
+    login_url = login_endpoint + \
+                f'client_id={client_id}&' + \
+                f'redirect_uri={redirect_uri}&' + \
+                f'response_type={response_type}&' + \
+                f'scope={scope}&' + \
+                f'state={state}'
+                
+    print("Login URL:", login_url)
+    
+    return redirect(login_url)
+    
+
+# @app.route("/logged-in")
+# def logged_in():
+    
+#     print("Request args:", request.args)
+    
+#     return redirect(url_for('home'))
+    
+    
+    
+###
     
 
 @app.route('/algorithms')
@@ -88,18 +132,7 @@ def run_algorithm(algorithm_id):
     return jsonify({"output": result})
 
 
-# @app.route("/login")
-# def login():
-#     domain_name = 'm1.ogoro.me'
-#     region = 'us-east-1'
 
-#     loginendpoint = 'https://' + domain_name + '.auth.' + region + '.amazoncognito.com/oauth2/authorize?'
-#     response_type = 'code'
-#     scope = 'openid profile'
-    
-#     loginurl = loginendpoint + 'response_type=' + response_type + '&client_id=' + clint_id + '&scope=' + scope + '&redirect_uri=' + redirect_uri
-
-#     return redirect(loginurl)
 
     
 
