@@ -2,10 +2,12 @@ from core import app, login_manager, models, egcd
 
 from flask import render_template, redirect, url_for, flash, request, jsonify
 
-import botocore.exceptions
-
 from flask_login import login_user, logout_user, login_required, current_user
 from flask_login import UserMixin
+
+import botocore.exceptions
+import requests
+
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -15,36 +17,32 @@ def load_user(user_id):
     quit()
     
     return "dummy_user_id"
+    
 
 
-@app.route("/")
-@app.route("/home")
-def home():
-    
-    # return jsonify({"message" : "M1 Core Service V.11"})
 
-    return render_template("home.html")
-    
-    
+domain_name = 'ogoro'
+region = 'us-east-1'
+
+# login_endpoint = f'https://{domain_name}.auth.{region}.amazoncognito.com/login?'
+login_endpoint = 'https://auth.ogoro.me/login?'
+
+
+client_id = '19a0cvebjtej10gesr5r94qfqv'
+redirect_logged_in = 'https://9bca7b3479d64496983d362806a38873.vfs.cloud9.us-east-1.amazonaws.com/logged-in'
+
+
+response_type = 'code'
+scope = 'email+openid'
+state = 'state_ok'
+
+
 @app.route("/login")
 def login():
     
-    domain_name = 'ogoro'
-    region = 'us-east-1'
-    
-    # login_endpoint = f'https://{domain_name}.auth.{region}.amazoncognito.com/login?'
-    login_endpoint = 'https://auth.ogoro.me/login?'
-    
-    client_id = '19a0cvebjtej10gesr5r94qfqv'
-    redirect_uri = 'https://9bca7b3479d64496983d362806a38873.vfs.cloud9.us-east-1.amazonaws.com/home'
-    
-    response_type = 'code'
-    scope = 'email+openid'
-    state = 'login_ok'
-    
     login_url = login_endpoint + \
                 f'client_id={client_id}&' + \
-                f'redirect_uri={redirect_uri}&' + \
+                f'redirect_uri={redirect_logged_in}&' + \
                 f'response_type={response_type}&' + \
                 f'scope={scope}&' + \
                 f'state={state}'
@@ -54,16 +52,53 @@ def login():
     return redirect(login_url)
     
 
-# @app.route("/logged-in")
-# def logged_in():
+@app.route("/logged-in")
+def logged_in():
     
-#     print("Request args:", request.args)
+    client_id = '19a0cvebjtej10gesr5r94qfqv'
+    redirect_home = 'https://9bca7b3479d64496983d362806a38873.vfs.cloud9.us-east-1.amazonaws.com/home'
     
-#     return redirect(url_for('home'))
+    print("Request args:", request.args)
+    
+    code, state = map(request.args.get, ('code', 'state'))
+    
+
+    # Authorization=Basic aSdxd892iujendek328uedj
+
+    # response = requests.post('https://auth.ogoro.me.us-east-1.amazoncognito.com/oauth2/token',
+    
+    #             {'Content-Type':'application/x-www-form-urlencoded',
+    #              'grant_type': 'authorization_code',
+    #              'client_id': client_id,
+    #              'code': code,
+    #              'redirect_uri': redirect_home})
+                 
+    # print('Logged-in response:', response.json())
     
     
-    
+    # POST https://auth.ogoro.me.us-east-1.amazoncognito.com/oauth2/token&
+    #                   Content-Type='application/x-www-form-urlencoded'&
+    #                   Authorization=Basic aSdxd892iujendek328uedj
+                       
+    #                   grant_type=authorization_code&
+    #                   client_id=djc98u3jiedmi283eu928&
+    #                   code=AUTHORIZATION_CODE&
+    #                   redirect_uri=com.myclientapp://myclient/redirect
+                       
+
+    return redirect(url_for('home'))
+
+
 ###
+
+
+@app.route("/")
+@app.route("/home")
+def home():
+    
+    # return jsonify({"message" : "M1 Core Service V.11"})
+    
+    return render_template("home.html")
     
 
 @app.route('/algorithms')
