@@ -1,9 +1,8 @@
-from core import app, login_manager, models, egcd
+from core import app, models, egcd, user
 
 from flask import render_template, redirect, url_for, flash, request, jsonify
 
 from flask_login import login_user, logout_user, login_required, current_user
-from flask_login import UserMixin
 
 from flask_awscognito import AWSCognitoAuthentication
 
@@ -14,20 +13,16 @@ import base64
 import boto3
 
 
-@login_manager.user_loader
-def load_user(user_id):
-    
-    print("Loading user")
-    
-    quit()
-    
-    return "dummy_user_id"
 
-
+DEFAULT_REGION = 'us-east-1'
+COGNITO_DOMAIN = 'auth.ogoro.me'
+COGNITO_REDIRECT_URL = 'https://9bca7b3479d64496983d362806a38873.vfs.cloud9.us-east-1.amazonaws.com/logged-in'
 
 USER_POOL = 'm1-user-pool'
 USER_POOL_CLIENT = 'm1-user-pool-client'
 USER_POOL_CLIENT_SECRET = ''
+
+
 
 client = boto3.client('cognito-idp')
 
@@ -59,21 +54,20 @@ def get_user_pool_clients(user_pool_id):
                                if attribute['ClientName'] == USER_POOL_CLIENT)
                         
     return user_pool_client_id
-    
+
+
 user_pool_id = get_user_pool_id(USER_POOL)
 user_pool_client_id = get_user_pool_clients(user_pool_id)
 
 # print('UPCI', user_pool_client_id)
 
 
-app.config['AWS_DEFAULT_REGION'] = 'us-east-1'
-app.config['AWS_COGNITO_DOMAIN'] = 'auth.ogoro.me'
+app.config['AWS_DEFAULT_REGION'] = DEFAULT_REGION
+app.config['AWS_COGNITO_DOMAIN'] = COGNITO_DOMAIN
 app.config['AWS_COGNITO_USER_POOL_ID'] = user_pool_id
 app.config['AWS_COGNITO_USER_POOL_CLIENT_ID'] = user_pool_client_id
 app.config['AWS_COGNITO_USER_POOL_CLIENT_SECRET'] = USER_POOL_CLIENT_SECRET
-app.config['AWS_COGNITO_REDIRECT_URL'] = 'https://9bca7b3479d64496983d362806a38873.vfs.cloud9.us-east-1.amazonaws.com/logged-in'
-
-
+app.config['AWS_COGNITO_REDIRECT_URL'] = COGNITO_REDIRECT_URL
 
 aws_auth = AWSCognitoAuthentication(app)
 
@@ -100,7 +94,16 @@ def logged_in():
     print('Response:', response)
     print()
     print('User sub:', user_sub)
-
+    
+    
+    new_user = user.User(user_sub)
+    print("New user:", new_user.id)
+    
+    print("Before - User loaded:", current_user)
+    
+    login_user(new_user)
+    
+    print("After - User loaded:", current_user)
 
     return redirect(url_for('home'))
     
