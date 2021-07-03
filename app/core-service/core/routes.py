@@ -80,6 +80,14 @@ def login():
     return redirect(aws_auth.get_sign_in_url())
     
 
+@app.route('/register')
+def register():
+    
+    register_url = aws_auth.get_sign_in_url().replace('login', 'signup', 1)
+    
+    return redirect(register_url)
+    
+
 @app.route("/logged-in")
 def logged_in():
     
@@ -99,19 +107,20 @@ def logged_in():
     print('User sub:', user_sub)
     print('User name:', name)    
     
-    print("Before - User loaded:", current_user)
+    
+    print("Before:")
+    print("  User name:", getattr(current_user, 'name', '-'))
+    print("  User authenticated:", current_user.is_authenticated)
     
     new_user = user.User(user_sub, name)
     
     login_user(new_user)
     
-    print("After - User loaded:", current_user)
+    print("After:", current_user)
+    print("  User name:", getattr(current_user, 'name', '-'))
+    print("  User authenticated:", current_user.is_authenticated())
     
-    
-    print("User name:", current_user.name)
-    print("User authenticated:", current_user.is_authenticated)
-    
-    flash(f"Successfully logged in as {current_user.name}", category='success')
+    flash(f"Welcome, {current_user.name}!", category='dark')
 
     return redirect(request.args.get('next') or url_for('home'))
     
