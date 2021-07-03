@@ -1,4 +1,4 @@
-from core import app, models, egcd, user
+from core import app, models, egcd
 
 from flask import render_template, redirect, url_for, flash, request, jsonify, session
 
@@ -10,7 +10,7 @@ import botocore.exceptions
 import requests
 import base64
 import boto3
-
+import os
 
 
 DEFAULT_REGION = 'us-east-1'
@@ -43,12 +43,8 @@ def get_user_pool_clients(user_pool_id):
     user_pool_clients_response = client.list_user_pool_clients(UserPoolId=user_pool_id,
                                                                MaxResults=60)
                                                         
-    # print("UPC", user_pool_clients_response)
-    
     user_pool_clients = user_pool_clients_response['UserPoolClients']
-    
-    # print(user_pool_clients)
-    
+
     user_pool_client_id = next(attribute['ClientId'] for attribute in user_pool_clients
                                if attribute['ClientName'] == USER_POOL_CLIENT)
                         
@@ -57,9 +53,6 @@ def get_user_pool_clients(user_pool_id):
 
 user_pool_id = get_user_pool_id(USER_POOL)
 user_pool_client_id = get_user_pool_clients(user_pool_id)
-
-# print('UPCI', user_pool_client_id)
-
 
 app.config['AWS_DEFAULT_REGION'] = DEFAULT_REGION
 app.config['AWS_COGNITO_DOMAIN'] = COGNITO_DOMAIN
@@ -82,7 +75,9 @@ def login():
 @app.route('/register')
 def register():
     
-    register_url = aws_auth.get_sign_in_url().replace('login', 'signup', 1)
+    sign_in_url = aws_auth.get_sign_in_url()
+    
+    register_url = sign_in_url.replace('login', 'signup', 1)
     
     return redirect(register_url)
     
@@ -94,7 +89,7 @@ def logged_in():
      
     response = client.get_user(AccessToken=access_token)
     
-    name = response['Username']
+    username = response['Username']
     user_attributes = response['UserAttributes']
     user_sub = next(attribute['Value'] for attribute in user_attributes
                     if attribute['Name'] == 'sub')
@@ -104,24 +99,14 @@ def logged_in():
     print('Response:', response)
     print()
     print('User sub:', user_sub)
-    print('User name:', name)    
+    print('User name:', username)
     
     
-    print("Before:")
-    print("  User name:", getattr(current_user, 'name', '-'))
-    print("  User authenticated:", current_user.is_authenticated)
+    print('ENV:', os.environ)
     
-    new_user = user.User(user_sub, name)
-
-    login_user(new_user)
+    session['username'] = username
     
-    session['user'] = 'test_user'
-    
-    print("After:", current_user)
-    print("  User name:", getattr(current_user, 'name', '-'))
-    print("  User authenticated:", current_user.is_authenticated())
-    
-    flash(f"Welcome, {current_user.name}!", category='dark')
+    flash(f"Welcome, {username}!", category='dark')
 
     return redirect(request.args.get('next') or url_for('home'))
     
@@ -129,7 +114,7 @@ def logged_in():
 @app.route('/logout')
 def logout():
     
-    logout_user()
+    session['username'] = None
     
     return redirect(request.args.get('next') or url_for('home'))
 
