@@ -417,6 +417,9 @@ Resources:
               - logs:CreateLogStream
               - logs:CreateLogGroup
               - logs:PutLogEvents
+              # Cognito
+              - cognito-idp:ListUserPools
+              - cognito-idp:ListUserPoolClients
               Resource: '*'
             - Effect: Allow
               Action:
@@ -701,27 +704,27 @@ Resources:
         ContainerPort: 8080
         TargetGroupArn: !Ref CoreTargetGroup
 
-  CoreContainerEC2Instance:
-    Type: AWS::EC2::Instance
-    DependsOn: GatewayAttachement
-    Properties:
-      Tags:
-      - Key: Name
-        Value: m1-core-container-ec2-instance
-      ImageId: !Ref LatestECSOptimizedAMI
-      IamInstanceProfile: !Ref CoreContainerEC2RoleInstanceProfile
-      InstanceType: t2.micro
-      KeyName: !Ref KeyPair
-      NetworkInterfaces:
-      - DeviceIndex: 0
-        SubnetId: !Ref PrivateSubnetOne
-        AssociatePublicIpAddress: false
-        GroupSet: 
-        - !Ref ClusterSecurityGroup
-      UserData:
-        Fn::Base64: !Sub |
-          #!/bin/bash
-          echo ECS_CLUSTER=${CoreCluster} >> /etc/ecs/ecs.config
+  # CoreContainerEC2Instance:
+  #   Type: AWS::EC2::Instance
+  #   DependsOn: GatewayAttachement
+  #   Properties:
+  #     Tags:
+  #     - Key: Name
+  #       Value: m1-core-container-ec2-instance
+  #     ImageId: !Ref LatestECSOptimizedAMI
+  #     IamInstanceProfile: !Ref CoreContainerEC2RoleInstanceProfile
+  #     InstanceType: t2.micro
+  #     KeyName: !Ref KeyPair
+  #     NetworkInterfaces:
+  #     - DeviceIndex: 0
+  #       SubnetId: !Ref PrivateSubnetOne
+  #       AssociatePublicIpAddress: false
+  #       GroupSet: 
+  #       - !Ref ClusterSecurityGroup
+  #     UserData:
+  #       Fn::Base64: !Sub |
+  #         #!/bin/bash
+  #         echo ECS_CLUSTER=${CoreCluster} >> /etc/ecs/ecs.config
           
 
   ### CI/CD
@@ -934,11 +937,11 @@ Outputs:
     Export:
       Name: !Sub ${AWS::StackName}:NATInstanceTwo
       
-  CoreContainerEC2Instance:
-    Description: EC2 Instance to host M1 Core container in ECS
-    Value: !Ref CoreContainerEC2Instance
-    Export:
-      Name: !Sub ${AWS::StackName}:CoreContainerEC2Instance  
+  # CoreContainerEC2Instance:
+  #   Description: EC2 Instance to host M1 Core container in ECS
+  #   Value: !Ref CoreContainerEC2Instance
+  #   Export:
+  #     Name: !Sub ${AWS::StackName}:CoreContainerEC2Instance  
       
   CodeRepositoryURL:
     Description: HTTPS Clone URL for CodeCommit Repository 
