@@ -1,6 +1,6 @@
 from core import app, models, egcd, user
 
-from flask import render_template, redirect, url_for, flash, request, jsonify
+from flask import render_template, redirect, url_for, flash, request, jsonify, session
 
 from flask_login import login_user, logout_user, login_required, current_user
 
@@ -9,7 +9,6 @@ from flask_awscognito import AWSCognitoAuthentication
 import botocore.exceptions
 import requests
 import base64
-
 import boto3
 
 
@@ -113,8 +112,10 @@ def logged_in():
     print("  User authenticated:", current_user.is_authenticated)
     
     new_user = user.User(user_sub, name)
-    
+
     login_user(new_user)
+    
+    session['user'] = 'test_user'
     
     print("After:", current_user)
     print("  User name:", getattr(current_user, 'name', '-'))
@@ -131,6 +132,9 @@ def logout():
     logout_user()
     
     return redirect(request.args.get('next') or url_for('home'))
+
+
+
 
     
 
