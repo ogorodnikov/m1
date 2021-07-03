@@ -72,6 +72,8 @@ app.config['AWS_COGNITO_REDIRECT_URL'] = COGNITO_REDIRECT_URL
 aws_auth = AWSCognitoAuthentication(app)
 
 
+###   Login   ###
+
 @app.route('/login')
 def login():
     
@@ -99,7 +101,9 @@ def logged_in():
     
     print("Before - User loaded:", current_user)
     
-    login_user(user_sub, name)
+    new_user = user.User(user_sub, name)
+    
+    login_user(new_user)
     
     print("After - User loaded:", current_user)
     
@@ -112,8 +116,16 @@ def logged_in():
     return redirect(request.args.get('next') or url_for('home'))
     
 
-###
+@app.route('/logout')
+def logout():
+    
+    logout_user()
+    
+    return redirect(request.args.get('next') or url_for('home'))
 
+    
+
+###   Algirithms   ###
 
 @app.route("/")
 @app.route("/home")
