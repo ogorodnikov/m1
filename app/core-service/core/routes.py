@@ -84,7 +84,8 @@ def logged_in():
     access_token = aws_auth.get_access_token(request.args)
      
     response = client.get_user(AccessToken=access_token)
-
+    
+    name = response['Username']
     user_attributes = response['UserAttributes']
     user_sub = next(attribute['Value'] for attribute in user_attributes
                     if attribute['Name'] == 'sub')
@@ -94,18 +95,21 @@ def logged_in():
     print('Response:', response)
     print()
     print('User sub:', user_sub)
-    
-    
-    new_user = user.User(user_sub)
-    print("New user:", new_user.id)
+    print('User name:', name)    
     
     print("Before - User loaded:", current_user)
     
-    login_user(new_user)
+    login_user(user_sub, name)
     
     print("After - User loaded:", current_user)
+    
+    
+    print("User name:", current_user.name)
+    print("User authenticated:", current_user.is_authenticated)
+    
+    flash(f"Successfully logged in as {current_user.name}", category='success')
 
-    return redirect(url_for('home'))
+    return redirect(request.args.get('next') or url_for('home'))
     
 
 ###
