@@ -9,60 +9,59 @@
   <div class="container-fluid">
      
     <div class="row">
-      
-      <div class="col p-3">
+      <div class="col-sm-12 mt-4 mb-3">
         <h5>{{ item.name }}:</h5>
       </div>
-      
     </div>
-    
     
     <div class="row">
-      
-      <div class="col">
+      <div class="col-sm-5 mb-3">
         {{ item.description }}
-        
-        <div class="col px-0 py-3">
-          <img class="img-thumbnail" src="https://indulgeyourpet.com/wp-content/uploads/Bombay.png" style="max-width:600px;width:100%" alt="image">
-        </div>
-        
       </div>
-      
     </div>
+
+    <div class="row">        
+      <div class="col-sm-5 mb-3">
+        <img class="img-thumbnail" src="https://indulgeyourpet.com/wp-content/uploads/Bombay.png" alt="image">
+      </div>
+    </div>
+    
     
     
     <!-- Parameters -->
     
-    <form action={{ url_for('run_algorithm', algorithm_id=item.id) }} method="get">
-      
-      <label for="parameters" class="form-label">Parameters:</label>
-      
-      <!--<input type="text" name="number" class="form-control text-light bg-dark mb-3" placeholder="please input value">-->
-      
-      {% for parameter in item.parameters %}
-      
-        <div class="input-group mb-1">
+
+    
+    <form action={{ url_for('run_algorithm', algorithm_id=item.id) }} method="POST">
           
-          <span class="input-group-text" id="parameter">{{ parameter }}:</span>
+      <div class="row">        
+        <div class="col-sm-5 mb-3">
           
-          <input class="form-control text-light bg-dark"
-                 name={{ parameter }}
-                 type="text" 
-                 placeholder="please input value"
-                 aria-label="Parameter"
-                 aria-describedby="parameters" 
-                 style="max-width:565px;width:100%">
+          <label for="parameters" class="form-label mb-3">Parameters:</label>
+          
+          {% for parameter in item.parameters %}
+          
+            <div class="input-group mb-1">
+              
+              <span class="input-group-text" id="parameter">{{ parameter }}:</span>
+              
+              <input class="form-control text-light bg-dark"
+                     name={{ parameter }}
+                     type="text" 
+                     placeholder="please input value"
+                     aria-label="Parameter"
+                     aria-describedby="parameters">
+            </div>
+          
+          {% endfor %}
+          
         </div>
-      
-      {% endfor %}
-      
-      <br>
-      
-      <div class="row">
-        <div class="col">
+      </div>
           
-          <button type="submit"
-             class="btn btn-warning">
+      <div class="row">
+        <div class="col-sm-5 mb-3">
+          
+          <button type="submit" class="btn btn-warning">
              Run
           </button>
           
@@ -79,6 +78,7 @@
       </div>
       
     </form>
+  </div>
 
 
     

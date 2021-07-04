@@ -129,18 +129,20 @@ def like_algorithm(algorithm_id):
     return response, 204
     
     
-@app.route("/algorithms/<algorithm_id>/run", methods = ['GET'])
+@app.route("/algorithms/<algorithm_id>/run", methods = ['GET', 'POST'])
 def run_algorithm(algorithm_id):
     
-    run_values = request.args.values()
+    # run_values = request.args.values()
     
-    flash(f"Run values: {run_values}!", category='dark')
+    run_values = request.form
     
-    run_int_values = map(int, run_values)
+    flash(f"Run values: {run_values}!", category='warning')
     
-    result = egcd.egcd(*run_int_values)
+    # run_int_values = map(int, run_values)
     
-    print(result)
+    # result = egcd.egcd(*run_int_values)
+    
+    # print(result)
     
     return redirect(url_for('get_algorithm', algorithm_id=algorithm_id))
     
