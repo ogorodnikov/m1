@@ -2,8 +2,6 @@ from core import app, models, egcd, aws_auth
 
 from flask import render_template, redirect, url_for, flash, request, jsonify, session
 
-from flask_login import login_user, logout_user, login_required, current_user
-
 
 import botocore.exceptions
 import requests
@@ -16,12 +14,21 @@ cognito_client = boto3.client('cognito-idp')
 
 ###   Login   ###
 
-@app.route('/login')
+@app.route('/login', methods = ['GET', 'POST'])
 def login():
     
-    return redirect(aws_auth.get_sign_in_url())
+    # return redirect(aws_auth.get_sign_in_url())
     
-    # return render_template("login.html")
+    next_url = request.args.get('next')
+    
+    if request.method == 'GET':
+        return render_template("login.html", next=next_url)
+        
+    if request.method == 'POST':
+        
+        flash(f"Form data: {request.values}", category='dark')
+        
+        return redirect(next_url or url_for('home'))
     
 
 @app.route('/register')
@@ -122,18 +129,21 @@ def like_algorithm(algorithm_id):
     return response, 204
     
     
-@app.route("/algorithms/<algorithm_id>/run")
+@app.route("/algorithms/<algorithm_id>/run", methods = ['GET'])
 def run_algorithm(algorithm_id):
     
-    print('Ok')
-    
     run_values = request.args.values()
+    
+    flash(f"Run values: {run_values}!", category='dark')
     
     run_int_values = map(int, run_values)
     
     result = egcd.egcd(*run_int_values)
     
     print(result)
+    
+    return redirect(url_for('get_algorithm', algorithm_id=algorithm_id))
+    
     
     # for e in run_values.items():
     #     print(e)
@@ -152,48 +162,10 @@ def run_algorithm(algorithm_id):
     return jsonify({"output": result})
 
 
-
-
+@app.route("/algorithms/<algorithm_id>/state", methods=['POST'])
+def set_algorithm_state(algorithm_id):
     
-
-# @app.route("/m1", methods=['GET'])
-# def get_algorithms():
-
-#     filter_category = request.args.get('filter')
+    state = request.args.get('state')
+    response = models.set_algorithm_state(algorithm_id, state)
     
-#     if filter_category is not None:
-        
-#         filter_value = request.args.get('value')
-        
-#         query_parameters = {'filter': filter_category,
-#                             'value': filter_value}
-                      
-#         service_response = table_client.query_algorithms(query_parameters)
-        
-#     else:
-
-#         service_response = table_client.get_all_algorithms()
-
-#     flask_response = Response(service_response)
-#     flask_response.headers["Content-Type"] = "application/json"
-
-#     return flask_response
-    
-    
-
-    
-
-
-    
-
-# @app.route("/m1/<algorithm_id>/state", methods=['POST'])
-# def set_algorithm_state(algorithm_id):
-    
-#     state = request.args.get('state')
-    
-#     service_response = table_client.set_algorithm_state(state)
-        
-#     flask_response = Response(service_response)
-#     flask_response.headers["Content-Type"] = "application/json"
-
-#     return flask_response
+    return response, 204
