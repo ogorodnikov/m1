@@ -1,11 +1,15 @@
 from flask import Flask
 from flask_cors import CORS
+from flask_awscognito import AWSCognitoAuthentication
+
+
+from core import config
 
 app = Flask(__name__)
+app.config.from_object(config.Config)
 
 CORS(app)
 
-app.config['SECRET_KEY'] = 'acf3fc4f4c3fccfcafa24499'
-# app.config['JSONIFY_PRETTYPRINT_REGULAR'] = False
+aws_auth = AWSCognitoAuthentication(app)
 
 from core import routes
