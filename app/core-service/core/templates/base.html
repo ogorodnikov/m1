@@ -15,7 +15,11 @@
       
       <!--<link rel="shortcut icon" href="{{ url_for('static', filename='cat.ico') }}">-->
       
-      <link rel="shortcut icon" href=https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15/svgs/solid/cat.svg>
+      {% if request.endpoint == 'login' %}
+        <link rel="shortcut icon" href=https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15/svgs/solid/paw.svg>
+      {% else %}
+        <link rel="shortcut icon" href=https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15/svgs/solid/cat.svg>      
+      {% endif %}
       
    </head>
    

@@ -69,7 +69,9 @@ aws_auth = AWSCognitoAuthentication(app)
 @app.route('/login')
 def login():
     
-    return redirect(aws_auth.get_sign_in_url())
+    # return redirect(aws_auth.get_sign_in_url())
+    
+    return render_template("login.html")
     
 
 @app.route('/register')
