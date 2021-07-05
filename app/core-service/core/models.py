@@ -57,6 +57,14 @@ def add_test_data():
 
 
 
+def login_user(login_form):
+    
+    login_response = {'status': 'logged-in',
+                      'username': login_form.get('username')}
+                      
+    return login_response
+
+
 def get_all_algorithms():
     
     response = table.scan()

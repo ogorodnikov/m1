@@ -1,5 +1,6 @@
 import os
 import boto3
+from datetime import timedelta
 
 
 DEFAULT_REGION = 'us-east-1'
@@ -40,8 +41,9 @@ user_pool_client_id = get_user_pool_clients(user_pool_id)
 
     
 class Config(object):
-    SECRET_KEY = os.environ.get('SECRET_KEY') or 'you-will-never-guess'
     
+    SECRET_KEY = os.environ.get('SECRET_KEY') or 'you-will-never-guess'
+
     AWS_DEFAULT_REGION = DEFAULT_REGION
     AWS_COGNITO_DOMAIN = COGNITO_DOMAIN
     AWS_COGNITO_USER_POOL_ID = user_pool_id
@@ -50,3 +52,4 @@ class Config(object):
     AWS_COGNITO_REDIRECT_URL = COGNITO_REDIRECT_URL
     
     JSONIFY_PRETTYPRINT_REGULAR = False
+    PERMANENT_SESSION_LIFETIME = timedelta(minutes=30)

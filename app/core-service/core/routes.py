@@ -5,7 +5,6 @@ from flask import render_template, redirect, url_for, flash, request, session
 import botocore.exceptions
 import boto3
 
-
 cognito_client = boto3.client('cognito-idp')
 
 
@@ -19,14 +18,33 @@ def login():
     next_url = request.args.get('next')
     
     if request.method == 'GET':
+        
         return render_template("login.html", next=next_url)
         
     if request.method == 'POST':
         
         flash(f"Login form data: {request.form}", category='dark')
         
-        return redirect(next_url or url_for('home'))
+        login_response = models.login_user(request.form)
+        
+        if login_response['status'] == 'logged-in':
+            
+            session.permanent = True
+        
+            username = login_response['username']
+            
+            session['username'] = username
     
+            flash(f"Welcome, {username}!", category='dark')
+        
+            return redirect(next_url or url_for('home'))
+        
+        else:
+            
+            flash(f"Login did not pass...", category='danger')
+        
+            return redirect(next_url or url_for('home'))
+            
 
 @app.route('/register')
 def register():
