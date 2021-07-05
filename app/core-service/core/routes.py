@@ -125,14 +125,10 @@ def get_algorithm(algorithm_id):
 def like_algorithm(algorithm_id):
     
     response = models.like_algorithm(algorithm_id)
-    
-    # flash(f"Like counted: {response}!", category='warning')
-    
+
     return redirect(url_for('get_algorithm', algorithm_id=algorithm_id))
     
-    # return response, 204
-    
-    
+
 @app.route("/algorithms/<algorithm_id>/run", methods = ['GET', 'POST'])
 def run_algorithm(algorithm_id):
     

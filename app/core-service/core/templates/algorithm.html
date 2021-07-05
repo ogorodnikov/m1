@@ -68,15 +68,6 @@
              Run
           </button>
           
-          <!--<a href={{ url_for('like_algorithm', algorithm_id=item.id) }}-->
-          <!--   class="btn btn-info"-->
-          <!--   role="button">-->
-          <!--   Like-->
-          <!--  <span class="badge bg-light text-dark rounded-pill align-text-bottom">-->
-          <!--    {{ item.likes }}-->
-          <!--  </span>-->
-          <!--</a>-->
-          
           <button type="submit" form="like_form" class="btn btn-info">
             Like
             <span class="badge bg-light text-dark rounded-pill align-text-bottom">
@@ -84,62 +75,15 @@
             </span>
           </button>
           
-
-          
         </div>
       </div>
       
     </form>
-    
-    
+
     <form id="like_form" action={{ url_for('like_algorithm', algorithm_id=item.id) }} method="GET">
-            
-      <!--<button type="submit" class="btn btn-info">-->
-      <!--  Like-->
-      <!--  <span class="badge bg-light text-dark rounded-pill align-text-bottom">-->
-      <!--    {{ item.likes }}-->
-      <!--  </span>-->
-      <!--</button>-->
-            
     </form>
     
-
-            
-            
   </div>
-
-
-    
-
-    
-    <!-- Buttons -->
-    
-    <!--<div class="row">-->
-
-    <!--  <div class="col">-->
-        
-    <!--    <a href=#-->
-    <!--       class="btn btn-warning"-->
-    <!--       role="button">-->
-    <!--       Run-->
-    <!--    </a>-->
-        
-    <!--    <a href={{ url_for('like_algorithm', algorithm_id=item.id) }}-->
-    <!--       class="btn btn-info"-->
-    <!--       role="button">-->
-    <!--       Like-->
-    <!--      <span class="badge bg-light text-dark rounded-pill align-text-bottom">-->
-    <!--        {{ item.likes }}-->
-    <!--      </span>-->
-    <!--    </a>-->
-        
-        
-    <!--  </div>-->
-    <!--</div>-->
-    
-    
-  </div>
-  
 
 {% endblock %}
 
