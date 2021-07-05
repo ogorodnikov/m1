@@ -1,4 +1,4 @@
-from core import app, models, egcd, aws_auth
+from core import app, models, aws_auth, egcd, bernvaz
 
 from flask import render_template, redirect, url_for, flash, request, jsonify, session
 
@@ -132,17 +132,20 @@ def like_algorithm(algorithm_id):
 @app.route("/algorithms/<algorithm_id>/run", methods = ['GET', 'POST'])
 def run_algorithm(algorithm_id):
     
-    # run_values = request.args.values()
+    runners = {'egcd': egcd.egcd,
+               'bernvaz': bernvaz.bernvaz}
     
-    run_values = request.form
+    run_values = request.form.values()
     
-    flash(f"Run values: {run_values}!", category='warning')
+    run_int_values = map(int, run_values)
     
-    # run_int_values = map(int, run_values)
+    runner = runners[algorithm_id]
     
-    # result = egcd.egcd(*run_int_values)
+    result = runner(*run_int_values)
     
-    # print(result)
+    flash(f"Running with values: {run_values}!", category='warning')
+    
+    flash(f"Result: {result}!", category='info')
     
     return redirect(url_for('get_algorithm', algorithm_id=algorithm_id))
     
