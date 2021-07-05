@@ -1,23 +1,25 @@
 import boto3, json
 
-from core import egcd, bernvaz
+from core.algorithms.egcd import egcd
+from core.algorithms.bernvaz import bernvaz
 
 # import os
 # os.environ['AWS_PROFILE'] = "default"
 # os.environ['AWS_DEFAULT_REGION'] = "us-east-1"
 
-
 # print("Profiles:", boto3.session.Session().available_profiles)
 # boto3.setup_default_session(profile_name='default')
-
-dynamodb = boto3.resource('dynamodb')
-table = dynamodb.Table('m1-algorithms-table')
 
 # table.scan()
 # print("Connected to 'm1-algorithms-table'")
 
-runners = {'egcd': egcd.egcd,
-           'bernvaz': bernvaz.bernvaz}
+
+dynamodb = boto3.resource('dynamodb')
+table = dynamodb.Table('m1-algorithms-table')
+
+
+runners = {'egcd': egcd,
+           'bernvaz': bernvaz}
 
 
 def add_test_data():

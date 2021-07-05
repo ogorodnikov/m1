@@ -1,16 +1,13 @@
 from core import app, models, aws_auth
 
-from flask import render_template, redirect, url_for, flash, request, jsonify, session
-
+from flask import render_template, redirect, url_for, flash, request, session
 
 import botocore.exceptions
-import requests
-import base64
 import boto3
-import os
 
 
 cognito_client = boto3.client('cognito-idp')
+
 
 ###   Login   ###
 
@@ -133,8 +130,8 @@ def run_algorithm(algorithm_id):
     run_values = tuple(request.form.values())
     run_result = models.run_algorithm(algorithm_id, run_values)
     
-    flash(f"Running with values: {run_values}!", category='warning')
-    flash(f"Result: {run_result}!", category='info')
+    flash(f"Running with values: {run_values}", category='warning')
+    flash(f"Result: {run_result}", category='info')
     
     return redirect(url_for('get_algorithm', algorithm_id=algorithm_id))
     
