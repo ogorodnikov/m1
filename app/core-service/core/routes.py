@@ -1,4 +1,4 @@
-from core import app, models, aws_auth
+from core import app, models, users, aws_auth
 
 from flask import render_template, redirect, url_for, flash, request, session
 
@@ -15,35 +15,29 @@ def login():
     
     # return redirect(aws_auth.get_sign_in_url())
     
-    next_url = request.args.get('next')
+    # next_url = request.args.get('next')
     
     if request.method == 'GET':
         
-        return render_template("login.html", next=next_url)
+        return render_template("login.html", referrer=request.referrer)
         
     if request.method == 'POST':
         
         flash(f"Login form data: {request.form}", category='dark')
         
-        login_response = models.login_user(request.form)
+        login_response = users.login_user(request.form)
         
         if login_response['status'] == 'logged-in':
             
             session.permanent = True
-        
-            username = login_response['username']
             
-            session['username'] = username
-    
-            flash(f"Welcome, {username}!", category='dark')
-        
-            return redirect(next_url or url_for('home'))
+            flash(f"Welcome, {session['username']}! Next: {request.args.get('next')}", category='dark')
+            return redirect(request.args.get('next') or url_for('home'))
         
         else:
             
             flash(f"Login did not pass...", category='danger')
-        
-            return redirect(next_url or url_for('home'))
+            return redirect(request.args.get('next') or url_for('home'))
             
 
 @app.route('/register')
@@ -90,11 +84,9 @@ def logout():
     
     session['username'] = None
     
+    flash(f"Logged out", category='info')
+    
     return redirect(request.args.get('next') or url_for('home'))
-
-
-
-
     
 
 ###   Algirithms   ###
