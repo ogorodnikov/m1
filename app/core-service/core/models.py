@@ -1,22 +1,24 @@
 import boto3, json
 
+from core import egcd, bernvaz
+
 # import os
 # os.environ['AWS_PROFILE'] = "default"
 # os.environ['AWS_DEFAULT_REGION'] = "us-east-1"
 
 
 # print("Profiles:", boto3.session.Session().available_profiles)
-
 # boto3.setup_default_session(profile_name='default')
 
-
 dynamodb = boto3.resource('dynamodb')
-
 table = dynamodb.Table('m1-algorithms-table')
 
 # table.scan()
-
 # print("Connected to 'm1-algorithms-table'")
+
+runners = {'egcd': egcd.egcd,
+           'bernvaz': bernvaz.bernvaz}
+
 
 def add_test_data():
 
@@ -95,6 +97,17 @@ def like_algorithm(algorithm_id):
     status_code = response['ResponseMetadata']['HTTPStatusCode']
         
     return {'status_code': status_code}
+    
+
+def run_algorithm(algorithm_id, run_values):
+    
+    run_int_values = map(int, run_values)
+    
+    runner = runners[algorithm_id]
+    
+    run_result = runner(*run_int_values)
+
+    return run_result
     
 
 def set_algorithm_state(algorithm_id, state):

@@ -1,4 +1,4 @@
-from core import app, models, aws_auth, egcd, bernvaz
+from core import app, models, aws_auth
 
 from flask import render_template, redirect, url_for, flash, request, jsonify, session
 
@@ -26,7 +26,7 @@ def login():
         
     if request.method == 'POST':
         
-        flash(f"Form data: {request.values}", category='dark')
+        flash(f"Form data: {request.form.values}", category='dark')
         
         return redirect(next_url or url_for('home'))
     
@@ -88,8 +88,6 @@ def logout():
 @app.route("/home")
 def home():
     
-    # return jsonify({"message" : "M1 Core Service V.11"})
-    
     return render_template("home.html")
     
 
@@ -132,40 +130,14 @@ def like_algorithm(algorithm_id):
 @app.route("/algorithms/<algorithm_id>/run", methods = ['GET', 'POST'])
 def run_algorithm(algorithm_id):
     
-    runners = {'egcd': egcd.egcd,
-               'bernvaz': bernvaz.bernvaz}
-    
-    run_values = request.form.values()
-    
-    run_int_values = map(int, run_values)
-    
-    runner = runners[algorithm_id]
-    
-    result = runner(*run_int_values)
+    run_values = tuple(request.form.values())
+    run_result = models.run_algorithm(algorithm_id, run_values)
     
     flash(f"Running with values: {run_values}!", category='warning')
-    
-    flash(f"Result: {result}!", category='info')
+    flash(f"Result: {run_result}!", category='info')
     
     return redirect(url_for('get_algorithm', algorithm_id=algorithm_id))
     
-    
-    # for e in run_values.items():
-    #     print(e)
-    
-    # if run_values is not None:
-        
-    #     service_response = runner.run_with_values(run_values)
-        
-    # else:
-
-    #     service_response = runner.run_default()
-
-    # flask_response = Response(service_response)
-    # flask_response.headers["Content-Type"] = "application/json"
-
-    return jsonify({"output": result})
-
 
 @app.route("/algorithms/<algorithm_id>/state", methods=['POST'])
 def set_algorithm_state(algorithm_id):
