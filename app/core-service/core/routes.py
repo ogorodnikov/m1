@@ -13,8 +13,6 @@ cognito_client = boto3.client('cognito-idp')
 @app.route('/login', methods = ['GET', 'POST'])
 def login():
     
-    # return redirect(aws_auth.get_sign_in_url())
-    
     next_url = request.args.get('next') or url_for('home')
     
     if request.method == 'GET':
@@ -25,13 +23,20 @@ def login():
         
         # flash(f"Login form data: {request.form}", category='dark')
         
+        
+        if request.form.get('action') == 'register':
+            
+            register_response = users.register_user(request.form)
+            flash(f"Registered: {register_response}!", category='warning')
+            
+        
         login_response = users.login_user(request.form)
         
         if login_response['status'] == 'logged-in':
             
             session.permanent = request.form.get('remember_me')
             
-            flash(f"Welcome, {session['username']}!", category='dark')
+            flash(f"Welcome, {session['username']}!", category='warning')
             return redirect(next_url)
         
         else:
@@ -48,35 +53,6 @@ def register():
     register_url = sign_in_url.replace('login', 'signup', 1)
     
     return redirect(register_url)
-    
-
-@app.route("/logged-in")
-def logged_in():
-    
-    access_token = aws_auth.get_access_token(request.args)
-     
-    response = cognito_client.get_user(AccessToken=access_token)
-    
-    username = response['Username']
-    user_attributes = response['UserAttributes']
-    user_sub = next(attribute['Value'] for attribute in user_attributes
-                    if attribute['Name'] == 'sub')
-    
-    print('Access token:', access_token)
-    print()
-    print('Response:', response)
-    print()
-    print('User sub:', user_sub)
-    print('User name:', username)
-    
-    
-    print('ENV:', os.environ)
-    
-    session['username'] = username
-    
-    flash(f"Welcome, {username}!", category='dark')
-
-    return redirect(request.args.get('next') or url_for('home'))
     
 
 @app.route('/logout')
