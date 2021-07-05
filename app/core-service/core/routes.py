@@ -15,7 +15,7 @@ def login():
     
     # return redirect(aws_auth.get_sign_in_url())
     
-    # next_url = request.args.get('next')
+    next_url = request.args.get('next') or url_for('home')
     
     if request.method == 'GET':
         
@@ -23,21 +23,21 @@ def login():
         
     if request.method == 'POST':
         
-        flash(f"Login form data: {request.form}", category='dark')
+        # flash(f"Login form data: {request.form}", category='dark')
         
         login_response = users.login_user(request.form)
         
         if login_response['status'] == 'logged-in':
             
-            session.permanent = True
+            session.permanent = request.form.get('remember_me')
             
-            flash(f"Welcome, {session['username']}! Next: {request.args.get('next')}", category='dark')
-            return redirect(request.args.get('next') or url_for('home'))
+            flash(f"Welcome, {session['username']}!", category='dark')
+            return redirect(next_url)
         
         else:
             
             flash(f"Login did not pass...", category='danger')
-            return redirect(request.args.get('next') or url_for('home'))
+            return redirect(next_url)
             
 
 @app.route('/register')
