@@ -2,8 +2,8 @@ from core import app, models, users, aws_auth
 
 from flask import render_template, redirect, url_for, flash, request, session
 
-import botocore.exceptions
 import boto3
+import botocore.exceptions
 
 cognito_client = boto3.client('cognito-idp')
 
@@ -27,12 +27,12 @@ def login():
         if request.form.get('action') == 'register':
             
             register_response = users.register_user(request.form)
-            flash(f"Registered: {register_response}!", category='warning')
+            flash(f"New user registered", category='info')
             
-        
         login_response = users.login_user(request.form)
+        login_status = login_response['status']
         
-        if login_response['status'] == 'logged-in':
+        if login_status == 'logged-in':
             
             session.permanent = request.form.get('remember_me')
             
@@ -41,19 +41,9 @@ def login():
         
         else:
             
-            flash(f"Login did not pass...", category='danger')
+            flash(f"Login did not pass... {login_status}", category='danger')
             return redirect(next_url)
             
-
-@app.route('/register')
-def register():
-    
-    sign_in_url = aws_auth.get_sign_in_url()
-    
-    register_url = sign_in_url.replace('login', 'signup', 1)
-    
-    return redirect(register_url)
-    
 
 @app.route('/logout')
 def logout():
