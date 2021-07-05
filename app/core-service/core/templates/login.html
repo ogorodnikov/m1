@@ -11,6 +11,7 @@
     <body class="text-center">
       
       <main class="form-signin">
+
         <form action="{{ url_for('login') }}" method="POST">
   
           <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
@@ -25,10 +26,14 @@
               </span>
             
               <!--<input type="text" class="form-control text-light bg-dark is-valid" id="username_input" -->
-            
-              <input type="text" class="form-control text-light bg-dark" id="username_input"
-               placeholder="Username"
-               aria-describedby="username_prepend username_validation_feedback" required>
+               
+              <input class="form-control text-light bg-dark"
+                     name="username"
+                     id="username_input"
+                     type="text" 
+                     placeholder="Username"
+                     aria-describedby="username_prepend username_validation_feedback"
+                     required>
   
               <div id="username_validation_feedback" class="valid-feedback">
                 Username is valid.
@@ -49,9 +54,17 @@
                 <i class="fas fa-asterisk"></i>
               </span>
         
-              <input type="password" class="form-control text-light bg-dark" id="password_input"
-               placeholder="Password"
-               aria-describedby="password_prepend password_validation_feedback" required>
+              <!--<input type="password" class="form-control text-light bg-dark" id="password_input"-->
+              <!-- placeholder="Password"-->
+              <!-- aria-describedby="password_prepend password_validation_feedback" required>-->
+               
+              <input class="form-control text-light bg-dark"
+                     name="password"
+                     id="password_input"
+                     type="password" 
+                     placeholder="Password"
+                     aria-describedby="password_prepend password_validation_feedback"
+                     required>
            
               <div id="password_validation_feedback" class="valid-feedback">
                 Password is valid.

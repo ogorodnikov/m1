@@ -26,7 +26,7 @@ def login():
         
     if request.method == 'POST':
         
-        flash(f"Form data: {request.form.values}", category='dark')
+        flash(f"Login form data: {request.form}", category='dark')
         
         return redirect(next_url or url_for('home'))
     
