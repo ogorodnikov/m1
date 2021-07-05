@@ -120,13 +120,17 @@ def get_algorithm(algorithm_id):
     return render_template("algorithm.html", item=item)
     
     
-@app.route("/algorithms/<algorithm_id>/like")
+@app.route("/algorithms/<algorithm_id>/like", methods = ['GET'])
 # @login_required
 def like_algorithm(algorithm_id):
     
     response = models.like_algorithm(algorithm_id)
     
-    return response, 204
+    # flash(f"Like counted: {response}!", category='warning')
+    
+    return redirect(url_for('get_algorithm', algorithm_id=algorithm_id))
+    
+    # return response, 204
     
     
 @app.route("/algorithms/<algorithm_id>/run", methods = ['GET', 'POST'])

@@ -47,10 +47,13 @@
               
               <input class="form-control text-light bg-dark"
                      name={{ parameter }}
-                     type="text" 
+                     type="tel" 
+                     pattern="[0-9]{1,10}" 
                      placeholder="please input value"
                      aria-label="Parameter"
-                     aria-describedby="parameters">
+                     aria-describedby="parameters"
+                     title="Integers 1 to 10 digit length"
+                     required>
             </div>
           
           {% endfor %}
@@ -65,19 +68,44 @@
              Run
           </button>
           
-          <a href={{ url_for('like_algorithm', algorithm_id=item.id) }}
-             class="btn btn-info"
-             role="button">
-             Like
+          <!--<a href={{ url_for('like_algorithm', algorithm_id=item.id) }}-->
+          <!--   class="btn btn-info"-->
+          <!--   role="button">-->
+          <!--   Like-->
+          <!--  <span class="badge bg-light text-dark rounded-pill align-text-bottom">-->
+          <!--    {{ item.likes }}-->
+          <!--  </span>-->
+          <!--</a>-->
+          
+          <button type="submit" form="like_form" class="btn btn-info">
+            Like
             <span class="badge bg-light text-dark rounded-pill align-text-bottom">
               {{ item.likes }}
             </span>
-          </a>
+          </button>
+          
+
           
         </div>
       </div>
       
     </form>
+    
+    
+    <form id="like_form" action={{ url_for('like_algorithm', algorithm_id=item.id) }} method="GET">
+            
+      <!--<button type="submit" class="btn btn-info">-->
+      <!--  Like-->
+      <!--  <span class="badge bg-light text-dark rounded-pill align-text-bottom">-->
+      <!--    {{ item.likes }}-->
+      <!--  </span>-->
+      <!--</button>-->
+            
+    </form>
+    
+
+            
+            
   </div>
 
 
