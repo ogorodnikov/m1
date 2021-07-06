@@ -5,6 +5,8 @@ from flask import render_template, redirect, url_for, flash, request, session
 import boto3
 import botocore.exceptions
 
+import urllib
+
 cognito_client = boto3.client('cognito-idp')
 
 
@@ -17,7 +19,10 @@ def login():
     
     if request.method == 'GET':
         
-        return render_template("login.html", referrer=request.referrer)
+        referer_parsed = urllib.parse.urlparse(request.referrer)
+        referer_path = referer_parsed.path
+        
+        return render_template("login.html", referrer=referer_path)
         
     if request.method == 'POST':
         
@@ -36,7 +41,12 @@ def login():
             
             session.permanent = request.form.get('remember_me')
             
+            parse_result = urllib.parse.urlparse(next_url)
+            
             flash(f"Welcome, {session['username']}!", category='warning')
+            flash(f"Next url:{next_url}!", category='info')
+            flash(f"Parse result:{parse_result.path}!", category='info')            
+            
             return redirect(next_url)
         
         else:
@@ -48,7 +58,7 @@ def login():
 @app.route('/logout')
 def logout():
     
-    session['username'] = None
+    session.pop('username', None)
     
     flash(f"Logged out", category='info')
     
