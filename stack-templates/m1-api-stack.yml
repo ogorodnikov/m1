@@ -346,8 +346,8 @@ Resources:
                 required: true
                 type: string
                 
-              security:
-              - m1-user-pool-authorizer: []
+              # security:
+              # - m1-user-pool-authorizer: []
                 
               responses:
                 "200":
@@ -376,7 +376,7 @@ Resources:
                       
                 requestParameters:
                   integration.request.path.algorithm-id: method.request.path.algorithm-id
-                  
+                  # method.request.body: method.request.body
                   
             # options: 
             #   summary: CORS support

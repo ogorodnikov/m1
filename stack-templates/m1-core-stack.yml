@@ -960,8 +960,8 @@ Outputs:
     Export:
       Name: !Sub ${AWS::StackName}:CoreLoadBalancerDNSName
 
-  # Test:
-  #   Description: Test
-  #   Value: !Ref LatestLinuxAMI
-  #   Export:
-  #     Name: Test
+  Test:
+    Description: Test
+    Value: !Ref LatestLinuxAMI
+    Export:
+      Name: Test
