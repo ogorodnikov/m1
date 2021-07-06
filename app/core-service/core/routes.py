@@ -5,7 +5,6 @@ from flask import render_template, redirect, url_for, flash, request, session
 import boto3
 import botocore.exceptions
 
-import urllib
 
 cognito_client = boto3.client('cognito-idp')
 
@@ -27,6 +26,15 @@ def login():
             
             register_response = users.register_user(request.form)
             flash(f"New user registered", category='info')
+            
+            
+            
+        if request.form.get('action') == 'facebook':
+            
+            facebook_response = users.facebook(request.form)
+            flash(f"Facebook {facebook_response}", category='info')          
+
+
             
         login_response = users.login_user(request.form)
         login_status = login_response['status']
@@ -93,8 +101,6 @@ def get_algorithm(algorithm_id):
 def like_algorithm(algorithm_id):
     
     response = models.like_algorithm(algorithm_id)
-    
-    flash(f"Version: {app.config['VERSION']}", category='info')
 
     return redirect(request.referrer)
     

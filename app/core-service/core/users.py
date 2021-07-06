@@ -107,3 +107,21 @@ def register_user(login_form):
     register_response = {'status': 'registered'}
     
     return register_response
+    
+    
+def facebook(login_form):
+    
+    username = login_form.get('username')
+    password = login_form.get('password')
+    
+    provider = cognito_client.describe_identity_provider(UserPoolId=app.config['AWS_COGNITO_USER_POOL_ID'],
+                                                         ProviderName='Facebook')
+                                                         
+    providers = cognito_client.list_identity_providers(UserPoolId=app.config['AWS_COGNITO_USER_POOL_ID'])
+    
+    
+
+    register_response = {'status': provider}
+    
+    return register_response
+        
