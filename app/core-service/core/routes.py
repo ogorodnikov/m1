@@ -93,6 +93,8 @@ def get_algorithm(algorithm_id):
 def like_algorithm(algorithm_id):
     
     response = models.like_algorithm(algorithm_id)
+    
+    flash(f"Version: {app.config['VERSION']}", category='info')
 
     return redirect(request.referrer)
     

@@ -2,7 +2,7 @@ import os
 import boto3
 from datetime import timedelta
 
-
+VERSION = 'V.0.19'
 DEFAULT_REGION = 'us-east-1'
 COGNITO_DOMAIN = 'auth.ogoro.me'
 COGNITO_REDIRECT_URL = 'https://9bca7b3479d64496983d362806a38873.vfs.cloud9.us-east-1.amazonaws.com/logged-in'
@@ -43,7 +43,8 @@ user_pool_client_id = get_user_pool_clients(user_pool_id)
 class Config(object):
     
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'you-will-never-guess'
-
+    
+    VERSION = VERSION
     AWS_DEFAULT_REGION = DEFAULT_REGION
     AWS_COGNITO_DOMAIN = COGNITO_DOMAIN
     AWS_COGNITO_USER_POOL_ID = user_pool_id
