@@ -74,64 +74,6 @@ Resources:
         
         paths:
         
-          /:
-          
-            get:
-            
-              responses:
-                "200":
-                  description: Default response for CORS method
-                  headers:
-                    Access-Control-Allow-Headers:
-                      type: string
-                    Access-Control-Allow-Methods:
-                      type: string
-                    Access-Control-Allow-Origin:
-                      type: string
-            
-              x-amazon-apigateway-integration:
-                connectionType: VPC_LINK
-                connectionId: !Ref APIGatewayVPCLink
-                httpMethod: GET
-                type: HTTP_PROXY
-                uri: !Join ["", ["http://", !ImportValue m1-core-stack:CoreLoadBalancerDNSName, "/"]]
-                responses: 
-                  default:
-                    statusCode: 200
-                    responseParameters:
-                      method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
-                      method.response.header.Access-Control-Allow-Methods: "'*'"
-                      method.response.header.Access-Control-Allow-Origin: "'*'"
-                      
-          /home:
-          
-            get:
-            
-              responses:
-                "200":
-                  description: Default response for CORS method
-                  headers:
-                    Access-Control-Allow-Headers:
-                      type: string
-                    Access-Control-Allow-Methods:
-                      type: string
-                    Access-Control-Allow-Origin:
-                      type: string
-            
-              x-amazon-apigateway-integration:
-                connectionType: VPC_LINK
-                connectionId: !Ref APIGatewayVPCLink
-                httpMethod: GET
-                type: HTTP_PROXY
-                uri:  !Sub ['http://${nlb}/home', nlb: !ImportValue m1-core-stack:CoreLoadBalancerDNSName]
-                responses: 
-                  default:
-                    statusCode: 200
-                    responseParameters:
-                      method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
-                      method.response.header.Access-Control-Allow-Methods: "'*'"
-                      method.response.header.Access-Control-Allow-Origin: "'*'"
-                      
           /login:
           
             get:
@@ -222,7 +164,67 @@ Resources:
                       
                 # requestParameters:
                 #   method.request.querystring.next          
+
+
+###   Algorithms   ###
+
+          /:
           
+            get:
+            
+              responses:
+                "200":
+                  description: Default response for CORS method
+                  headers:
+                    Access-Control-Allow-Headers:
+                      type: string
+                    Access-Control-Allow-Methods:
+                      type: string
+                    Access-Control-Allow-Origin:
+                      type: string
+            
+              x-amazon-apigateway-integration:
+                connectionType: VPC_LINK
+                connectionId: !Ref APIGatewayVPCLink
+                httpMethod: GET
+                type: HTTP_PROXY
+                uri: !Sub ['http://${nlb}/', nlb: !ImportValue m1-core-stack:CoreLoadBalancerDNSName]
+                responses: 
+                  default:
+                    statusCode: 200
+                    responseParameters:
+                      method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
+                      method.response.header.Access-Control-Allow-Methods: "'*'"
+                      method.response.header.Access-Control-Allow-Origin: "'*'"
+                      
+          /home:
+          
+            get:
+            
+              responses:
+                "200":
+                  description: Default response for CORS method
+                  headers:
+                    Access-Control-Allow-Headers:
+                      type: string
+                    Access-Control-Allow-Methods:
+                      type: string
+                    Access-Control-Allow-Origin:
+                      type: string
+            
+              x-amazon-apigateway-integration:
+                connectionType: VPC_LINK
+                connectionId: !Ref APIGatewayVPCLink
+                httpMethod: GET
+                type: HTTP_PROXY
+                uri:  !Sub ['http://${nlb}/home', nlb: !ImportValue m1-core-stack:CoreLoadBalancerDNSName]
+                responses: 
+                  default:
+                    statusCode: 200
+                    responseParameters:
+                      method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
+                      method.response.header.Access-Control-Allow-Methods: "'*'"
+                      method.response.header.Access-Control-Allow-Origin: "'*'"
           
           /algorithms:
           
@@ -292,88 +294,89 @@ Resources:
                   integration.request.path.algorithm-id: method.request.path.algorithm-id
                       
 
-          # /algorithms/{algorithm-id}/like:
+          /algorithms/{algorithm-id}/like:
           
-          #   get:
+            get:
 
-          #     parameters:
-          #     - name: algorithm-id
-          #       in: path
-          #       required: true
-          #       type: string
+              parameters:
+              - name: algorithm-id
+                in: path
+                required: true
+                type: string
                 
-          #     # security:
-          #     # - m1-user-pool-authorizer: []
+              # security:
+              # - m1-user-pool-authorizer: []
                 
-          #     responses:
-          #       "200":
-          #         description: Default response for CORS method
-          #         headers:
-          #           Access-Control-Allow-Headers:
-          #             type: string
-          #           Access-Control-Allow-Methods:
-          #             type: string
-          #           Access-Control-Allow-Origin:
-          #             type: string
+              responses:
+                "200":
+                  description: Default response for CORS method
+                  headers:
+                    Access-Control-Allow-Headers:
+                      type: string
+                    Access-Control-Allow-Methods:
+                      type: string
+                    Access-Control-Allow-Origin:
+                      type: string
                       
-          #     x-amazon-apigateway-integration:
-          #       connectionType: VPC_LINK
-          #       connectionId: !Ref APIGatewayVPCLink
-          #       httpMethod: GET
-          #       type: HTTP_PROXY
-          #       uri: !Join ["", ["http://", !ImportValue m1-core-stack:CoreLoadBalancerDNSName, "/algorithms/{algorithm-id}/like"]]
-          #       responses: 
-          #         default:
-          #           statusCode: 200
-          #           responseParameters:
-          #             method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
-          #             method.response.header.Access-Control-Allow-Methods: "'*'"
-          #             method.response.header.Access-Control-Allow-Origin: "'*'"
+              x-amazon-apigateway-integration:
+                connectionType: VPC_LINK
+                connectionId: !Ref APIGatewayVPCLink
+                httpMethod: GET
+                type: HTTP_PROXY
+                uri: !Sub ['http://${nlb}/algorithms/{algorithm-id}/like', nlb: !ImportValue m1-core-stack:CoreLoadBalancerDNSName]
+                responses: 
+                  default:
+                    statusCode: 200
+                    responseParameters:
+                      method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
+                      method.response.header.Access-Control-Allow-Methods: "'*'"
+                      method.response.header.Access-Control-Allow-Origin: "'*'"
                       
-          #       requestParameters:
-          #         integration.request.path.algorithm-id: method.request.path.algorithm-id
+                requestParameters:
+                  integration.request.path.algorithm-id: method.request.path.algorithm-id
 
 
-          # /algorithms/{algorithm-id}/run:
+          /algorithms/{algorithm-id}/run:
           
-          #   post:
+            post:
 
-          #     parameters:
-          #     - name: algorithm-id
-          #       in: path
-          #       required: true
-          #       type: string
+              parameters:
+              - name: algorithm-id
+                in: path
+                required: true
+                type: string
                 
-          #     security:
-          #     - m1-user-pool-authorizer: []
+              security:
+              - m1-user-pool-authorizer: []
                 
-          #     responses:
-          #       "200":
-          #         description: Default response for CORS method
-          #         headers:
-          #           Access-Control-Allow-Headers:
-          #             type: string
-          #           Access-Control-Allow-Methods:
-          #             type: string
-          #           Access-Control-Allow-Origin:
-          #             type: string
+              responses:
+                "200":
+                  description: Default response for CORS method
+                  headers:
+                    Access-Control-Allow-Headers:
+                      type: string
+                    Access-Control-Allow-Methods:
+                      type: string
+                    Access-Control-Allow-Origin:
+                      type: string
                       
-          #     x-amazon-apigateway-integration:
-          #       connectionType: VPC_LINK
-          #       connectionId: !Ref APIGatewayVPCLink
-          #       httpMethod: GET
-          #       type: HTTP_PROXY
-          #       uri: !Join ["", ["http://", !ImportValue m1-core-stack:CoreLoadBalancerDNSName, "/algorithms/{algorithm-id}/run"]]
-          #       responses: 
-          #         default:
-          #           statusCode: 200
-          #           responseParameters:
-          #             method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
-          #             method.response.header.Access-Control-Allow-Methods: "'*'"
-          #             method.response.header.Access-Control-Allow-Origin: "'*'"
+              x-amazon-apigateway-integration:
+                connectionType: VPC_LINK
+                connectionId: !Ref APIGatewayVPCLink
+                httpMethod: POST
+                type: HTTP_PROXY
+                uri: !Sub ['http://${nlb}/algorithms/{algorithm-id}/run', nlb: !ImportValue m1-core-stack:CoreLoadBalancerDNSName]
+                responses: 
+                  default:
+                    statusCode: 200
+                    responseParameters:
+                      method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
+                      method.response.header.Access-Control-Allow-Methods: "'*'"
+                      method.response.header.Access-Control-Allow-Origin: "'*'"
                       
-          #       requestParameters:
-          #         integration.request.path.algorithm-id: method.request.path.algorithm-id
+                requestParameters:
+                  integration.request.path.algorithm-id: method.request.path.algorithm-id
+                  
                   
             # options: 
             #   summary: CORS support

@@ -420,6 +420,7 @@ Resources:
               # Cognito
               - cognito-idp:ListUserPools
               - cognito-idp:ListUserPoolClients
+              - cognito-idp:AdminConfirmSignUp
               Resource: '*'
             - Effect: Allow
               Action:
@@ -959,8 +960,8 @@ Outputs:
     Export:
       Name: !Sub ${AWS::StackName}:CoreLoadBalancerDNSName
 
-  Test:
-    Description: Test
-    Value: !Ref LatestLinuxAMI
-    Export:
-      Name: Test
+  # Test:
+  #   Description: Test
+  #   Value: !Ref LatestLinuxAMI
+  #   Export:
+  #     Name: Test
