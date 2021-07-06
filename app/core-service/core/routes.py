@@ -19,15 +19,9 @@ def login():
     
     if request.method == 'GET':
         
-        referer_parsed = urllib.parse.urlparse(request.referrer)
-        referer_path = referer_parsed.path
-        
-        return render_template("login.html", referrer=referer_path)
+        return render_template("login.html", referrer=request.referrer)
         
     if request.method == 'POST':
-        
-        # flash(f"Login form data: {request.form}", category='dark')
-        
         
         if request.form.get('action') == 'register':
             
@@ -41,18 +35,13 @@ def login():
             
             session.permanent = request.form.get('remember_me')
             
-            parse_result = urllib.parse.urlparse(next_url)
-            
             flash(f"Welcome, {session['username']}!", category='warning')
-            flash(f"Next url:{next_url}!", category='info')
-            flash(f"Parse result:{parse_result.path}!", category='info')            
             
-            return redirect(next_url)
-        
         else:
             
             flash(f"Login did not pass... {login_status}", category='danger')
-            return redirect(next_url)
+        
+        return redirect(next_url)
             
 
 @app.route('/logout')
@@ -62,7 +51,7 @@ def logout():
     
     flash(f"Logged out", category='info')
     
-    return redirect(request.args.get('next') or url_for('home'))
+    return redirect(request.referrer)
     
 
 ###   Algirithms   ###
@@ -75,7 +64,6 @@ def home():
     
 
 @app.route('/algorithms')
-# @login_required
 def get_algorithms():
     
     if not request.args:
@@ -102,15 +90,14 @@ def get_algorithm(algorithm_id):
     
     
 @app.route("/algorithms/<algorithm_id>/like", methods = ['GET'])
-# @login_required
 def like_algorithm(algorithm_id):
     
     response = models.like_algorithm(algorithm_id)
 
-    return redirect(url_for('get_algorithm', algorithm_id=algorithm_id))
+    return redirect(request.referrer)
     
 
-@app.route("/algorithms/<algorithm_id>/run", methods = ['GET', 'POST'])
+@app.route("/algorithms/<algorithm_id>/run", methods = ['POST'])
 def run_algorithm(algorithm_id):
     
     run_values = tuple(request.form.values())
@@ -119,7 +106,7 @@ def run_algorithm(algorithm_id):
     flash(f"Running with values: {run_values}", category='warning')
     flash(f"Result: {run_result}", category='info')
     
-    return redirect(url_for('get_algorithm', algorithm_id=algorithm_id))
+    return redirect(request.referrer)
     
 
 @app.route("/algorithms/<algorithm_id>/state", methods=['POST'])
