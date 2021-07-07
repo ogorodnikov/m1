@@ -1,4 +1,4 @@
-from core import app, models, users, aws_auth
+from core import app, models, users, auth
 
 from flask import render_template, redirect, url_for, flash, request, session
 
@@ -27,24 +27,14 @@ def login():
         
         if facebook:
         
-            flash(f"Facebook", category='danger')
-            
             autorization_endpoint = 'https://www.facebook.com/v8.0/dialog/oauth'
             
             parameters = {'client_id': '355403372591689',
                           'redirect_uri': 'https://9bca7b3479d64496983d362806a38873.vfs.cloud9.us-east-1.amazonaws.com/login',
                           'scope': 'public_profile,email'}
                           
-            # https://www.facebook.com/v8.0/dialog/oauth?client_id=355403372591689&redirect_uri=https://9bca7b3479d64496983d362806a38873.vfs.cloud9.us-east-1.amazonaws.com/login&scope=public_profile,email"
-            
-            # requests.get(autorization_endpoint, parameters)
-            
             autorization_url = autorization_endpoint + '?' + urlencode(parameters)
-            
-            # response = requests.get(autorization_endpoint, parameters)
-            
-            flash(f"Sent autorization request {autorization_url}", category='danger')
-            
+
             return redirect(autorization_url)
             
         
@@ -52,54 +42,31 @@ def login():
         
         if code:
             
-            flash(f"Code: {code}", category='info')
-            
-            token_endpoint = 'https://graph.facebook.com/oauth/access_token'
-            
-            parameters = {'client_id': '355403372591689',
-                          'client_secret': '14a6e02a55e3c801993f58882e1b4ea1',
-                          'grant_type': 'authorization_code',
-                          'redirect_uri': 'https://9bca7b3479d64496983d362806a38873.vfs.cloud9.us-east-1.amazonaws.com/login',
-                          'code': code}
-            
-            token_response = requests.get(token_endpoint, parameters)
-            token_response_json = token_response.json()
-            access_token = token_response_json.get('access_token')
-            
-            app.config['token'] = access_token
-            
-            flash(f"Token response: {token_response_json}", category='warning')
-            flash(f"Token: {access_token}", category='danger')
-            
+            access_token = auth.code_to_token(code)
+            session['token'] = access_token
             
             
             me_endpoint = 'https://graph.facebook.com/me'
             
-            parameters = {'fields': 'short_name,name,email,picture',
+            parameters = {'fields': 'name,email,picture,short_name',
                           'access_token': access_token}
                           
             me_response = requests.get(me_endpoint, parameters)
             me_response_json = me_response.json()
             
-            short_name = me_response_json.get('short_name')
             name = me_response_json.get('name')
             email = me_response_json.get('email')
             picture = me_response_json.get('picture')
+            short_name = me_response_json.get('short_name')
             
             picture_url = picture.get('data').get('url') if picture else ""
             
             session['username'] = short_name
             session['picture_url'] = picture_url
             
-            flash(f"Name: {name}", category='info')
-            flash(f"Email: {email}", category='info')
-            flash(f"Picture URL: {picture_url} <a href=”{picture_url}”><\a>", category='info')
             flash(f"Welcome, facebook user {session['username']}!", category='warning')
             
             login_referer = session['login_referer']
-            
-            flash(f"Login referer: {login_referer}", category='info')
-            
             session.pop('login_referer', None)
             
             return redirect(login_referer)
