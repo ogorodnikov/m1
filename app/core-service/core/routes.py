@@ -53,24 +53,26 @@ def login():
         register_response = users.register_user(request.args)
         flash(f"New user registered", category='info')
         
-        login_response = users.login_user(request.args)
-        login_status = login_response['status']
+        return redirect(url_for('login', request.args))
         
-        if login_status == 'logged-in':
+        # login_response = users.login_user(request.args)
+        # login_status = login_response['status']
+        
+        # if login_status == 'logged-in':
             
-            session.permanent = request.args.get('remember_me')
+        #     session.permanent = request.args.get('remember_me')
             
-            flash(f"Welcome, {session['username']}!", category='warning')
+        #     flash(f"Welcome, {session['username']}!", category='warning')
             
-        else:
+        # else:
             
-            flash(f"Login did not pass... {login_status}", category='danger')
+        #     flash(f"Login did not pass... {login_status}", category='danger')
             
         
-        login_referer = session['login_referer']
-        session.pop('login_referer', None)
+        # login_referer = session['login_referer']
+        # session.pop('login_referer', None)
             
-        return redirect(login_referer)
+        # return redirect(login_referer)
         
         
     if flow == 'sign-in':

@@ -2,7 +2,7 @@ import os
 import boto3
 from datetime import timedelta
 
-VERSION = 'V.0.19'
+VERSION = 'V.0.20'
 DEFAULT_REGION = 'us-east-1'
 COGNITO_DOMAIN = 'auth.ogoro.me'
 COGNITO_REDIRECT_URL = 'https://9bca7b3479d64496983d362806a38873.vfs.cloud9.us-east-1.amazonaws.com/logged-in'
