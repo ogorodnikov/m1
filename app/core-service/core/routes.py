@@ -19,8 +19,7 @@ def login():
     
     session['login_referer'] = session.get('login_referer') or request.referrer
 
-    next_url = request.args.get('next') or url_for('home')
-    
+
     if request.method == 'GET':
         
         
@@ -106,7 +105,7 @@ def login():
             return redirect(login_referer)
             
 
-        return render_template("login.html", referrer=request.referrer)
+        return render_template("login.html")
         
         
     if request.method == 'POST':
@@ -129,9 +128,13 @@ def login():
         else:
             
             flash(f"Login did not pass... {login_status}", category='danger')
-        
-        return redirect(next_url)
             
+        
+        login_referer = session['login_referer']
+        session.pop('login_referer', None)
+            
+        return redirect(login_referer)
+        
 
 @app.route('/logout')
 def logout():
