@@ -35,8 +35,34 @@ def login():
                           'code': code}
             
             token_response = requests.get(token_endpoint, parameters)
+            token_response_json = token_response.json()
+            access_token = token_response_json.get('access_token')
             
-            flash(f"Token response: {token_response.text}", category='warning')
+            app.config['token'] = access_token
+            
+            flash(f"Token response: {token_response_json}", category='warning')
+            flash(f"Token: {access_token}", category='danger')
+            
+            
+            
+            me_endpoint = 'https://graph.facebook.com/me'
+            
+            parameters = {'fields': 'name,email,picture',
+                          'access_token': access_token}
+                          
+            me_response = requests.get(me_endpoint, parameters)
+            me_response_json = me_response.json()
+            
+            name = me_response_json.get('name')
+            email = me_response_json.get('email')
+            picture = me_response_json.get('picture')
+            
+            picture_url = picture.get('data').get('url') if picture else ""
+            
+            flash(f"Name: {name}", category='info')
+            flash(f"Email: {email}", category='info')
+            flash(f"Picture URL: {picture_url} <a href=”{picture_url}”><\a>", category='info')
+            
             
         
         return render_template("login.html", referrer=request.referrer, code=code)
