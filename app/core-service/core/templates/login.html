@@ -86,12 +86,29 @@
           </div>
           
           <div class="col-md-6 mx-md-auto mb-3">
-            <button class="btn btn-lg btn-primary mx-3" type="submit" name="action" value="sign-in">Sign in</button>
+            <button class="btn btn-lg btn-primary mx-2" type="submit" name="action" value="sign-in">Sign in</button>
             <button class="btn btn-lg btn-warning mx-2" type="submit" name="action" value="register">Register</button>
             <button class="btn btn-lg btn-danger mx-2" type="submit" name="action" value="facebook">Facebook</button>
             
-            <a class="btn btn-lg btn-primary" href="https://www.facebook.com/v8.0/dialog/oauth?client_id=355403372591689&redirect_uri=https://9bca7b3479d64496983d362806a38873.vfs.cloud9.us-east-1.amazonaws.com/login">1</a>
-            <a class="btn btn-lg btn-primary" href="https://graph.facebook.com/oauth/access_token?client_id=355403372591689&client_secret=14a6e02a55e3c801993f58882e1b4ea1&grant_type=authorization_code&redirect_uri=https://ogoro.me&code=AQD_4SN1GX_8JN2av-Ffou0N02ELk9AqTN0Bmipcr4F6ilYKxRLXATpeHsZurMlYsmAm17PgWz9YwWVx1PPO1Bp8vKpn7Dj7ROv_ee-X7j5NSOZAyPT0PF7z6GGLLovHcUKGzN_nfeC8xH1adn4S4zV7CG2dw9KfjLTj-a74llCUBkzm5VoMIWkd4FkmFMrG9PqwPRS_mXM5luTIQEZPVy2WS0NrDx3CgST1Jlv5Io3iRTmOK8kt94LkTjIr2q1pEH_CS4k1tpuFhLNWXsSIaOqqnulZlniaNqJuB9limjS474Tr_GNNu2mfYTuxPI0z_ENV-tg-8F9UcQNc9959zN9o">2</a>
+            <br>
+            <br>
+            
+            <a class="btn btn-lg btn-light mx-2" 
+               href="https://www.facebook.com/v8.0/dialog/oauth?client_id=355403372591689&redirect_uri=https://9bca7b3479d64496983d362806a38873.vfs.cloud9.us-east-1.amazonaws.com/login">
+              Get code
+            </a>
+            
+            <!--<a class="btn btn-lg btn-secondary mx-2" -->
+            <!--   href="https://graph.facebook.com/oauth/access_token?client_id=355403372591689&client_secret=14a6e02a55e3c801993f58882e1b4ea1&grant_type=authorization_code&redirect_uri=https://9bca7b3479d64496983d362806a38873.vfs.cloud9.us-east-1.amazonaws.com/login&code={{ code }}">-->
+            <!--  Get token-->
+            <!--</a>-->
+            
+            
+            <a class="btn btn-lg btn-secondary mx-2" 
+               href="https://graph.facebook.com/oauth/access_token?client_id=355403372591689&client_secret=14a6e02a55e3c801993f58882e1b4ea1&grant_type=authorization_code&redirect_uri=https://ogoro.auth.us-east-1.amazoncognito.com/oauth2/idpresponse&code={{ code }}">
+              Get token
+            </a>
+            
           </div>
           
           <!--https://graph.facebook.com/oauth/access_token?client_id=355403372591689&client_secret=14a6e02a55e3c801993f58882e1b4ea1Re&grant_type=authorization_code&redirect_uri=https://ogoro.me&code=AQBxLs61A58ry6gG6J57ef_QeLwLXdcyrPPKjiGrjYLVe-rwURV5ZKdFqW3X75jV29rAZUrc-LOoJhgKTp7V_-1po92Qxg0XNlv60tWvwUA2XPFHjkzg482fuTpZUTLWXMXhB7H3MurtJPvuNprIWvbH2YFwQZtzWfK9j-fBOtowocHca0v2eomBXzFukGpAtC5NVGP8bFBQ68eIHvadGY-OcNb1e7RnSZ_geaHH4dsLJzNY08BftpDKU8jFyOlWdf3jpGNsWuRsJVzQPVnl0UpfJ1B1tR1QVLnqUgOxolNxLCMPe-fs2QaEGyP_LVk9ZpyAL6d8_3U4J4685XP5w5zZ#_=_-->
