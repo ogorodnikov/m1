@@ -6,6 +6,7 @@ import boto3
 import botocore.exceptions
 
 import requests
+from urllib.parse import urlencode
 
 
 cognito_client = boto3.client('cognito-idp')
@@ -16,9 +17,36 @@ cognito_client = boto3.client('cognito-idp')
 @app.route('/login', methods = ['GET', 'POST'])
 def login():
     
+
     next_url = request.args.get('next') or url_for('home')
     
     if request.method == 'GET':
+        
+        
+        facebook = request.args.get('facebook')
+        
+        if facebook:
+        
+            flash(f"Facebook", category='danger')
+            
+            autorization_endpoint = 'https://www.facebook.com/v8.0/dialog/oauth'
+            
+            parameters = {'client_id': '355403372591689',
+                          'redirect_uri': 'https://9bca7b3479d64496983d362806a38873.vfs.cloud9.us-east-1.amazonaws.com/login',
+                          'scope': 'public_profile,email'}
+                          
+            # https://www.facebook.com/v8.0/dialog/oauth?client_id=355403372591689&redirect_uri=https://9bca7b3479d64496983d362806a38873.vfs.cloud9.us-east-1.amazonaws.com/login&scope=public_profile,email"
+            
+            # requests.get(autorization_endpoint, parameters)
+            
+            autorization_url = autorization_endpoint + '?' + urlencode(parameters)
+            
+            # response = requests.get(autorization_endpoint, parameters)
+            
+            flash(f"Sent autorization request {autorization_url}", category='danger')
+            
+            return redirect(autorization_url)
+            
         
         code = request.args.get('code')
         
@@ -74,14 +102,6 @@ def login():
             register_response = users.register_user(request.form)
             flash(f"New user registered", category='info')
             
-            
-            
-        if request.form.get('action') == 'facebook':
-            
-            facebook_response = users.facebook(request.form)
-            flash(f"Facebook: {facebook_response}", category='info')          
-
-
             
         login_response = users.login_user(request.form)
         login_status = login_response['status']
