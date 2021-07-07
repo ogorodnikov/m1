@@ -9,9 +9,6 @@ def get_cognito_public_keys():
     # pool_id = os.environ["AWS_COGNITO_USER_POOL_ID"]
     # url = f"https://cognito-idp.{region}.amazonaws.com/{pool_id}/.well-known/jwks.json"
     
-    # [print(key, ':', os.environ[key]) for key in os.environ]
-    
-    # url = "https://cognito-idp.us-east-1.amazonaws.com/us-east-1_eADXvMciJ/.well-known/jwks.json"
     # resp = requests.get(url)
     # print(resp)
     
