@@ -1,5 +1,20 @@
 import requests
 
+from urllib.parse import urlencode
+
+
+def get_autorization_url():
+    
+    autorization_endpoint = 'https://www.facebook.com/v8.0/dialog/oauth'
+    
+    parameters = {'client_id': '355403372591689',
+                  'redirect_uri': 'https://9bca7b3479d64496983d362806a38873.vfs.cloud9.us-east-1.amazonaws.com/login',
+                  'scope': 'public_profile,email'}
+                  
+    autorization_url = autorization_endpoint + '?' + urlencode(parameters)
+    
+    return autorization_url
+    
 
 def code_to_token(code):
             
@@ -16,3 +31,29 @@ def code_to_token(code):
     access_token = token_response_json.get('access_token')
     
     return access_token
+    
+
+def get_facebook_claims(access_token):
+            
+    me_endpoint = 'https://graph.facebook.com/me'
+    
+    parameters = {'fields': 'name,email,picture,short_name',
+                  'access_token': access_token}
+                  
+    me_response = requests.get(me_endpoint, parameters)
+    me_response_json = me_response.json()
+
+    picture = me_response_json.get('picture')
+    picture_data = picture.get('data') if picture else ""
+    picture_url = picture_data.get('url') if picture_data else ""
+    
+    claims = {}
+    
+    claims['name'] = me_response_json.get('name')
+    claims['email'] = me_response_json.get('email')
+    claims['short_name'] = me_response_json.get('short_name')    
+    claims['picture_url'] = picture_url
+    
+    return claims
+    
+    

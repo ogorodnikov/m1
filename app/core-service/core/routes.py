@@ -6,7 +6,6 @@ import boto3
 import botocore.exceptions
 
 import requests
-from urllib.parse import urlencode
 
 
 cognito_client = boto3.client('cognito-idp')
@@ -23,18 +22,11 @@ def login():
     if request.method == 'GET':
         
         
-        facebook = request.args.get('facebook')
+        facebook_flow = request.args.get('facebook_flow')
         
-        if facebook:
-        
-            autorization_endpoint = 'https://www.facebook.com/v8.0/dialog/oauth'
+        if facebook_flow:
             
-            parameters = {'client_id': '355403372591689',
-                          'redirect_uri': 'https://9bca7b3479d64496983d362806a38873.vfs.cloud9.us-east-1.amazonaws.com/login',
-                          'scope': 'public_profile,email'}
-                          
-            autorization_url = autorization_endpoint + '?' + urlencode(parameters)
-
+            autorization_url = auth.get_autorization_url()
             return redirect(autorization_url)
             
         
@@ -42,32 +34,18 @@ def login():
         
         if code:
             
-            access_token = auth.code_to_token(code)
-            session['token'] = access_token
+            facebook_token = auth.code_to_token(code)
             
+            claims = auth.get_facebook_claims(facebook_token)
             
-            me_endpoint = 'https://graph.facebook.com/me'
-            
-            parameters = {'fields': 'name,email,picture,short_name',
-                          'access_token': access_token}
-                          
-            me_response = requests.get(me_endpoint, parameters)
-            me_response_json = me_response.json()
-            
-            name = me_response_json.get('name')
-            email = me_response_json.get('email')
-            picture = me_response_json.get('picture')
-            short_name = me_response_json.get('short_name')
-            
-            picture_url = picture.get('data').get('url') if picture else ""
-            
-            session['username'] = short_name
-            session['picture_url'] = picture_url
-            
-            flash(f"Welcome, facebook user {session['username']}!", category='warning')
+            session['facebook_token'] = facebook_token
+            session['username'] = claims['short_name']
+            session['picture_url'] = claims['picture_url']
             
             login_referer = session['login_referer']
             session.pop('login_referer', None)
+            
+            flash(f"Welcome, facebook user {session['username']}!", category='warning')
             
             return redirect(login_referer)
             
