@@ -12,7 +12,7 @@
 
       <main class="form-signin">
 
-        <form action="{{ url_for('login') }}" method="POST">
+        <form action="{{ url_for('login') }}" method="GET">
   
           <h1 class="h3 mb-3 fw-normal">Please sign in or register</h1>
   
@@ -25,23 +25,14 @@
                 <i class="fas fa-cat"></i>
               </span>
             
-              <!--<input type="text" class="form-control text-light bg-dark is-valid" id="username_input" -->
-               
               <input class="form-control text-light bg-dark"
                      name="username"
                      id="username_input"
                      type="text" 
                      placeholder="Username"
-                     aria-describedby="username_prepend username_validation_feedback"
+                     aria-describedby="username_prepend"
                      required>
   
-              <div id="username_validation_feedback" class="valid-feedback">
-                Username is valid.
-              </div>
-              <div id="username_validation_feedback" class="invalid-feedback">
-                Please choose a username.
-              </div>
-            
             </div>
           </div>
       
@@ -54,48 +45,38 @@
                 <i class="fas fa-asterisk"></i>
               </span>
         
-              <!--<input type="password" class="form-control text-light bg-dark" id="password_input"-->
-              <!-- placeholder="Password"-->
-              <!-- aria-describedby="password_prepend password_validation_feedback" required>-->
-               
               <input class="form-control text-light bg-dark"
                      name="password"
                      id="password_input"
                      type="password" 
                      placeholder="Password"
-                     aria-describedby="password_prepend password_validation_feedback"
+                     aria-describedby="password_prepend"
                      required>
            
-              <div id="password_validation_feedback" class="valid-feedback">
-                Password is valid.
-              </div>
-              <div id="password_validation_feedback" class="invalid-feedback">
-                Please choose a password.
-              </div>
-          
             </div>
           </div>
   
-          <div class="checkbox col-md-6 mx-md-auto mb-3">
+          <div class="checkbox mb-3">
             <label>
-              <input type="checkbox" value="True" name="remember_me"> Remember me
+              <input type="checkbox" value="True" name="remember_me"> &nbspRemember me
             </label>
           </div>
           
           <div class="col-md-6 mx-md-auto mb-4">
-            <button class="btn btn-lg btn-info mx-2" type="submit" name="action" value="sign-in">Sign in</button>
-            <button class="btn btn-lg btn-warning mx-2" type="submit" name="action" value="register">Register</button>
+            <button class="btn btn-lg btn-primary mx-2" type="submit" name="flow" value="sign-in">Sign in</button>
+            <button class="btn btn-lg btn-warning mx-2" type="submit" name="flow" value="register">Register</button>
+            <button class="btn btn-lg btn-info mx-2" type="submit" name="flow" value="facebook" form="facebook_login_form">
+              Login using Facebook
+              <span class="badge bg-light text-dark rounded-pill align-text-bottom">
+                <i class="fab fa-facebook-f"></i>
+              </span>
+            </button>
           </div>
           
-          <a class="btn btn-lg btn-primary mx-2" 
-             href={{ url_for('login', facebook_flow=true) }}>
-            Login using Facebook
-            <span class="badge bg-light text-dark rounded-pill align-text-bottom">
-              17
-            </span>
-          </a>
-
         </form>
+        
+        <form id="facebook_login_form" action="{{ url_for('login') }}" method="GET"></form>
+        
       </main>
     </body>
   </div>

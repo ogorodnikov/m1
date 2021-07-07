@@ -18,55 +18,47 @@ def login():
     
     session['login_referer'] = session.get('login_referer') or request.referrer
 
+    
+    code = request.args.get('code')
+    
+    if code:
+        
+        facebook_token = auth.code_to_token(code)
+        
+        claims = auth.get_facebook_claims(facebook_token)
+        
+        session['facebook_token'] = facebook_token
+        session['username'] = claims['short_name']
+        session['picture_url'] = claims['picture_url']
+        
+        login_referer = session['login_referer']
+        session.pop('login_referer', None)
+        
+        flash(f"Welcome, facebook user {session['username']}!", category='warning')
+        
+        return redirect(login_referer)
+        
+        
+    flow = request.args.get('flow')
+    
+    if flow == 'facebook':
+        
+        autorization_url = auth.get_autorization_url()
+        
+        return redirect(autorization_url)
+        
 
-    if request.method == 'GET':
+    if flow == 'register':
         
+        register_response = users.register_user(request.args)
+        flash(f"New user registered", category='info')
         
-        facebook_flow = request.args.get('facebook_flow')
-        
-        if facebook_flow:
-            
-            autorization_url = auth.get_autorization_url()
-            return redirect(autorization_url)
-            
-        
-        code = request.args.get('code')
-        
-        if code:
-            
-            facebook_token = auth.code_to_token(code)
-            
-            claims = auth.get_facebook_claims(facebook_token)
-            
-            session['facebook_token'] = facebook_token
-            session['username'] = claims['short_name']
-            session['picture_url'] = claims['picture_url']
-            
-            login_referer = session['login_referer']
-            session.pop('login_referer', None)
-            
-            flash(f"Welcome, facebook user {session['username']}!", category='warning')
-            
-            return redirect(login_referer)
-            
-
-        return render_template("login.html")
-        
-        
-    if request.method == 'POST':
-        
-        if request.form.get('action') == 'register':
-            
-            register_response = users.register_user(request.form)
-            flash(f"New user registered", category='info')
-            
-            
-        login_response = users.login_user(request.form)
+        login_response = users.login_user(request.args)
         login_status = login_response['status']
         
         if login_status == 'logged-in':
             
-            session.permanent = request.form.get('remember_me')
+            session.permanent = request.args.get('remember_me')
             
             flash(f"Welcome, {session['username']}!", category='warning')
             
@@ -79,6 +71,34 @@ def login():
         session.pop('login_referer', None)
             
         return redirect(login_referer)
+        
+        
+    if flow == 'sign-in':
+    
+        login_response = users.login_user(request.args)
+        login_status = login_response['status']
+        
+        if login_status == 'logged-in':
+            
+            session.permanent = request.args.get('remember_me')
+            
+            flash(f"Welcome, {session['username']}!", category='warning')
+            
+        else:
+            
+            flash(f"Login did not pass... {login_status}", category='danger')
+            
+        
+        login_referer = session['login_referer']
+        session.pop('login_referer', None)
+            
+        return redirect(login_referer)
+        
+        
+    return render_template("login.html")
+                
+                
+                
         
 
 @app.route('/logout')
