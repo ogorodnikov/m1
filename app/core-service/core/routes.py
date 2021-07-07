@@ -17,6 +17,7 @@ cognito_client = boto3.client('cognito-idp')
 @app.route('/login', methods = ['GET', 'POST'])
 def login():
     
+    session['login_referer'] = session.get('login_referer') or request.referrer
 
     next_url = request.args.get('next') or url_for('home')
     
@@ -75,25 +76,38 @@ def login():
             
             me_endpoint = 'https://graph.facebook.com/me'
             
-            parameters = {'fields': 'name,email,picture',
+            parameters = {'fields': 'short_name,name,email,picture',
                           'access_token': access_token}
                           
             me_response = requests.get(me_endpoint, parameters)
             me_response_json = me_response.json()
             
+            short_name = me_response_json.get('short_name')
             name = me_response_json.get('name')
             email = me_response_json.get('email')
             picture = me_response_json.get('picture')
             
             picture_url = picture.get('data').get('url') if picture else ""
             
+            session['username'] = short_name
+            session['picture_url'] = picture_url
+            
             flash(f"Name: {name}", category='info')
             flash(f"Email: {email}", category='info')
             flash(f"Picture URL: {picture_url} <a href=”{picture_url}”><\a>", category='info')
+            flash(f"Welcome, facebook user {session['username']}!", category='warning')
             
+            login_referer = session['login_referer']
             
+            flash(f"Login referer: {login_referer}", category='info')
+            
+            session.pop('login_referer', None)
+            
+            return redirect(login_referer)
+            
+
+        return render_template("login.html", referrer=request.referrer)
         
-        return render_template("login.html", referrer=request.referrer, code=code)
         
     if request.method == 'POST':
         
@@ -123,6 +137,7 @@ def login():
 def logout():
     
     session.pop('username', None)
+    session.pop('picture_url', None)
     
     flash(f"Logged out", category='info')
     

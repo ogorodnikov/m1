@@ -82,24 +82,22 @@
             </label>
           </div>
           
-          <div class="col-md-6 mx-md-auto mb-3">
-            <button class="btn btn-lg btn-primary mx-2" type="submit" name="action" value="sign-in">Sign in</button>
+          <div class="col-md-6 mx-md-auto mb-4">
+            <button class="btn btn-lg btn-info mx-2" type="submit" name="action" value="sign-in">Sign in</button>
             <button class="btn btn-lg btn-warning mx-2" type="submit" name="action" value="register">Register</button>
           </div>
           
-          <br>
-          Or
-          <br>
+          <a class="btn btn-lg btn-primary mx-2" 
+             href={{ url_for('login', facebook=true) }}>
+            Login using Facebook
+          </a>
           
-            <a class="btn btn-lg btn-primary mx-2" 
-               href={{ url_for('login', facebook=true) }}>
-              Login with Facebook token
-            </a>
+
           
-            <a class="btn btn-lg btn-light mx-2" 
-               href="https://www.facebook.com/v8.0/dialog/oauth?client_id=355403372591689&redirect_uri=https://9bca7b3479d64496983d362806a38873.vfs.cloud9.us-east-1.amazonaws.com/login&scope=public_profile,email">
-              Get token
-            </a>
+            <!--<a class="btn btn-lg btn-light mx-2" -->
+            <!--   href="https://www.facebook.com/v8.0/dialog/oauth?client_id=355403372591689&redirect_uri=https://9bca7b3479d64496983d362806a38873.vfs.cloud9.us-east-1.amazonaws.com/login&scope=public_profile,email">-->
+            <!--  Get token-->
+            <!--</a>-->
           
             
         </form>
