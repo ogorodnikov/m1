@@ -637,8 +637,8 @@ Resources:
       Cluster: !Ref CoreCluster
       LaunchType: FARGATE
       DeploymentConfiguration:
-        MaximumPercent: 200
-        MinimumHealthyPercent: 0
+        MaximumPercent: 300
+        MinimumHealthyPercent: 100
       DesiredCount: 0
       NetworkConfiguration:
         AwsvpcConfiguration:
@@ -688,8 +688,8 @@ Resources:
       Cluster: !Ref CoreCluster
       LaunchType: EC2
       DeploymentConfiguration:
-        MaximumPercent: 200
-        MinimumHealthyPercent: 0
+        MaximumPercent: 300
+        MinimumHealthyPercent: 100
       DesiredCount: 0
       NetworkConfiguration:
         AwsvpcConfiguration:
