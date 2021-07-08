@@ -40,16 +40,19 @@ user_pool_client_id = get_user_pool_client_id(user_pool_id, user_pool_client)
 class Config(object):
     
     REGION = os.getenv('REGION')
+    DOMAIN = os.getenv('DOMAIN')
     VERSION = os.getenv('VERSION')
     SECRET_KEY = os.getenv('SECRET_KEY')
     
-    COGNITO_DOMAIN = os.getenv('COGNITO_DOMAIN')
     COGNITO_USER_POOL_ID = user_pool_id
     COGNITO_USER_POOL_CLIENT_ID = user_pool_client_id
 
     FACEBOOK_CLIENT_ID = os.getenv('FACEBOOK_CLIENT_ID')    
     FACEBOOK_CLIENT_SECRET = os.getenv('FACEBOOK_CLIENT_SECRET')
     
+    AWS_NLB = os.getenv('AWS_NLB')
+    
     JSONIFY_PRETTYPRINT_REGULAR = False
     PERMANENT_SESSION_LIFETIME = timedelta(minutes=30)
+
     

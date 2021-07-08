@@ -17,6 +17,10 @@ def get_autorization_url():
     
     redirect_uri = url_for('login', _external=True, _scheme='https')
     
+    aws_nlb = app.config['AWS_NLB']
+    domain = app.config['DOMAIN']
+    redirect_uri_after_proxy = redirect_uri.replace(aws_nlb, domain)
+    
     parameters = {'client_id': facebook_client_id,
                   'redirect_uri': redirect_uri,
                   'scope': 'public_profile,email'}
