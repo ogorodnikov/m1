@@ -1,6 +1,6 @@
 import requests
 
-from flask import request
+from flask import url_for
 
 from urllib.parse import urlencode
 
@@ -10,10 +10,8 @@ def get_autorization_url():
     autorization_endpoint = 'https://www.facebook.com/v8.0/dialog/oauth'
     
     parameters = {'client_id': '355403372591689',
-                  'redirect_uri': 'https://9bca7b3479d64496983d362806a38873.vfs.cloud9.us-east-1.amazonaws.com/login',
+                  'redirect_uri': url_for('login', _external=True, _scheme='https'),
                   'scope': 'public_profile,email'}
-                  
-    # print(f">>>> Url for: {url_for('login')}, {request.referrer}")
                   
     autorization_url = autorization_endpoint + '?' + urlencode(parameters)
     
@@ -27,7 +25,7 @@ def code_to_token(code):
     parameters = {'client_id': '355403372591689',
                   'client_secret': '14a6e02a55e3c801993f58882e1b4ea1',
                   'grant_type': 'authorization_code',
-                  'redirect_uri': 'https://9bca7b3479d64496983d362806a38873.vfs.cloud9.us-east-1.amazonaws.com/login',
+                  'redirect_uri': url_for('login', _external=True, _scheme='https'),
                   'code': code}
     
     token_response = requests.get(token_endpoint, parameters)
