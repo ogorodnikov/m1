@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 from datetime import timedelta
 
 
-VERSION = 'V.0.20.1'
+VERSION = 'V.0.21'
 DEFAULT_REGION = 'us-east-1'
 COGNITO_DOMAIN = 'auth.ogoro.me'
 
