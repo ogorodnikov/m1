@@ -20,7 +20,9 @@ def login():
     
     if code:
         
-        facebook_token = auth.code_to_token(code)
+        flash(f"Code: {code}", category='info')
+        
+        facebook_token, redirect_uri = auth.code_to_token(code)
         
         claims = auth.get_facebook_claims(facebook_token)
         
@@ -30,6 +32,10 @@ def login():
         
         login_referer = session['login_referer']
         session.pop('login_referer', None)
+        
+        flash(f"TOKEN Redirect URI: {redirect_uri}", category='info')
+        flash(f"Token: {code}", category='info')
+        flash(f"Claims: {claims}", category='info')
         
         flash(f"Welcome, facebook user {session['username']}!", category='warning')
         
@@ -41,6 +47,8 @@ def login():
     if flow == 'facebook':
         
         autorization_url = auth.get_autorization_url()
+        
+        flash(f"AUTH Redirect URI: {autorization_url}", category='info')
         
         return redirect(autorization_url)
         

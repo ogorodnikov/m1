@@ -5,8 +5,8 @@ from core import app
 
 from flask import session
 
-user_pool_id = app.config.get('AWS_COGNITO_USER_POOL_ID')
-client_id = app.config.get('AWS_COGNITO_USER_POOL_CLIENT_ID')
+user_pool_id = app.config.get('COGNITO_USER_POOL_ID')
+client_id = app.config.get('COGNITO_USER_POOL_CLIENT_ID')
 
 cognito_client = boto3.client('cognito-idp')
 
