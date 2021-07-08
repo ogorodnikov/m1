@@ -1,5 +1,7 @@
 import requests
 
+from flask import request
+
 from urllib.parse import urlencode
 
 
@@ -10,6 +12,8 @@ def get_autorization_url():
     parameters = {'client_id': '355403372591689',
                   'redirect_uri': 'https://9bca7b3479d64496983d362806a38873.vfs.cloud9.us-east-1.amazonaws.com/login',
                   'scope': 'public_profile,email'}
+                  
+    # print(f">>>> Url for: {url_for('login')}, {request.referrer}")
                   
     autorization_url = autorization_endpoint + '?' + urlencode(parameters)
     

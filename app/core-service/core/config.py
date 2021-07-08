@@ -1,11 +1,12 @@
 import os
 import boto3
+from dotenv import load_dotenv
 from datetime import timedelta
 
-VERSION = 'V.0.20'
+
+VERSION = 'V.0.20.1'
 DEFAULT_REGION = 'us-east-1'
 COGNITO_DOMAIN = 'auth.ogoro.me'
-COGNITO_REDIRECT_URL = 'https://9bca7b3479d64496983d362806a38873.vfs.cloud9.us-east-1.amazonaws.com/logged-in'
 
 USER_POOL = 'm1-user-pool'
 USER_POOL_CLIENT = 'm1-user-pool-client'
@@ -50,7 +51,9 @@ class Config(object):
     AWS_COGNITO_USER_POOL_ID = user_pool_id
     AWS_COGNITO_USER_POOL_CLIENT_ID = user_pool_client_id
     AWS_COGNITO_USER_POOL_CLIENT_SECRET = USER_POOL_CLIENT_SECRET
-    AWS_COGNITO_REDIRECT_URL = COGNITO_REDIRECT_URL
+    
+    FACEBOOK_CLIENT_ID = os.getenv('FACEBOOK_CLIENT_ID')    
+    FACEBOOK_CLIENT_SECRET = os.getenv('FACEBOOK_CLIENT_SECRET')
     
     JSONIFY_PRETTYPRINT_REGULAR = False
     PERMANENT_SESSION_LIFETIME = timedelta(minutes=30)

@@ -49,17 +49,31 @@
         <ul class="navbar-nav">        
         
           {% if session['username'] %}
-
-            <li class="nav-item">
-                <a class="nav-link">{{ session['username'] }}</a>
+            
+              {% if session['picture_url'] %}
+              
+              <li class="nav-item my-auto">
+                  <a class="nav-link p-0">
+                    <img src={{ session['picture_url'] or "https://indulgeyourpet.com/wp-content/uploads/Bombay.png" }} alt='Picture' class="rounded-circle" height=30>
+                  </a>
+              </li>
+              
+              {% else %}
+              
+              <li class="nav-item my-auto">
+                  <a class="nav-link" style="color: black; font-weight: bold">
+                      <i class="fas fa-cat"></i>
+                  </a>
+              </li>
+              
+              {% endif %}
+              
+            <li class="nav-item my-auto">
+                <a class="nav-link" disabled>{{ session['username'] }}</a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link" style="color: black; font-weight: bold">
-                    <i class="fas fa-cat"></i>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href={{ url_for('logout', next=request.path) }}>Logout</a>
+              
+            <li class="nav-item my-auto">
+                <a class="nav-link" href={{ url_for('logout', next=request.path) }}> &nbsp Logout</a>
             </li>
             
           {% else %}

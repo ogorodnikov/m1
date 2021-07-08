@@ -8,9 +8,6 @@ import botocore.exceptions
 import requests
 
 
-cognito_client = boto3.client('cognito-idp')
-
-
 ###   Login   ###
 
 @app.route('/login', methods = ['GET', 'POST'])
