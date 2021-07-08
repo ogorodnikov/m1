@@ -22,14 +22,14 @@ def get_autorization_url():
     redirect_uri_after_proxy = redirect_uri.replace(aws_nlb, domain)
     
     parameters = {'client_id': facebook_client_id,
-                  'redirect_uri': redirect_uri,
+                  'redirect_uri': redirect_uri_after_proxy,
                   'scope': 'public_profile,email'}
                   
     autorization_url = autorization_endpoint + '?' + urlencode(parameters)
     
     print('AUTH URL:', autorization_url)
     
-    return autorization_url
+    return autorization_url, redirect_uri, aws_nlb, domain, redirect_uri_after_proxy
     
 
 def code_to_token(code):

@@ -46,9 +46,13 @@ def login():
     
     if flow == 'facebook':
         
-        autorization_url = auth.get_autorization_url()
+        autorization_url, redirect_uri, aws_nlb, domain, redirect_uri_after_proxy = auth.get_autorization_url()
         
-        flash(f"AUTH Redirect URI: {autorization_url}", category='info')
+        flash(f"AUTH redirect_uri: {redirect_uri}", category='info')
+        flash(f"AUTH aws_nlb: {aws_nlb}", category='info')
+        flash(f"AUTH domain: {domain}", category='info')
+        flash(f"AUTH redirect_uri_after_proxy: {redirect_uri_after_proxy}", category='info')
+        flash(f"AUTH autorization_url: {autorization_url}", category='info')
         
         return redirect(autorization_url)
         
