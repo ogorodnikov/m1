@@ -3,7 +3,6 @@ import boto3
 from dotenv import load_dotenv
 from datetime import timedelta
 
-
 load_dotenv()
 
 cognito_client = boto3.client('cognito-idp')
@@ -54,7 +53,5 @@ class Config(object):
     
     JSONIFY_PRETTYPRINT_REGULAR = False
     PERMANENT_SESSION_LIFETIME = timedelta(minutes=30)
-    
-    
 
     

@@ -49,7 +49,7 @@ def code_to_token(code):
     parameters = {'client_id': facebook_client_id,
                   'client_secret': facebook_client_secret,
                   'grant_type': 'authorization_code',
-                  'redirect_uri': redirect_uri,
+                  'redirect_uri': redirect_uri_after_proxy,
                   'code': code}
     
     token_response = requests.get(token_endpoint, parameters)
