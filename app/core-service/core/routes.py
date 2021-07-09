@@ -71,6 +71,7 @@ def login():
             
             session.permanent = request.args.get('remember_me')
             
+            flash(f"Remember me, {request.args.get('remember_me')}", category='info')
             flash(f"Welcome, {session['username']}!", category='warning')
             
         else:
@@ -93,6 +94,7 @@ def login():
             
             session.permanent = request.args.get('remember_me')
             
+            flash(f"Remember me, {request.args.get('remember_me')}", category='info')
             flash(f"Welcome, {session['username']}!", category='warning')
             
         else:

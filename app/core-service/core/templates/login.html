@@ -37,8 +37,9 @@
           </div>
       
           <div class="form-floating col-md-6 mx-md-auto mb-3">
-        
+            
             <label for="password_input">Password</label>
+            
             <div class="input-group has-validation">
           
               <span class="input-group-text bg-warning" id="password_prepend">
@@ -46,13 +47,15 @@
               </span>
         
               <input class="form-control text-light bg-dark"
-                     name="password"
                      id="password_input"
-                     type="password" 
+                     name="password"
+                     type="password"
+                     inputmode="numeric"
+                     pattern="[\S]{6,}" 
                      placeholder="Password"
-                     aria-describedby="password_prepend"
+                     title="more than 6 symbol length"
                      required>
-           
+
             </div>
           </div>
   
