@@ -27,12 +27,18 @@ def get_autorization_url():
                   
     autorization_url = autorization_endpoint + '?' + urlencode(parameters)
     
-    print('AUTH URL:', autorization_url)
+    app.logger.info(f"AUTH redirect_uri: {redirect_uri}")
+    app.logger.info(f"AUTH aws_nlb: {aws_nlb}")
+    app.logger.info(f"AUTH domain: {domain}")
+    app.logger.info(f"AUTH redirect_uri_after_proxy: {redirect_uri_after_proxy}")
+    app.logger.info(f"AUTH autorization_url: {autorization_url}")
     
-    return autorization_url, redirect_uri, aws_nlb, domain, redirect_uri_after_proxy
+    return autorization_url
     
 
 def code_to_token(code):
+    
+    
             
     token_endpoint = 'https://graph.facebook.com/oauth/access_token'
     
@@ -42,23 +48,32 @@ def code_to_token(code):
     domain = app.config['DOMAIN']
     redirect_uri_after_proxy = redirect_uri.replace(aws_nlb, domain)
     
-    # parameters = {'client_id': facebook_client_id,
-    #               'client_secret': facebook_client_secret,
-    #               'grant_type': 'authorization_code',
-    #               'redirect_uri': redirect_uri,
-    #               'code': code}
+    parameters = {'client_id': facebook_client_id,
+                  'client_secret': facebook_client_secret,
+                  'grant_type': 'authorization_code',
+                  'redirect_uri': redirect_uri,
+                  'code': code}
     
-    # token_response = requests.get(token_endpoint, parameters)
+    token_response = requests.get(token_endpoint, parameters)
     
-    full_redirect_uri = f'{token_endpoint}?client_id={facebook_client_id}&client_secret={facebook_client_secret}&' + \
-                        f'grant_type=authorization_code&redirect_uri={redirect_uri_after_proxy}&code={code}'
+    # full_redirect_uri = f'{token_endpoint}?client_id={facebook_client_id}&client_secret={facebook_client_secret}&' + \
+    #                     f'grant_type=authorization_code&redirect_uri={redirect_uri_after_proxy}&code={code}'
                         
-    token_response = requests.get(full_redirect_uri)
+    # token_response = requests.get(full_redirect_uri)
     
     token_response_json = token_response.json()
     access_token = token_response_json.get('access_token')
     
-    return access_token, full_redirect_uri
+    app.logger.info(f"AUTH code: {code}")
+    app.logger.info(f"TOKEN redirect_uri: {redirect_uri}")
+    app.logger.info(f"TOKEN aws_nlb: {aws_nlb}")
+    app.logger.info(f"TOKEN domain: {domain}")
+    app.logger.info(f"TOKEN redirect_uri_after_proxy: {redirect_uri_after_proxy}")
+    app.logger.info(f"TOKEN parameters: {parameters}")
+    app.logger.info(f"TOKEN token: {token_response}")
+    app.logger.info(f"TOKEN access: {access_token}")
+    
+    return access_token
     
 
 def get_facebook_claims(access_token):
@@ -81,6 +96,8 @@ def get_facebook_claims(access_token):
     claims['email'] = me_response_json.get('email')
     claims['short_name'] = me_response_json.get('short_name')    
     claims['picture_url'] = picture_url
+    
+    app.logger.info(f"Claims: {claims}")
     
     return claims
     

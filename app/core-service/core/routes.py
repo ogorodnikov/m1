@@ -15,29 +15,17 @@ def login():
     
     session['login_referer'] = session.get('login_referer') or request.referrer
 
-    
     flow = request.args.get('flow')
     
     if flow == 'facebook':
         
-        autorization_url, redirect_uri, aws_nlb, domain, redirect_uri_after_proxy = auth.get_autorization_url()
-        
-        flash(f"AUTH redirect_uri: {redirect_uri}", category='info')
-        flash(f"AUTH aws_nlb: {aws_nlb}", category='info')
-        flash(f"AUTH domain: {domain}", category='info')
-        flash(f"AUTH redirect_uri_after_proxy: {redirect_uri_after_proxy}", category='info')
-        flash(f"AUTH autorization_url: {autorization_url}", category='info')
-        
+        autorization_url = auth.get_autorization_url()
         return redirect(autorization_url)
         
-        
     code = request.args.get('code')
-    
     if code:
         
-        flash(f"Code: {code}", category='info')
-        
-        facebook_token, redirect_uri = auth.code_to_token(code)
+        facebook_token = auth.code_to_token(code)
         
         claims = auth.get_facebook_claims(facebook_token)
         
@@ -47,10 +35,6 @@ def login():
         
         login_referer = session['login_referer']
         session.pop('login_referer', None)
-        
-        flash(f"TOKEN Redirect URI: {redirect_uri}", category='info')
-        flash(f"Token: {facebook_token}", category='info')
-        flash(f"Claims: {claims}", category='info')
         
         flash(f"Welcome, facebook user {session['username']}!", category='warning')
         

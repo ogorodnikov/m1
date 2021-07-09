@@ -7,6 +7,8 @@ from core import config
 app = Flask(__name__)
 app.config.from_object(config.Config)
 
+app.logger.setLevel(20) # INFO
+
 CORS(app)
 
 
