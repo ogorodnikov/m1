@@ -13,8 +13,10 @@ from yaml import load
 dictConfig({
     'version': 1,
     'formatters': {'default': {
-        'format': '[%(asctime)s] %(module)6.6s | %(levelname).4s | %(message)s', 
-        'datefmt': "%Y-%m-%d %H:%M:%S",
+        'format': '%(module)6.6s | %(levelname).4s | %(message)s', 
+        
+        # 'format': '[%(asctime)s] %(module)6.6s | %(levelname).4s | %(message)s', 
+        # 'datefmt': "%Y-%m-%d %H:%M:%S",
     }},
     'handlers': {'wsgi': {
         'class': 'logging.StreamHandler',
