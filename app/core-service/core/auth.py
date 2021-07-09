@@ -37,6 +37,10 @@ def code_to_token(code):
     token_endpoint = 'https://graph.facebook.com/oauth/access_token'
     
     redirect_uri = url_for('login', _external=True, _scheme='https')
+
+    aws_nlb = app.config['AWS_NLB']
+    domain = app.config['DOMAIN']
+    redirect_uri_after_proxy = redirect_uri.replace(aws_nlb, domain)
     
     # parameters = {'client_id': facebook_client_id,
     #               'client_secret': facebook_client_secret,
@@ -47,7 +51,7 @@ def code_to_token(code):
     # token_response = requests.get(token_endpoint, parameters)
     
     full_redirect_uri = f'{token_endpoint}?client_id={facebook_client_id}&client_secret={facebook_client_secret}&' + \
-                        f'&grant_type=authorization_code&redirect_uri={redirect_uri}&code={code}'
+                        f'grant_type=authorization_code&redirect_uri={redirect_uri_after_proxy}&code={code}'
                         
     token_response = requests.get(full_redirect_uri)
     

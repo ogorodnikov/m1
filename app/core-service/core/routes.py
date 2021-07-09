@@ -16,6 +16,21 @@ def login():
     session['login_referer'] = session.get('login_referer') or request.referrer
 
     
+    flow = request.args.get('flow')
+    
+    if flow == 'facebook':
+        
+        autorization_url, redirect_uri, aws_nlb, domain, redirect_uri_after_proxy = auth.get_autorization_url()
+        
+        flash(f"AUTH redirect_uri: {redirect_uri}", category='info')
+        flash(f"AUTH aws_nlb: {aws_nlb}", category='info')
+        flash(f"AUTH domain: {domain}", category='info')
+        flash(f"AUTH redirect_uri_after_proxy: {redirect_uri_after_proxy}", category='info')
+        flash(f"AUTH autorization_url: {autorization_url}", category='info')
+        
+        return redirect(autorization_url)
+        
+        
     code = request.args.get('code')
     
     if code:
@@ -34,27 +49,12 @@ def login():
         session.pop('login_referer', None)
         
         flash(f"TOKEN Redirect URI: {redirect_uri}", category='info')
-        flash(f"Token: {code}", category='info')
+        flash(f"Token: {facebook_token}", category='info')
         flash(f"Claims: {claims}", category='info')
         
         flash(f"Welcome, facebook user {session['username']}!", category='warning')
         
         return redirect(login_referer)
-        
-        
-    flow = request.args.get('flow')
-    
-    if flow == 'facebook':
-        
-        autorization_url, redirect_uri, aws_nlb, domain, redirect_uri_after_proxy = auth.get_autorization_url()
-        
-        flash(f"AUTH redirect_uri: {redirect_uri}", category='info')
-        flash(f"AUTH aws_nlb: {aws_nlb}", category='info')
-        flash(f"AUTH domain: {domain}", category='info')
-        flash(f"AUTH redirect_uri_after_proxy: {redirect_uri_after_proxy}", category='info')
-        flash(f"AUTH autorization_url: {autorization_url}", category='info')
-        
-        return redirect(autorization_url)
         
 
     if flow == 'register':
