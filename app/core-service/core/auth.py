@@ -38,8 +38,6 @@ def get_autorization_url():
 
 def code_to_token(code):
     
-    
-            
     token_endpoint = 'https://graph.facebook.com/oauth/access_token'
     
     redirect_uri = url_for('login', _external=True, _scheme='https')
@@ -55,11 +53,6 @@ def code_to_token(code):
                   'code': code}
     
     token_response = requests.get(token_endpoint, parameters)
-    
-    # full_redirect_uri = f'{token_endpoint}?client_id={facebook_client_id}&client_secret={facebook_client_secret}&' + \
-    #                     f'grant_type=authorization_code&redirect_uri={redirect_uri_after_proxy}&code={code}'
-                        
-    # token_response = requests.get(full_redirect_uri)
     
     token_response_json = token_response.json()
     access_token = token_response_json.get('access_token')
@@ -97,7 +90,10 @@ def get_facebook_claims(access_token):
     claims['short_name'] = me_response_json.get('short_name')    
     claims['picture_url'] = picture_url
     
-    app.logger.info(f"Claims: {claims}")
+    app.logger.info(f"CLAIMS me_endpoint: {me_endpoint}")
+    app.logger.info(f"CLAIMS parameters: {parameters}")
+    app.logger.info(f"CLAIMS me_response_json: {me_response_json}")
+    app.logger.info(f"CLAIMS claims: {claims}")
     
     return claims
     

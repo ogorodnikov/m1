@@ -15,12 +15,14 @@ def login():
     
     session['login_referer'] = session.get('login_referer') or request.referrer
 
+
     flow = request.args.get('flow')
     
     if flow == 'facebook':
         
         autorization_url = auth.get_autorization_url()
         return redirect(autorization_url)
+        
         
     code = request.args.get('code')
     if code:
@@ -46,31 +48,14 @@ def login():
         register_response = users.register_user(request.args)
         flash(f"New user registered", category='info')
         
-        # return redirect(url_for('login', request.args))
+        redirect_to_sign_in_args = request.args.copy()
+        redirect_to_sign_in_args['flow'] = 'sign-in'
         
-        login_response = users.login_user(request.args)
-        login_status = login_response['status']
+        return redirect(url_for('login', **redirect_to_sign_in_args))
         
-        if login_status == 'logged-in':
-            
-            session.permanent = request.args.get('remember_me')
-            
-            flash(f"Remember me, {request.args.get('remember_me')}", category='info')
-            flash(f"Welcome, {session['username']}!", category='warning')
-            
-        else:
-            
-            flash(f"Login did not pass... {login_status}", category='danger')
-            
-        
-        login_referer = session['login_referer']
-        session.pop('login_referer', None)
-            
-        return redirect(login_referer)
-        
-        
+
     if flow == 'sign-in':
-    
+        
         login_response = users.login_user(request.args)
         login_status = login_response['status']
         
@@ -78,7 +63,6 @@ def login():
             
             session.permanent = request.args.get('remember_me')
             
-            flash(f"Remember me, {request.args.get('remember_me')}", category='info')
             flash(f"Welcome, {session['username']}!", category='warning')
             
         else:
@@ -93,8 +77,6 @@ def login():
         
         
     return render_template("login.html")
-                
-                
                 
         
 
