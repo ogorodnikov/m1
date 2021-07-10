@@ -1,9 +1,10 @@
+from flask import flash, redirect, session, url_for
+
 import boto3
 import botocore.exceptions
 
 from core import app
 
-from flask import session
 
 user_pool_id = app.config.get('COGNITO_USER_POOL_ID')
 client_id = app.config.get('COGNITO_USER_POOL_CLIENT_ID')
@@ -35,27 +36,22 @@ def login_user(login_form):
         user_sub = next(attribute['Value'] for attribute in user_attributes
                         if attribute['Name'] == 'sub')    
         
-        print('Token response:', token_response)
-        print()
-        print('AccessToken:', access_token)
-        print()
-        print('RefreshToken:', refresh_token)
-        print()
-        print('User response:', user_response)
-        print()
-        print('User attributes:', user_attributes)
-        print()
-        print('User sub:', user_sub)
+        app.logger.info(f'LOGIN token_response: {token_response}')
+        app.logger.info(f'LOGIN access_token: {access_token}')
+        app.logger.info(f'LOGIN refresh_token: {refresh_token}')
+        app.logger.info(f'LOGIN user_response: {user_response}')
+        app.logger.info(f'LOGIN user_attributes: {user_attributes}')
+        app.logger.info(f'LOGIN user_sub: {user_sub}')
+
+        session.permanent = login_form.get('remember_me')
             
         session['username'] = username
         
-        login_response = {'status': 'logged-in'}
+        flash(f"Welcome, {session['username']}!", category='warning')
     
     except Exception as exception:
         
-        login_response = {'status': repr(exception)}
-        
-    return login_response
+        flash(f"Login did not pass... {exception}", category='danger')
     
     
     
@@ -64,25 +60,31 @@ def register_user(login_form):
     username = login_form.get('username')
     password = login_form.get('password')
     
-    sign_up_response = cognito_client.sign_up(ClientId=client_id,
-                                               Username=username,
-                                               Password=password)
+    try:
     
-    # confirmation_response = cognito_client.confirm_sign_up(ClientId=client_id,
-    #                                                       Username=username,
-    #                                                       ConfirmationCode='')
+        sign_up_response = cognito_client.sign_up(ClientId=client_id,
+                                                   Username=username,
+                                                   Password=password)
+        
+        # confirmation_response = cognito_client.confirm_sign_up(ClientId=client_id,
+        #                                                       Username=username,
+        #                                                       ConfirmationCode='')
+        
+        confirmation_response = cognito_client.admin_confirm_sign_up(UserPoolId=user_pool_id,
+                                                                     Username=username)
     
-    confirmation_response = cognito_client.admin_confirm_sign_up(UserPoolId=user_pool_id,
-                                                                 Username=username)
-
-    print('Sign up response:', sign_up_response)
-    print()
-    
-    print('Confirmation response:', confirmation_response)
-    print()
-    
-    register_response = {'status': 'registered'}
-    
-    return register_response
+        app.logger.info(f'REGISTER sign_up_response: {sign_up_response}')
+        app.logger.info(f'REGISTER confirmation_response: {confirmation_response}')
+        
+        flash(f"New user registered", category='info')
+            
+        redirect_to_sign_in_args = login_form.copy()
+        redirect_to_sign_in_args['flow'] = 'sign-in'
+        
+        return redirect(url_for('login', **redirect_to_sign_in_args))
+        
+    except Exception as exception:
+        
+        flash(f"Registration did not pass... {exception}", category='danger')
     
     

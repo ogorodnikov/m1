@@ -45,31 +45,13 @@ def login():
 
     if flow == 'register':
         
-        register_response = users.register_user(request.args)
-        flash(f"New user registered", category='info')
-        
-        redirect_to_sign_in_args = request.args.copy()
-        redirect_to_sign_in_args['flow'] = 'sign-in'
-        
-        return redirect(url_for('login', **redirect_to_sign_in_args))
+        users.register_user(request.args)
         
 
     if flow == 'sign-in':
         
-        login_response = users.login_user(request.args)
-        login_status = login_response['status']
-        
-        if login_status == 'logged-in':
-            
-            session.permanent = request.args.get('remember_me')
-            
-            flash(f"Welcome, {session['username']}!", category='warning')
-            
-        else:
-            
-            flash(f"Login did not pass... {login_status}", category='danger')
-            
-        
+        users.login_user(request.args)
+
         login_referer = session['login_referer']
         session.pop('login_referer', None)
             
