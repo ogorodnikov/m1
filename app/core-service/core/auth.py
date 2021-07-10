@@ -51,8 +51,11 @@ def code_to_token(code):
                   'grant_type': 'authorization_code',
                   'redirect_uri': redirect_uri_after_proxy,
                   'code': code}
+                  
+    access_token_url = token_endpoint + '?' + urlencode(parameters)
     
-    token_response = requests.get(token_endpoint, parameters)
+    # token_response = requests.get(token_endpoint, parameters)
+    token_response = requests.get(access_token_url)
     
     token_response_json = token_response.json()
     access_token = token_response_json.get('access_token')
@@ -63,7 +66,9 @@ def code_to_token(code):
     app.logger.info(f"TOKEN domain: {domain}")
     app.logger.info(f"TOKEN redirect_uri_after_proxy: {redirect_uri_after_proxy}")
     app.logger.info(f"TOKEN parameters: {parameters}")
-    app.logger.info(f"TOKEN token: {token_response}")
+    app.logger.info(f"TOKEN access_token_url: {access_token_url}")
+    app.logger.info(f"TOKEN token_response: {token_response}")
+    app.logger.info(f"TOKEN token_response_json: {token_response_json}")   
     app.logger.info(f"TOKEN access: {access_token}")
     
     return access_token

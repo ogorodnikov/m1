@@ -1,0 +1,42 @@
+
+# Development settings
+
+
+VERSION = V.0.28
+
+REGION = us-east-1
+DOMAIN = m1.ogoro.me
+
+SECRET_KEY = '###'
+
+USER_POOL = m1-user-pool
+USER_POOL_CLIENT = m1-user-pool-client
+
+AWS_NLB = m1-core-nlb-d1a3c13eaba292ca.elb.us-east-1.amazonaws.com
+
+
+# https://developers.facebook.com/apps/
+
+FACEBOOK_CLIENT_ID = ###
+FACEBOOK_CLIENT_SECRET = ###
+
+
+
+# Facebook App Settings:
+#
+# 1) Products > Add Product > Facebook Login > Web:
+#
+# Site URL:
+# https://m1.ogoro.me/
+#
+# 2) Facebook Login > Settings > Valid OAuth Redirect URIs:
+#
+# 2.1) Dev login redirect from:
+# https://9bca7b3479d64496983d362806a38873.vfs.cloud9.us-east-1.amazonaws.com/login
+#
+# 2.2 )Prod login redirect from:
+# https://m1.ogoro.me/login
+#
+# App Review > Permissions and Features > public_profile, email
+
+
