@@ -6,12 +6,11 @@ from core import config
 from logging.config import dictConfig
 
 
-dictConfig(config.LOGGING_CONFIG)
-
-print(config.LOGGING_CONFIG)
-
 app = Flask(__name__)
+
 app.config.from_object(config.Config)
+
+dictConfig(config.LOGGING_CONFIG)
 
 CORS(app)
 

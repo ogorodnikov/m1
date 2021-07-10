@@ -1,0 +1,45 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Description: M1 Cognito Stack
+
+Resources:
+
+# Cognito
+
+  UserPool:
+    Type: AWS::Cognito::UserPool
+    Properties:
+      UserPoolName: test-user-pool
+      # AutoVerifiedAttributes:
+      # - email
+      
+      Policies:
+        PasswordPolicy:
+          MinimumLength: 6
+          RequireNumbers: False
+          RequireSymbols: False
+          RequireUppercase: False
+          RequireLowercase: False
+  
+  UserPoolClient:  
+    Type: AWS::Cognito::UserPoolClient
+    Properties: 
+      ClientName: test-user-pool-client
+      UserPoolId: !Ref UserPool
+      
+      ExplicitAuthFlows: 
+      - ALLOW_ADMIN_USER_PASSWORD_AUTH
+      - ALLOW_CUSTOM_AUTH
+      - ALLOW_USER_PASSWORD_AUTH
+      - ALLOW_USER_SRP_AUTH
+      - ALLOW_REFRESH_TOKEN_AUTH
+        
+        
+
+# Outputs:
+
+#   Test:
+#     Description: Test API Export
+#     Value: !Sub ['http://${nlb}/home', nlb: !ImportValue m1-core-stack:CoreLoadBalancerDNSName]
+#     Export:
+#       Name: TestAPIExport
