@@ -9,7 +9,7 @@ Resources:
   UserPool:
     Type: AWS::Cognito::UserPool
     Properties:
-      UserPoolName: test-user-pool
+      UserPoolName: m1-user-pool
       # AutoVerifiedAttributes:
       # - email
       
@@ -24,7 +24,7 @@ Resources:
   UserPoolClient:  
     Type: AWS::Cognito::UserPoolClient
     Properties: 
-      ClientName: test-user-pool-client
+      ClientName: m1-user-pool-client
       UserPoolId: !Ref UserPool
       
       ExplicitAuthFlows: 
@@ -33,6 +33,7 @@ Resources:
       - ALLOW_USER_PASSWORD_AUTH
       - ALLOW_USER_SRP_AUTH
       - ALLOW_REFRESH_TOKEN_AUTH
+
         
         
 

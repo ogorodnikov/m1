@@ -10,14 +10,29 @@ Resources:
     Type: AWS::Cognito::UserPool
     Properties:
       UserPoolName: m1-user-pool
-      AutoVerifiedAttributes:
-      - email
+      # AutoVerifiedAttributes:
+      # - email
+      
+      Policies:
+        PasswordPolicy:
+          MinimumLength: 6
+          RequireNumbers: False
+          RequireSymbols: False
+          RequireUppercase: False
+          RequireLowercase: False
   
   UserPoolClient:  
     Type: AWS::Cognito::UserPoolClient
     Properties: 
       ClientName: m1-user-pool-client
       UserPoolId: !Ref UserPool
+      
+      ExplicitAuthFlows: 
+      - ALLOW_ADMIN_USER_PASSWORD_AUTH
+      - ALLOW_CUSTOM_AUTH
+      - ALLOW_USER_PASSWORD_AUTH
+      - ALLOW_USER_SRP_AUTH
+      - ALLOW_REFRESH_TOKEN_AUTH
 
 # API VPC Link
       
