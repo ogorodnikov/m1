@@ -3,9 +3,17 @@ import boto3
 from dotenv import load_dotenv
 from datetime import timedelta
 
+
 load_dotenv()
 
 cognito_client = boto3.client('cognito-idp')
+elb_client = boto3.client('elbv2')
+
+
+def get_nlb_arn(nlb):
+    
+    return 'm1-core-nlb-d1a3c13eaba292ca.elb.us-east-1.amazonaws.com'
+    
 
 
 def get_user_pool_id(user_pool):
@@ -28,6 +36,8 @@ def get_user_pool_client_id(user_pool_id, user_pool_client):
                         
     return user_pool_client_id
     
+nlb = os.getenv('NLB')
+nlb_arn = get_nlb_arn(nlb)
     
 user_pool = os.getenv('USER_POOL')
 user_pool_id = get_user_pool_id(user_pool)
@@ -49,12 +59,11 @@ class Config(object):
     FACEBOOK_CLIENT_ID = os.getenv('FACEBOOK_CLIENT_ID')    
     FACEBOOK_CLIENT_SECRET = os.getenv('FACEBOOK_CLIENT_SECRET')
     
-    AWS_NLB = os.getenv('AWS_NLB')
+    AWS_NLB = nlb_arn
     
     JSONIFY_PRETTYPRINT_REGULAR = False
     PERMANENT_SESSION_LIFETIME = timedelta(minutes=30)
-
-
+    
 
 LOGGING_CONFIG = {'version': 1,
 
