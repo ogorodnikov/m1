@@ -79,7 +79,9 @@ def register_user(login_form):
         
         confirmation_response = cognito_client.admin_confirm_sign_up(UserPoolId=user_pool_id,
                                                                      Username=username)
-    
+                                                                     
+        app.logger.info(f'REGISTER client_id: {client_id}')
+        app.logger.info(f'REGISTER user_pool_id: {user_pool_id}')
         app.logger.info(f'REGISTER sign_up_response: {sign_up_response}')
         app.logger.info(f'REGISTER confirmation_response: {confirmation_response}')
         

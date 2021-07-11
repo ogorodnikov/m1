@@ -9,12 +9,11 @@ from logging.config import dictConfig
 app = Flask(__name__)
 CORS(app)
 
-@app.before_first_request
-def set_config():
-    
-    app.config.from_object(config.Config)
-    dictConfig(config.LOGGING_CONFIG)
-    app.logger.info(f'CONFIG app.config: {app.config}')
+app.config.from_object(config.Config)
+
+dictConfig(config.LOGGING_CONFIG)
+
+app.logger.info(f'CONFIG app.config: {app.config}')
 
 
 from core import routes

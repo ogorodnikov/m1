@@ -10,10 +10,23 @@ cognito_client = boto3.client('cognito-idp')
 elb_client = boto3.client('elbv2')
 
 
-def get_nlb_arn(nlb):
+def get_nlb_dns(nlb_name):
     
-    return 'm1-core-nlb-d1a3c13eaba292ca.elb.us-east-1.amazonaws.com'
+    load_balancers_response = elb_client.describe_load_balancers(Names=[nlb_name])
     
+    load_balancers = load_balancers_response['LoadBalancers']
+    
+    nlb_dns = next(load_balancer['DNSName'] for load_balancer in load_balancers
+                   if load_balancer['LoadBalancerName'] == nlb_name)
+                        
+    return nlb_dns
+    
+    # NLB ARN: dict_items([('LoadBalancers', [{'LoadBalancerArn': 'arn:aws:elasticloadbalancing:us-east-1:196332284574:loadbalancer/net/m1-core-nlb/d1a3c13eaba292ca', 
+    # 'DNSName': 'm1-core-nlb-d1a3c13eaba292ca.elb.us-east-1.amazonaws.com',
+    
+    # print('NLB ARN:', nlb_arn.items())
+    
+    # return 'm1-core-nlb-d1a3c13eaba292ca.elb.us-east-1.amazonaws.com'
 
 
 def get_user_pool_id(user_pool):
@@ -36,8 +49,9 @@ def get_user_pool_client_id(user_pool_id, user_pool_client):
                         
     return user_pool_client_id
     
-nlb = os.getenv('NLB')
-nlb_arn = get_nlb_arn(nlb)
+    
+nlb_name = os.getenv('NLB_NAME')
+nlb_dns = get_nlb_dns(nlb_name)
     
 user_pool = os.getenv('USER_POOL')
 user_pool_id = get_user_pool_id(user_pool)
@@ -59,7 +73,7 @@ class Config(object):
     FACEBOOK_CLIENT_ID = os.getenv('FACEBOOK_CLIENT_ID')    
     FACEBOOK_CLIENT_SECRET = os.getenv('FACEBOOK_CLIENT_SECRET')
     
-    AWS_NLB = nlb_arn
+    AWS_NLB = nlb_dns
     
     JSONIFY_PRETTYPRINT_REGULAR = False
     PERMANENT_SESSION_LIFETIME = timedelta(minutes=30)
