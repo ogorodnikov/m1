@@ -50,14 +50,11 @@ def login():
 
     if flow == 'sign-in':
         
-        users.login_user(request.args)
+        logged_in_url = users.login_user(request.args)
 
-        login_referer = session['login_referer']
-        session.pop('login_referer', None)
-            
-        return redirect(login_referer)
+        return redirect(logged_in_url)
         
-        
+
     return render_template("login.html")
                 
         
@@ -67,6 +64,7 @@ def logout():
     
     session.pop('username', None)
     session.pop('picture_url', None)
+    session.pop('facebook_token', None)
     
     flash(f"Logged out", category='info')
     

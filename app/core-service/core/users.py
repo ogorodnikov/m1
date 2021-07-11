@@ -1,4 +1,4 @@
-from flask import flash, redirect, session, url_for
+from flask import flash, session, url_for
 
 import boto3
 import botocore.exceptions
@@ -52,6 +52,11 @@ def login_user(login_form):
     except Exception as exception:
         
         flash(f"Login did not pass... {exception}", category='danger')
+    
+    login_referer = session['login_referer']
+    session.pop('login_referer', None)
+            
+    return login_referer
     
     
     
