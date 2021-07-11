@@ -15,32 +15,31 @@ def login():
     
     session['login_referer'] = session.get('login_referer') or request.referrer
 
-
     flow = request.args.get('flow')
+    code = request.args.get('code')
+    
+    if not (flow or code):
+        
+        return render_template("login.html")
     
     if flow == 'facebook':
         
-        autorization_url = auth.get_autorization_url()
-        return redirect(autorization_url)
-        
-    code = request.args.get('code')
+        redirect_url = auth.get_autorization_url()
+
     if code:
         
         facebook_token = auth.code_to_token(code)
-        facebook_logged_in_url = auth.set_facebook_claims(facebook_token)
-        return redirect(facebook_logged_in_url)
-        
+        redirect_url = auth.set_facebook_claims(facebook_token)
+
     if flow == 'register':
         
-        users.register_user(request.args)
+        redirect_url = users.register_user(request.args)
 
     if flow == 'sign-in':
         
-        logged_in_url = users.login_user(request.args)
-        return redirect(logged_in_url)
+        redirect_url = users.login_user(request.args)
 
-    return render_template("login.html")
-                
+    return redirect(redirect_url)
         
 
 @app.route('/logout')

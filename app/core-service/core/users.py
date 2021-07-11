@@ -66,6 +66,8 @@ def register_user(login_form):
     password = login_form.get('password')
     
     try:
+        
+        app.logger.info(f'REGISTER login_form: {login_form}')
     
         sign_up_response = cognito_client.sign_up(ClientId=client_id,
                                                    Username=username,
@@ -86,10 +88,13 @@ def register_user(login_form):
         redirect_to_sign_in_args = login_form.copy()
         redirect_to_sign_in_args['flow'] = 'sign-in'
         
-        return redirect(url_for('login', **redirect_to_sign_in_args))
+        return url_for('login', **redirect_to_sign_in_args)
         
     except Exception as exception:
         
         flash(f"Registration did not pass... {exception}", category='danger')
     
-    
+        login_referer = session['login_referer']
+        session.pop('login_referer', None)
+            
+        return login_referer
