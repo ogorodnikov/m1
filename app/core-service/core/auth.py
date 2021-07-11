@@ -1,8 +1,8 @@
 import requests
 
-from core import app
+from flask import flash, session, url_for
 
-from flask import url_for
+from core import app
 
 from urllib.parse import urlencode
 
@@ -58,7 +58,7 @@ def code_to_token(code):
     token_response = requests.get(access_token_url)
     
     token_response_json = token_response.json()
-    access_token = token_response_json.get('access_token')
+    facebook_token = token_response_json.get('access_token')
     
     app.logger.info(f"AUTH code: {code}")
     app.logger.info(f"TOKEN redirect_uri: {redirect_uri}")
@@ -69,12 +69,14 @@ def code_to_token(code):
     app.logger.info(f"TOKEN access_token_url: {access_token_url}")
     app.logger.info(f"TOKEN token_response: {token_response}")
     app.logger.info(f"TOKEN token_response_json: {token_response_json}")   
-    app.logger.info(f"TOKEN access: {access_token}")
+    app.logger.info(f"TOKEN facebook_token: {facebook_token}")
     
-    return access_token
+    session['facebook_token'] = facebook_token    
+    
+    return facebook_token
     
 
-def get_facebook_claims(access_token):
+def set_facebook_claims(access_token):
             
     me_endpoint = 'https://graph.facebook.com/me'
     
@@ -88,18 +90,18 @@ def get_facebook_claims(access_token):
     picture_data = picture.get('data') if picture else ""
     picture_url = picture_data.get('url') if picture_data else ""
     
-    claims = {}
-    
-    claims['name'] = me_response_json.get('name')
-    claims['email'] = me_response_json.get('email')
-    claims['short_name'] = me_response_json.get('short_name')    
-    claims['picture_url'] = picture_url
-    
     app.logger.info(f"CLAIMS me_endpoint: {me_endpoint}")
     app.logger.info(f"CLAIMS parameters: {parameters}")
     app.logger.info(f"CLAIMS me_response_json: {me_response_json}")
-    app.logger.info(f"CLAIMS claims: {claims}")
+
+    session['username'] = me_response_json.get('short_name')
+    session['picture_url'] = picture_url
+        
+    login_referer = session['login_referer']
+    session.pop('login_referer', None)
+        
+    flash(f"Welcome, facebook user {session['username']}!", category='warning')
     
-    return claims
+    return login_referer
     
     

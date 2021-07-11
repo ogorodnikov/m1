@@ -23,37 +23,21 @@ def login():
         autorization_url = auth.get_autorization_url()
         return redirect(autorization_url)
         
-        
     code = request.args.get('code')
     if code:
         
         facebook_token = auth.code_to_token(code)
+        facebook_logged_in_url = auth.set_facebook_claims(facebook_token)
+        return redirect(facebook_logged_in_url)
         
-        claims = auth.get_facebook_claims(facebook_token)
-        
-        session['facebook_token'] = facebook_token
-        session['username'] = claims['short_name']
-        session['picture_url'] = claims['picture_url']
-        
-        login_referer = session['login_referer']
-        session.pop('login_referer', None)
-        
-        flash(f"Welcome, facebook user {session['username']}!", category='warning')
-        
-        return redirect(login_referer)
-        
-
     if flow == 'register':
         
         users.register_user(request.args)
-        
 
     if flow == 'sign-in':
         
         logged_in_url = users.login_user(request.args)
-
         return redirect(logged_in_url)
-        
 
     return render_template("login.html")
                 
