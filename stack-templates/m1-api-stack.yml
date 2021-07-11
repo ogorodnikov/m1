@@ -57,10 +57,18 @@ Resources:
   BasePathMapping:
     Type: AWS::ApiGateway::BasePathMapping
     Properties: 
-      # BasePath: String
       DomainName: !Ref DomainName
       RestApiId: !Ref RESTAPI
       Stage: m1-api-stage-prod
+      
+# Route53
+  
+  HostedZone:
+    Type: AWS::Route53::HostedZone
+    Properties: 
+      Name: test.ogoro.me
+      HostedZoneConfig: 
+        Comment: 'M1 hosted zone'
 
 # API
 
@@ -434,10 +442,16 @@ Resources:
             #           type: string
 
 
-# Outputs:
+Outputs:
 
-#   Test:
-#     Description: Test API Export
-#     Value: !Sub ['http://${nlb}/home', nlb: !ImportValue m1-core-stack:CoreLoadBalancerDNSName]
-#     Export:
-#       Name: TestAPIExport
+  NameServers:
+    Description: Name Servers
+    Value: !Join ['; ', !GetAtt HostedZone.NameServers]
+    Export:
+      Name: !Sub ${AWS::StackName}:NameServers
+
+  # Test:
+  #   Description: Test API Export
+  #   Value: !Sub ['http://${nlb}/home', nlb: !ImportValue m1-core-stack:CoreLoadBalancerDNSName]
+  #   Export:
+  #     Name: TestAPIExport
