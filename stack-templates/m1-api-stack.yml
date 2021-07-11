@@ -54,13 +54,13 @@ Resources:
       RegionalCertificateArn: "arn:aws:acm:us-east-1:196332284574:certificate/dcf2f76d-b040-4013-993f-8a8d9d96767b"
       SecurityPolicy: TLS_1_2
       
-  # BasePathMapping:
-  #   Type: AWS::ApiGateway::BasePathMapping
-  #   Properties: 
-  #     # BasePath: String
-  #     DomainName: !Ref DomainName
-  #     RestApiId: !Ref RESTAPI
-  #     Stage: !Ref APIDeployment
+  BasePathMapping:
+    Type: AWS::ApiGateway::BasePathMapping
+    Properties: 
+      # BasePath: String
+      DomainName: !Ref DomainName
+      RestApiId: !Ref RESTAPI
+      Stage: m1-api-stage-prod
 
 # API
 
