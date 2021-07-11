@@ -20,13 +20,6 @@ def get_nlb_dns(nlb_name):
                    if load_balancer['LoadBalancerName'] == nlb_name)
                         
     return nlb_dns
-    
-    # NLB ARN: dict_items([('LoadBalancers', [{'LoadBalancerArn': 'arn:aws:elasticloadbalancing:us-east-1:196332284574:loadbalancer/net/m1-core-nlb/d1a3c13eaba292ca', 
-    # 'DNSName': 'm1-core-nlb-d1a3c13eaba292ca.elb.us-east-1.amazonaws.com',
-    
-    # print('NLB ARN:', nlb_arn.items())
-    
-    # return 'm1-core-nlb-d1a3c13eaba292ca.elb.us-east-1.amazonaws.com'
 
 
 def get_user_pool_id(user_pool):
