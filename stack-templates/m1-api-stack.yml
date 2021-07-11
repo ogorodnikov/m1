@@ -53,8 +53,7 @@ Resources:
       DomainName: m1.ogoro.me
       EndpointConfiguration:
         Types: [REGIONAL]
-      # >>>> Certificate
-      RegionalCertificateArn: "arn:aws:acm:us-east-1:196332284574:certificate/dcf2f76d-b040-4013-993f-8a8d9d96767b"
+      RegionalCertificateArn: !Ref Certificate
       SecurityPolicy: TLS_1_2
       
   APIBasePathMapping:
@@ -70,59 +69,58 @@ Resources:
   HostedZone:
     Type: AWS::Route53::HostedZone
     Properties: 
-      Name: test.ogoro.me
+      Name: ogoro.me
       HostedZoneConfig: 
         Comment: 'M1 hosted zone'
 
-  # RecordSetGroup:
-  #   Type: AWS::Route53::RecordSetGroup
-  #   Properties:
-  #     HostedZoneId: !Ref HostedZone
-  #     RecordSets:
+  RecordSetGroup:
+    Type: AWS::Route53::RecordSetGroup
+    Properties:
+      HostedZoneId: !Ref HostedZone
+      RecordSets:
       
-  #     - Name: test.ogoro.me.
-  #       Type: A
-  #       AliasTarget:
-  #         HostedZoneId: Z2FDTNDATAQYW2 # Magical AWS Hosted Zone for all Cloudfront Distributions
-  #         DNSName: dxx9yo8k7j76i.cloudfront.net.
-  #         # >>>> Static site ogoro.me CloudFront
-  #         # DNSName: !GetAtt 
-  #         # DNSName: !GetAtt CFDistribution.DomainName
+      - Name: ogoro.me.
+        Type: A
+        AliasTarget:
+          HostedZoneId: Z2FDTNDATAQYW2 # Magical AWS Hosted Zone for all Cloudfront Distributions
+          DNSName: dxx9yo8k7j76i.cloudfront.net.
+          # >>>> Static site ogoro.me CloudFront
+          # DNSName: !GetAtt 
+          # DNSName: !GetAtt CFDistribution.DomainName
           
-  #     - Name: www.test.ogoro.me.
-  #       Type: A
-  #       AliasTarget:
-  #         HostedZoneId: Z2FDTNDATAQYW2 # Magical AWS Hosted Zone for all Cloudfront Distributions
-  #         DNSName: dxx9yo8k7j76i.cloudfront.net.
-  #         # >>>> Static site ogoro.me CloudFront
-  #         # DNSName: !GetAtt 
-  #         # DNSName: !GetAtt CFDistribution.DomainName
+      - Name: www.ogoro.me.
+        Type: A
+        AliasTarget:
+          HostedZoneId: Z2FDTNDATAQYW2 # Magical AWS Hosted Zone for all Cloudfront Distributions
+          DNSName: dxx9yo8k7j76i.cloudfront.net.
+          # >>>> Static site ogoro.me CloudFront
+          # DNSName: !GetAtt 
+          # DNSName: !GetAtt CFDistribution.DomainName
           
-  #     - Name: m1.test.ogoro.me
-  #       Type: A
-  #       AliasTarget:
-  #         HostedZoneId: !GetAtt APIDomainName.RegionalHostedZoneId
-  #         DNSName: !GetAtt APIDomainName.RegionalDomainName
+      - Name: m1.ogoro.me
+        Type: A
+        AliasTarget:
+          HostedZoneId: !GetAtt APIDomainName.RegionalHostedZoneId
+          DNSName: !GetAtt APIDomainName.RegionalDomainName
           
-  #     - Name: www.m1.test.ogoro.me
-  #       Type: A
-  #       AliasTarget:
-  #         HostedZoneId: !GetAtt APIDomainName.RegionalHostedZoneId
-  #         DNSName: !GetAtt APIDomainName.RegionalDomainName
+      - Name: www.m1.ogoro.me
+        Type: A
+        AliasTarget:
+          HostedZoneId: !GetAtt APIDomainName.RegionalHostedZoneId
+          DNSName: !GetAtt APIDomainName.RegionalDomainName
+          
   
 # Certificate
 
   Certificate:
     Type: AWS::CertificateManager::Certificate
     Properties: 
-      DomainName: test.ogoro.me
-      SubjectAlternativeNames: ['*.test.ogoro.me']
+      DomainName: ogoro.me
+      SubjectAlternativeNames: ['*.ogoro.me']
       ValidationMethod: DNS
       DomainValidationOptions: 
-      - DomainName: test.ogoro.me
+      - DomainName: ogoro.me
         HostedZoneId: !Ref HostedZone
-
-
 
 
 # API
@@ -463,47 +461,47 @@ Resources:
                   integration.request.path.algorithm-id: method.request.path.algorithm-id
                   # method.request.body: method.request.body
                   
-            # options: 
-            #   summary: CORS support
-            #   description: Enable CORS by returning correct headers
-            #   consumes:
-            #   - application/json
-            #   produces:
-            #   - application/json
-            #   tags:
-            #   - CORS
-            #   x-amazon-apigateway-integration:
-            #     type: mock
-            #     requestTemplates:
-            #       application/json: "{\n  \"statusCode\" : 200\n}\n"
-            #     responses:
-            #       default:
-            #         statusCode: 200
-            #         responseParameters:
-            #           method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
-            #           method.response.header.Access-Control-Allow-Methods: "'*'"
-            #           method.response.header.Access-Control-Allow-Origin: "'*'"
-            #         responseTemplates:
-            #           application/json: "{}\n"
-            #   responses:
-            #     "200":
-            #       description: Default response for CORS method
-            #       headers:
-            #         Access-Control-Allow-Headers:
-            #           type: string
-            #         Access-Control-Allow-Methods:
-            #           type: string
-            #         Access-Control-Allow-Origin:
-            #           type: string
+            options: 
+              summary: CORS support
+              description: Enable CORS by returning correct headers
+              consumes:
+              - application/json
+              produces:
+              - application/json
+              tags:
+              - CORS
+              x-amazon-apigateway-integration:
+                type: mock
+                requestTemplates:
+                  application/json: "{\n  \"statusCode\" : 200\n}\n"
+                responses:
+                  default:
+                    statusCode: 200
+                    responseParameters:
+                      method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
+                      method.response.header.Access-Control-Allow-Methods: "'*'"
+                      method.response.header.Access-Control-Allow-Origin: "'*'"
+                    responseTemplates:
+                      application/json: "{}\n"
+              responses:
+                "200":
+                  description: Default response for CORS method
+                  headers:
+                    Access-Control-Allow-Headers:
+                      type: string
+                    Access-Control-Allow-Methods:
+                      type: string
+                    Access-Control-Allow-Origin:
+                      type: string
 
 
-# Outputs:
+Outputs:
 
-  # NameServers:
-  #   Description: Name Servers
-  #   Value: !Join ['; ', !GetAtt HostedZone.NameServers]
-  #   Export:
-  #     Name: !Sub ${AWS::StackName}:NameServers
+  NameServers:
+    Description: Name Servers
+    Value: !Join ['; ', !GetAtt HostedZone.NameServers]
+    Export:
+      Name: !Sub ${AWS::StackName}:NameServers
 
   # Test:
   #   Description: Test API Export
