@@ -43,21 +43,22 @@ Resources:
       TargetArns: 
       - !ImportValue m1-core-stack:CoreLoadBalancer
       
-# Domain Name
+# API Domain and mapping to Stage
 
-  DomainName:
+  APIDomainName:
     Type: AWS::ApiGateway::DomainName
     Properties: 
       DomainName: m1.ogoro.me
       EndpointConfiguration:
         Types: [REGIONAL]
+      # >>>> Certificate
       RegionalCertificateArn: "arn:aws:acm:us-east-1:196332284574:certificate/dcf2f76d-b040-4013-993f-8a8d9d96767b"
       SecurityPolicy: TLS_1_2
       
-  BasePathMapping:
+  APIBasePathMapping:
     Type: AWS::ApiGateway::BasePathMapping
     Properties: 
-      DomainName: !Ref DomainName
+      DomainName: !Ref APIDomainName
       RestApiId: !Ref RESTAPI
       Stage: m1-api-stage-prod
       
@@ -69,6 +70,55 @@ Resources:
       Name: test.ogoro.me
       HostedZoneConfig: 
         Comment: 'M1 hosted zone'
+
+  # RecordSet:
+  #   Type: AWS::Route53::RecordSet
+  #   Properties:
+  #     HostedZoneId: !Ref HostedZone
+  #     Name: test.ogoro.me.
+  #     Type: A
+  #     AliasTarget:
+  #       DNSName: dxx9yo8k7j76i.cloudfront.net.
+  #       # Magical AWS Hosted Zone for all Cloudfront Distributions
+  #       HostedZoneId: Z2FDTNDATAQYW2 
+        
+  RecordSetGroup:
+    Type: AWS::Route53::RecordSetGroup
+    Properties:
+      HostedZoneId: !Ref HostedZone
+      RecordSets:
+      
+      - Name: test.ogoro.me.
+        Type: A
+        AliasTarget:
+          HostedZoneId: Z2FDTNDATAQYW2 # Magical AWS Hosted Zone for all Cloudfront Distributions
+          DNSName: dxx9yo8k7j76i.cloudfront.net.
+          # >>>> Static site ogoro.me CloudFront
+          # DNSName: !GetAtt 
+          # DNSName: !GetAtt CFDistribution.DomainName
+          
+      - Name: www.test.ogoro.me.
+        Type: A
+        AliasTarget:
+          HostedZoneId: Z2FDTNDATAQYW2 # Magical AWS Hosted Zone for all Cloudfront Distributions
+          DNSName: dxx9yo8k7j76i.cloudfront.net.
+          # >>>> Static site ogoro.me CloudFront
+          # DNSName: !GetAtt 
+          # DNSName: !GetAtt CFDistribution.DomainName
+          
+      - Name: m1.test.ogoro.me
+        Type: A
+        AliasTarget:
+          HostedZoneId: !GetAtt APIDomainName.RegionalHostedZoneId
+          DNSName: !GetAtt APIDomainName.RegionalDomainName
+          
+      - Name: www.m1.test.ogoro.me
+        Type: A
+        AliasTarget:
+          HostedZoneId: !GetAtt APIDomainName.RegionalHostedZoneId
+          DNSName: !GetAtt APIDomainName.RegionalDomainName
+          
+      
 
 # API
 
@@ -442,13 +492,13 @@ Resources:
             #           type: string
 
 
-Outputs:
+# Outputs:
 
-  NameServers:
-    Description: Name Servers
-    Value: !Join ['; ', !GetAtt HostedZone.NameServers]
-    Export:
-      Name: !Sub ${AWS::StackName}:NameServers
+  # NameServers:
+  #   Description: Name Servers
+  #   Value: !Join ['; ', !GetAtt HostedZone.NameServers]
+  #   Export:
+  #     Name: !Sub ${AWS::StackName}:NameServers
 
   # Test:
   #   Description: Test API Export
