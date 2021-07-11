@@ -45,15 +45,22 @@ Resources:
       
 # Domain Name
 
-  # DomainName:
-  #   Type: AWS::ApiGatewayV2::DomainName
+  DomainName:
+    Type: AWS::ApiGateway::DomainName
+    Properties: 
+      DomainName: m1.ogoro.me
+      EndpointConfiguration:
+        Types: [REGIONAL]
+      RegionalCertificateArn: "arn:aws:acm:us-east-1:196332284574:certificate/dcf2f76d-b040-4013-993f-8a8d9d96767b"
+      SecurityPolicy: TLS_1_2
+      
+  # BasePathMapping:
+  #   Type: AWS::ApiGateway::BasePathMapping
   #   Properties: 
-  #     DomainName: ogoro.me
-  #     DomainNameConfigurations: 
-  #     - CertificateArn: String
-  #       CertificateName: String
-  #       EndpointType: String
-  #       SecurityPolicy: TLS_1_2
+  #     # BasePath: String
+  #     DomainName: !Ref DomainName
+  #     RestApiId: !Ref RESTAPI
+  #     Stage: !Ref APIDeployment
 
 # API
 
