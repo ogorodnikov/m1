@@ -1,0 +1,41 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Description: M1 Cognito Stack
+
+Resources:
+
+  UserPool:
+    Type: AWS::Cognito::UserPool
+    Properties:
+      UserPoolName: m1-user-pool
+      # AutoVerifiedAttributes:
+      # - email
+      
+      Policies:
+        PasswordPolicy:
+          MinimumLength: 6
+          RequireNumbers: False
+          RequireSymbols: False
+          RequireUppercase: False
+          RequireLowercase: False
+  
+  UserPoolClient:  
+    Type: AWS::Cognito::UserPoolClient
+    Properties: 
+      ClientName: m1-user-pool-client
+      UserPoolId: !Ref UserPool
+      
+      ExplicitAuthFlows: 
+      - ALLOW_ADMIN_USER_PASSWORD_AUTH
+      - ALLOW_CUSTOM_AUTH
+      - ALLOW_USER_PASSWORD_AUTH
+      - ALLOW_USER_SRP_AUTH
+      - ALLOW_REFRESH_TOKEN_AUTH
+      
+Outputs:
+
+  UserPool:
+    Description: Cognito User Pool
+    Value: !Ref UserPool
+    Export:
+      Name: !Sub ${AWS::StackName}:UserPool
