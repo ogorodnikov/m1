@@ -4,8 +4,6 @@ Description: M1 API Stack
 
 Resources:
 
-Resources:
-
 # API VPC Link
       
   APIGatewayVPCLink:
@@ -88,10 +86,42 @@ Resources:
     Properties: 
       DomainName: ogoro.me
       SubjectAlternativeNames: ['*.ogoro.me']
+      # SubjectAlternativeNames: ['*.ogoro.me', '*.m1.ogoro.me']
       ValidationMethod: DNS
       DomainValidationOptions: 
       - DomainName: ogoro.me
         HostedZoneId: !Ref HostedZone
+        
+        
+# CloudFront
+
+  CloudFront:
+    Type: AWS::CloudFront::Distribution
+    Properties: 
+      DistributionConfig:
+      
+        Comment: Distribution for S3 Static Site ogoro.me
+        Aliases: ['ogoro.me', 'www.ogoro.me']
+        Enabled: true
+
+        CacheBehaviors: 
+        - TargetOriginId: S3-ogoro-me
+          ViewerProtocolPolicy: redirect-to-https
+          
+        Origins: 
+        - DomainName: ogoro.me.s3-website-us-east-1.amazonaws.com
+          Id: S3-ogoro-me
+          # CustomOriginConfig: 
+          
+        ViewerCertificate: 
+          AcmCertificateArn: !Ref Certificate
+          CloudFrontDefaultCertificate: false
+
+          MinimumProtocolVersion: String
+          SslSupportMethod: String
+
+
+        
 
 
 # API

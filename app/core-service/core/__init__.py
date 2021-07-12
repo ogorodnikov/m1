@@ -13,7 +13,5 @@ app.config.from_object(config.Config)
 
 dictConfig(config.LOGGING_CONFIG)
 
-app.logger.info(f'CONFIG app.config: {app.config}')
-
 
 from core import routes

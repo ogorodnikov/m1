@@ -2,34 +2,34 @@
 
 <html lang="en">
     
-   <head>
-      <meta charset="utf-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+    
+    <title>
+        {% block title %}
+        {% endblock %}
+    </title>
+    
+    <!--<link rel="shortcut icon" href="{{ url_for('static', filename='cat.ico') }}">-->
+    
+    {% if request.endpoint == 'login' %}
+      <link rel="shortcut icon" href=https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15/svgs/solid/paw.svg>
+    {% else %}
+      <link rel="shortcut icon" href=https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15/svgs/solid/cat.svg>      
+    {% endif %}
       
-      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
-      
-      <title>
-          {% block title %}
-          {% endblock %}
-      </title>
-      
-      <!--<link rel="shortcut icon" href="{{ url_for('static', filename='cat.ico') }}">-->
-      
-      {% if request.endpoint == 'login' %}
-        <link rel="shortcut icon" href=https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15/svgs/solid/paw.svg>
-      {% else %}
-        <link rel="shortcut icon" href=https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15/svgs/solid/cat.svg>      
-      {% endif %}
-      
-   </head>
+  </head>
    
-   <body>
+  <body>
        
     <!--Navigation Bar-->
        
     <nav class="navbar navbar-expand-md navbar-dark bg-dark">
         
-      <a class="navbar-brand">M1 Core Service</a>
+      <a class="navbar-brand">M1</a>
       
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar_nav">
         <span class="navbar-toggler-icon"></span>
@@ -37,12 +37,16 @@
       
       <div class="collapse navbar-collapse" id="navbar_nav">
         <ul class="navbar-nav mr-auto">
-            <li class="nav-item active">
-                <a class="nav-link" href="{{ url_for('home') }}">Home</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('get_algorithms') }}">Algorithms</a>
-            </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('home') }}">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('get_algorithms') }}">Algorithms</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ 'https://ogoro.me' }}"
+             target="_blank" rel="noopener noreferrer">About</a>
+          </li>
         </ul>
         
         
@@ -50,39 +54,39 @@
         
           {% if session['username'] %}
             
-              {% if session['picture_url'] %}
-              
-              <li class="nav-item my-auto">
-                  <a class="nav-link p-0">
-                    <img src={{ session['picture_url'] or "https://indulgeyourpet.com/wp-content/uploads/Bombay.png" }} alt='Picture' class="rounded-circle" height=30>
-                  </a>
-              </li>
-              
-              {% else %}
-              
-              <li class="nav-item my-auto">
-                  <a class="nav-link" style="color: black; font-weight: bold">
-                      <i class="fas fa-cat"></i>
-                  </a>
-              </li>
-              
-              {% endif %}
+            {% if session['picture_url'] %}
+            
+            <li class="nav-item my-auto">
+              <a class="nav-link p-0">
+                <img src={{ session['picture_url'] or "https://indulgeyourpet.com/wp-content/uploads/Bombay.png" }} alt='Picture' class="rounded-circle" height=30>
+              </a>
+            </li>
+            
+            {% else %}
+            
+            <li class="nav-item my-auto">
+              <a class="nav-link" style="color: black; font-weight: bold">
+                <i class="fas fa-cat"></i>
+              </a>
+            </li>
+            
+            {% endif %}
               
             <li class="nav-item my-auto">
-                <a class="nav-link" disabled>{{ session['username'] }}</a>
+              <a class="nav-link" disabled>{{ session['username'] }}</a>
             </li>
               
             <li class="nav-item my-auto">
-                <a class="nav-link" href={{ url_for('logout', next=request.path) }}> Logout</a>
+              <a class="nav-link" href={{ url_for('logout', next=request.path) }}> Logout</a>
             </li>
             
           {% else %}
       
             <li class="nav-item">
-                <a class="nav-link" href={{ url_for('login') }}>Login</a>
+              <a class="nav-link" href={{ url_for('login') }}>Login</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href={{ url_for('login') }}>Register</a>
+              <a class="nav-link" href={{ url_for('login') }}>Register</a>
             </li>
             
           {% endif %}
@@ -96,36 +100,36 @@
       </div>
     </nav>
     
-      {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-           {% for category, message in messages %}
-              <div class="alert alert-{{ category }} mb-1">
-                  <button type="button" class="m1-2 mb-1 close" data-dismiss="alert" aria-label="Close">
-                      <span aria-hidden="true">&times;</span>
-                  </button>
-                  {{ message }}
-              </div>
-           {% endfor %}
-        {% endif %}
-      {% endwith %}
-      
-      {% block content %}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }} mb-1">
+            <button type="button" class="m1-2 mb-1 close" data-dismiss="alert" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+    
+    {% block content %}
 
-      {% endblock %}
-      
-      <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-      <script src="https://kit.fontawesome.com/4fdb4dd25f.js" crossorigin="anonymous"></script>
-      <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
-      <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
-      <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
+    {% endblock %}
+    
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://kit.fontawesome.com/4fdb4dd25f.js" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
+ 
+  </body>
    
-   </body>
-   
-   <style>
-      body {
-      background-color: #212121;
-      color: white
-      }
-   </style>
+  <style>
+    body {
+    background-color: #212121;
+    color: white
+    }
+  </style>
    
 </html>

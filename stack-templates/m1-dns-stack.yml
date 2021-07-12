@@ -1,0 +1,72 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Description: M1 API Stack
+
+Resources:
+
+# Route53
+  
+  HostedZone:
+    Type: AWS::Route53::HostedZone
+    Properties: 
+      Name: ogoro.me
+      HostedZoneConfig: 
+        Comment: 'M1 hosted zone'
+
+  RecordSetGroup:
+    Type: AWS::Route53::RecordSetGroup
+    Properties:
+      HostedZoneId: !Ref HostedZone
+      RecordSets:
+      
+      - Name: ogoro.me.
+        Type: A
+        AliasTarget:
+          HostedZoneId: Z2FDTNDATAQYW2 # Magical AWS Hosted Zone for all Cloudfront Distributions
+          DNSName: dxx9yo8k7j76i.cloudfront.net.
+          # >>>> Static site ogoro.me CloudFront
+          # DNSName: !GetAtt 
+          # DNSName: !GetAtt CFDistribution.DomainName
+          
+      - Name: www.ogoro.me.
+        Type: A
+        AliasTarget:
+          HostedZoneId: Z2FDTNDATAQYW2 # Magical AWS Hosted Zone for all Cloudfront Distributions
+          DNSName: dxx9yo8k7j76i.cloudfront.net.
+          # >>>> Static site ogoro.me CloudFront
+          # DNSName: !GetAtt 
+          # DNSName: !GetAtt CFDistribution.DomainName
+          
+      - Name: m1.ogoro.me
+        Type: A
+        AliasTarget:
+          HostedZoneId: !GetAtt APIDomainName.RegionalHostedZoneId
+          DNSName: !GetAtt APIDomainName.RegionalDomainName
+          
+      - Name: www.m1.ogoro.me
+        Type: A
+        AliasTarget:
+          HostedZoneId: !GetAtt APIDomainName.RegionalHostedZoneId
+          DNSName: !GetAtt APIDomainName.RegionalDomainName
+          
+  
+# Certificate
+
+  Certificate:
+    Type: AWS::CertificateManager::Certificate
+    Properties: 
+      DomainName: ogoro.me
+      SubjectAlternativeNames: ['*.ogoro.me']
+      ValidationMethod: DNS
+      DomainValidationOptions: 
+      - DomainName: ogoro.me
+        HostedZoneId: !Ref HostedZone
+
+
+Outputs:
+
+  NameServers:
+    Description: Name Servers
+    Value: !Join ['; ', !GetAtt HostedZone.NameServers]
+    Export:
+      Name: !Sub ${AWS::StackName}:NameServers
