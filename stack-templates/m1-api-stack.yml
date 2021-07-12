@@ -51,20 +51,16 @@ Resources:
       - Name: ogoro.me.
         Type: A
         AliasTarget:
-          HostedZoneId: Z2FDTNDATAQYW2 # Magical AWS Hosted Zone for all Cloudfront Distributions
-          DNSName: dxx9yo8k7j76i.cloudfront.net.
-          # >>>> Static site ogoro.me CloudFront
-          # DNSName: !GetAtt 
-          # DNSName: !GetAtt CFDistribution.DomainName
+          # Magical AWS Hosted Zone for all Cloudfront Distributions
+          HostedZoneId: Z2FDTNDATAQYW2 
+          DNSName: !GetAtt CloudFront.DomainName
           
       - Name: www.ogoro.me.
         Type: A
         AliasTarget:
-          HostedZoneId: Z2FDTNDATAQYW2 # Magical AWS Hosted Zone for all Cloudfront Distributions
-          DNSName: dxx9yo8k7j76i.cloudfront.net.
-          # >>>> Static site ogoro.me CloudFront
-          # DNSName: !GetAtt 
-          # DNSName: !GetAtt CFDistribution.DomainName
+          # Magical AWS Hosted Zone for all Cloudfront Distributions
+          HostedZoneId: Z2FDTNDATAQYW2
+          DNSName: !GetAtt CloudFront.DomainName
           
       - Name: m1.ogoro.me
         Type: A
@@ -100,25 +96,28 @@ Resources:
     Properties: 
       DistributionConfig:
       
-        Comment: Distribution for S3 Static Site ogoro.me
-        Aliases: ['ogoro.me', 'www.ogoro.me']
-        Enabled: true
+        Comment: ogoro.me S3 static site distribution
+        Aliases: [ogoro.me, www.ogoro.me]
+        HttpVersion: http2
+        Enabled: True
 
-        CacheBehaviors: 
-        - TargetOriginId: S3-ogoro-me
+        DefaultCacheBehavior: 
+          TargetOriginId: S3-ogoro-me
           ViewerProtocolPolicy: redirect-to-https
+          # AWS managed policy Managed-CachingOptimized 
+          CachePolicyId: 658327ea-f89d-4fab-a63d-7e88639e58f6
           
         Origins: 
         - DomainName: ogoro.me.s3-website-us-east-1.amazonaws.com
           Id: S3-ogoro-me
-          # CustomOriginConfig: 
+          CustomOriginConfig:
+            OriginProtocolPolicy: http-only
           
         ViewerCertificate: 
           AcmCertificateArn: !Ref Certificate
-          CloudFrontDefaultCertificate: false
+          MinimumProtocolVersion: TLSv1.2_2019
+          SslSupportMethod: sni-only
 
-          MinimumProtocolVersion: String
-          SslSupportMethod: String
 
 
         
