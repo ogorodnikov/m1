@@ -1,4 +1,4 @@
-from flask import flash, session, url_for
+from flask import flash, session, url_for, redirect
 
 import boto3
 import botocore.exceptions
@@ -79,18 +79,28 @@ def register_user(login_form):
         
         confirmation_response = cognito_client.admin_confirm_sign_up(UserPoolId=user_pool_id,
                                                                      Username=username)
-                                                                     
-        app.logger.info(f'REGISTER client_id: {client_id}')
-        app.logger.info(f'REGISTER user_pool_id: {user_pool_id}')
-        app.logger.info(f'REGISTER sign_up_response: {sign_up_response}')
-        app.logger.info(f'REGISTER confirmation_response: {confirmation_response}')
-        
-        flash(f"New user registered", category='info')
             
         redirect_to_sign_in_args = login_form.copy()
         redirect_to_sign_in_args['flow'] = 'sign-in'
         
-        return url_for('login', **redirect_to_sign_in_args)
+        redirect_uri = url_for('login', _external=True, _scheme='https', **redirect_to_sign_in_args)
+    
+        aws_nlb = app.config['AWS_NLB']
+        domain = app.config['DOMAIN']
+        
+        redirect_uri_after_proxy = redirect_uri.replace(aws_nlb, domain)
+        
+        app.logger.info(f'REGISTER client_id: {client_id}')
+        app.logger.info(f'REGISTER user_pool_id: {user_pool_id}')
+        app.logger.info(f'REGISTER sign_up_response: {sign_up_response}')
+        app.logger.info(f'REGISTER confirmation_response: {confirmation_response}')
+        app.logger.info(f'REGISTER redirect_to_sign_in_args: {redirect_to_sign_in_args}')
+        app.logger.info(f'REGISTER redirect_uri: {redirect_uri}')
+        app.logger.info(f'REGISTER redirect_uri_after_proxy: {redirect_uri_after_proxy}')
+        
+        flash(f"New user registered", category='info')
+        
+        return redirect_uri_after_proxy
         
     except Exception as exception:
         

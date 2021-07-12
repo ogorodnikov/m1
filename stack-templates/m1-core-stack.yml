@@ -421,6 +421,8 @@ Resources:
               - cognito-idp:ListUserPools
               - cognito-idp:ListUserPoolClients
               - cognito-idp:AdminConfirmSignUp
+              # ELB
+              - elasticloadbalancing:DescribeLoadBalancers
               Resource: '*'
             - Effect: Allow
               Action:
