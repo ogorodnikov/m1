@@ -13,8 +13,7 @@ Resources:
       TargetArns: 
       - !ImportValue m1-core-stack:CoreLoadBalancer
 
-
-# API Domain and mapping to Stage
+# API Domain
 
   APIDomainName:
     Type: AWS::ApiGateway::DomainName
@@ -22,8 +21,10 @@ Resources:
       DomainName: m1.ogoro.me
       EndpointConfiguration:
         Types: [REGIONAL]
-      RegionalCertificateArn: !Ref Certificate
+      RegionalCertificateArn: !ImportValue m1-dns-stack:Certificate
       SecurityPolicy: TLS_1_2
+
+# Mapping to stage
       
   APIBasePathMapping:
     Type: AWS::ApiGateway::BasePathMapping
@@ -32,104 +33,15 @@ Resources:
       RestApiId: !Ref RESTAPI
       Stage: m1-api-stage-prod
 
-
-# Route53
-  
-  HostedZone:
-    Type: AWS::Route53::HostedZone
-    Properties: 
-      Name: ogoro.me
-      HostedZoneConfig: 
-        Comment: 'M1 hosted zone'
-
-  RecordSetGroup:
-    Type: AWS::Route53::RecordSetGroup
-    Properties:
-      HostedZoneId: !Ref HostedZone
-      RecordSets:
-      
-      - Name: ogoro.me.
-        Type: A
-        AliasTarget:
-          # Magical AWS Hosted Zone for all Cloudfront Distributions
-          HostedZoneId: Z2FDTNDATAQYW2 
-          DNSName: !GetAtt CloudFront.DomainName
-          
-      - Name: www.ogoro.me.
-        Type: A
-        AliasTarget:
-          # Magical AWS Hosted Zone for all Cloudfront Distributions
-          HostedZoneId: Z2FDTNDATAQYW2
-          DNSName: !GetAtt CloudFront.DomainName
-          
-      - Name: m1.ogoro.me
-        Type: A
-        AliasTarget:
-          HostedZoneId: !GetAtt APIDomainName.RegionalHostedZoneId
-          DNSName: !GetAtt APIDomainName.RegionalDomainName
-          
-      - Name: www.m1.ogoro.me
-        Type: A
-        AliasTarget:
-          HostedZoneId: !GetAtt APIDomainName.RegionalHostedZoneId
-          DNSName: !GetAtt APIDomainName.RegionalDomainName
-          
-  
-# Certificate
-
-  Certificate:
-    Type: AWS::CertificateManager::Certificate
-    Properties: 
-      DomainName: ogoro.me
-      SubjectAlternativeNames: ['*.ogoro.me']
-      # SubjectAlternativeNames: ['*.ogoro.me', '*.m1.ogoro.me']
-      ValidationMethod: DNS
-      DomainValidationOptions: 
-      - DomainName: ogoro.me
-        HostedZoneId: !Ref HostedZone
-        
-        
-# CloudFront
-
-  CloudFront:
-    Type: AWS::CloudFront::Distribution
-    Properties: 
-      DistributionConfig:
-      
-        Comment: ogoro.me S3 static site distribution
-        Aliases: [ogoro.me, www.ogoro.me]
-        HttpVersion: http2
-        Enabled: True
-
-        DefaultCacheBehavior: 
-          TargetOriginId: S3-ogoro-me
-          ViewerProtocolPolicy: redirect-to-https
-          # AWS managed policy Managed-CachingOptimized 
-          CachePolicyId: 658327ea-f89d-4fab-a63d-7e88639e58f6
-          
-        Origins: 
-        - DomainName: ogoro.me.s3-website-us-east-1.amazonaws.com
-          Id: S3-ogoro-me
-          CustomOriginConfig:
-            OriginProtocolPolicy: http-only
-          
-        ViewerCertificate: 
-          AcmCertificateArn: !Ref Certificate
-          MinimumProtocolVersion: TLSv1.2_2019
-          SslSupportMethod: sni-only
-
-
-
-        
-
-
-# API
+# Stage
 
   APIDeployment:
     Type: AWS::ApiGateway::Deployment
     Properties: 
       RestApiId: !Ref RESTAPI
       StageName: m1-api-stage-prod
+
+# REST API
       
   RESTAPI:
     Type: AWS::ApiGateway::RestApi
@@ -463,52 +375,49 @@ Resources:
                   integration.request.path.algorithm-id: method.request.path.algorithm-id
                   # method.request.body: method.request.body
                   
-            options: 
-              summary: CORS support
-              description: Enable CORS by returning correct headers
-              consumes:
-              - application/json
-              produces:
-              - application/json
-              tags:
-              - CORS
-              x-amazon-apigateway-integration:
-                type: mock
-                requestTemplates:
-                  application/json: "{\n  \"statusCode\" : 200\n}\n"
-                responses:
-                  default:
-                    statusCode: 200
-                    responseParameters:
-                      method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
-                      method.response.header.Access-Control-Allow-Methods: "'*'"
-                      method.response.header.Access-Control-Allow-Origin: "'*'"
-                    responseTemplates:
-                      application/json: "{}\n"
-              responses:
-                "200":
-                  description: Default response for CORS method
-                  headers:
-                    Access-Control-Allow-Headers:
-                      type: string
-                    Access-Control-Allow-Methods:
-                      type: string
-                    Access-Control-Allow-Origin:
-                      type: string
-
+            # options: 
+            #   summary: CORS support
+            #   description: Enable CORS by returning correct headers
+            #   consumes:
+            #   - application/json
+            #   produces:
+            #   - application/json
+            #   tags:
+            #   - CORS
+            #   x-amazon-apigateway-integration:
+            #     type: mock
+            #     requestTemplates:
+            #       application/json: "{\n  \"statusCode\" : 200\n}\n"
+            #     responses:
+            #       default:
+            #         statusCode: 200
+            #         responseParameters:
+            #           method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
+            #           method.response.header.Access-Control-Allow-Methods: "'*'"
+            #           method.response.header.Access-Control-Allow-Origin: "'*'"
+            #         responseTemplates:
+            #           application/json: "{}\n"
+            #   responses:
+            #     "200":
+            #       description: Default response for CORS method
+            #       headers:
+            #         Access-Control-Allow-Headers:
+            #           type: string
+            #         Access-Control-Allow-Methods:
+            #           type: string
+            #         Access-Control-Allow-Origin:
+            #           type: string
 
 Outputs:
 
-  NameServers:
-    Description: Name Servers
-    Value: !Join ['; ', !GetAtt HostedZone.NameServers]
+  APIDomainNameRegionalHostedZoneId:
+    Description: API Domain Name Regional Hosted Zone Id
+    Value: !GetAtt APIDomainName.RegionalHostedZoneId
     Export:
-      Name: !Sub ${AWS::StackName}:NameServers
+      Name: !Sub ${AWS::StackName}:APIDomainNameRegionalHostedZoneId
 
-  # Test:
-  #   Description: Test API Export
-  #   Value: !Sub 
-  #   - arn:aws:cognito-idp:${AWS::Region}:${AWS::AccountId}:userpool/${userpool}
-  #   - userpool: !ImportValue m1-cognito-stack:UserPool
-  #   Export:
-  #     Name: TestAPIExport
+  APIDomainNameRegionalDomainName:
+    Description: API Domain Name Regional Domain Name
+    Value: !GetAtt APIDomainName.RegionalDomainName
+    Export:
+      Name: !Sub ${AWS::StackName}:APIDomainNameRegionalDomainName

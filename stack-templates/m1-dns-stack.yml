@@ -4,3 +4,102 @@ Description: M1 DNS Stack
 
 Resources:
 
+# Route53
+  
+  HostedZone:
+    Type: AWS::Route53::HostedZone
+    Properties: 
+      Name: ogoro.me
+      HostedZoneConfig: 
+        Comment: M1 hosted zone
+
+  RecordSetGroup:
+    Type: AWS::Route53::RecordSetGroup
+    Properties:
+      HostedZoneId: !Ref HostedZone
+      RecordSets:
+      
+      - Name: ogoro.me.
+        Type: A
+        AliasTarget:
+          # Magical AWS Hosted Zone for all Cloudfront Distributions
+          HostedZoneId: Z2FDTNDATAQYW2 
+          DNSName: !GetAtt CloudFrontDistribution.DomainName
+          
+      - Name: www.ogoro.me.
+        Type: A
+        AliasTarget:
+          # Magical AWS Hosted Zone for all Cloudfront Distributions
+          HostedZoneId: Z2FDTNDATAQYW2
+          DNSName: !GetAtt CloudFrontDistribution.DomainName
+          
+      - Name: m1.ogoro.me
+        Type: A
+        AliasTarget:
+          HostedZoneId: 
+            !ImportValue m1-api-stack:APIDomainNameRegionalHostedZoneId
+          DNSName: 
+            !ImportValue m1-api-stack:APIDomainNameRegionalDomainName
+          
+      - Name: www.m1.ogoro.me
+        Type: A
+        AliasTarget:
+          HostedZoneId: 
+            !ImportValue m1-api-stack:APIDomainNameRegionalHostedZoneId
+          DNSName: 
+            !ImportValue m1-api-stack:APIDomainNameRegionalDomainName
+  
+# Certificate
+
+  Certificate:
+    Type: AWS::CertificateManager::Certificate
+    Properties: 
+      DomainName: ogoro.me
+      SubjectAlternativeNames: ['*.ogoro.me']
+      ValidationMethod: DNS
+      DomainValidationOptions: 
+      - DomainName: ogoro.me
+        HostedZoneId: !Ref HostedZone
+
+# CloudFront
+
+  CloudFrontDistribution:
+    Type: AWS::CloudFront::Distribution
+    Properties: 
+      DistributionConfig:
+      
+        Comment: ogoro.me S3 static site distribution
+        Aliases: [ogoro.me, www.ogoro.me]
+        HttpVersion: http2
+        Enabled: True
+
+        DefaultCacheBehavior: 
+          TargetOriginId: S3-ogoro-me
+          ViewerProtocolPolicy: redirect-to-https
+          # AWS managed policy Managed-CachingOptimized 
+          CachePolicyId: 658327ea-f89d-4fab-a63d-7e88639e58f6
+          
+        Origins: 
+        - DomainName: ogoro.me.s3-website-us-east-1.amazonaws.com
+          Id: S3-ogoro-me
+          CustomOriginConfig:
+            OriginProtocolPolicy: http-only
+          
+        ViewerCertificate: 
+          AcmCertificateArn: !Ref Certificate
+          MinimumProtocolVersion: TLSv1.2_2019
+          SslSupportMethod: sni-only
+
+Outputs:
+
+  NameServers:
+    Description: Name Servers
+    Value: !Join ['; ', !GetAtt HostedZone.NameServers]
+    Export:
+      Name: !Sub ${AWS::StackName}:NameServers
+      
+  Certificate:
+    Description: ACM Certificate
+    Value: !Ref Certificate
+    Export:
+      Name: !Sub ${AWS::StackName}:Certificate
