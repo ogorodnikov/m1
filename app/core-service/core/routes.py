@@ -115,4 +115,5 @@ def set_algorithm_state(algorithm_id):
     state = request.args.get('state')
     response = models.set_algorithm_state(algorithm_id, state)
     
+    
     return response, 204
