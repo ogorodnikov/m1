@@ -8,6 +8,7 @@ Resources:
     Type: AWS::Cognito::UserPool
     Properties:
       UserPoolName: m1-user-pool
+      
       # AutoVerifiedAttributes:
       # - email
       
@@ -18,6 +19,27 @@ Resources:
           RequireSymbols: False
           RequireUppercase: False
           RequireLowercase: False
+      
+      AliasAttributes: [email, phone_number, preferred_username]
+      UsernameConfiguration:
+        CaseSensitive: False
+        
+      Schema:
+      - Name: name
+        AttributeDataType: String
+        Mutable: True
+        Required: False
+      - Name: email
+        AttributeDataType: String
+        Mutable: True
+        Required: False
+      - Name: picture_url
+        AttributeDataType: String
+        Mutable: True
+        Required: False
+        StringAttributeConstraints:
+          MaxLength: 2048
+
   
   UserPoolClient:  
     Type: AWS::Cognito::UserPoolClient
