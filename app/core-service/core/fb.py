@@ -2,7 +2,7 @@ import requests
 
 from flask import flash, session, url_for
 
-from core import app
+from core import app, users
 
 from urllib.parse import urlencode
 
@@ -76,7 +76,7 @@ def code_to_token(code):
     return facebook_token
     
 
-def set_facebook_claims(access_token):
+def login_facebook_user(access_token):
             
     me_endpoint = 'https://graph.facebook.com/me'
     
@@ -90,15 +90,19 @@ def set_facebook_claims(access_token):
     picture_data = picture.get('data') if picture else ""
     picture_url = picture_data.get('url') if picture_data else ""
     
+    session['name'] = me_response_json.get('name')
+    session['email'] = me_response_json.get('email')
+    session['username'] = me_response_json.get('short_name')
+    session['picture_url'] = picture_url
+    
     app.logger.info(f"CLAIMS me_endpoint: {me_endpoint}")
     app.logger.info(f"CLAIMS parameters: {parameters}")
     app.logger.info(f"CLAIMS me_response_json: {me_response_json}")
-
-    session['username'] = me_response_json.get('short_name')
-    session['picture_url'] = picture_url
         
     login_referer = session['login_referer']
     session.pop('login_referer', None)
+    
+    users.populate_facebook_user()
         
     flash(f"Welcome, facebook user {session['username']}!", category='warning')
     

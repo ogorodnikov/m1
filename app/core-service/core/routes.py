@@ -1,4 +1,4 @@
-from core import app, models, users, auth
+from core import app, models, users, fb
 
 from flask import render_template, redirect, url_for, flash, request, session
 
@@ -24,12 +24,12 @@ def login():
     
     if flow == 'facebook':
         
-        redirect_url = auth.get_autorization_url()
+        redirect_url = fb.get_autorization_url()
 
     if code:
         
-        facebook_token = auth.code_to_token(code)
-        redirect_url = auth.set_facebook_claims(facebook_token)
+        facebook_token = fb.code_to_token(code)
+        redirect_url = fb.login_facebook_user(facebook_token)
 
     if flow == 'register':
         

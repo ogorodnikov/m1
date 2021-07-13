@@ -16,6 +16,7 @@ def login_user(login_form):
     
     username = login_form.get('username')
     password = login_form.get('password')
+    email = login_form.get('email')
     
     try:
         
@@ -110,3 +111,41 @@ def register_user(login_form):
         session.pop('login_referer', None)
             
         return login_referer
+
+    
+def populate_facebook_user():
+    
+    user_response = cognito_client.list_users(UserPoolId=user_pool_id,
+                                              Filter=f"email=\"{session['email']}\"")
+    
+    user_already_in_cognito = bool(user_response['Users'])
+    
+    app.logger.info(f'POPULATE user_response: {user_response}')
+    app.logger.info(f'POPULATE user_already_in_cognito: {user_already_in_cognito}')
+    
+    if user_already_in_cognito:
+
+        return
+    
+    fb_username = 'fb_' + session['email'].replace('@', '_')
+    
+    cognito_client.sign_up(ClientId=client_id,
+                           Username=fb_username,
+                           Password='11111111',
+                           UserAttributes=[{'Name': 'name', 
+                                            'Value': session['name']},
+                                           {'Name': 'email', 
+                                            'Value': session['email']},
+                                           {'Name': 'custom:picture_url', 
+                                            'Value': session['picture_url']}])
+    
+    cognito_client.admin_confirm_sign_up(UserPoolId=user_pool_id,
+                                         Username=fb_username)
+                                         
+    app.logger.info(f'POPULATE session: {session}')
+    app.logger.info(f'POPULATE fb_username: {fb_username}')    
+    app.logger.info(f'POPULATE done')                                                                 
+
+    
+    
+    
