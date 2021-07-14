@@ -51,7 +51,7 @@ def add_test_data():
             batch.put_item(item)
          
             
-add_test_data()
+# add_test_data()
 
 # print("Test data added to 'm1-algorithms-table'")
 
