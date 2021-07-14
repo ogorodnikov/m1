@@ -277,35 +277,35 @@ Resources:
         ContainerPort: 8080
         TargetGroupArn: !ImportValue m1-core-stack:CoreTargetGroup
 
-  CoreContainerEC2Instance:
-    Type: AWS::EC2::Instance
-    # DependsOn: GatewayAttachement
-    Properties:
-      Tags:
-      - Key: Name
-        Value: m1-core-container-ec2-instance
-      ImageId: !Ref LatestECSOptimizedAMI
-      IamInstanceProfile: !Ref CoreContainerEC2RoleInstanceProfile
-      InstanceType: t2.micro
-      KeyName: !Ref KeyPair
-      NetworkInterfaces:
-      - DeviceIndex: 0
-        SubnetId: !ImportValue m1-core-stack:PrivateSubnetOne
-        AssociatePublicIpAddress: false
-        GroupSet: 
-        - !ImportValue m1-core-stack:VPCSecurityGroup
-      UserData:
-        Fn::Base64: !Sub |
-          #!/bin/bash
-          echo ECS_CLUSTER=${CoreCluster} >> /etc/ecs/ecs.config
-          echo ECS_ENABLE_AWSLOGS_EXECUTIONROLE_OVERRIDE=true >> /etc/ecs/ecs.config
+  # CoreContainerEC2Instance:
+  #   Type: AWS::EC2::Instance
+  #   # DependsOn: GatewayAttachement
+  #   Properties:
+  #     Tags:
+  #     - Key: Name
+  #       Value: m1-core-container-ec2-instance
+  #     ImageId: !Ref LatestECSOptimizedAMI
+  #     IamInstanceProfile: !Ref CoreContainerEC2RoleInstanceProfile
+  #     InstanceType: t2.micro
+  #     KeyName: !Ref KeyPair
+  #     NetworkInterfaces:
+  #     - DeviceIndex: 0
+  #       SubnetId: !ImportValue m1-core-stack:PrivateSubnetOne
+  #       AssociatePublicIpAddress: false
+  #       GroupSet: 
+  #       - !ImportValue m1-core-stack:VPCSecurityGroup
+  #     UserData:
+  #       Fn::Base64: !Sub |
+  #         #!/bin/bash
+  #         echo ECS_CLUSTER=${CoreCluster} >> /etc/ecs/ecs.config
+  #         echo ECS_ENABLE_AWSLOGS_EXECUTIONROLE_OVERRIDE=true >> /etc/ecs/ecs.config
           
-          # echo ECS_ENABLE_TASK_ENI=true >> /etc/ecs/ecs.config
+  #         # echo ECS_ENABLE_TASK_ENI=true >> /etc/ecs/ecs.config
           
-          # mkdir /home/ec2-user/.aws/ && touch /home/ec2-user/.aws/config
-          # echo [default] > /home/ec2-user/.aws/config
-          # echo role_arn = arn:aws:iam::196332284574:role/m1-ecs-task-role >> /home/ec2-user/.aws/config
-          # echo credential_source = EcsContainer >> /home/ec2-user/.aws/config  
+  #         # mkdir /home/ec2-user/.aws/ && touch /home/ec2-user/.aws/config
+  #         # echo [default] > /home/ec2-user/.aws/config
+  #         # echo role_arn = arn:aws:iam::196332284574:role/m1-ecs-task-role >> /home/ec2-user/.aws/config
+  #         # echo credential_source = EcsContainer >> /home/ec2-user/.aws/config  
 
 
 Outputs:

@@ -384,6 +384,16 @@ Outputs:
     Export:
       Name: !Sub ${AWS::StackName}:PrivateSubnetTwo
       
+  PublicSubnetOne:
+    Value: !Ref PublicSubnetOne
+    Export:
+      Name: !Sub ${AWS::StackName}:PublicSubnetOne
+      
+  PublicSubnetTwo:
+    Value: !Ref PublicSubnetTwo
+    Export:
+      Name: !Sub ${AWS::StackName}:PublicSubnetTwo
+      
   NATInstanceOne:
     Value: !Ref NATInstanceOne
     Export:
