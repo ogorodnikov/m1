@@ -2,6 +2,7 @@ AWSTemplateFormatVersion: 2010-09-09
 
 Description: M1 Core Stack
 
+
 Mappings:
 
   SubnetConfig:
@@ -15,33 +16,19 @@ Mappings:
       CIDR: 10.0.2.0/24
     PrivateTwo:
       CIDR: 10.0.3.0/24
-      
+
+
 Parameters:
 
-  KeyPair:
-    Type: String
-    Default: m1-key
-    
-  CreateAWSServiceRoleForECS:
-    Type: String
-    Default: true
-  
   LatestLinuxAMI:
     Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
     Default: /aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2
     
-  LatestECSOptimizedAMI:
-    Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
-    Default: /aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id
-    
   NATAMI:
     Type: String
-    Default: ami-00a9d4a05375b2763    
-    
-    
-Conditions:
-  CreateAWSServiceRoleForECS: !Not [!Equals [!Ref CreateAWSServiceRoleForECS, true]]
-      
+    Default: ami-00a9d4a05375b2763
+
+
 Resources:
 
   VPC:
@@ -67,7 +54,7 @@ Resources:
       VpcId: !Ref VPC
       InternetGatewayId: !Ref InternetGateway
       
-  # Subnets
+# Subnets
 
   PublicSubnetOne:
     Type: AWS::EC2::Subnet
@@ -123,7 +110,7 @@ Resources:
       VpcId: !Ref VPC
       CidrBlock: !FindInMap [SubnetConfig, PrivateTwo, CIDR]
       
-  # Routing
+# Routing
 
   PublicRouteTable:
     Type: AWS::EC2::RouteTable
@@ -153,15 +140,15 @@ Resources:
       SubnetId: !Ref PublicSubnetTwo
       RouteTableId: !Ref PublicRouteTable
 
-  # Security Groups
+# Security Groups
   
-  ClusterSecurityGroup:
+  VPCSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
       Tags: 
       - Key: Name
-        Value: m1-cluster-sg
-      GroupName: m1-cluster-sg
+        Value: m1-vpc-sg
+      GroupName: m1-vpc-sg
       GroupDescription: Access to ECS Cluster from VPC range
       VpcId: !Ref VPC
       SecurityGroupIngress:
@@ -178,10 +165,10 @@ Resources:
       GroupDescription: Access to NAT Instances
       VpcId: !Ref VPC
       SecurityGroupIngress:
-      - SourceSecurityGroupId: !GetAtt ClusterSecurityGroup.GroupId
+      - SourceSecurityGroupId: !GetAtt VPCSecurityGroup.GroupId
         IpProtocol: -1
         
-  # NAT Instances
+# NAT Instances
   
   NATInstanceOne:
     Type: AWS::EC2::Instance
@@ -289,7 +276,7 @@ Resources:
   #       Count: 1
   #       Timeout: PT5M
         
-  # Private Routing
+# Private Routing
   
   PrivateRouteTableOne:
     Type: AWS::EC2::RouteTable
@@ -333,224 +320,7 @@ Resources:
       RouteTableId: !Ref PrivateRouteTableTwo
       SubnetId: !Ref PrivateSubnetTwo
 
-  ### Roles
-
-  ECSRole:
-    Type: AWS::IAM::Role
-    Properties:
-      Tags: 
-      - Key: Name
-        Value: m1-ecs-role
-      RoleName: m1-ecs-role
-      AssumeRolePolicyDocument:
-        Statement:
-        - Effect: Allow
-          Principal:
-            Service:
-            - ecs.amazonaws.com
-            - ecs-tasks.amazonaws.com
-          Action:
-          - sts:AssumeRole
-      Path: /
-      Policies:
-      - PolicyName: m1-ecs-policy
-        PolicyDocument:
-          Statement:
-          - Effect: Allow
-            Action:
-            # Network Interface actions for awsvpc networking mode
-            - ec2:AttachNetworkInterface
-            - ec2:CreateNetworkInterface
-            - ec2:CreateNetworkInterfacePermission
-            - ec2:DeleteNetworkInterface
-            - ec2:DeleteNetworkInterfacePermission
-            - ec2:Describe*
-            - ec2:DetachNetworkInterface
-            # ELB
-            - elasticloadbalancing:DeregisterInstancesFromLoadBalancer
-            - elasticloadbalancing:DeregisterTargets
-            - elasticloadbalancing:Describe*
-            - elasticloadbalancing:RegisterInstancesWithLoadBalancer
-            - elasticloadbalancing:RegisterTargets
-            # Allow ECS to run tasks that have IAM roles assigned to them
-            - iam:PassRole
-            # Allow ECS interact with container images
-            - ecr:GetAuthorizationToken
-            - ecr:BatchCheckLayerAvailability
-            - ecr:GetDownloadUrlForLayer
-            - ecr:BatchGetImage
-            # Allow ECS create and push logs to CloudWatch
-            - logs:DescribeLogStreams
-            - logs:CreateLogStream
-            - logs:CreateLogGroup
-            - logs:PutLogEvents
-            Resource: '*'
-
-  ECSTaskRole:
-    Type: AWS::IAM::Role
-    Properties:
-      Tags: 
-      - Key: Name
-        Value: m1-ecs-task-role
-      RoleName: m1-ecs-task-role
-      AssumeRolePolicyDocument:
-        Statement:
-        - Effect: Allow
-          Principal:
-            Service: 
-            - ecs-tasks.amazonaws.com
-          Action:
-          - sts:AssumeRole
-      Path: /
-      Policies:
-        - PolicyName: m1-ecs-task-policy
-          PolicyDocument:
-            Statement:
-            - Effect: Allow
-              Action:
-              # Allow ECS Tasks to download images from ECR
-              - ecr:GetAuthorizationToken
-              - ecr:BatchCheckLayerAvailability
-              - ecr:GetDownloadUrlForLayer
-              - ecr:BatchGetImage
-              # Allow ECS tasks to upload logs to CloudWatch
-              - logs:CreateLogStream
-              - logs:CreateLogGroup
-              - logs:PutLogEvents
-              # Cognito
-              - cognito-idp:ListUsers
-              - cognito-idp:ListUserPools
-              - cognito-idp:ListUserPoolClients
-              - cognito-idp:AdminConfirmSignUp
-              # ELB
-              - elasticloadbalancing:DescribeLoadBalancers
-              Resource: '*'
-            - Effect: Allow
-              Action:
-              # Allows ECS tasks to interact with particular DynamoDB table
-              - dynamodb:Scan
-              - dynamodb:Query
-              - dynamodb:UpdateItem
-              - dynamodb:GetItem
-              - dynamodb:BatchWriteItem
-              Resource: arn:aws:dynamodb:*:*:table/m1-algorithms-table*
-
-  CodePipelineRole:
-    Type: AWS::IAM::Role
-    Properties:
-      RoleName: m1-codepipeline-role
-      AssumeRolePolicyDocument:
-        Statement:
-        - Effect: Allow
-          Principal:
-            Service:
-            - codepipeline.amazonaws.com
-          Action:
-          - sts:AssumeRole
-      Path: /
-      Policies:
-      - PolicyName: m1-codepipeline-policy
-        PolicyDocument:
-          Statement:
-          - Action:
-            - codecommit:GetBranch
-            - codecommit:GetCommit
-            - codecommit:UploadArchive
-            - codecommit:GetUploadArchiveStatus
-            - codecommit:CancelUploadArchive
-            - s3:GetObject
-            - s3:GetObjectVersion
-            - s3:GetBucketVersioning
-            - elasticloadbalancing:*
-            - autoscaling:*
-            - cloudwatch:*
-            - ecs:*
-            - codebuild:*
-            - iam:PassRole
-            Resource: '*'
-            Effect: Allow
-          - Action:
-            - s3:PutObject
-            Resource:
-            - arn:aws:s3:::*
-            Effect: Allow
-          Version: 2012-10-17
-
-  CodeBuildRole:
-    Type: AWS::IAM::Role
-    Properties:
-      RoleName: m1-codebuild-role
-      AssumeRolePolicyDocument:
-        Version: 2012-10-17
-        Statement:
-          Effect: Allow
-          Principal:
-            Service: codebuild.amazonaws.com
-          Action: sts:AssumeRole
-      Policies:
-      - PolicyName: m1-codebuild-policy
-        PolicyDocument:
-          Version: 2012-10-17
-          Statement:
-          - Effect: Allow
-            Action:
-            - codecommit:ListBranches
-            - codecommit:ListRepositories
-            - codecommit:BatchGetRepositories
-            - codecommit:Get*
-            - codecommit:GitPull
-            Resource:
-            - !Sub arn:aws:codecommit:${AWS::Region}:${AWS::AccountId}:m1-repository
-          - Effect: Allow
-            Action:
-            - logs:CreateLogGroup
-            - logs:CreateLogStream
-            - logs:PutLogEvents
-            - s3:PutObject
-            - s3:GetObject
-            - s3:GetObjectVersion
-            - s3:ListBucket
-            - ecr:GetAuthorizationToken
-            - ecr:InitiateLayerUpload
-            - ecr:UploadLayerPart
-            - ecr:CompleteLayerUpload
-            - ecr:PutImage
-            - ecr:BatchCheckLayerAvailability
-            Resource: '*'
-            
-  ECSServiceLinkedRole:
-    Type: AWS::IAM::ServiceLinkedRole
-    Condition: CreateAWSServiceRoleForECS
-    Properties:
-      AWSServiceName: ecs.amazonaws.com
-      
-  CoreContainerEC2Role:
-    Type: AWS::IAM::Role
-    Properties:
-      RoleName: m1-core-container-ec2-role
-      AssumeRolePolicyDocument:
-        Statement:
-        - Effect: Allow
-          Principal:
-            Service: 
-            - ec2.amazonaws.com
-          Action:
-          - sts:AssumeRole
-      Path: /
-      ManagedPolicyArns:
-      - arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore
-      # - arn:aws:iam::aws:policy/AmazonSSMDirectoryServiceAccess
-      # - arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy
-      - arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role
-  
-  CoreContainerEC2RoleInstanceProfile:
-    Type: AWS::IAM::InstanceProfile
-    Properties:
-      Path: /
-      Roles: 
-      - !Ref CoreContainerEC2Role
-            
-  # Load Balancer
+# Load Balancer
   
   CoreLoadBalancer:
     Type: AWS::ElasticLoadBalancingV2::LoadBalancer
@@ -586,298 +356,23 @@ Resources:
       Port: 80
       Protocol: TCP
 
-  ### ECR and Logs
-  
-  CoreImageRepository: 
-    Type: AWS::ECR::Repository
-    Properties: 
-      RepositoryName: m1-core-image
-      
-  CoreLogGroup: 
-    Type: AWS::Logs::LogGroup
-    Properties: 
-      LogGroupName: m1-core-log-group
-      
-  ### ECS
-      
-  CoreCluster:
-    Type: AWS::ECS::Cluster
-    DependsOn: CoreListener
-    Properties:
-      ClusterName: m1-core-cluster
-      
-  # Fargate
-      
-  CoreFargateTaskDefinition:
-    Type: AWS::ECS::TaskDefinition
-    Properties:
-      Family: m1-core-fargate-task-definition
-      Cpu: 256
-      Memory: 512
-      NetworkMode: awsvpc
-      RequiresCompatibilities:
-      - FARGATE
-      TaskRoleArn: !Ref ECSTaskRole
-      ExecutionRoleArn: !Ref ECSRole
-      ContainerDefinitions:
-      - Name: m1-core-image
-        PortMappings: 
-        - ContainerPort: 8080
-          Protocol: http
-        Image: !Sub ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${CoreImageRepository}:latest
-        LogConfiguration:
-          LogDriver: awslogs
-          Options:
-            awslogs-group: !Ref CoreLogGroup
-            awslogs-region: !Ref AWS::Region
-            awslogs-stream-prefix: m1-core-fargate
-        Essential: true
-
-  CoreFargateService:
-    Type: AWS::ECS::Service
-    Properties:
-      ServiceName: m1-core-fargate-service
-      Cluster: !Ref CoreCluster
-      LaunchType: FARGATE
-      DeploymentConfiguration:
-        MaximumPercent: 300
-        MinimumHealthyPercent: 100
-      DesiredCount: 0
-      NetworkConfiguration:
-        AwsvpcConfiguration:
-          AssignPublicIp: DISABLED
-          SecurityGroups:
-          - !Ref ClusterSecurityGroup
-          Subnets:
-          - !Ref PrivateSubnetOne
-          - !Ref PrivateSubnetTwo
-      TaskDefinition: !Ref CoreFargateTaskDefinition
-      LoadBalancers:
-      - ContainerName: m1-core-image
-        ContainerPort: 8080
-        TargetGroupArn: !Ref CoreTargetGroup
-        
-  # Container EC2
-  
-  CoreContainerEC2TaskDefinition:
-    Type: AWS::ECS::TaskDefinition
-    Properties:
-      Family: m1-core-container-ec2-task-definition
-      Cpu: 256
-      Memory: 512
-      NetworkMode: awsvpc
-      RequiresCompatibilities:
-      - EC2
-      TaskRoleArn: !Ref ECSTaskRole
-      ExecutionRoleArn: !Ref ECSRole
-      ContainerDefinitions:
-      - Name: m1-core-image
-        PortMappings: 
-        - ContainerPort: 8080
-          Protocol: http
-        Image: !Sub ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${CoreImageRepository}:latest
-        LogConfiguration:
-          LogDriver: awslogs
-          Options:
-            awslogs-group: !Ref CoreLogGroup
-            awslogs-region: !Ref AWS::Region
-            awslogs-stream-prefix: m1-core-container-ec2
-        Essential: true
-        
-  CoreContainerEC2Service:
-    Type: AWS::ECS::Service
-    Properties:
-      ServiceName: m1-core-container-ec2-service
-      Cluster: !Ref CoreCluster
-      LaunchType: EC2
-      DeploymentConfiguration:
-        MaximumPercent: 300
-        MinimumHealthyPercent: 100
-      DesiredCount: 0
-      NetworkConfiguration:
-        AwsvpcConfiguration:
-          AssignPublicIp: DISABLED
-          SecurityGroups:
-          - !Ref ClusterSecurityGroup
-          Subnets:
-          - !Ref PrivateSubnetOne
-          - !Ref PrivateSubnetTwo
-      TaskDefinition: !Ref CoreContainerEC2TaskDefinition
-      LoadBalancers:
-      - ContainerName: m1-core-image
-        ContainerPort: 8080
-        TargetGroupArn: !Ref CoreTargetGroup
-
-  CoreContainerEC2Instance:
-    Type: AWS::EC2::Instance
-    DependsOn: GatewayAttachement
-    Properties:
-      Tags:
-      - Key: Name
-        Value: m1-core-container-ec2-instance
-      ImageId: !Ref LatestECSOptimizedAMI
-      IamInstanceProfile: !Ref CoreContainerEC2RoleInstanceProfile
-      InstanceType: t2.micro
-      KeyName: !Ref KeyPair
-      NetworkInterfaces:
-      - DeviceIndex: 0
-        SubnetId: !Ref PrivateSubnetOne
-        AssociatePublicIpAddress: false
-        GroupSet: 
-        - !Ref ClusterSecurityGroup
-      UserData:
-        Fn::Base64: !Sub |
-          #!/bin/bash
-          echo ECS_CLUSTER=${CoreCluster} >> /etc/ecs/ecs.config
-          echo ECS_ENABLE_AWSLOGS_EXECUTIONROLE_OVERRIDE=true >> /etc/ecs/ecs.config
-          
-          # echo ECS_ENABLE_TASK_ENI=true >> /etc/ecs/ecs.config
-          
-          # mkdir /home/ec2-user/.aws/ && touch /home/ec2-user/.aws/config
-          # echo [default] > /home/ec2-user/.aws/config
-          # echo role_arn = arn:aws:iam::196332284574:role/m1-ecs-task-role >> /home/ec2-user/.aws/config
-          # echo credential_source = EcsContainer >> /home/ec2-user/.aws/config
-          
-
-  ### CI/CD
-          
-  CodeCommitRepository:   
-    Type: AWS::CodeCommit::Repository
-    Properties:
-      RepositoryName: m1-core-codecommit-repository
-
-  CoreArtifactsBucket:
-    Type: AWS::S3::Bucket
-    Properties:
-      BucketName: m1-core-artifacts-bucket
-      
-  CoreArtifactsBucketPolicy:
-    Type: AWS::S3::BucketPolicy
-    Properties:
-      Bucket: !Ref CoreArtifactsBucket
-      PolicyDocument:
-        Version: 2012-10-17
-        Statement:
-        - Sid: Whitelisted S3 Get and Put
-          Effect: Allow
-          Principal:
-            AWS:
-            - !GetAtt CodeBuildRole.Arn
-            - !GetAtt CodePipelineRole.Arn
-          Action:
-          - s3:GetObject
-          - s3:GetObjectVersion
-          - s3:GetBucketVersioning
-          - s3:PutObject
-          Resource:
-          - !Sub ${CoreArtifactsBucket.Arn}
-          - !Sub ${CoreArtifactsBucket.Arn}/*
-      
-  CodeBuildProject:
-    Type: AWS::CodeBuild::Project
-    Properties:
-      Name: m1-core-codebuild-project
-      Artifacts:
-        Type: no_artifacts
-      Environment:
-        Type: LINUX_CONTAINER
-        ComputeType: BUILD_GENERAL1_SMALL
-        Image: aws/codebuild/python:3.5.2
-        PrivilegedMode: true
-        EnvironmentVariables:
-        - Name: AWS_ACCOUNT_ID
-          Value: !Ref AWS::AccountId
-        - Name: AWS_DEFAULT_REGION
-          Value: !Ref AWS::Region
-        # Possibly - Docker Credentials
-      ServiceRole: !GetAtt CodeBuildRole.Arn
-      Source:
-        Type: CODECOMMIT
-        Location: !Sub https://git-codecommit.${AWS::Region}.amazonaws.com/v1/repos/${CodeCommitRepository.Name}
-        
-  CodePipeline: 
-    Type: AWS::CodePipeline::Pipeline 
-    Properties:
-      Name: m1-core-codepipeline-pipeline
-      RoleArn: !GetAtt CodePipelineRole.Arn
-      Stages:
-      - Name: Source
-        Actions: 
-        - Name: SourceAction
-          ActionTypeId: 
-            Category: Source 
-            Owner: AWS 
-            Version: 1 
-            Provider: CodeCommit 
-          OutputArtifacts: 
-          - Name: m1-core-source-artifact 
-          Configuration: 
-            BranchName: main
-            RepositoryName: !GetAtt CodeCommitRepository.Name
-          RunOrder: 1
-      - Name: Build 
-        Actions: 
-        - Name: BuildAction 
-          InputArtifacts: 
-          - Name: m1-core-source-artifact 
-          ActionTypeId: 
-            Category: Build 
-            Owner: AWS 
-            Version: 1 
-            Provider: CodeBuild
-          OutputArtifacts: 
-          - Name: m1-core-build-artifact 
-          Configuration: 
-            ProjectName: !Ref CodeBuildProject
-          RunOrder: 1
-      - Name: Deploy
-        Actions: 
-        - Name: DeployAction
-          InputArtifacts: 
-          - Name: m1-core-build-artifact 
-          ActionTypeId: 
-            Category: Deploy 
-            Owner: AWS 
-            Version: 1
-            Provider: ECS 
-          Configuration: 
-            ClusterName: !Ref CoreCluster
-            ServiceName: !GetAtt CoreFargateService.Name
-            FileName: m1-core-image-definitions.json 
-          RunOrder: 1
-      ArtifactStore: 
-        Type: S3 
-        Location: !Ref CoreArtifactsBucket
-
-
-### Outputs
 
 Outputs:
 
-  Region:
-    Value: !Ref AWS::Region
-    Export:
-      Name: !Sub ${AWS::StackName}:Region
-      
-  AccountId:
-    Value: !Ref AWS::AccountId
-    Export:
-      Name: !Sub ${AWS::StackName}:AccountId
-      
   VPC:
     Value: !Ref VPC
     Export:
       Name: !Sub ${AWS::StackName}:VPC
       
-  PublicSubnetOne:
-    Value: !Ref PublicSubnetOne
+  VPCSecurityGroup:
+    Value: !Ref VPCSecurityGroup
     Export:
-      Name: !Sub ${AWS::StackName}:PublicSubnetOne
+      Name: !Sub ${AWS::StackName}:VPCSecurityGroup
       
-  PublicSubnetTwo:
-    Value: !Ref PublicSubnetTwo
+  CoreTargetGroup:
+    Value: !Ref CoreTargetGroup
     Export:
-      Name: !Sub ${AWS::StackName}:PublicSubnetTwo
+      Name: !Sub ${AWS::StackName}:CoreTargetGroup
       
   PrivateSubnetOne:
     Value: !Ref PrivateSubnetOne
@@ -898,18 +393,6 @@ Outputs:
     Value: !Ref NATInstanceTwo
     Export:
       Name: !Sub ${AWS::StackName}:NATInstanceTwo
-      
-  # CoreContainerEC2Instance:
-  #   Description: EC2 Instance to host M1 Core container in ECS
-  #   Value: !Ref CoreContainerEC2Instance
-  #   Export:
-  #     Name: !Sub ${AWS::StackName}:CoreContainerEC2Instance  
-      
-  CodeRepositoryURL:
-    Description: HTTPS Clone URL for CodeCommit Repository 
-    Value: !GetAtt CodeCommitRepository.CloneUrlHttp
-    Export:
-      Name: !Sub ${AWS::StackName}:CodeRepositoryURL
       
   CoreLoadBalancer:
     Value: !Ref CoreLoadBalancer

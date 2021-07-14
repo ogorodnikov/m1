@@ -1,0 +1,197 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Description: M1 CI/CD Stack
+
+
+Resources:
+      
+  CodePipelineRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: m1-codepipeline-role
+      AssumeRolePolicyDocument:
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service:
+            - codepipeline.amazonaws.com
+          Action:
+          - sts:AssumeRole
+      Path: /
+      Policies:
+      - PolicyName: m1-codepipeline-policy
+        PolicyDocument:
+          Statement:
+          - Action:
+            - codecommit:GetBranch
+            - codecommit:GetCommit
+            - codecommit:UploadArchive
+            - codecommit:GetUploadArchiveStatus
+            - codecommit:CancelUploadArchive
+            - s3:GetObject
+            - s3:GetObjectVersion
+            - s3:GetBucketVersioning
+            - elasticloadbalancing:*
+            - autoscaling:*
+            - cloudwatch:*
+            - ecs:*
+            - codebuild:*
+            - iam:PassRole
+            Resource: '*'
+            Effect: Allow
+          - Action:
+            - s3:PutObject
+            Resource:
+            - arn:aws:s3:::*
+            Effect: Allow
+          Version: 2012-10-17
+
+  CodeBuildRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: m1-codebuild-role
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          Effect: Allow
+          Principal:
+            Service: codebuild.amazonaws.com
+          Action: sts:AssumeRole
+      Policies:
+      - PolicyName: m1-codebuild-policy
+        PolicyDocument:
+          Version: 2012-10-17
+          Statement:
+          - Effect: Allow
+            Action:
+            - codecommit:ListBranches
+            - codecommit:ListRepositories
+            - codecommit:BatchGetRepositories
+            - codecommit:Get*
+            - codecommit:GitPull
+            Resource:
+            - !Sub arn:aws:codecommit:${AWS::Region}:${AWS::AccountId}:m1-repository
+          - Effect: Allow
+            Action:
+            - logs:CreateLogGroup
+            - logs:CreateLogStream
+            - logs:PutLogEvents
+            - s3:PutObject
+            - s3:GetObject
+            - s3:GetObjectVersion
+            - s3:ListBucket
+            - ecr:GetAuthorizationToken
+            - ecr:InitiateLayerUpload
+            - ecr:UploadLayerPart
+            - ecr:CompleteLayerUpload
+            - ecr:PutImage
+            - ecr:BatchCheckLayerAvailability
+            Resource: '*'
+
+  CodeCommitRepository:   
+    Type: AWS::CodeCommit::Repository
+    Properties:
+      RepositoryName: m1-core-codecommit-repository
+
+  CoreArtifactsBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: m1-core-artifacts-bucket
+      
+  CoreArtifactsBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref CoreArtifactsBucket
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+        - Sid: Whitelisted S3 Get and Put
+          Effect: Allow
+          Principal:
+            AWS:
+            - !GetAtt CodeBuildRole.Arn
+            - !GetAtt CodePipelineRole.Arn
+          Action:
+          - s3:GetObject
+          - s3:GetObjectVersion
+          - s3:GetBucketVersioning
+          - s3:PutObject
+          Resource:
+          - !Sub ${CoreArtifactsBucket.Arn}
+          - !Sub ${CoreArtifactsBucket.Arn}/*
+      
+  CodeBuildProject:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Name: m1-core-codebuild-project
+      Artifacts:
+        Type: no_artifacts
+      Environment:
+        Type: LINUX_CONTAINER
+        ComputeType: BUILD_GENERAL1_SMALL
+        Image: aws/codebuild/python:3.5.2
+        PrivilegedMode: true
+        EnvironmentVariables:
+        - Name: AWS_ACCOUNT_ID
+          Value: !Ref AWS::AccountId
+        - Name: AWS_DEFAULT_REGION
+          Value: !Ref AWS::Region
+        # Possibly - Docker Credentials
+      ServiceRole: !GetAtt CodeBuildRole.Arn
+      Source:
+        Type: CODECOMMIT
+        Location: !Sub https://git-codecommit.${AWS::Region}.amazonaws.com/v1/repos/${CodeCommitRepository.Name}
+        
+  CodePipeline: 
+    Type: AWS::CodePipeline::Pipeline 
+    Properties:
+      Name: m1-core-codepipeline-pipeline
+      RoleArn: !GetAtt CodePipelineRole.Arn
+      Stages:
+      - Name: Source
+        Actions: 
+        - Name: SourceAction
+          ActionTypeId: 
+            Category: Source 
+            Owner: AWS 
+            Version: 1 
+            Provider: CodeCommit 
+          OutputArtifacts: 
+          - Name: m1-core-source-artifact 
+          Configuration: 
+            BranchName: main
+            RepositoryName: !GetAtt CodeCommitRepository.Name
+          RunOrder: 1
+      - Name: Build 
+        Actions: 
+        - Name: BuildAction 
+          InputArtifacts: 
+          - Name: m1-core-source-artifact 
+          ActionTypeId: 
+            Category: Build 
+            Owner: AWS 
+            Version: 1 
+            Provider: CodeBuild
+          OutputArtifacts: 
+          - Name: m1-core-build-artifact 
+          Configuration: 
+            ProjectName: !Ref CodeBuildProject
+          RunOrder: 1
+      - Name: Deploy
+        Actions: 
+        - Name: DeployAction
+          InputArtifacts: 
+          - Name: m1-core-build-artifact 
+          ActionTypeId: 
+            Category: Deploy 
+            Owner: AWS 
+            Version: 1
+            Provider: ECS 
+          Configuration: 
+            ClusterName: !ImportValue m1-cluster-stack:CoreCluster
+            ServiceName: !ImportValue m1-cluster-stack:CoreFargateServiceName
+            FileName: m1-core-image-definitions.json 
+          RunOrder: 1
+      ArtifactStore: 
+        Type: S3 
+        Location: !Ref CoreArtifactsBucket
