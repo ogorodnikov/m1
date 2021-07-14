@@ -18,7 +18,7 @@ Resources:
     Type: AWS::EC2::SecurityGroup
     Properties:
       GroupDescription: Access to Bastion Host
-      VpcId: !ImportValue m1-core-stack:VPCId
+      VpcId: !ImportValue m1-core-stack:VPC
       GroupName: m1-bastion-sg
       Tags:
       - Key: Name
@@ -49,7 +49,7 @@ Resources:
       - !ImportValue m1-core-stack:PublicSubnetOne
       - !ImportValue m1-core-stack:PublicSubnetTwo
       MinSize: 0
-      DesiredCapacity: 1
+      DesiredCapacity: 0
       MaxSize: 1
       Tags:
       - Key: Name

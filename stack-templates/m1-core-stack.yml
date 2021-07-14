@@ -849,56 +849,6 @@ Resources:
         Type: S3 
         Location: !Ref CoreArtifactsBucket
 
-  ### DynamoDB
-
-  DynamoDBEndpoint:
-    Type: AWS::EC2::VPCEndpoint
-    Properties:
-      PolicyDocument:
-        Version: 2012-10-17
-        Statement:
-        - Effect: Allow
-          Action: '*'
-          Principal: '*'
-          Resource: '*'
-      RouteTableIds:
-      - !Ref PrivateRouteTableOne
-      - !Ref PrivateRouteTableTwo
-      ServiceName: !Sub com.amazonaws.${AWS::Region}.dynamodb
-      VpcId: !Ref VPC
-      
-  AlgorithmsTable:
-    Type: AWS::DynamoDB::Table
-    Properties:
-      TableName: m1-algorithms-table
-      ProvisionedThroughput:
-        ReadCapacityUnits: 1
-        WriteCapacityUnits: 1
-
-      AttributeDefinitions:
-      - AttributeName: id
-        AttributeType: S
-      - AttributeName: type
-        AttributeType: S
-        
-      KeySchema:
-      - AttributeName: id
-        KeyType: HASH
-     
-      GlobalSecondaryIndexes:
-      - IndexName: type-index
-        KeySchema:
-        - AttributeName: type
-          KeyType: HASH
-        - AttributeName: id
-          KeyType: RANGE
-        Projection:
-          ProjectionType: ALL
-        ProvisionedThroughput:
-          ReadCapacityUnits: 1
-          WriteCapacityUnits: 1
-
-
 
 ### Outputs
 
@@ -914,10 +864,10 @@ Outputs:
     Export:
       Name: !Sub ${AWS::StackName}:AccountId
       
-  VPCId:
+  VPC:
     Value: !Ref VPC
     Export:
-      Name: !Sub ${AWS::StackName}:VPCId
+      Name: !Sub ${AWS::StackName}:VPC
       
   PublicSubnetOne:
     Value: !Ref PublicSubnetOne
@@ -970,7 +920,17 @@ Outputs:
     Value: !GetAtt CoreLoadBalancer.DNSName
     Export:
       Name: !Sub ${AWS::StackName}:CoreLoadBalancerDNSName
+      
+  PrivateRouteTableOne:
+    Value: !Ref PrivateRouteTableOne
+    Export:
+      Name: !Sub ${AWS::StackName}:PrivateRouteTableOne      
 
+  PrivateRouteTableTwo:
+    Value: !Ref PrivateRouteTableTwo
+    Export:
+      Name: !Sub ${AWS::StackName}:PrivateRouteTableTwo   
+  
   Test:
     Description: Test
     Value: !Ref LatestLinuxAMI

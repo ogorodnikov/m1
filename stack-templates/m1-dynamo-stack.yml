@@ -1,0 +1,52 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Description: M1 DynamoDB Stack
+
+Resources:
+
+  DynamoDBEndpoint:
+    Type: AWS::EC2::VPCEndpoint
+    Properties:
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+        - Effect: Allow
+          Action: '*'
+          Principal: '*'
+          Resource: '*'
+      RouteTableIds:
+      - !ImportValue m1-core-stack:PrivateRouteTableOne
+      - !ImportValue m1-core-stack:PrivateRouteTableTwo
+      ServiceName: !Sub com.amazonaws.${AWS::Region}.dynamodb
+      VpcId: !ImportValue m1-core-stack:VPC
+      
+  AlgorithmsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: m1-algorithms-table
+      ProvisionedThroughput:
+        ReadCapacityUnits: 1
+        WriteCapacityUnits: 1
+
+      AttributeDefinitions:
+      - AttributeName: id
+        AttributeType: S
+      - AttributeName: type
+        AttributeType: S
+        
+      KeySchema:
+      - AttributeName: id
+        KeyType: HASH
+     
+      GlobalSecondaryIndexes:
+      - IndexName: type-index
+        KeySchema:
+        - AttributeName: type
+          KeyType: HASH
+        - AttributeName: id
+          KeyType: RANGE
+        Projection:
+          ProjectionType: ALL
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
