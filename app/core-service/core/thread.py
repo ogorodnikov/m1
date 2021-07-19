@@ -2,6 +2,8 @@ import logging
 import threading
 import time
 
+import concurrent.futures
+
 
 def thread_function(name):
     
@@ -30,11 +32,11 @@ def launch_one_daemon_thread():
     
     
 
-def launch_multiple_threads():
+def launch_multiple_threads(thread_count):
 
     threads = list()
     
-    for index in range(3):
+    for index in range(thread_count):
         
         logging.info("Main    : create and start thread %d.", index)
         
@@ -51,6 +53,13 @@ def launch_multiple_threads():
         thread.join()
         
         logging.info("Main    : thread %d done", index)
+        
+        
+def launch_thread_pool_executor(thread_count):
+
+    with concurrent.futures.ThreadPoolExecutor(max_workers=3) as executor:
+        
+        executor.map(thread_function, range(thread_count))
 
     
 
@@ -62,7 +71,7 @@ if __name__ == "__main__":
                         level=logging.INFO,
                         datefmt="%H:%M:%S")
 
-    launch_multiple_threads()
+    launch_thread_pool_executor(3)
     
     
     
