@@ -100,10 +100,10 @@ def like_algorithm(algorithm_id):
 @app.route("/algorithms/<algorithm_id>/run", methods = ['POST'])
 def run_algorithm(algorithm_id):
     
-    run_values = tuple(request.form.values())
+    run_values = request.form
     run_result = models.run_algorithm(algorithm_id, run_values)
     
-    flash(f"Running with values: {run_values}", category='warning')
+    flash(f"Running with values: {dict(run_values)}", category='warning')
     flash(f"Result: {run_result}", category='info')
     
     return redirect(request.referrer)

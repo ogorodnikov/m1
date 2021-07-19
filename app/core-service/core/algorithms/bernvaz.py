@@ -1,18 +1,15 @@
 from qiskit import *
+from core import app
 
 # from matplotlib import pyplot as plt
 # from qiskit.tools.visualization import plot_histogram
 
-def bernvaz(secret):
+
+def bernvaz(run_values):
     
-# def bernvaz(*args, **kwargs):
-    
-#     print('Args:', args)
-#     print('Kwargs:', kwargs)
+    secret = run_values.get('secret')
 
     HIDDEN_DIGITS = str(secret)
-    
-    print("Circuit:")
     
     hidden_len = len(HIDDEN_DIGITS)
     
@@ -44,13 +41,14 @@ def bernvaz(secret):
     # circuit.draw(output='mpl')
     # circuit.draw()
     
-    print(circuit)
-    
     simulator = Aer.get_backend('qasm_simulator')
     result = execute(circuit, backend=simulator, shots=1).result()
     
     counts = result.get_counts()
     
-    print("Possible hidden digits:", counts)
+    app.logger.info(f"BERVAZ run_values: {run_values}")
+    app.logger.info(f"BERVAZ secret: {secret}")
+    app.logger.info(f"BERVAZ circuit: \n\n{circuit}\n")
+    app.logger.info(f"BERVAZ counts: {counts}")
     
     return {'Counts:': counts}
