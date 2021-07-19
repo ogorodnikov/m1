@@ -1,7 +1,8 @@
 # from qiskit import QuantumCircuit, Aer
-# from qiskit.providers.ibmq import least_busy
 
 from qiskit import *
+from qiskit.providers.ibmq import least_busy
+from qiskit.tools.monitor import backend_overview, job_monitor
 
 from core import app
 
@@ -12,21 +13,22 @@ from core import app
 def bernvaz(run_values):
     
     secret = run_values.get('secret')
-    run_mode = run_values.get('run_mode', 'qasm_simulator')
+    run_mode = run_values.get('run_mode', 'simulator')
 
     HIDDEN_DIGITS = str(secret)
     
-    hidden_len = len(HIDDEN_DIGITS)
+    hidden_qubit_count = len(HIDDEN_DIGITS)
+    total_qubit_count = hidden_qubit_count + 1
     
-    input_qubit_indices = range(hidden_len)
+    input_qubit_indices = range(hidden_qubit_count)
     measure_bits_indices = input_qubit_indices
     
-    output_qubit_index = hidden_len
+    output_qubit_index = hidden_qubit_count
     
-    all_qubit_indices = range(hidden_len + 1)
+    all_qubit_indices = range(total_qubit_count)
     
     
-    circuit = QuantumCircuit(hidden_len + 1, hidden_len)
+    circuit = QuantumCircuit(total_qubit_count, hidden_qubit_count)
     
     circuit.x(output_qubit_index)
     circuit.h(all_qubit_indices)
@@ -46,8 +48,43 @@ def bernvaz(run_values):
     # circuit.draw(output='mpl')
     # circuit.draw()
     
-    simulator = Aer.get_backend('qasm_simulator')
-    result = execute(circuit, backend=simulator, shots=1).result()
+    
+    ###   Run   ###
+    
+    if run_mode == 'simulator':
+        
+        simulator = Aer.get_backend('qasm_simulator')        
+        
+    if run_mode == 'quantum_device':
+    
+        qiskit_token = app.config.get('QISKIT_TOKEN')
+        
+        IBMQ.save_account(qiskit_token)
+        IBMQ.load_account()
+        provider = IBMQ.get_provider("ibm-q")
+        
+        # backend_overview()
+        
+        device_filter = lambda device: (not device.configuration().simulator 
+                                        and device.configuration().n_qubits >= total_qubit_count
+                                        and device.status().operational==True)
+        
+        least_busy_device = least_busy(provider.backends(filters=device_filter))
+
+
+        app.logger.info(f"BERVAZ qiskit_token: {qiskit_token}")
+        app.logger.info(f"BERVAZ least_busy_device: {least_busy_device}")
+        
+        
+        simulator = least_busy_device
+        
+    
+
+    job = execute(circuit, backend=simulator, shots=10)
+    
+    job_monitor(job)
+    
+    result = job.result()
     
     counts = result.get_counts()
     

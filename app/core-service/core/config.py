@@ -71,6 +71,9 @@ class Config(object):
     JSONIFY_PRETTYPRINT_REGULAR = False
     PERMANENT_SESSION_LIFETIME = timedelta(minutes=30)
     
+    QISKIT_TOKEN = os.getenv('QISKIT_TOKEN')
+    
+    
 
 LOGGING_CONFIG = {'version': 1,
 
