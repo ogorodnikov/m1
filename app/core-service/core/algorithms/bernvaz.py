@@ -1,4 +1,8 @@
+# from qiskit import QuantumCircuit, Aer
+# from qiskit.providers.ibmq import least_busy
+
 from qiskit import *
+
 from core import app
 
 # from matplotlib import pyplot as plt
@@ -8,6 +12,7 @@ from core import app
 def bernvaz(run_values):
     
     secret = run_values.get('secret')
+    run_mode = run_values.get('run_mode', 'qasm_simulator')
 
     HIDDEN_DIGITS = str(secret)
     
@@ -47,6 +52,7 @@ def bernvaz(run_values):
     counts = result.get_counts()
     
     app.logger.info(f"BERVAZ run_values: {run_values}")
+    app.logger.info(f"BERVAZ run_mode: {run_mode}")
     app.logger.info(f"BERVAZ secret: {secret}")
     app.logger.info(f"BERVAZ circuit: \n\n{circuit}\n")
     app.logger.info(f"BERVAZ counts: {counts}")

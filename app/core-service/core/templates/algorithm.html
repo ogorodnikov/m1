@@ -47,12 +47,13 @@
               
               <input class="form-control text-light bg-dark"
                      name={{ parameter }}
-                     type="tel" 
-                     pattern="[0-9]{1,25}" 
+                     type="tel"
+                     pattern="[0-9]{1,10}" 
                      placeholder="please input value"
+                     value="1010"
                      aria-label="Parameter"
                      aria-describedby="parameters"
-                     title="Integers 1 to 25 digit length"
+                     title="Integers 1 to 10 digit length"
                      required>
             </div>
           
@@ -64,8 +65,12 @@
       <div class="row">
         <div class="col-sm-5 mb-3">
           
-          <button type="submit" class="btn btn-warning">
-             Run
+          <button type="submit" class="btn btn-warning" name="run_mode" value="qasm_simulator">
+             Run on Simulator
+          </button>
+          
+          <button type="submit" class="btn btn-danger" name="run_mode" value="qasm_simulator2">
+             Run on Quantum Device
           </button>
           
           <button type="submit" form="like_form" class="btn btn-info">
