@@ -10,6 +10,7 @@ from core import app
 # from qiskit.tools.visualization import plot_histogram
 
 
+
 def bernvaz(run_values):
     
     secret = run_values.get('secret')
@@ -58,22 +59,27 @@ def bernvaz(run_values):
         backend = Aer.get_backend('qasm_simulator')
         
     if run_mode == 'quantum_device':
-    
+        
         qiskit_token = app.config.get('QISKIT_TOKEN')
-        
         IBMQ.save_account(qiskit_token)
-        provider = IBMQ.load_account()
-
-        # backend = get_least_busy_backend(total_qubit_count)
         
-        backend = provider.get_backend('ibmq_manila')
-
+        if not IBMQ.active_account():
+            IBMQ.load_account()
+            
+        provider = IBMQ.get_provider()
+        
         app.logger.info(f"BERVAZ provider: {provider}")
         app.logger.info(f"BERVAZ provider.backends(): {provider.backends()}")
-        app.logger.info(f"BERVAZ backend: {backend}")
+        
+        # backend = provider.get_backend('ibmq_manila')
+
+        backend = get_least_busy_backend(provider, total_qubit_count)
+
+    
+    app.logger.info(f"BERVAZ backend: {backend}")
         
 
-    job = execute(circuit, backend=backend, shots=1)
+    job = execute(circuit, backend=backend, shots=10)
     
     job_monitor(job, interval=5)
     
@@ -86,11 +92,11 @@ def bernvaz(run_values):
     app.logger.info(f"BERVAZ secret: {secret}")
     app.logger.info(f"BERVAZ circuit: \n\n{circuit}\n")
     app.logger.info(f"BERVAZ counts: {counts}")
-    
+
     return {'Counts:': counts}
     
 
-def get_least_busy_backend(total_qubit_count):
+def get_least_busy_backend(provider, total_qubit_count):
     
     # backend_overview()
     
