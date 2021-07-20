@@ -20,17 +20,18 @@ task_executor = ThreadPoolExecutor(MAX_TASK_WORKERS)
 
 def task_worker(task_queue, worker_active_flag):
     
-    print("Task worker started")
+    app.logger.info(f'RUNNER task_worker started')
     
     while True:
     
         if worker_active_flag.is_set() and not task_queue.empty():
             
-            task_queue.get()
-            print("Fetched task!")
-            print("Q size:", task_queue.qsize())
+            pop_task = task_queue.get()
+            
+            app.logger.info(f'RUNNER pop_task: {pop_task}')
+            app.logger.info(f'RUNNER task_queue.qsize: {task_queue.qsize()}')
     
-    print("Task worker exited")
+    app.logger.info(f'RUNNER task_worker exited')
     
 
 runners = {'egcd': egcd,
@@ -68,12 +69,12 @@ def run_algorithm(algorithm_id, run_values):
     global task_id
     task_id += 1
     
-    task = (priority, task_id, runner, run_values)
+    new_task = (priority, task_id, runner, run_values)
 
     
-    task_queue.put(task)
+    task_queue.put(new_task)
     
-    app.logger.info(f'RUNNER task: {task}')
+    app.logger.info(f'RUNNER new_task: {new_task}')
     app.logger.info(f'RUNNER task_queue.qsize: {task_queue.qsize()}')
     
     run_result = runner(run_values)
