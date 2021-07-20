@@ -9,6 +9,30 @@ from core.algorithms.egcd import egcd
 from core.algorithms.bernvaz import bernvaz
 
 
+
+from concurrent.futures import ThreadPoolExecutor
+
+
+MAX_TASK_WORKERS = 1
+
+task_executor = ThreadPoolExecutor(MAX_TASK_WORKERS)
+
+
+def task_worker(task_queue, worker_active_flag):
+    
+    print("Task worker started")
+    
+    while True:
+    
+        if worker_active_flag.is_set() and not task_queue.empty():
+            
+            task_queue.get()
+            print("Fetched task!")
+            print("Q size:", task_queue.qsize())
+    
+    print("Task worker exited")
+    
+
 runners = {'egcd': egcd,
            'bernvaz': bernvaz}
            
@@ -16,20 +40,8 @@ task_queue = PriorityQueue()
 task_id = 0
 
 
-def test_runner(task_queue, is_runner_active):
-    
-    print("Before Bonya test")
-    
-    while is_runner_active.is_set():
-
-        print("Bonya test")
-        time.sleep(0.5)
-    
-    print("After Bonya test")
-    
-
-is_runner_active = threading.Event()
-is_runner_active.set()
+worker_active_flag = threading.Event()
+worker_active_flag.set()
 
 # with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
 #     executor.submit(test_runner, task_queue, is_runner_active)
@@ -38,11 +50,14 @@ is_runner_active.set()
     
     # is_runner_active.clear()
     
-runner_thread = threading.Thread(target=test_runner, 
-                                 args=(task_queue, is_runner_active),
-                                 daemon=True)
+# runner_thread = threading.Thread(target=test_runner, 
+#                                  args=(task_queue, is_runner_active),
+#                                  daemon=True)
 
-runner_thread.start()
+# runner_thread.start()
+
+task_executor.submit(task_worker, task_queue, worker_active_flag)
+    
     
 
 def run_algorithm(algorithm_id, run_values):
