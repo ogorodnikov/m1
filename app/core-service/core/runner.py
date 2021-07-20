@@ -1,5 +1,8 @@
 from queue import PriorityQueue
 
+import threading
+import time
+
 from core import app
 
 from core.algorithms.egcd import egcd
@@ -11,6 +14,36 @@ runners = {'egcd': egcd,
            
 task_queue = PriorityQueue()
 task_id = 0
+
+
+def test_runner(task_queue, is_runner_active):
+    
+    print("Before Bonya test")
+    
+    while is_runner_active.is_set():
+
+        print("Bonya test")
+        time.sleep(0.5)
+    
+    print("After Bonya test")
+    
+
+is_runner_active = threading.Event()
+is_runner_active.set()
+
+# with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
+#     executor.submit(test_runner, task_queue, is_runner_active)
+    
+    # time.sleep(2.5)
+    
+    # is_runner_active.clear()
+    
+runner_thread = threading.Thread(target=test_runner, 
+                                 args=(task_queue, is_runner_active),
+                                 daemon=True)
+
+runner_thread.start()
+    
 
 def run_algorithm(algorithm_id, run_values):
     
