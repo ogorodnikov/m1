@@ -1,4 +1,6 @@
-def egcd(a, b):
+def egcd(run_values):
+    
+    a, b = map(int, map(run_values.get, ('a', 'b')))
 
     old_r, r = a, b
     old_s, s = 1, 0
