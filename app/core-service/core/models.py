@@ -1,7 +1,7 @@
 import boto3, json
 
-from core.algorithms.egcd import egcd
-from core.algorithms.bernvaz import bernvaz
+
+###   Credential check   ###
 
 # import os
 # os.environ['AWS_PROFILE'] = "default"
@@ -16,10 +16,6 @@ from core.algorithms.bernvaz import bernvaz
 
 dynamodb = boto3.resource('dynamodb')
 table = dynamodb.Table('m1-algorithms-table')
-
-
-runners = {'egcd': egcd,
-           'bernvaz': bernvaz}
 
 
 def add_test_data():
@@ -98,17 +94,6 @@ def like_algorithm(algorithm_id):
     status_code = response['ResponseMetadata']['HTTPStatusCode']
         
     return {'status_code': status_code}
-    
-
-def run_algorithm(algorithm_id, run_values):
-    
-    # run_int_values = map(int, run_values)
-    
-    runner = runners[algorithm_id]
-    
-    run_result = runner(run_values)
-
-    return run_result
     
 
 def set_algorithm_state(algorithm_id, state):

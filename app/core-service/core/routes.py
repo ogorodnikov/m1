@@ -1,4 +1,4 @@
-from core import app, models, users, fb
+from core import app, models, users, fb, runner
 
 from flask import render_template, redirect, url_for, flash, request, session
 
@@ -101,7 +101,7 @@ def like_algorithm(algorithm_id):
 def run_algorithm(algorithm_id):
     
     run_values = request.form
-    run_result = models.run_algorithm(algorithm_id, run_values)
+    run_result = runner.run_algorithm(algorithm_id, run_values)
     
     flash(f"Running with values: {dict(run_values)}", category='warning')
     flash(f"Result: {run_result}", category='info')
