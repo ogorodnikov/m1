@@ -14,14 +14,14 @@ from flask import flash
 from concurrent.futures import ThreadPoolExecutor
 
 
-# MAX_TASK_WORKERS = 2
+MAX_TASK_WORKERS = 2
 
-# task_executor = ThreadPoolExecutor(MAX_TASK_WORKERS)
+task_executor = ThreadPoolExecutor(MAX_TASK_WORKERS)
 
 
-# def test_excepthook(args):
+def test_excepthook(args):
     
-#     print(f"Test excepthook: {args}")
+    print(f"Test excepthook: {args}")
     
 
 # threading.excepthook = test_excepthook
@@ -47,16 +47,17 @@ def task_worker(task_queue, result_queue, worker_active_flag):
             
             app.logger.info(f'RUNNER test')
             
-
+            show_flash()
+            
             run_result = runner(run_values)
             
             # result_queue.put(task_id, run_results)
             
             app.logger.info(f'RUNNER run_result: {run_result}')
             
-            app.logger.info(f'RUNNER app.request_context: {app.request_context()}')
+            app.logger.info(f'RUNNER show_flash: {show_flash}')
             
-            # flash("Test", category='info')
+
             
 
             # app.logger.info(f'RUNNER result_queue.qsize: {result_queue.qsize()}')          
@@ -84,13 +85,7 @@ result_queue = PriorityQueue()
 worker_active_flag = threading.Event()
 worker_active_flag.set()
 
-task_worker_thread = threading.Thread(target=task_worker,
-                                      args=(task_queue, result_queue, worker_active_flag),
-                                      daemon=True)
-                                      
-task_worker_thread.start()
-
-# task_executor.submit(task_worker, task_queue, result_queue, worker_active_flag)
+task_executor.submit(task_worker, task_queue, result_queue, worker_active_flag)
     
 
 def run_algorithm(algorithm_id, run_values):
@@ -112,6 +107,6 @@ def run_algorithm(algorithm_id, run_values):
 
 def show_flash():
     
-    # flash("Test", category='info')
+    flash("Test", category='info')
     
     return 'test'
