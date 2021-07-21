@@ -50,26 +50,14 @@ def task_worker(task_queue, result_queue, worker_active_flag):
 
             run_result = runner(run_values)
             
-            # result_queue.put(task_id, run_results)
+            result_queue.put(task_id, run_result)
             
             app.logger.info(f'RUNNER run_result: {run_result}')
+            app.logger.info(f'RUNNER result_queue.qsize: {result_queue.qsize()}')
             
-            app.logger.info(f'RUNNER app.request_context: {app.request_context()}')
-            
-            # flash("Test", category='info')
-            
+            show_flash()
 
-            # app.logger.info(f'RUNNER result_queue.qsize: {result_queue.qsize()}')          
 
-            # test = show_flash()
-            
-            # app.logger.info(f'RUNNER test: {test}')
-            
-            # app.logger.info(f'RUNNER flask.current_app: {flask.current_app, flask.has_request_context()}')
-
-            
-            # flash(f"Result: {run_result}", category='info')
-            
     
     app.logger.info(f'RUNNER task_worker exited')
     
@@ -107,11 +95,15 @@ def run_algorithm(algorithm_id, run_values):
     app.logger.info(f'RUNNER new_task: {new_task}')
     app.logger.info(f'RUNNER task_queue.qsize: {task_queue.qsize()}')
     
+    flash(f"Message", category='info')
+    
     # return run_result
     
 
 def show_flash():
     
-    # flash("Test", category='info')
+    print('test')
+    
+    flash(f"Test", category='info')
     
     return 'test'

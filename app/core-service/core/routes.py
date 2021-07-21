@@ -118,3 +118,19 @@ def set_algorithm_state(algorithm_id):
     
     
     return response, 204
+
+
+@app.after_request
+def response_processor(response):
+    
+    test_message = 'test message'
+
+    @response.call_on_close
+    def process_after_request():
+        
+        print(test_message)
+        
+        with app.app_context():
+            flash(f"test_message: {test_message}", category='info')
+
+    return response
