@@ -124,13 +124,28 @@ def set_algorithm_state(algorithm_id):
 def response_processor(response):
     
     test_message = 'test message'
+    
+    app_context = app.app_context()
+    request_context = app.test_request_context('/home')
+    
+    # with app_context:
+    #     flash(f"test_message: {test_message}", category='info')
+    
+    # print(request_context)
+    
+    # with app.app_context():
+    #     flash(f"test_message: {test_message}", category='info')
+        
 
     @response.call_on_close
     def process_after_request():
         
-        print(test_message)
+        # print(test_message)
         
-        with app.app_context():
-            flash(f"test_message: {test_message}", category='info')
+        print(request_context)
+        print(app_context)
+        
+        with request_context, app_context:
+                flash(f"test_message: {test_message}", category='info')
 
     return response

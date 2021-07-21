@@ -19,13 +19,6 @@ from concurrent.futures import ThreadPoolExecutor
 # task_executor = ThreadPoolExecutor(MAX_TASK_WORKERS)
 
 
-# def test_excepthook(args):
-    
-#     print(f"Test excepthook: {args}")
-    
-
-# threading.excepthook = test_excepthook
-
 
 def task_worker(task_queue, result_queue, worker_active_flag):
     
@@ -76,7 +69,7 @@ task_worker_thread = threading.Thread(target=task_worker,
                                       args=(task_queue, result_queue, worker_active_flag),
                                       daemon=True)
                                       
-task_worker_thread.start()
+# task_worker_thread.start()
 
 # task_executor.submit(task_worker, task_queue, result_queue, worker_active_flag)
     
