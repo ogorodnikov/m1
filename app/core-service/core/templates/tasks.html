@@ -9,8 +9,49 @@
 <div class="row justify-content-center m-3">
    
   <h5 class="mb-3">Tasks:</h5>
+  
+  <table class="table table-hover table-dark">
+    
+    <thead>
+      <tr>
+        <th scope="col">Task</th>
+        <th scope="col">Algorithm</th>
+        <th scope="col">Run Values</th>
+        <th scope="col">Result</th>
+        <th scope="col">Status</th>
+      </tr>
+    </thead>
+    
+    <tbody>
+       
+      {% for task_id, task in tasks.items() %}
       
-  {{ tasks }}
+      <tr>
+        <td class="w-1">{{ task_id }}</td>
+        <td class="col-1">
+          <a href={{ url_for('get_algorithm', algorithm_id=task.algorithm_id) }}
+          
+            {% if task.status == 'Done' %}
+              class="btn btn-success"
+            {% elif task.status == 'Created' %}
+              class="btn btn-warning"
+            {% else%}
+              class="btn btn-danger"            
+            {% endif %}
+            
+            role="button">
+            {{ task.algorithm_id }}
+          </a>
+        </td>
+        <td class="col-auto">{{ task.run_values }}</td>
+        <td class="col-auto">{{ task.result }}</td>
+        <td class="col-1">{{ task.status }}</td>
+      <tr/>
+      
+      {% endfor %}
+      
+    </tbody>
+  </table>
 
 {% endblock %}
 
