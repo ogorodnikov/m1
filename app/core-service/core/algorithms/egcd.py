@@ -21,5 +21,5 @@ def egcd(run_values):
     # print(f'{a} * {old_s} + {b} * {old_t} = {old_r}')
     # print()
     
-    return {'GCD:': old_r,
+    return {'GCD': old_r,
             'Bézout coefficients': (old_s, old_t)}

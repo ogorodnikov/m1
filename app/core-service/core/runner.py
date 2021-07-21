@@ -33,6 +33,9 @@ def task_worker(task_queue, result_queue, worker_active_flag):
             
             runner = runners[algorithm_id]
             
+            app.logger.info(f'RUNNER run_values.items(): {list(run_values.items())}')
+            app.logger.info(f'RUNNER run_values: {run_values}')
+            
             app.logger.info(f'RUNNER pop_task: {pop_task}')
             app.logger.info(f'RUNNER task_queue.qsize: {task_queue.qsize()}')
             app.logger.info(f'RUNNER runner: {runner}')            

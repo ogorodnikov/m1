@@ -16,7 +16,8 @@
       <tr>
         <th scope="col">Task</th>
         <th scope="col">Algorithm</th>
-        <th scope="col">Run Values</th>
+        <th scope="col">Run Mode</th>
+        <th scope="col">Parameters</th>
         <th scope="col">Result</th>
         <th scope="col">Status</th>
       </tr>
@@ -27,7 +28,7 @@
       {% for task_id, task in tasks.items() %}
       
       <tr>
-        <td class="w-1">{{ task_id }}</td>
+        <td class="col-1">{{ task_id }}</td>
         <td class="col-1">
           <a href={{ url_for('get_algorithm', algorithm_id=task.algorithm_id) }}
           
@@ -43,8 +44,25 @@
             {{ task.algorithm_id }}
           </a>
         </td>
-        <td class="col-auto">{{ task.run_values }}</td>
-        <td class="col-auto">{{ task.result }}</td>
+        <td class="col-1">{{ task.run_values.run_mode }}</td>
+        <td class="col-2">
+          
+          {% for name, value in task.run_values.items() %}
+            {% if name != 'run_mode' %}
+              {{ name }}: {{ value }}
+            {% endif %}
+          {% endfor %}
+        
+        </td>
+        <td class="col-auto">
+          
+          {% if task.result %}
+            {% for name, value in task.result.items() %}
+              {{ name }}: {{ value }}
+            {% endfor %}
+          {% endif %}
+          
+        </td>
         <td class="col-1">{{ task.status }}</td>
       <tr/>
       
