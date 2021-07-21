@@ -69,7 +69,10 @@
              Run on Simulator
           </button>
           
-          <button type="submit" class="btn btn-danger" name="run_mode" value="quantum_device">
+          <button type="submit" class="btn btn-danger" name="run_mode" value="quantum_device"
+            {% if item.type != 'quantum' %}
+              disabled
+            {% endif %}>
              Run on Quantum Device
           </button>
           

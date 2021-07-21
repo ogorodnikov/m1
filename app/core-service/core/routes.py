@@ -104,7 +104,7 @@ def run_algorithm(algorithm_id):
     
     task_id = runner.run_algorithm(algorithm_id, run_values)
     
-    flash(f"Task <a href='/tasks'>#{task_id}</a> scheduled: {algorithm_id}, {dict(run_values)}", category='info')
+    flash(f"Task <a href='/tasks'>#{task_id}</a> scheduled: {algorithm_id}, {dict(run_values)}", category='warning')
 
     return redirect(request.referrer)
     
@@ -133,5 +133,5 @@ def test():
     while not result_queue.empty():
         
         task_id, result = result_queue.get()
-        flash(f"Task <a href='/tasks'>#{task_id}</a> done: {result}", category='warning')
+        flash(f"Task <a href='/tasks'>#{task_id}</a> done: {result}", category='info')
 
