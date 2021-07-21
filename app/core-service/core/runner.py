@@ -11,10 +11,7 @@ from core.algorithms.bernvaz import bernvaz
 from concurrent.futures import ThreadPoolExecutor
 
 
-# MAX_TASK_WORKERS = 2
-
-# task_executor = ThreadPoolExecutor(MAX_TASK_WORKERS)
-
+TASK_WORKERS_COUNT = 2
 
 
 def task_worker(task_queue, result_queue, worker_active_flag):
@@ -50,7 +47,7 @@ def task_worker(task_queue, result_queue, worker_active_flag):
             tasks[task_id]['status'] = 'Done'
             tasks[task_id]['result'] = result
             
-            app.logger.info(f'RUNNER tasks: {tasks}')            
+            app.logger.info(f'RUNNER len(tasks): {len(tasks)}')            
 
 
     
@@ -68,13 +65,19 @@ tasks = {}
 worker_active_flag = threading.Event()
 worker_active_flag.set()
 
-task_worker_thread = threading.Thread(target=task_worker,
-                                      args=(task_queue, result_queue, worker_active_flag),
-                                      daemon=True)
-                                      
-task_worker_thread.start()
+task_workers = []
 
-# task_executor.submit(task_worker, task_queue, result_queue, worker_active_flag)
+for i in range(TASK_WORKERS_COUNT):
+
+    task_worker_thread = threading.Thread(target=task_worker,
+                                          args=(task_queue, result_queue, worker_active_flag),
+                                          daemon=True)
+                                          
+    task_worker_thread.start()
+    
+    task_workers.append(task_worker_thread)
+    
+app.logger.info(f'RUNNER task_workers: {task_workers}')
     
 
 def run_algorithm(algorithm_id, run_values):
