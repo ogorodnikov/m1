@@ -105,7 +105,7 @@ def run_algorithm(algorithm_id):
     task_id = runner.run_algorithm(algorithm_id, run_values)
     
     flash(f"New task: {algorithm_id} with values: {dict(run_values)}", category='warning')
-    flash(f"Task scheduled with id: <a href='#'>{task_id}</a>", category='info')
+    flash(f"Task scheduled with ID: <a href='#'>{task_id}</a>", category='info')
 
     return redirect(request.referrer)
     
@@ -118,6 +118,12 @@ def set_algorithm_state(algorithm_id):
     
     
     return response, 204
+    
+
+@app.route('/tasks')
+def get_tasks():
+    
+    return render_template("tasks.html", tasks=runner.tasks)
 
 
 @app.before_request

@@ -36,16 +36,18 @@ def task_worker(task_queue, result_queue, worker_active_flag):
             app.logger.info(f'RUNNER pop_task: {pop_task}')
             app.logger.info(f'RUNNER task_queue.qsize: {task_queue.qsize()}')
             app.logger.info(f'RUNNER runner: {runner}')            
-            
-            app.logger.info(f'RUNNER test')
-            
 
             run_result = runner(run_values)
             
-            result_queue.put((task_id, run_result))
-            
             app.logger.info(f'RUNNER run_result: {run_result}')
             app.logger.info(f'RUNNER result_queue.qsize: {result_queue.qsize()}')
+            
+            result_queue.put((task_id, run_result))
+            
+            tasks[task_id]['status'] = 'Done'
+            tasks[task_id]['run_result'] = run_result
+            
+            app.logger.info(f'RUNNER tasks: {tasks}')            
 
 
     
@@ -58,6 +60,7 @@ runners = {'egcd': egcd,
 task_id = 0          
 task_queue = PriorityQueue()
 result_queue = PriorityQueue()
+tasks = {}
 
 worker_active_flag = threading.Event()
 worker_active_flag.set()
@@ -80,13 +83,15 @@ def run_algorithm(algorithm_id, run_values):
     
     new_task = (priority, task_id, algorithm_id, run_values)
     
+    tasks[task_id] = {'algorithm_id': algorithm_id,
+                      'run_values': run_values,
+                      'status': 'Created'}
+                      
     task_queue.put(new_task)
     
     app.logger.info(f'RUNNER new_task: {new_task}')
     app.logger.info(f'RUNNER task_queue.qsize: {task_queue.qsize()}')
     app.logger.info(f'RUNNER task_id: {task_id}')
-    
-    time.sleep(1)
     
     return task_id
     
