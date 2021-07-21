@@ -120,32 +120,20 @@ def set_algorithm_state(algorithm_id):
     return response, 204
 
 
-@app.after_request
-def response_processor(response):
+@app.before_request
+def test():
     
-    test_message = 'test message'
+    task_queue = runner.task_queue
+    result_queue = runner.result_queue
     
-    app_context = app.app_context()
-    request_context = app.test_request_context('/home')
-    
-    # with app_context:
-    #     flash(f"test_message: {test_message}", category='info')
-    
-    # print(request_context)
-    
-    # with app.app_context():
-    #     flash(f"test_message: {test_message}", category='info')
-        
+    task_queue_size = task_queue.qsize()
+    result_queue_size = result_queue.qsize()
 
-    @response.call_on_close
-    def process_after_request():
+    # flash(f"task_queue_size: {task_queue_size}", category='info')    
+    # flash(f"result_queue_size: {result_queue_size}", category='info')
+    
+    while not result_queue.empty():
         
-        # print(test_message)
-        
-        print(request_context)
-        print(app_context)
-        
-        with request_context, app_context:
-                flash(f"test_message: {test_message}", category='info')
+        result = result_queue.get()
+        flash(f"result <a href='/home' class='alert-link'>: {result}", category='info')
 
-    return response

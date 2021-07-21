@@ -8,9 +8,6 @@ from core import app
 from core.algorithms.egcd import egcd
 from core.algorithms.bernvaz import bernvaz
 
-from flask import flash
-
-
 from concurrent.futures import ThreadPoolExecutor
 
 
@@ -25,6 +22,8 @@ def task_worker(task_queue, result_queue, worker_active_flag):
     app.logger.info(f'RUNNER task_worker started')
     
     while True:
+        
+        time.sleep(1)
     
         if worker_active_flag.is_set() and not task_queue.empty():
             
@@ -47,8 +46,6 @@ def task_worker(task_queue, result_queue, worker_active_flag):
             
             app.logger.info(f'RUNNER run_result: {run_result}')
             app.logger.info(f'RUNNER result_queue.qsize: {result_queue.qsize()}')
-            
-            show_flash()
 
 
     
@@ -69,7 +66,7 @@ task_worker_thread = threading.Thread(target=task_worker,
                                       args=(task_queue, result_queue, worker_active_flag),
                                       daemon=True)
                                       
-# task_worker_thread.start()
+task_worker_thread.start()
 
 # task_executor.submit(task_worker, task_queue, result_queue, worker_active_flag)
     
@@ -88,15 +85,6 @@ def run_algorithm(algorithm_id, run_values):
     app.logger.info(f'RUNNER new_task: {new_task}')
     app.logger.info(f'RUNNER task_queue.qsize: {task_queue.qsize()}')
     
-    flash(f"Message", category='info')
-    
     # return run_result
     
 
-def show_flash():
-    
-    print('test')
-    
-    flash(f"Test", category='info')
-    
-    return 'test'
