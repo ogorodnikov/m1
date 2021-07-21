@@ -37,15 +37,15 @@ def task_worker(task_queue, result_queue, worker_active_flag):
             app.logger.info(f'RUNNER task_queue.qsize: {task_queue.qsize()}')
             app.logger.info(f'RUNNER runner: {runner}')            
 
-            run_result = runner(run_values)
+            result = runner(run_values)
             
-            app.logger.info(f'RUNNER run_result: {run_result}')
+            app.logger.info(f'RUNNER result: {result}')
             app.logger.info(f'RUNNER result_queue.qsize: {result_queue.qsize()}')
             
-            result_queue.put((task_id, run_result))
+            result_queue.put((task_id, result))
             
             tasks[task_id]['status'] = 'Done'
-            tasks[task_id]['run_result'] = run_result
+            tasks[task_id]['result'] = result
             
             app.logger.info(f'RUNNER tasks: {tasks}')            
 

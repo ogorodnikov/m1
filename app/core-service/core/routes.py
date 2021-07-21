@@ -104,8 +104,7 @@ def run_algorithm(algorithm_id):
     
     task_id = runner.run_algorithm(algorithm_id, run_values)
     
-    flash(f"New task: {algorithm_id} with values: {dict(run_values)}", category='warning')
-    flash(f"Task scheduled with ID: <a href='#'>{task_id}</a>", category='info')
+    flash(f"Task <a href='/tasks'>#{task_id}</a> scheduled: {algorithm_id}, {dict(run_values)}", category='info')
 
     return redirect(request.referrer)
     
@@ -129,19 +128,10 @@ def get_tasks():
 @app.before_request
 def test():
     
-    task_queue = runner.task_queue
     result_queue = runner.result_queue
-    
-    task_queue_size = task_queue.qsize()
-    result_queue_size = result_queue.qsize()
-
-    # flash(f"task_queue_size: {task_queue_size}", category='info')    
-    # flash(f"result_queue_size: {result_queue_size}", category='info')
     
     while not result_queue.empty():
         
-        result = result_queue.get()
-        # f'<a href="#" class="link-primary">Result {result}</a>'
-        # class='alert-link'
-        flash(f"Result: <a href='#'>{result}</a>", category='danger')
+        task_id, result = result_queue.get()
+        flash(f"Task <a href='/tasks'>#{task_id}</a> done: {result}", category='warning')
 
