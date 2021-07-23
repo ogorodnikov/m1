@@ -78,9 +78,9 @@ class Config(object):
 LOGGING_CONFIG = {'version': 1,
 
                   'formatters': {'default': {
-                                             # 'format': '%(levelname).1s %(module)6.6s | %(message)s'}},
-                                              'format': '[%(asctime)s] %(module)6.6s | %(levelname).4s | %(message)s', 
-                                              'datefmt': "%Y-%m-%d %H:%M:%S"}},
+                                              'format': '%(levelname).1s %(module)6.6s | %(message)s'}},
+                                            #   'format': '[%(asctime)s] %(module)6.6s | %(levelname).4s | %(message)s', 
+                                            #   'datefmt': "%Y-%m-%d %H:%M:%S"}},
                                             
                   'handlers': {'wsgi': {'class': 'logging.StreamHandler',
                                         'stream': 'ext://flask.logging.wsgi_errors_stream',
