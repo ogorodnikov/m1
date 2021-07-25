@@ -2,6 +2,7 @@ from qiskit import *
 from qiskit.providers.ibmq import least_busy
 from qiskit.tools.monitor import backend_overview, job_monitor
 
+from qiskit.circuit.library import Diagonal
 
 from qiskit_textbook.problems import grover_problem_oracle
 
@@ -9,6 +10,9 @@ import math
 import numpy as np
 
 def grover(run_values):
+    
+    run_values = {'secret':'101',}
+    secret = (run_values.get('secret'),)
     
     qubit_count = 3
     solutions = (0, 1), #(2, 3)
@@ -27,11 +31,43 @@ def grover(run_values):
     print(f'GROVER repetitions_count: {repetitions_count}')
     print(f'GROVER iterations_count: {iterations_count}')
     
+    patterns = [f'{element:>0{qubit_count}b}' for element in range(elements_count)]
+    
+    print(f'GROVER patterns: {patterns}')
+    
+    diagonal_elements = [-1 if pattern in secret else 1 for pattern in patterns] 
+    
+    # run_bits = int('1010', 2)
+    
+    # print(run_bits)
+    
+    # # quit()
+    
+    # diagonal_elements = [1] * 2 ** qubit_count
+    
+    # diagonal_elements[1] = -1
+    
+    print(f'GROVER diagonal_elements: {diagonal_elements}')
+    
+    quit()
+    
+    phase_oracle = Diagonal(diagonal_elements)
+    phase_oracle.name = 'Phase Oracle'
+    
+    print(f'GROVER phase_oracle: {phase_oracle}')
+            
+    # quit()
+    
     oracle = grover_problem_oracle(qubit_count, variant=10, print_solutions=True)
     
     # print(oracle.decompose())
     # print(oracle.decompose().decompose())
     # print(oracle.decompose().decompose().decompose())
+    
+    print(oracle)
+    
+    
+    # quit()
 
 
     for repetitions_count in range(1, 4):
@@ -40,7 +76,7 @@ def grover(run_values):
         
         circuit = QuantumCircuit(qubit_count)
         
-        circuit.append(oracle, [0, 1, 2])
+        circuit.append(phase_oracle, [0, 1, 2])
     
         # for qubit in range(qubit_count):
         #     circuit.h(qubit)
