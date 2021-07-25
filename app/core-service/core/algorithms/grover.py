@@ -11,8 +11,11 @@ import numpy as np
 
 def grover(run_values):
     
-    run_values = {'secret':'101',}
-    secret = (run_values.get('secret'),)
+    run_values = {'secret':'000',}
+    
+    secret = run_values.get('secret')
+    secret_string = ''.join('1' if symbol == '1' else '0' for symbol in secret)
+    secret_index = int(secret, 2)
     
     qubit_count = 3
     solutions = (0, 1), #(2, 3)
@@ -25,49 +28,28 @@ def grover(run_values):
     
     iterations_count = math.floor(np.pi * np.sqrt(2 ** qubit_count / solutions_count) / 4)
     
+    diagonal_elements = [1] * elements_count
+    diagonal_elements[secret_index] = -1
+    
+    phase_oracle = Diagonal(diagonal_elements)
+    phase_oracle.name = 'Phase Oracle'    
+    
     print(f'GROVER elements_count: {elements_count}')
     print(f'GROVER solutions_count: {solutions_count}')
     print(f'GROVER repetitions: {repetitions}')
     print(f'GROVER repetitions_count: {repetitions_count}')
     print(f'GROVER iterations_count: {iterations_count}')
-    
-    patterns = [f'{element:>0{qubit_count}b}' for element in range(elements_count)]
-    
-    print(f'GROVER patterns: {patterns}')
-    
-    diagonal_elements = [-1 if pattern in secret else 1 for pattern in patterns] 
-    
-    # run_bits = int('1010', 2)
-    
-    # print(run_bits)
-    
-    # # quit()
-    
-    # diagonal_elements = [1] * 2 ** qubit_count
-    
-    # diagonal_elements[1] = -1
-    
     print(f'GROVER diagonal_elements: {diagonal_elements}')
     
+
+    
+    # oracle = grover_problem_oracle(qubit_count, variant=10, print_solutions=True)
+    
+    print(phase_oracle.decompose())
+    print(phase_oracle.decompose().decompose())
+    print(phase_oracle.decompose().decompose().decompose())
+    
     quit()
-    
-    phase_oracle = Diagonal(diagonal_elements)
-    phase_oracle.name = 'Phase Oracle'
-    
-    print(f'GROVER phase_oracle: {phase_oracle}')
-            
-    # quit()
-    
-    oracle = grover_problem_oracle(qubit_count, variant=10, print_solutions=True)
-    
-    # print(oracle.decompose())
-    # print(oracle.decompose().decompose())
-    # print(oracle.decompose().decompose().decompose())
-    
-    print(oracle)
-    
-    
-    # quit()
 
 
     for repetitions_count in range(1, 4):
