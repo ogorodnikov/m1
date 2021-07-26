@@ -17,7 +17,6 @@ from qiskit.tools.monitor import backend_overview, job_monitor
 
 
 TASK_WORKERS_COUNT = 2
-BACKEND_QUBIT_COUNT = 5
 
 runner_functions = {'egcd': egcd,
                     'bernvaz': bernvaz,
@@ -112,6 +111,12 @@ def task_runner(algorithm_id, run_values):
     if run_mode == 'classic':
         
         return runner_function(run_values)
+    
+    else:
+    
+        circuit = runner_function(run_values)
+        
+        qubit_count = circuit.num_qubits
         
     if run_mode == 'simulator':
         
@@ -132,11 +137,9 @@ def task_runner(algorithm_id, run_values):
         
         # backend = provider.get_backend('ibmq_manila')
 
-        backend = get_least_busy_backend(provider, BACKEND_QUBIT_COUNT)
+        backend = get_least_busy_backend(provider, qubit_count)
         
     app.logger.info(f'RUNNER backend: {backend}')
-    
-    circuit = runner_function(run_values)
 
     job = execute(circuit, backend=backend, shots=1024)
     

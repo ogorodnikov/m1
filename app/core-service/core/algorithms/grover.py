@@ -1,4 +1,4 @@
-from qiskit import *
+from qiskit import QuantumCircuit
 
 from qiskit.circuit.library import Diagonal
 
