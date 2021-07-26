@@ -51,12 +51,25 @@ def build_diffuser(qubit_count):
     
     return diffuser_circuit
     
+    
+def get_least_busy_backend(provider, total_qubit_count):
+    
+    # backend_overview()
+    
+    backend_filter = lambda backend: (not backend.configuration().simulator 
+                                      and backend.configuration().n_qubits >= total_qubit_count
+                                      and backend.status().operational==True)
+        
+    least_busy_backend = least_busy(provider.backends(filters=backend_filter))
+    
+    return least_busy_backend
+    
 
 def grover(run_values):
     
-    run_mode = 'simulator'
-    # run_mode = 'quantum_device'
-    run_values = {'secret': ('11',),}
+    # run_mode = 'simulator'
+    run_mode = 'quantum_device'
+    run_values = {'secret': ('1111',),}
     
     secrets = run_values.get('secret')
     secret_count = len(secrets)
@@ -73,6 +86,19 @@ def grover(run_values):
     
     diffuser = build_diffuser(qubit_count)
 
+    circuit = QuantumCircuit(qubit_count)
+    
+    for qubit in qubits:
+        circuit.h(qubit)
+
+    for i in range(repetitions_count):
+    
+        circuit.barrier()
+        circuit.append(phase_oracle, qubits)
+        circuit.append(diffuser, qubits)
+        
+    circuit.measure_all()
+    
     print(f'GROVER secrets: {secrets}')
     print(f'GROVER secret_count: {secret_count}')
     print(f'GROVER qubit_count: {qubit_count}')
@@ -90,34 +116,21 @@ def grover(run_values):
     print(phase_oracle.decompose().decompose().decompose())
 
     print(f'GROVER diffuser: \n{diffuser}')
-
-    circuit = QuantumCircuit(qubit_count)
     
-    for qubit in qubits:
-        circuit.h(qubit)
-
-    for i in range(repetitions_count):
-    
-        circuit.barrier()
-        circuit.append(phase_oracle, qubits)
-        circuit.append(diffuser, qubits)
-        
-    circuit.measure_all()
+    print(f"GROVER circuit: \n{circuit}")
     
 
     ###   Run   ###
-    
 
     if run_mode == 'simulator':
-        
-        # backend = provider.get_backend('ibmq_qasm_simulator')
         
         backend = Aer.get_backend('qasm_simulator')
         
         
     if run_mode == 'quantum_device':
     
-        qiskit_token = app.config.get('QISKIT_TOKEN')
+        # qiskit_token = app.config.get('QISKIT_TOKEN')
+        qiskit_token = xxx
         IBMQ.save_account(qiskit_token)
         
         if not IBMQ.active_account():
@@ -125,20 +138,19 @@ def grover(run_values):
             
         provider = IBMQ.get_provider()
         
-        app.logger.info(f"GROVER provider: {provider}")
-        app.logger.info(f"GROVER provider.backends(): {provider.backends()}")
+        print(f"GROVER provider: {provider}")
+        print(f"GROVER provider.backends(): {provider.backends()}")
         
         # backend = provider.get_backend('ibmq_manila')
 
-        backend = get_least_busy_backend(provider, total_qubit_count)
+        backend = get_least_busy_backend(provider, qubit_count)
         
 
     print(f"GROVER run_mode: {run_mode}")
     print(f"GROVER backend: {backend}")
-    print(f"GROVER circuit: \n\n{circuit}")
-    print(f'GROVER running circuit...')
 
-    job = execute(circuit, backend=backend, shots=10)
+
+    job = execute(circuit, backend=backend, shots=1024)
     
     job_monitor(job, interval=5)
     
@@ -153,16 +165,3 @@ def grover(run_values):
     
     
 result = grover('bonya')
-
-
-def get_least_busy_backend(provider, total_qubit_count):
-    
-    # backend_overview()
-    
-    backend_filter = lambda backend: (not backend.configuration().simulator 
-                                      and backend.configuration().n_qubits >= total_qubit_count
-                                      and backend.status().operational==True)
-        
-    least_busy_backend = least_busy(provider.backends(filters=backend_filter))
-    
-    return least_busy_backend
