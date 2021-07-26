@@ -1,19 +1,19 @@
+import time
+import threading
+
+# from concurrent.futures import ThreadPoolExecutor
+
 from queue import PriorityQueue
 
-import threading
-import time
+from qiskit import IBMQ, Aer, execute
+from qiskit.providers.ibmq import least_busy
+from qiskit.tools.monitor import backend_overview, job_monitor
 
 from core import app
 
 from core.algorithms.egcd import egcd
 from core.algorithms.bernvaz import bernvaz
 from core.algorithms.grover import grover
-
-from concurrent.futures import ThreadPoolExecutor
-
-from qiskit import IBMQ, Aer, execute
-from qiskit.providers.ibmq import least_busy
-from qiskit.tools.monitor import backend_overview, job_monitor
 
 
 TASK_WORKERS_COUNT = 2
@@ -22,7 +22,6 @@ runner_functions = {'egcd': egcd,
                     'bernvaz': bernvaz,
                     'grover': grover,    
                    }
-
 
 
 task_id = 0          
