@@ -53,11 +53,7 @@ def build_diffuser(qubit_count):
 
 def grover(run_values):
     
-    # run_mode = 'simulator'
-    # run_mode = 'quantum_device'
-    # run_values = {'secret': ('1111',),}
-    
-    secrets = run_values.getlist('secret')
+    secrets = [value for key, value in run_values.items() if 'secret' in key]
     secret_count = len(secrets)
     
     qubit_count = len(max(secrets, key=len))

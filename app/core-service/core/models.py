@@ -48,7 +48,7 @@ def add_test_data():
                              'Classical algorith complexity is O(N) while quantum is O(square root of N).',
               'link': 'https://en.wikipedia.org/wiki/Grover%27s_algorithm',
               'image': b'1010',
-              'parameters': [{'name': 'secret', 'default_value': '101'}, {'name': 'secret', 'default_value': '111'}],
+              'parameters': [{'name': 'secret_1', 'default_value': '101'}, {'name': 'secret_2', 'default_value': '111'}],
               'likes': 457,
               'enabled': True},
               
@@ -60,7 +60,7 @@ def add_test_data():
             batch.put_item(item)
          
             
-add_test_data()
+# add_test_data()
 
 # print("Test data added to 'm1-algorithms-table'")
 
