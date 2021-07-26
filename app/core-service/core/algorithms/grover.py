@@ -1,8 +1,5 @@
 from qiskit import *
 
-from qiskit.providers.ibmq import least_busy
-from qiskit.tools.monitor import backend_overview, job_monitor
-
 from qiskit.circuit.library import Diagonal
 
 from core import app
@@ -53,19 +50,6 @@ def build_diffuser(qubit_count):
     
     return diffuser_circuit
     
-    
-def get_least_busy_backend(provider, total_qubit_count):
-    
-    # backend_overview()
-    
-    backend_filter = lambda backend: (not backend.configuration().simulator 
-                                      and backend.configuration().n_qubits >= total_qubit_count
-                                      and backend.status().operational==True)
-        
-    least_busy_backend = least_busy(provider.backends(filters=backend_filter))
-    
-    return least_busy_backend
-    
 
 def grover(run_values):
     
@@ -74,8 +58,6 @@ def grover(run_values):
     # run_values = {'secret': ('1111',),}
     
     secrets = run_values.getlist('secret')
-    run_mode = run_values.get('run_mode')
-    
     secret_count = len(secrets)
     
     qubit_count = len(max(secrets, key=len))
@@ -86,7 +68,6 @@ def grover(run_values):
     repetitions =  (elements_count / secret_count) ** 0.5 * 3.14 / 4
     repetitions_count = int(repetitions)
     
-    app.logger.info(f'GROVER run_values: {run_values}')
     app.logger.info(f'GROVER secrets: {secrets}')
     app.logger.info(f'GROVER secret_count: {secret_count}')
     app.logger.info(f'GROVER qubit_count: {qubit_count}')
@@ -124,45 +105,6 @@ def grover(run_values):
     
     app.logger.info(f'GROVER circuit: \n{circuit}')
     
+    return circuit
 
-    ###   Run   ###
-
-    if run_mode == 'simulator':
-        
-        backend = Aer.get_backend('qasm_simulator')
-        
-        
-    if run_mode == 'quantum_device':
     
-        qiskit_token = app.config.get('QISKIT_TOKEN')
-        IBMQ.save_account(qiskit_token)
-        
-        if not IBMQ.active_account():
-            IBMQ.load_account()
-            
-        provider = IBMQ.get_provider()
-        
-        app.logger.info(f'GROVER provider: {provider}')
-        app.logger.info(f'GROVER provider.backends(): {provider.backends()}')
-        
-        # backend = provider.get_backend('ibmq_manila')
-
-        backend = get_least_busy_backend(provider, qubit_count)
-        
-
-    app.logger.info(f'GROVER run_mode: {run_mode}')
-    app.logger.info(f'GROVER backend: {backend}')
-
-
-    job = execute(circuit, backend=backend, shots=1024)
-    
-    job_monitor(job, interval=5)
-    
-    result = job.result()
-    
-    counts = result.get_counts()
-    
-    app.logger.info(f'GROVER counts:')
-    [app.logger.info(f'{state}: {count}') for state, count in sorted(counts.items())]
-
-    return {'Counts:': counts}

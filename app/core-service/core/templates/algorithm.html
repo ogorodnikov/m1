@@ -65,16 +65,26 @@
       <div class="row">
         <div class="col-sm-5 mb-3">
           
-          <button type="submit" class="btn btn-warning" name="run_mode" value="simulator">
-             Run on Simulator
-          </button>
+          {% if item.type == 'quantum' %}
           
-          <button type="submit" class="btn btn-danger" name="run_mode" value="quantum_device"
-            {% if item.type != 'quantum' %}
-              disabled
-            {% endif %}>
-             Run on Quantum Device
-          </button>
+            <button type="submit" class="btn btn-warning" name="run_mode" value="simulator">
+               Run on Simulator
+            </button>
+            
+            <button type="submit" class="btn btn-danger" name="run_mode" value="quantum_device"
+              {% if item.type != 'quantum' %}
+                disabled
+              {% endif %}>
+               Run on Quantum Device
+            </button>
+          
+          {% else %}
+          
+            <button type="submit" class="btn btn-warning" name="run_mode" value="classic">
+               Run
+            </button>            
+          
+          {% endif %}
           
           <button type="submit" form="like_form" class="btn btn-info">
             Like
