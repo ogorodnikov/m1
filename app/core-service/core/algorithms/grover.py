@@ -11,45 +11,48 @@ import numpy as np
 
 def grover(run_values):
     
-    run_values = {'secret':'000',}
+    run_values = {'secret': ('1010',),}
     
-    secret = run_values.get('secret')
-    secret_string = ''.join('1' if symbol == '1' else '0' for symbol in secret)
-    secret_index = int(secret, 2)
+    secrets = run_values.get('secret')
+    secret_count = len(secrets)
     
-    qubit_count = 3
-    solutions = (0, 1), #(2, 3)
-    
+    qubit_count = len(max(secrets, key=len))
     elements_count = 2 ** qubit_count
-    solutions_count = len(solutions)
-    
-    repetitions =  (elements_count / solutions_count) ** 0.5 * 3.14 / 4
-    repetitions_count = int(repetitions)
-    
-    iterations_count = math.floor(np.pi * np.sqrt(2 ** qubit_count / solutions_count) / 4)
     
     diagonal_elements = [1] * elements_count
-    diagonal_elements[secret_index] = -1
     
+    for secret in secrets:
+        secret_string = ''.join('1' if letter == '1' else '0' for letter in secret)
+        secret_index = int(secret_string, 2)
+        diagonal_elements[secret_index] = -1
+
     phase_oracle = Diagonal(diagonal_elements)
-    phase_oracle.name = 'Phase Oracle'    
+    phase_oracle.name = 'Phase Oracle'   
     
+    repetitions =  (elements_count / secret_count) ** 0.5 * 3.14 / 4
+    repetitions_count = int(repetitions)
+    
+    iterations_count = math.floor(np.pi * np.sqrt(2 ** qubit_count / secret_count) / 4)
+
+    print(f'GROVER secrets: {secrets}')
+    print(f'GROVER secret_count: {secret_count}')
+    print(f'GROVER qubit_count: {qubit_count}')
     print(f'GROVER elements_count: {elements_count}')
-    print(f'GROVER solutions_count: {solutions_count}')
+    
     print(f'GROVER repetitions: {repetitions}')
     print(f'GROVER repetitions_count: {repetitions_count}')
     print(f'GROVER iterations_count: {iterations_count}')
     print(f'GROVER diagonal_elements: {diagonal_elements}')
     
-
+    # quit()
     
     # oracle = grover_problem_oracle(qubit_count, variant=10, print_solutions=True)
     
-    # print(phase_oracle.decompose())
-    # print(phase_oracle.decompose().decompose())
-    # print(phase_oracle.decompose().decompose().decompose())
+    print(phase_oracle.decompose())
+    print(phase_oracle.decompose().decompose())
+    print(phase_oracle.decompose().decompose().decompose())
     
-    quit()
+    # quit()
 
 
     for repetitions_count in range(1, 4):
@@ -58,13 +61,10 @@ def grover(run_values):
         
         circuit = QuantumCircuit(qubit_count)
         
-        circuit.append(phase_oracle, [0, 1, 2])
-    
-        # for qubit in range(qubit_count):
-        #     circuit.h(qubit)
+        for qubit in range(qubit_count):
+            circuit.h(qubit)
         
-        # for pattern in patterns:
-        #     circuit.cz(*pattern)
+        circuit.append(phase_oracle, range(qubit_count))
     
         for i in range(repetitions_count):
         
@@ -76,14 +76,14 @@ def grover(run_values):
             for qubit in range(qubit_count):
                 circuit.x(qubit)
                 
-            for qubit in range(qubit_count-1):
+            for qubit in range(1, qubit_count):
                 circuit.i(qubit)
         
-            circuit.h(qubit_count-1)
-            circuit.mct(list(range(qubit_count-1)), qubit_count-1)
-            circuit.h(qubit_count-1)
+            circuit.h(0)
+            circuit.mct(list(range(1, qubit_count)), 0)
+            circuit.h(0)
             
-            for qubit in range(qubit_count-1):
+            for qubit in range(1, qubit_count):
                 circuit.i(qubit)
         
             for qubit in range(qubit_count):

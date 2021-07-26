@@ -53,7 +53,7 @@ def diffuser(nqubits):
 # print(grover_circuit)
 
 
-secret_index = 3
+secret_index = 2
 
 qubit_count = 2
 elements_count = 2 ** qubit_count
