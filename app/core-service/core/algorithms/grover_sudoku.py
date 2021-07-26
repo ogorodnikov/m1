@@ -1,100 +1,67 @@
-from qiskit import *
+from itertools import combinations, zip_longest
 
-from qiskit.providers.ibmq import least_busy
-from qiskit.tools.monitor import backend_overview, job_monitor
-
-from qiskit.circuit.library import Diagonal
-
-from core import app
+from qiskit import ClassicalRegister, QuantumRegister, QuantumCircuit
 
 
-def build_phase_oracle(secrets, elements_count):
-    
-    diagonal_elements = [1] * elements_count
-    
-    for secret in secrets:
-        secret_string = ''.join('1' if letter == '1' else '0' for letter in secret)
-        secret_index = int(secret_string, 2)
-        diagonal_elements[secret_index] = -1
 
-    phase_oracle = Diagonal(diagonal_elements)
-    phase_oracle.name = 'Phase Oracle'
+def grover_sudoku(run_values):
     
-    return phase_oracle
-    
-    
-def build_diffuser(qubit_count):
-    
-    diffuser_circuit = QuantumCircuit(qubit_count)
-        
-    for qubit in range(qubit_count):
-        diffuser_circuit.h(qubit)
-
-    for qubit in range(qubit_count):
-        diffuser_circuit.x(qubit)
-        
-    for qubit in range(1, qubit_count):
-        diffuser_circuit.i(qubit)
-
-    diffuser_circuit.h(0)
-    diffuser_circuit.mct(list(range(1, qubit_count)), 0)
-    diffuser_circuit.h(0)
-    
-    for qubit in range(1, qubit_count):
-        diffuser_circuit.i(qubit)
-
-    for qubit in range(qubit_count):
-        diffuser_circuit.x(qubit)
-
-    for qubit in range(qubit_count):
-        diffuser_circuit.h(qubit)
-        
-    diffuser_circuit.name = 'Diffuser'
-    
-    return diffuser_circuit
-    
-    
-def get_least_busy_backend(provider, total_qubit_count):
-    
-    # backend_overview()
-    
-    backend_filter = lambda backend: (not backend.configuration().simulator 
-                                      and backend.configuration().n_qubits >= total_qubit_count
-                                      and backend.status().operational==True)
-        
-    least_busy_backend = least_busy(provider.backends(filters=backend_filter))
-    
-    return least_busy_backend
-    
-
-def grover(run_values):
-    
-    # run_mode = 'simulator'
+    run_mode = 'simulator'
     # run_mode = 'quantum_device'
-    # run_values = {'secret': ('1111',),}
-    
-    secrets = run_values.getlist('secret')
-    run_mode = run_values.get('run_mode')
-    
-    secret_count = len(secrets)
-    
-    qubit_count = len(max(secrets, key=len))
-    qubits = range(qubit_count)
 
-    elements_count = 2 ** qubit_count
+    run_values = {'secret_row_1': '011',
+                  'secret_row_2': '1',
+                  'secret_row_3': '10',
+                 }
+                 
     
-    repetitions =  (elements_count / secret_count) ** 0.5 * 3.14 / 4
-    repetitions_count = int(repetitions)
+    secrets = [value for key, value in run_values.items() if 'secret_row' in key]
+
+    columns = list(zip_longest(*secrets, fillvalue='0'))
+    rows = list(zip(*columns))
     
-    app.logger.info(f'GROVER run_values: {run_values}')
-    app.logger.info(f'GROVER secrets: {secrets}')
-    app.logger.info(f'GROVER secret_count: {secret_count}')
-    app.logger.info(f'GROVER qubit_count: {qubit_count}')
-    app.logger.info(f'GROVER elements_count: {elements_count}')
+    height = len(rows)
+    width = len(columns)
+    cells_count = height * width
     
-    app.logger.info(f'GROVER repetitions: {repetitions}')
-    app.logger.info(f'GROVER repetitions_count: {repetitions_count}')
+    row_pairs = sorted(((a, row_index), (b, row_index)) 
+                       for a, b in combinations(range(width), 2)
+                       for row_index in range(height))
+                 
+    column_pairs = sorted(((column_index, a), (column_index, b)) 
+                          for a, b in combinations(range(height), 2)
+                          for column_index in range(width))
     
+    pairs = row_pairs + column_pairs
+    
+    row_pairs_count = len(row_pairs)
+    column_pairs_count = len(column_pairs)
+    pairs_count = len(pairs)
+    
+    cell_qubits = QuantumRegister(cells_count, name='c')
+    pair_qubits = QuantumRegister(pairs_count, name='p')
+    output_qubit = QuantumRegister(1, name='out')
+    bits = ClassicalRegister(cells_count, name='b')
+    circuit = QuantumCircuit(cell_qubits, pair_qubits, output_qubit, bits)
+
+
+    print(f'SUDOKU run_values: {run_values}')
+    print(f'SUDOKU secrets: {secrets}')    
+    print(f'SUDOKU rows: {rows}')
+    print(f'SUDOKU columns: {columns}')
+    print(f'SUDOKU row_pairs: {row_pairs}')
+    print(f'SUDOKU column_pairs: {column_pairs}')
+    print(f'SUDOKU pairs: {pairs}')
+    print(f'SUDOKU circuit: /n{circuit}')
+    
+    quit()
+
+
+
+    print(f'SUDOKU elements_count: {elements_count}')
+    
+    quit()
+
     phase_oracle = build_phase_oracle(secrets, elements_count)
     
     diffuser = build_diffuser(qubit_count)
@@ -166,3 +133,6 @@ def grover(run_values):
     [app.logger.info(f'{state}: {count}') for state, count in sorted(counts.items())]
 
     return {'Counts:': counts}
+
+
+grover_sudoku('monya')
