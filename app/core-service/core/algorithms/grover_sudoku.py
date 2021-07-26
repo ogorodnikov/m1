@@ -1,17 +1,48 @@
 from itertools import combinations, zip_longest
 
-from qiskit import ClassicalRegister, QuantumRegister, QuantumCircuit
+from qiskit import Aer, ClassicalRegister, QuantumRegister, QuantumCircuit, execute
+from qiskit.tools.monitor import job_monitor
 
 
+def build_diffuser(qubit_count):
+    
+    diffuser_circuit = QuantumCircuit(qubit_count)
+        
+    for qubit in range(qubit_count):
+        diffuser_circuit.h(qubit)
+
+    for qubit in range(qubit_count):
+        diffuser_circuit.x(qubit)
+        
+    for qubit in range(1, qubit_count):
+        diffuser_circuit.i(qubit)
+
+    diffuser_circuit.h(0)
+    diffuser_circuit.mct(list(range(1, qubit_count)), 0)
+    diffuser_circuit.h(0)
+    
+    for qubit in range(1, qubit_count):
+        diffuser_circuit.i(qubit)
+
+    for qubit in range(qubit_count):
+        diffuser_circuit.x(qubit)
+
+    for qubit in range(qubit_count):
+        diffuser_circuit.h(qubit)
+        
+    diffuser_circuit.name = 'Diffuser'
+    
+    return diffuser_circuit
+    
 
 def grover_sudoku(run_values):
     
     run_mode = 'simulator'
     # run_mode = 'quantum_device'
 
-    run_values = {'secret_row_1': '011',
-                  'secret_row_2': '1',
-                  'secret_row_3': '10',
+    run_values = {'secret_row_1': '10',
+                  'secret_row_2': '0',
+                #   'secret_row_3': '10',
                  }
                  
     
@@ -43,8 +74,87 @@ def grover_sudoku(run_values):
     output_qubit = QuantumRegister(1, name='out')
     bits = ClassicalRegister(cells_count, name='b')
     circuit = QuantumCircuit(cell_qubits, pair_qubits, output_qubit, bits)
+    
+
+    
+    one_state = (0, 1)
+    
+    for x in range(width):
+        
+        for y in range(height):
+            
+            cell_qubit = x + y * width
+            
+            if rows[y][x] == '1':
+                
+                circuit.initialize(one_state, cell_qubit)
+                
+            else:
+                
+                circuit.h(cell_qubit)      
+        
+        
+    
+    minus_state = (1 / 2**0.5, -1 / 2**0.5)
+    
+    circuit.initialize(minus_state, output_qubit)
+    
+
+    
+    # circuit.h(range(1, cells_count))
+
+    
+    sudoku_oracle_circuit = QuantumCircuit(cells_count + pairs_count)
+
+    for pair_index, pair in enumerate(pairs):
+        
+        (ax, ay), (bx, by) = pair
+        
+        a_index = ax + ay * width
+        b_index = bx + by * width
+        
+        pair_qubit_index = pair_index + cells_count
+        
+        print((ax, ay), (bx, by), a_index, b_index, pair_qubit_index)
+        
+        sudoku_oracle_circuit.cx(a_index, pair_qubit_index)
+        sudoku_oracle_circuit.cx(b_index, pair_qubit_index)
+        
+    sudoku_oracle_gate = sudoku_oracle_circuit.to_gate()
+    sudoku_oracle_gate.name = "Sudoku Oracle"
+    
+    
+    elements_count = cells_count ** 2
+
+    repetitions =  (elements_count / pairs_count) ** 0.5 * 3.14 / 4
+    repetitions_count = int(repetitions)
+    
+    print(f'SUDOKU elements_count: {elements_count}')
+    print(f'SUDOKU pairs_count: {pairs_count}')
+    print(f'SUDOKU repetitions: {repetitions}')
+    print(f'SUDOKU repetitions_count: {repetitions_count}')
+    
+    quit()
+    
+
+    for i in range(repetitions_count):
+    
+        circuit.append(sudoku_oracle_gate, range(cells_count + pairs_count))
+        
+        circuit.mct(pair_qubits, output_qubit)
+        
+        circuit.append(sudoku_oracle_gate, range(cells_count + pairs_count))
+        
+        diffuser = build_diffuser(cells_count)
+        
+        circuit.append(diffuser, cell_qubits)
 
 
+    # measure
+    
+    circuit.measure(cell_qubits, bits)
+    
+        
     print(f'SUDOKU run_values: {run_values}')
     print(f'SUDOKU secrets: {secrets}')    
     print(f'SUDOKU rows: {rows}')
@@ -52,45 +162,8 @@ def grover_sudoku(run_values):
     print(f'SUDOKU row_pairs: {row_pairs}')
     print(f'SUDOKU column_pairs: {column_pairs}')
     print(f'SUDOKU pairs: {pairs}')
-    print(f'SUDOKU circuit: /n{circuit}')
-    
-    quit()
+    print(f'SUDOKU circuit: \n{circuit}')
 
-
-
-    print(f'SUDOKU elements_count: {elements_count}')
-    
-    quit()
-
-    phase_oracle = build_phase_oracle(secrets, elements_count)
-    
-    diffuser = build_diffuser(qubit_count)
-
-    circuit = QuantumCircuit(qubit_count)
-    
-    for qubit in qubits:
-        circuit.h(qubit)
-
-    for i in range(repetitions_count):
-    
-        circuit.barrier()
-        circuit.append(phase_oracle, qubits)
-        circuit.append(diffuser, qubits)
-        
-    circuit.measure_all()
-    
-    app.logger.info(f'GROVER phase_oracle: \n{phase_oracle}')
-    app.logger.info(f'GROVER phase_oracle 1 decomposition:')
-    app.logger.info(phase_oracle.decompose())
-    app.logger.info(f'GROVER phase_oracle 2 decomposition:')
-    app.logger.info(phase_oracle.decompose().decompose())
-    app.logger.info(f'GROVER phase_oracle 3 decomposition:')
-    app.logger.info(phase_oracle.decompose().decompose().decompose())
-
-    app.logger.info(f'GROVER diffuser: \n{diffuser}')
-    
-    app.logger.info(f'GROVER circuit: \n{circuit}')
-    
 
     ###   Run   ###
 
@@ -109,16 +182,16 @@ def grover_sudoku(run_values):
             
         provider = IBMQ.get_provider()
         
-        app.logger.info(f'GROVER provider: {provider}')
-        app.logger.info(f'GROVER provider.backends(): {provider.backends()}')
+        print(f'SUDOKU provider: {provider}')
+        print(f'SUDOKU provider.backends(): {provider.backends()}')
         
         # backend = provider.get_backend('ibmq_manila')
 
         backend = get_least_busy_backend(provider, qubit_count)
         
 
-    app.logger.info(f'GROVER run_mode: {run_mode}')
-    app.logger.info(f'GROVER backend: {backend}')
+    print(f'SUDOKU run_mode: {run_mode}')
+    print(f'SUDOKU backend: {backend}')
 
 
     job = execute(circuit, backend=backend, shots=1024)
@@ -129,8 +202,8 @@ def grover_sudoku(run_values):
     
     counts = result.get_counts()
     
-    app.logger.info(f'GROVER counts:')
-    [app.logger.info(f'{state}: {count}') for state, count in sorted(counts.items())]
+    print(f'SUDOKU counts:')
+    [print(f'{state}: {count}') for state, count in sorted(counts.items())]
 
     return {'Counts:': counts}
 
