@@ -11,6 +11,7 @@
     <div class="row">
       <div class="col-sm-12 mt-4 mb-3">
         <h5>{{ item.name }}:</h5>
+        {{ item }}
       </div>
     </div>
     
@@ -43,14 +44,14 @@
           
             <div class="input-group mb-1">
               
-              <span class="input-group-text" id="parameter">{{ parameter }}:</span>
+              <span class="input-group-text" id="parameter">{{ parameter.name }}:</span>
               
               <input class="form-control text-light bg-dark"
-                     name={{ parameter }}
+                     name={{ parameter.name }}
                      type="tel"
                      pattern="[0-9]{1,10}" 
                      placeholder="please input value"
-                     value="1010"
+                     value={{ parameter.default_value }}
                      aria-label="Parameter"
                      aria-describedby="parameters"
                      title="Integers 1 to 10 digit length"

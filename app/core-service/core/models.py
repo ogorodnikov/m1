@@ -27,7 +27,7 @@ def add_test_data():
                              'Classical algorith complexity is O(N) while quantum is O(1).',
               'link': 'https://en.wikipedia.org/wiki/Bernstein%E2%80%93Vazirani_algorithm',
               'image': b'1010',
-              'parameters': ['secret'],
+              'parameters': [{'name': 'secret', 'default_value': '1010'}],
               'likes': 1324,
               'enabled': True},
               
@@ -37,7 +37,7 @@ def add_test_data():
               'description': 'Calculates GCD (Greatest common divisor) and Bézout coefficents.',
               'link': 'https://en.wikipedia.org/wiki/Extended_Euclidean_algorithm',
               'image': b'1010',
-              'parameters': ['a', 'b'],
+              'parameters': [{'name': 'a', 'default_value': '345'}, {'name': 'b', 'default_value': '455244237'}],
               'likes': 768,
               'enabled': True},
               
@@ -48,7 +48,7 @@ def add_test_data():
                              'Classical algorith complexity is O(N) while quantum is O(square root of N).',
               'link': 'https://en.wikipedia.org/wiki/Grover%27s_algorithm',
               'image': b'1010',
-              'parameters': ['secret', 'secret'],
+              'parameters': [{'name': 'secret', 'default_value': '101'}, {'name': 'secret', 'default_value': '111'}],
               'likes': 457,
               'enabled': True},
               
@@ -60,7 +60,7 @@ def add_test_data():
             batch.put_item(item)
          
             
-# add_test_data()
+add_test_data()
 
 # print("Test data added to 'm1-algorithms-table'")
 
