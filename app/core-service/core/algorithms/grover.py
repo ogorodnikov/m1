@@ -63,12 +63,12 @@ def grover(run_values):
         
         for qubit in range(qubit_count):
             circuit.h(qubit)
-        
-        circuit.append(phase_oracle, range(qubit_count))
     
         for i in range(repetitions_count):
         
             circuit.barrier()
+            
+            circuit.append(phase_oracle, range(qubit_count))
             
             for qubit in range(qubit_count):
                 circuit.h(qubit)

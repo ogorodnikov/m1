@@ -58,6 +58,7 @@ secret_index = 2
 qubit_count = 2
 elements_count = 2 ** qubit_count
 
+
 diagonal_elements = [1] * elements_count
 diagonal_elements[secret_index] = -1
 
