@@ -5,6 +5,8 @@ from qiskit.tools.monitor import backend_overview, job_monitor
 
 from qiskit.circuit.library import Diagonal
 
+from core import app
+
 
 def build_phase_oracle(secrets, elements_count):
     
@@ -68,10 +70,12 @@ def get_least_busy_backend(provider, total_qubit_count):
 def grover(run_values):
     
     # run_mode = 'simulator'
-    run_mode = 'quantum_device'
-    run_values = {'secret': ('1111',),}
+    # run_mode = 'quantum_device'
+    # run_values = {'secret': ('1111',),}
     
-    secrets = run_values.get('secret')
+    secrets = run_values.getlist('secret')
+    run_mode = run_values.get('run_mode')
+    
     secret_count = len(secrets)
     
     qubit_count = len(max(secrets, key=len))
@@ -81,6 +85,15 @@ def grover(run_values):
     
     repetitions =  (elements_count / secret_count) ** 0.5 * 3.14 / 4
     repetitions_count = int(repetitions)
+    
+    app.logger.info(f'GROVER run_values: {run_values}')
+    app.logger.info(f'GROVER secrets: {secrets}')
+    app.logger.info(f'GROVER secret_count: {secret_count}')
+    app.logger.info(f'GROVER qubit_count: {qubit_count}')
+    app.logger.info(f'GROVER elements_count: {elements_count}')
+    
+    app.logger.info(f'GROVER repetitions: {repetitions}')
+    app.logger.info(f'GROVER repetitions_count: {repetitions_count}')
     
     phase_oracle = build_phase_oracle(secrets, elements_count)
     
@@ -99,25 +112,17 @@ def grover(run_values):
         
     circuit.measure_all()
     
-    print(f'GROVER secrets: {secrets}')
-    print(f'GROVER secret_count: {secret_count}')
-    print(f'GROVER qubit_count: {qubit_count}')
-    print(f'GROVER elements_count: {elements_count}')
-    
-    print(f'GROVER repetitions: {repetitions}')
-    print(f'GROVER repetitions_count: {repetitions_count}')
+    app.logger.info(f'GROVER phase_oracle: \n{phase_oracle}')
+    app.logger.info(f'GROVER phase_oracle 1 decomposition:')
+    app.logger.info(phase_oracle.decompose())
+    app.logger.info(f'GROVER phase_oracle 2 decomposition:')
+    app.logger.info(phase_oracle.decompose().decompose())
+    app.logger.info(f'GROVER phase_oracle 3 decomposition:')
+    app.logger.info(phase_oracle.decompose().decompose().decompose())
 
-    print(f'GROVER phase_oracle: \n\n{phase_oracle}')
-    print(f'GROVER phase_oracle 1 decomposition:')
-    print(phase_oracle.decompose())
-    print(f'GROVER phase_oracle 2 decomposition:')
-    print(phase_oracle.decompose().decompose())
-    print(f'GROVER phase_oracle 3 decomposition:')
-    print(phase_oracle.decompose().decompose().decompose())
-
-    print(f'GROVER diffuser: \n{diffuser}')
+    app.logger.info(f'GROVER diffuser: \n{diffuser}')
     
-    print(f"GROVER circuit: \n{circuit}")
+    app.logger.info(f'GROVER circuit: \n{circuit}')
     
 
     ###   Run   ###
@@ -129,8 +134,7 @@ def grover(run_values):
         
     if run_mode == 'quantum_device':
     
-        # qiskit_token = app.config.get('QISKIT_TOKEN')
-        qiskit_token = xxx
+        qiskit_token = app.config.get('QISKIT_TOKEN')
         IBMQ.save_account(qiskit_token)
         
         if not IBMQ.active_account():
@@ -138,16 +142,16 @@ def grover(run_values):
             
         provider = IBMQ.get_provider()
         
-        print(f"GROVER provider: {provider}")
-        print(f"GROVER provider.backends(): {provider.backends()}")
+        app.logger.info(f'GROVER provider: {provider}')
+        app.logger.info(f'GROVER provider.backends(): {provider.backends()}')
         
         # backend = provider.get_backend('ibmq_manila')
 
         backend = get_least_busy_backend(provider, qubit_count)
         
 
-    print(f"GROVER run_mode: {run_mode}")
-    print(f"GROVER backend: {backend}")
+    app.logger.info(f'GROVER run_mode: {run_mode}')
+    app.logger.info(f'GROVER backend: {backend}')
 
 
     job = execute(circuit, backend=backend, shots=1024)
@@ -158,10 +162,7 @@ def grover(run_values):
     
     counts = result.get_counts()
     
-    print(f"GROVER counts:")
-    [print(f'{state}: {count}') for state, count in sorted(counts.items())]
+    app.logger.info(f'GROVER counts:')
+    [app.logger.info(f'{state}: {count}') for state, count in sorted(counts.items())]
 
     return {'Counts:': counts}
-    
-    
-result = grover('bonya')

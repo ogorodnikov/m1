@@ -7,12 +7,17 @@ from core import app
 
 from core.algorithms.egcd import egcd
 from core.algorithms.bernvaz import bernvaz
+from core.algorithms.grover import grover
 
 from concurrent.futures import ThreadPoolExecutor
 
 
 TASK_WORKERS_COUNT = 2
 
+runners = {'egcd': egcd,
+           'bernvaz': bernvaz,
+           'grover': grover,    
+          }
 
 def task_worker(task_queue, result_queue, worker_active_flag):
     
@@ -52,10 +57,6 @@ def task_worker(task_queue, result_queue, worker_active_flag):
 
     
     app.logger.info(f'RUNNER task_worker exited')
-    
-
-runners = {'egcd': egcd,
-           'bernvaz': bernvaz}
 
 task_id = 0          
 task_queue = PriorityQueue()

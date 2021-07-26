@@ -24,11 +24,11 @@ def add_test_data():
               'name': 'Bernstein Vazirani',
               'type': 'quantum',
               'description': 'Determines hidden message encoded in black-box function.\n' +
-                             'Classical algorith complexity is O(n) while quantum is O(1).',
+                             'Classical algorith complexity is O(N) while quantum is O(1).',
               'link': 'https://en.wikipedia.org/wiki/Bernstein%E2%80%93Vazirani_algorithm',
               'image': b'1010',
               'parameters': ['secret'],
-              'likes': 0,
+              'likes': 1324,
               'enabled': True},
               
               {'id': 'egcd',
@@ -38,8 +38,21 @@ def add_test_data():
               'link': 'https://en.wikipedia.org/wiki/Extended_Euclidean_algorithm',
               'image': b'1010',
               'parameters': ['a', 'b'],
-              'likes': 0,
-              'enabled': True}]
+              'likes': 768,
+              'enabled': True},
+              
+              {'id': 'grover',
+              'name': 'Grover',
+              'type': 'quantum',
+              'description': 'Finds elements which satisfy constraints determined by black-box function.\n' +
+                             'Classical algorith complexity is O(N) while quantum is O(square root of N).',
+              'link': 'https://en.wikipedia.org/wiki/Grover%27s_algorithm',
+              'image': b'1010',
+              'parameters': ['secret', 'secret'],
+              'likes': 457,
+              'enabled': True},
+              
+              ]
               
     
     with table.batch_writer(overwrite_by_pkeys=['id']) as batch:
