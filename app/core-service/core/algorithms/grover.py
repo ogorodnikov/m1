@@ -1,23 +1,12 @@
 from qiskit import *
+
 from qiskit.providers.ibmq import least_busy
 from qiskit.tools.monitor import backend_overview, job_monitor
 
 from qiskit.circuit.library import Diagonal
 
-# from qiskit_textbook.problems import grover_problem_oracle
 
-import math
-import numpy as np
-
-def grover(run_values):
-    
-    run_values = {'secret': ('1010',),}
-    
-    secrets = run_values.get('secret')
-    secret_count = len(secrets)
-    
-    qubit_count = len(max(secrets, key=len))
-    elements_count = 2 ** qubit_count
+def build_phase_oracle(secrets, elements_count):
     
     diagonal_elements = [1] * elements_count
     
@@ -27,12 +16,62 @@ def grover(run_values):
         diagonal_elements[secret_index] = -1
 
     phase_oracle = Diagonal(diagonal_elements)
-    phase_oracle.name = 'Phase Oracle'   
+    phase_oracle.name = 'Phase Oracle'
+    
+    return phase_oracle
+    
+    
+def build_diffuser(qubit_count):
+    
+    diffuser_circuit = QuantumCircuit(qubit_count)
+        
+    for qubit in range(qubit_count):
+        diffuser_circuit.h(qubit)
+
+    for qubit in range(qubit_count):
+        diffuser_circuit.x(qubit)
+        
+    for qubit in range(1, qubit_count):
+        diffuser_circuit.i(qubit)
+
+    diffuser_circuit.h(0)
+    diffuser_circuit.mct(list(range(1, qubit_count)), 0)
+    diffuser_circuit.h(0)
+    
+    for qubit in range(1, qubit_count):
+        diffuser_circuit.i(qubit)
+
+    for qubit in range(qubit_count):
+        diffuser_circuit.x(qubit)
+
+    for qubit in range(qubit_count):
+        diffuser_circuit.h(qubit)
+        
+    diffuser_circuit.name = 'Diffuser'
+    
+    return diffuser_circuit
+    
+
+def grover(run_values):
+    
+    run_mode = 'simulator'
+    # run_mode = 'quantum_device'
+    run_values = {'secret': ('11',),}
+    
+    secrets = run_values.get('secret')
+    secret_count = len(secrets)
+    
+    qubit_count = len(max(secrets, key=len))
+    qubits = range(qubit_count)
+
+    elements_count = 2 ** qubit_count
     
     repetitions =  (elements_count / secret_count) ** 0.5 * 3.14 / 4
     repetitions_count = int(repetitions)
     
-    iterations_count = math.floor(np.pi * np.sqrt(2 ** qubit_count / secret_count) / 4)
+    phase_oracle = build_phase_oracle(secrets, elements_count)
+    
+    diffuser = build_diffuser(qubit_count)
 
     print(f'GROVER secrets: {secrets}')
     print(f'GROVER secret_count: {secret_count}')
@@ -41,76 +80,89 @@ def grover(run_values):
     
     print(f'GROVER repetitions: {repetitions}')
     print(f'GROVER repetitions_count: {repetitions_count}')
-    print(f'GROVER iterations_count: {iterations_count}')
-    print(f'GROVER diagonal_elements: {diagonal_elements}')
-    
-    # quit()
-    
-    # oracle = grover_problem_oracle(qubit_count, variant=10, print_solutions=True)
-    
+
+    print(f'GROVER phase_oracle: \n\n{phase_oracle}')
+    print(f'GROVER phase_oracle 1 decomposition:')
     print(phase_oracle.decompose())
+    print(f'GROVER phase_oracle 2 decomposition:')
     print(phase_oracle.decompose().decompose())
+    print(f'GROVER phase_oracle 3 decomposition:')
     print(phase_oracle.decompose().decompose().decompose())
-    
-    # quit()
 
+    print(f'GROVER diffuser: \n{diffuser}')
 
-    for repetitions_count in range(1, 4):
-        
-        print(f'GROVER repetitions_count: {repetitions_count}')
-        
-        circuit = QuantumCircuit(qubit_count)
-        
-        for qubit in range(qubit_count):
-            circuit.h(qubit)
+    circuit = QuantumCircuit(qubit_count)
     
-        for i in range(repetitions_count):
-        
-            circuit.barrier()
-            
-            circuit.append(phase_oracle, range(qubit_count))
-            
-            for qubit in range(qubit_count):
-                circuit.h(qubit)
-        
-            for qubit in range(qubit_count):
-                circuit.x(qubit)
-                
-            for qubit in range(1, qubit_count):
-                circuit.i(qubit)
-        
-            circuit.h(0)
-            circuit.mct(list(range(1, qubit_count)), 0)
-            circuit.h(0)
-            
-            for qubit in range(1, qubit_count):
-                circuit.i(qubit)
-        
-            for qubit in range(qubit_count):
-                circuit.x(qubit)
-        
-            for qubit in range(qubit_count):
-                circuit.h(qubit)
-            
+    for qubit in qubits:
+        circuit.h(qubit)
+
+    for i in range(repetitions_count):
     
-        circuit.measure_all()
+        circuit.barrier()
+        circuit.append(phase_oracle, qubits)
+        circuit.append(diffuser, qubits)
         
-        print(circuit.draw(output='text', fold=200))
+    circuit.measure_all()
     
+
+    ###   Run   ###
     
-        # run
+
+    if run_mode == 'simulator':
+        
+        # backend = provider.get_backend('ibmq_qasm_simulator')
         
         backend = Aer.get_backend('qasm_simulator')
         
-        job = execute(circuit, backend=backend, shots=1000)
         
-        result = job.result()
+    if run_mode == 'quantum_device':
+    
+        qiskit_token = app.config.get('QISKIT_TOKEN')
+        IBMQ.save_account(qiskit_token)
         
-        counts = result.get_counts()
+        if not IBMQ.active_account():
+            IBMQ.load_account()
+            
+        provider = IBMQ.get_provider()
         
-        [print(f'{state}: {count}') for state, count in sorted(counts.items())]
+        app.logger.info(f"GROVER provider: {provider}")
+        app.logger.info(f"GROVER provider.backends(): {provider.backends()}")
+        
+        # backend = provider.get_backend('ibmq_manila')
 
-    return counts
+        backend = get_least_busy_backend(provider, total_qubit_count)
+        
+
+    print(f"GROVER run_mode: {run_mode}")
+    print(f"GROVER backend: {backend}")
+    print(f"GROVER circuit: \n\n{circuit}")
+    print(f'GROVER running circuit...')
+
+    job = execute(circuit, backend=backend, shots=10)
+    
+    job_monitor(job, interval=5)
+    
+    result = job.result()
+    
+    counts = result.get_counts()
+    
+    print(f"GROVER counts:")
+    [print(f'{state}: {count}') for state, count in sorted(counts.items())]
+
+    return {'Counts:': counts}
+    
     
 result = grover('bonya')
 
+
+def get_least_busy_backend(provider, total_qubit_count):
+    
+    # backend_overview()
+    
+    backend_filter = lambda backend: (not backend.configuration().simulator 
+                                      and backend.configuration().n_qubits >= total_qubit_count
+                                      and backend.status().operational==True)
+        
+    least_busy_backend = least_busy(provider.backends(filters=backend_filter))
+    
+    return least_busy_backend
