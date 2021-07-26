@@ -19,44 +19,7 @@ runners = {'egcd': egcd,
            'grover': grover,    
           }
 
-def task_worker(task_queue, result_queue, worker_active_flag):
-    
-    app.logger.info(f'RUNNER task_worker started')
-    
-    while True:
-        
-        time.sleep(1)
-    
-        if worker_active_flag.is_set() and not task_queue.empty():
-            
-            pop_task = task_queue.get()
-            
-            priority, task_id, algorithm_id, run_values = pop_task
-            
-            runner = runners[algorithm_id]
-            
-            app.logger.info(f'RUNNER run_values.items(): {list(run_values.items())}')
-            app.logger.info(f'RUNNER run_values: {run_values}')
-            
-            app.logger.info(f'RUNNER pop_task: {pop_task}')
-            app.logger.info(f'RUNNER task_queue.qsize: {task_queue.qsize()}')
-            app.logger.info(f'RUNNER runner: {runner}')            
 
-            result = runner(run_values)
-            
-            app.logger.info(f'RUNNER result: {result}')
-            app.logger.info(f'RUNNER result_queue.qsize: {result_queue.qsize()}')
-            
-            result_queue.put((task_id, result))
-            
-            tasks[task_id]['status'] = 'Done'
-            tasks[task_id]['result'] = result
-            
-            app.logger.info(f'RUNNER len(tasks): {len(tasks)}')            
-
-
-    
-    app.logger.info(f'RUNNER task_worker exited')
 
 task_id = 0          
 task_queue = PriorityQueue()
@@ -92,7 +55,7 @@ def run_algorithm(algorithm_id, run_values):
     
     tasks[task_id] = {'algorithm_id': algorithm_id,
                       'run_values': run_values,
-                      'status': 'Created'}
+                      'status': 'Running'}
                       
     task_queue.put(new_task)
     
@@ -103,3 +66,36 @@ def run_algorithm(algorithm_id, run_values):
     return task_id
     
 
+def task_worker(task_queue, result_queue, worker_active_flag):
+    
+    app.logger.info(f'RUNNER task_worker started')
+    
+    while True:
+        
+        time.sleep(1)
+    
+        if worker_active_flag.is_set() and not task_queue.empty():
+            
+            pop_task = task_queue.get()
+            
+            priority, task_id, algorithm_id, run_values = pop_task
+            
+            runner = runners[algorithm_id]
+            
+            app.logger.info(f'RUNNER run_values.items(): {list(run_values.items())}')
+            app.logger.info(f'RUNNER run_values: {run_values}')
+            
+            app.logger.info(f'RUNNER pop_task: {pop_task}')
+            app.logger.info(f'RUNNER task_queue.qsize: {task_queue.qsize()}')
+            app.logger.info(f'RUNNER runner: {runner}')            
+
+            result = runner(run_values)
+            
+            result_queue.put((task_id, result))
+
+            tasks[task_id]['result'] = result            
+            tasks[task_id]['status'] = 'Done'
+            
+            app.logger.info(f'RUNNER result: {result}')
+            app.logger.info(f'RUNNER result_queue.qsize: {result_queue.qsize()}')
+            app.logger.info(f'RUNNER len(tasks): {len(tasks)}')
