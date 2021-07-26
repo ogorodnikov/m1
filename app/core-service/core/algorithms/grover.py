@@ -4,7 +4,7 @@ from qiskit.tools.monitor import backend_overview, job_monitor
 
 from qiskit.circuit.library import Diagonal
 
-from qiskit_textbook.problems import grover_problem_oracle
+# from qiskit_textbook.problems import grover_problem_oracle
 
 import math
 import numpy as np
@@ -45,9 +45,9 @@ def grover(run_values):
     
     # oracle = grover_problem_oracle(qubit_count, variant=10, print_solutions=True)
     
-    print(phase_oracle.decompose())
-    print(phase_oracle.decompose().decompose())
-    print(phase_oracle.decompose().decompose().decompose())
+    # print(phase_oracle.decompose())
+    # print(phase_oracle.decompose().decompose())
+    # print(phase_oracle.decompose().decompose().decompose())
     
     quit()
 
