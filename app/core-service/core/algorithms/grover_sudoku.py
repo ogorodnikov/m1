@@ -4,6 +4,36 @@ from qiskit import Aer, ClassicalRegister, QuantumRegister, QuantumCircuit, exec
 from qiskit.tools.monitor import job_monitor
 
 
+ONE_STATE = 0, 1
+ZERO_STATE = 1, 0
+MINUS_STATE = 2**-0.5, -(2**-0.5)
+
+
+def build_sudoku_oracle(cells_count, pairs, sudoku_width):
+    
+    pairs_count = len(pairs)
+
+    sudoku_oracle_circuit = QuantumCircuit(cells_count + pairs_count)
+
+    for pair_index, pair in enumerate(pairs):
+        
+        (ax, ay), (bx, by) = pair
+        
+        a_index = ax + ay * sudoku_width
+        b_index = bx + by * sudoku_width
+        
+        pair_qubit_index = pair_index + cells_count
+        
+        print((ax, ay), (bx, by), a_index, b_index, pair_qubit_index)
+        
+        sudoku_oracle_circuit.cx(a_index, pair_qubit_index)
+        sudoku_oracle_circuit.cx(b_index, pair_qubit_index)
+        
+    sudoku_oracle_circuit.name = "Sudoku Oracle"
+    
+    return sudoku_oracle_circuit
+    
+
 def build_diffuser(qubit_count):
     
     diffuser_circuit = QuantumCircuit(qubit_count)
@@ -40,28 +70,42 @@ def grover_sudoku(run_values):
     run_mode = 'simulator'
     # run_mode = 'quantum_device'
 
-    run_values = {'secret_row_1': '10',
-                  'secret_row_2': '0',
-                #   'secret_row_3': '10',
+    run_values = {'sudoku_width': '3',
+                  'sudoku_height': '3',
+                  'input_row_1': '',
+                  'input_row_2': '',
+                  'input_row_3': '',                  
                  }
                  
-    
-    secrets = [value for key, value in run_values.items() if 'secret_row' in key]
 
-    columns = list(zip_longest(*secrets, fillvalue='0'))
-    rows = list(zip(*columns))
+    sudoku_width = int(run_values.get('sudoku_width'))
+    sudoku_height = int(run_values.get('sudoku_height'))
     
-    height = len(rows)
-    width = len(columns)
-    cells_count = height * width
+    # input_rows = [value.ljust(sudoku_width, '.')[:sudoku_width]
+    #               for key, value in run_values.items()
+    #               if 'input_row' in key]
+                  
+    # rows = input_rows[:sudoku_height]
+    
+    input_rows = [value for key, value in run_values.items() if 'input_row' in key]
+    
+    limited_rows = [row[:sudoku_width] for row in input_rows[:sudoku_height]]
+    
+    sudoku_rows = [row.ljust(sudoku_width, '.') for row in limited_rows]
+    
+    print(input_rows)
+    print(limited_rows)
+    print(sudoku_rows)
+
+    cells_count = sudoku_height * sudoku_width
     
     row_pairs = sorted(((a, row_index), (b, row_index)) 
-                       for a, b in combinations(range(width), 2)
-                       for row_index in range(height))
+                       for a, b in combinations(range(sudoku_width), 2)
+                       for row_index in range(sudoku_height))
                  
     column_pairs = sorted(((column_index, a), (column_index, b)) 
-                          for a, b in combinations(range(height), 2)
-                          for column_index in range(width))
+                          for a, b in combinations(range(sudoku_height), 2)
+                          for column_index in range(sudoku_width))
     
     pairs = row_pairs + column_pairs
     
@@ -69,141 +113,126 @@ def grover_sudoku(run_values):
     column_pairs_count = len(column_pairs)
     pairs_count = len(pairs)
     
-    cell_qubits = QuantumRegister(cells_count, name='c')
-    pair_qubits = QuantumRegister(pairs_count, name='p')
-    output_qubit = QuantumRegister(1, name='out')
-    bits = ClassicalRegister(cells_count, name='b')
-    circuit = QuantumCircuit(cell_qubits, pair_qubits, output_qubit, bits)
     
-
-    
-    one_state = (0, 1)
-    
-    for x in range(width):
+    for iterations in range(1, 3):
         
-        for y in range(height):
-            
-            cell_qubit = x + y * width
-            
-            if rows[y][x] == '1':
+        print('>>>> Iterations:', iterations)
+    
+        cell_qubits = QuantumRegister(cells_count, name='c')
+        pair_qubits = QuantumRegister(pairs_count, name='p')
+        
+        output_qubit = QuantumRegister(1, name='out')
+        
+        output_bits = ClassicalRegister(cells_count, name='b')
+        
+        circuit = QuantumCircuit(cell_qubits, pair_qubits, output_qubit, output_bits)
+        
+    
+    
+        for x in range(sudoku_width):
+            for y in range(sudoku_height):
                 
-                circuit.initialize(one_state, cell_qubit)
+                cell_qubit = x + y * sudoku_width
+                cell_input_value = sudoku_rows[y][x]
                 
-            else:
-                
-                circuit.h(cell_qubit)      
-        
-        
-    
-    minus_state = (1 / 2**0.5, -1 / 2**0.5)
-    
-    circuit.initialize(minus_state, output_qubit)
-    
-
-    
-    # circuit.h(range(1, cells_count))
-
-    
-    sudoku_oracle_circuit = QuantumCircuit(cells_count + pairs_count)
-
-    for pair_index, pair in enumerate(pairs):
-        
-        (ax, ay), (bx, by) = pair
-        
-        a_index = ax + ay * width
-        b_index = bx + by * width
-        
-        pair_qubit_index = pair_index + cells_count
-        
-        print((ax, ay), (bx, by), a_index, b_index, pair_qubit_index)
-        
-        sudoku_oracle_circuit.cx(a_index, pair_qubit_index)
-        sudoku_oracle_circuit.cx(b_index, pair_qubit_index)
-        
-    sudoku_oracle_gate = sudoku_oracle_circuit.to_gate()
-    sudoku_oracle_gate.name = "Sudoku Oracle"
-    
-    
-    elements_count = cells_count ** 2
-
-    repetitions =  (elements_count / pairs_count) ** 0.5 * 3.14 / 4
-    repetitions_count = int(repetitions)
-    
-    print(f'SUDOKU elements_count: {elements_count}')
-    print(f'SUDOKU pairs_count: {pairs_count}')
-    print(f'SUDOKU repetitions: {repetitions}')
-    print(f'SUDOKU repetitions_count: {repetitions_count}')
-    
-    quit()
-    
-
-    for i in range(repetitions_count):
-    
-        circuit.append(sudoku_oracle_gate, range(cells_count + pairs_count))
-        
-        circuit.mct(pair_qubits, output_qubit)
-        
-        circuit.append(sudoku_oracle_gate, range(cells_count + pairs_count))
-        
-        diffuser = build_diffuser(cells_count)
-        
-        circuit.append(diffuser, cell_qubits)
-
-
-    # measure
-    
-    circuit.measure(cell_qubits, bits)
+                if cell_input_value == '1':
+                    circuit.initialize(ONE_STATE, cell_qubit)
+                    
+                elif cell_input_value == '0':
+                    circuit.initialize(ZERO_STATE, cell_qubit)
+                    
+                else:
+                    circuit.h(cell_qubit)      
     
         
-    print(f'SUDOKU run_values: {run_values}')
-    print(f'SUDOKU secrets: {secrets}')    
-    print(f'SUDOKU rows: {rows}')
-    print(f'SUDOKU columns: {columns}')
-    print(f'SUDOKU row_pairs: {row_pairs}')
-    print(f'SUDOKU column_pairs: {column_pairs}')
-    print(f'SUDOKU pairs: {pairs}')
-    print(f'SUDOKU circuit: \n{circuit}')
-
-
-    ###   Run   ###
-
-    if run_mode == 'simulator':
-        
-        backend = Aer.get_backend('qasm_simulator')
-        
-        
-    if run_mode == 'quantum_device':
+        circuit.initialize(MINUS_STATE, output_qubit)
     
-        qiskit_token = app.config.get('QISKIT_TOKEN')
-        IBMQ.save_account(qiskit_token)
         
-        if not IBMQ.active_account():
-            IBMQ.load_account()
+        sudoku_oracle = build_sudoku_oracle(cells_count, pairs, sudoku_width)
+    
+        elements_count = 2 ** cells_count
+    
+        repetitions =  (elements_count / pairs_count) ** 0.5 * 3.14 / 4
+        repetitions_count = int(repetitions)
+        
+    
+        
+    
+        for i in range(iterations):
+        
+            circuit.append(sudoku_oracle, range(cells_count + pairs_count))
             
-        provider = IBMQ.get_provider()
+            circuit.mct(pair_qubits, output_qubit)
+            
+            # circuit.append(sudoku_oracle, range(cells_count + pairs_count))
+            
+            diffuser = build_diffuser(cells_count)
+            
+            circuit.append(diffuser, cell_qubits)
+    
+    
+        # measure
         
-        print(f'SUDOKU provider: {provider}')
-        print(f'SUDOKU provider.backends(): {provider.backends()}')
+        circuit.measure(cell_qubits, output_bits)
         
-        # backend = provider.get_backend('ibmq_manila')
-
-        backend = get_least_busy_backend(provider, qubit_count)
+            
+        print(f'SUDOKU run_values: {run_values}')
+        print(f'SUDOKU input_rows: {input_rows}')    
+        print(f'SUDOKU sudoku_rows: {sudoku_rows}')
+        print(f'SUDOKU row_pairs: {row_pairs}')
+        print(f'SUDOKU column_pairs: {column_pairs}')
+        print(f'SUDOKU pairs: {pairs}')
         
-
-    print(f'SUDOKU run_mode: {run_mode}')
-    print(f'SUDOKU backend: {backend}')
-
-
-    job = execute(circuit, backend=backend, shots=1024)
+        print(f'SUDOKU cells_count: {cells_count}')        
+        print(f'SUDOKU pairs_count: {pairs_count}')
+        
+        print(f'SUDOKU elements_count: {elements_count}')
+        print(f'SUDOKU repetitions: {repetitions}')
+        print(f'SUDOKU repetitions_count: {repetitions_count}')
+        
+        print(f'SUDOKU sudoku_oracle: \n{sudoku_oracle}')
+        print(f'SUDOKU circuit: \n{circuit}')
     
-    job_monitor(job, interval=5)
     
-    result = job.result()
+        ###   Run   ###
     
-    counts = result.get_counts()
+        if run_mode == 'simulator':
+            
+            backend = Aer.get_backend('qasm_simulator')
+            
+            
+        if run_mode == 'quantum_device':
+        
+            qiskit_token = app.config.get('QISKIT_TOKEN')
+            IBMQ.save_account(qiskit_token)
+            
+            if not IBMQ.active_account():
+                IBMQ.load_account()
+                
+            provider = IBMQ.get_provider()
+            
+            print(f'SUDOKU provider: {provider}')
+            print(f'SUDOKU provider.backends(): {provider.backends()}')
+            
+            # backend = provider.get_backend('ibmq_manila')
     
-    print(f'SUDOKU counts:')
-    [print(f'{state}: {count}') for state, count in sorted(counts.items())]
+            backend = get_least_busy_backend(provider, qubit_count)
+            
+    
+        print(f'SUDOKU run_mode: {run_mode}')
+        print(f'SUDOKU backend: {backend}')
+    
+    
+        job = execute(circuit, backend=backend, shots=1024)
+        
+        job_monitor(job, interval=5)
+        
+        result = job.result()
+        
+        counts = result.get_counts()
+        
+        print(f'SUDOKU counts:')
+        [print(f'{state}: {count}') for state, count in sorted(counts.items())]
 
     return {'Counts:': counts}
 
