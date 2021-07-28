@@ -182,7 +182,7 @@ def grover_sudoku(run_values):
     pair_qubits = QuantumRegister(pair_qubits_count, name='p')
     
     output_qubit = QuantumRegister(1, name='out')
-    output_bits = ClassicalRegister(cells_count, name='b')
+    output_bits = ClassicalRegister(cell_qubits_count, name='b')
     
     initial_circuit = QuantumCircuit(cell_qubits, pair_qubits, 
                                      output_qubit, output_bits)
@@ -201,11 +201,11 @@ def grover_sudoku(run_values):
 
     for i in range(repetitions_count):
     
-        circuit.append(sudoku_oracle, range(cells_count + pairs_count))
+        circuit.append(sudoku_oracle, range(cell_qubits_count + pair_qubits_count))
         
         circuit.mct(pair_qubits, output_qubit)
         
-        circuit.append(sudoku_oracle, range(cells_count + pairs_count))
+        circuit.append(sudoku_oracle, range(cell_qubits_count + pair_qubits_count))
         
         diffuser = build_diffuser(cell_qubits_count)
         
@@ -237,6 +237,8 @@ def grover_sudoku(run_values):
     
     print(f'SUDOKU sudoku_oracle: \n{sudoku_oracle}')
     print(f'SUDOKU circuit: \n{circuit}')
+    
+    quit()
     
 
     ###   Run   ###
