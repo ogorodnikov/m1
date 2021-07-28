@@ -11,27 +11,56 @@ ZERO_STATE = 1, 0
 MINUS_STATE = 2**-0.5, -(2**-0.5)
 
 
-def initialize_sudoku_circuit(circuit, output_qubit, sudoku_rows):
+def initialize_sudoku_circuit(circuit, sudoku_rows, qubits_per_cell, output_qubit):
     
     sudoku_height = len(sudoku_rows)
     sudoku_width = len(sudoku_rows[0])
     
-    for x in range(sudoku_width):
-        for y in range(sudoku_height):
-            
-            cell_qubit = x + y * sudoku_width
-            cell_input_value = sudoku_rows[y][x]
-            
-            if cell_input_value == '1':
-                circuit.initialize(ONE_STATE, cell_qubit)
-                
-            elif cell_input_value == '0':
-                circuit.initialize(ZERO_STATE, cell_qubit)
-                
-            else:
-                circuit.h(cell_qubit)
+    print(sudoku_rows)
     
+    for y in range(sudoku_height):
+        for x in range(sudoku_width):
+        
+            
+            cell_base_index = (x + y * sudoku_width) * qubits_per_cell
+            
+            cell_value = sudoku_rows[y][x]
+            
+            try:
+                
+                cell_integer = int(cell_value)
+                cell_binary = f'{cell_integer:0{qubits_per_cell}b}'
+                print('cell_integer:', cell_integer)
+                print('cell_binary:', cell_binary)
+                print()
+                
+                for bit_index, bit in enumerate(cell_binary):
+                
+                    cell_qubit = cell_base_index + bit_index
+                    
+                    if bit == '1':
+                        state = ONE_STATE
+                    else:
+                        state = ZERO_STATE
+
+                    print('state:', state)
+
+                    circuit.initialize(state, cell_qubit)
+                
+                print()
+                        
+            
+            except ValueError:
+                
+                for bit_index in range(qubits_per_cell):
+                
+                    cell_qubit = cell_base_index + bit_index
+                    
+                    circuit.h(cell_qubit)
+                
     circuit.initialize(MINUS_STATE, output_qubit)
+    
+    return circuit
 
 
 def build_sudoku_oracle(cell_qubits_count, pair_qubits_count, 
@@ -57,12 +86,10 @@ def build_sudoku_oracle(cell_qubits_count, pair_qubits_count,
     
             sudoku_oracle_circuit.cx(a_qubit, pair_qubit)
             sudoku_oracle_circuit.cx(b_qubit, pair_qubit)
+            
+            sudoku_oracle_circuit.barrier()
         
     sudoku_oracle_circuit.name = "Sudoku Oracle"
-    
-    print(sudoku_oracle_circuit)
-    
-    quit()
     
     return sudoku_oracle_circuit
     
@@ -108,14 +135,16 @@ def grover_sudoku(run_values):
 
     run_values = {'sudoku_width': '2',
                   'sudoku_height': '2',
-                  'input_row_1': '01',
-                  'input_row_2': '1.',
+                  'maximum_digit': '1',
+                  'input_row_1': '20',
+                  'input_row_2': '1',
                   'input_row_3': '',                  
                  }
                  
 
     sudoku_width = int(run_values.get('sudoku_width'))
     sudoku_height = int(run_values.get('sudoku_height'))
+    sudoku_maximum_digit = int(run_values.get('maximum_digit'))
     
     
     input_rows = [value for key, value in run_values.items() if 'input_row' in key]
@@ -142,7 +171,9 @@ def grover_sudoku(run_values):
                        for symbol in row 
                        if symbol.isdecimal()]
                        
-    qubits_per_cell = max(map(int.bit_length, sudoku_integers))
+    possible_integers = sudoku_integers + [sudoku_maximum_digit]
+                       
+    qubits_per_cell = max(map(int.bit_length, possible_integers))
     
     cell_qubits_count = cells_count * qubits_per_cell
     pair_qubits_count = pairs_count * qubits_per_cell
@@ -151,13 +182,13 @@ def grover_sudoku(run_values):
     pair_qubits = QuantumRegister(pair_qubits_count, name='p')
     
     output_qubit = QuantumRegister(1, name='out')
-    
     output_bits = ClassicalRegister(cells_count, name='b')
     
-    circuit = QuantumCircuit(cell_qubits, pair_qubits, output_qubit, output_bits)
+    initial_circuit = QuantumCircuit(cell_qubits, pair_qubits, 
+                                     output_qubit, output_bits)
     
-    
-    # initialize_sudoku_circuit(circuit, output_qubit, sudoku_rows)
+    circuit = initialize_sudoku_circuit(initial_circuit, sudoku_rows, 
+                                        qubits_per_cell, output_qubit)
     
     sudoku_oracle = build_sudoku_oracle(cell_qubits_count, pair_qubits_count, 
                                         pairs, qubits_per_cell, sudoku_width)
@@ -187,10 +218,11 @@ def grover_sudoku(run_values):
     
         
     print(f'SUDOKU run_values: {run_values}')
+    print(f'SUDOKU sudoku_maximum_digit: {sudoku_maximum_digit}')
     print(f'SUDOKU input_rows: {input_rows}')    
     print(f'SUDOKU sudoku_rows: {sudoku_rows}')
     print(f'SUDOKU sudoku_integers: {sudoku_integers}')
-    print(f'SUDOKU qubits_per_digit: {qubits_per_digit}')
+    print(f'SUDOKU qubits_per_digit: {qubits_per_cell}')
     
     print(f'SUDOKU row_pairs: {row_pairs}')
     print(f'SUDOKU column_pairs: {column_pairs}')
@@ -206,8 +238,6 @@ def grover_sudoku(run_values):
     print(f'SUDOKU sudoku_oracle: \n{sudoku_oracle}')
     print(f'SUDOKU circuit: \n{circuit}')
     
-    quit()
-
 
     ###   Run   ###
 
