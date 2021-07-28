@@ -4,6 +4,8 @@ from qiskit import Aer, ClassicalRegister, QuantumRegister, QuantumCircuit, exec
 from qiskit.tools.monitor import job_monitor
 
 
+RADIX = 10
+
 ONE_STATE = 0, 1
 ZERO_STATE = 1, 0
 MINUS_STATE = 2**-0.5, -(2**-0.5)
@@ -32,25 +34,35 @@ def initialize_sudoku_circuit(circuit, output_qubit, sudoku_rows):
     circuit.initialize(MINUS_STATE, output_qubit)
 
 
-def build_sudoku_oracle(cells_count, pairs, sudoku_width):
+def build_sudoku_oracle(cell_qubits_count, pair_qubits_count, 
+                        pairs, qubits_per_cell, sudoku_width):
     
-    pairs_count = len(pairs)
-
-    sudoku_oracle_circuit = QuantumCircuit(cells_count + pairs_count)
+    sudoku_oracle_circuit = QuantumCircuit(cell_qubits_count + pair_qubits_count)
 
     for pair_index, pair in enumerate(pairs):
         
         (ax, ay), (bx, by) = pair
         
-        a_index = ax + ay * sudoku_width
-        b_index = bx + by * sudoku_width
+        a_base_index = (ax + ay * sudoku_width) * qubits_per_cell
+        b_base_index = (bx + by * sudoku_width) * qubits_per_cell
         
-        pair_qubit_index = pair_index + cells_count
-
-        sudoku_oracle_circuit.cx(a_index, pair_qubit_index)
-        sudoku_oracle_circuit.cx(b_index, pair_qubit_index)
+        pair_base_index = cell_qubits_count + pair_index * qubits_per_cell
+        
+        for position_index in range(qubits_per_cell):
+        
+            a_qubit = a_base_index + position_index
+            b_qubit = b_base_index + position_index
+            
+            pair_qubit = pair_base_index + position_index
+    
+            sudoku_oracle_circuit.cx(a_qubit, pair_qubit)
+            sudoku_oracle_circuit.cx(b_qubit, pair_qubit)
         
     sudoku_oracle_circuit.name = "Sudoku Oracle"
+    
+    print(sudoku_oracle_circuit)
+    
+    quit()
     
     return sudoku_oracle_circuit
     
@@ -86,6 +98,9 @@ def build_diffuser(qubit_count):
     return diffuser_circuit
     
 
+
+
+
 def grover_sudoku(run_values):
     
     run_mode = 'simulator'
@@ -93,8 +108,8 @@ def grover_sudoku(run_values):
 
     run_values = {'sudoku_width': '2',
                   'sudoku_height': '2',
-                  'input_row_1': '',
-                  'input_row_2': '',
+                  'input_row_1': '01',
+                  'input_row_2': '1.',
                   'input_row_3': '',                  
                  }
                  
@@ -120,28 +135,32 @@ def grover_sudoku(run_values):
                           for a, b in combinations(range(sudoku_height), 2)
                           for column_index in range(sudoku_width))
     
-    
     pairs = row_pairs + column_pairs
-    
-    row_pairs_count = len(row_pairs)
-    column_pairs_count = len(column_pairs)
     pairs_count = len(pairs)
     
+    sudoku_integers = [int(symbol) for row in sudoku_rows 
+                       for symbol in row 
+                       if symbol.isdecimal()]
+                       
+    qubits_per_cell = max(map(int.bit_length, sudoku_integers))
     
-    cell_qubits = QuantumRegister(cells_count, name='c')
-    pair_qubits = QuantumRegister(pairs_count, name='p')
+    cell_qubits_count = cells_count * qubits_per_cell
+    pair_qubits_count = pairs_count * qubits_per_cell
+    
+    cell_qubits = QuantumRegister(cell_qubits_count, name='c')
+    pair_qubits = QuantumRegister(pair_qubits_count, name='p')
     
     output_qubit = QuantumRegister(1, name='out')
     
     output_bits = ClassicalRegister(cells_count, name='b')
     
-    
-    sudoku_oracle = build_sudoku_oracle(cells_count, pairs, sudoku_width)
-        
     circuit = QuantumCircuit(cell_qubits, pair_qubits, output_qubit, output_bits)
     
-    initialize_sudoku_circuit(circuit, output_qubit, sudoku_rows)
     
+    # initialize_sudoku_circuit(circuit, output_qubit, sudoku_rows)
+    
+    sudoku_oracle = build_sudoku_oracle(cell_qubits_count, pair_qubits_count, 
+                                        pairs, qubits_per_cell, sudoku_width)
 
     elements_count = 2 ** cells_count
 
@@ -157,7 +176,7 @@ def grover_sudoku(run_values):
         
         circuit.append(sudoku_oracle, range(cells_count + pairs_count))
         
-        diffuser = build_diffuser(cells_count)
+        diffuser = build_diffuser(cell_qubits_count)
         
         circuit.append(diffuser, cell_qubits)
 
@@ -170,6 +189,9 @@ def grover_sudoku(run_values):
     print(f'SUDOKU run_values: {run_values}')
     print(f'SUDOKU input_rows: {input_rows}')    
     print(f'SUDOKU sudoku_rows: {sudoku_rows}')
+    print(f'SUDOKU sudoku_integers: {sudoku_integers}')
+    print(f'SUDOKU qubits_per_digit: {qubits_per_digit}')
+    
     print(f'SUDOKU row_pairs: {row_pairs}')
     print(f'SUDOKU column_pairs: {column_pairs}')
     print(f'SUDOKU pairs: {pairs}')
@@ -183,6 +205,8 @@ def grover_sudoku(run_values):
     
     print(f'SUDOKU sudoku_oracle: \n{sudoku_oracle}')
     print(f'SUDOKU circuit: \n{circuit}')
+    
+    quit()
 
 
     ###   Run   ###
