@@ -10,13 +10,27 @@ ONE_STATE = 0, 1
 ZERO_STATE = 1, 0
 MINUS_STATE = 2**-0.5, -(2**-0.5)
 
+SOLUTION_COUNT = 2
+REPETITIONS_LIMIT = 2
+DEFAULT_MAXIMUM_DIGIT = 1
+
+run_values = {'sudoku_width': '2',
+              'sudoku_height': '2',
+              'maximum_digit': '3',
+              'input_row_1': '',
+              'input_row_2': '',
+              'input_row_3': '',
+              'run_mode': 'simulator',                 
+            #   'run_mode': 'quantum_device',                 
+             }
+
 
 def initialize_sudoku_circuit(circuit, sudoku_rows, qubits_per_cell, output_qubit):
     
     sudoku_height = len(sudoku_rows)
     sudoku_width = len(sudoku_rows[0])
     
-    print(sudoku_rows)
+    # print(sudoku_rows)
     
     for y in range(sudoku_height):
         for x in range(sudoku_width):
@@ -30,9 +44,9 @@ def initialize_sudoku_circuit(circuit, sudoku_rows, qubits_per_cell, output_qubi
                 
                 cell_integer = int(cell_value)
                 cell_binary = f'{cell_integer:0{qubits_per_cell}b}'
-                print('cell_integer:', cell_integer)
-                print('cell_binary:', cell_binary)
-                print()
+                # print('cell_integer:', cell_integer)
+                # print('cell_binary:', cell_binary)
+                # print()
                 
                 for bit_index, bit in enumerate(cell_binary):
                 
@@ -47,7 +61,7 @@ def initialize_sudoku_circuit(circuit, sudoku_rows, qubits_per_cell, output_qubi
 
                     circuit.initialize(state, cell_qubit)
                 
-                print()
+                # print()
                         
             
             except ValueError:
@@ -123,28 +137,16 @@ def build_diffuser(qubit_count):
     diffuser_circuit.name = 'Diffuser'
     
     return diffuser_circuit
-    
-
 
 
 
 def grover_sudoku(run_values):
     
-    run_mode = 'simulator'
-    # run_mode = 'quantum_device'
-
-    run_values = {'sudoku_width': '2',
-                  'sudoku_height': '2',
-                  'maximum_digit': '1',
-                  'input_row_1': '20',
-                  'input_row_2': '1',
-                  'input_row_3': '',                  
-                 }
-                 
-
+    run_mode = run_values.get('run_mode')
+    
     sudoku_width = int(run_values.get('sudoku_width'))
     sudoku_height = int(run_values.get('sudoku_height'))
-    sudoku_maximum_digit = int(run_values.get('maximum_digit'))
+    sudoku_maximum_digit = int(run_values.get('maximum_digit') or DEFAULT_MAXIMUM_DIGIT)
     
     
     input_rows = [value for key, value in run_values.items() if 'input_row' in key]
@@ -193,11 +195,14 @@ def grover_sudoku(run_values):
     sudoku_oracle = build_sudoku_oracle(cell_qubits_count, pair_qubits_count, 
                                         pairs, qubits_per_cell, sudoku_width)
 
-    elements_count = 2 ** cells_count
+    defined_qubits_count = len(sudoku_integers) * qubits_per_cell
 
-    repetitions =  (elements_count / pairs_count) ** 0.5 # * 3.14 / 4
-    repetitions_count = int(repetitions)
+    elements_count = 2 ** (cell_qubits_count - defined_qubits_count)
     
+    repetitions = (elements_count / SOLUTION_COUNT) ** 0.5 * 3.14 / 4
+    
+    repetitions_count = min(int(repetitions), REPETITIONS_LIMIT)
+
 
     for i in range(repetitions_count):
     
@@ -215,6 +220,9 @@ def grover_sudoku(run_values):
     # measure
     
     circuit.measure(cell_qubits, output_bits)
+    
+    
+    quit()
     
         
     print(f'SUDOKU run_values: {run_values}')
@@ -237,8 +245,6 @@ def grover_sudoku(run_values):
     
     print(f'SUDOKU sudoku_oracle: \n{sudoku_oracle}')
     print(f'SUDOKU circuit: \n{circuit}')
-    
-    quit()
     
 
     ###   Run   ###
@@ -284,4 +290,4 @@ def grover_sudoku(run_values):
     return {'Counts:': counts}
 
 
-grover_sudoku('monya')
+grover_sudoku(run_values)
