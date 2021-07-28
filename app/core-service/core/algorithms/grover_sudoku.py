@@ -1,23 +1,21 @@
-from itertools import combinations, zip_longest
+from itertools import combinations
 
 from qiskit import Aer, ClassicalRegister, QuantumRegister, QuantumCircuit, execute
 from qiskit.tools.monitor import job_monitor
 
-
-RADIX = 10
 
 ONE_STATE = 0, 1
 ZERO_STATE = 1, 0
 MINUS_STATE = 2**-0.5, -(2**-0.5)
 
 SOLUTION_COUNT = 2
-REPETITIONS_LIMIT = 2
+REPETITIONS_LIMIT = 3
 DEFAULT_MAXIMUM_DIGIT = 1
 
 run_values = {'sudoku_width': '2',
               'sudoku_height': '2',
               'maximum_digit': '3',
-              'input_row_1': '',
+              'input_row_1': '2',
               'input_row_2': '',
               'input_row_3': '',
               'run_mode': 'simulator',                 
@@ -30,11 +28,8 @@ def initialize_sudoku_circuit(circuit, sudoku_rows, qubits_per_cell, output_qubi
     sudoku_height = len(sudoku_rows)
     sudoku_width = len(sudoku_rows[0])
     
-    # print(sudoku_rows)
-    
     for y in range(sudoku_height):
         for x in range(sudoku_width):
-        
             
             cell_base_index = (x + y * sudoku_width) * qubits_per_cell
             
@@ -44,11 +39,8 @@ def initialize_sudoku_circuit(circuit, sudoku_rows, qubits_per_cell, output_qubi
                 
                 cell_integer = int(cell_value)
                 cell_binary = f'{cell_integer:0{qubits_per_cell}b}'
-                # print('cell_integer:', cell_integer)
-                # print('cell_binary:', cell_binary)
-                # print()
                 
-                for bit_index, bit in enumerate(cell_binary):
+                for bit_index, bit in enumerate(reverse(cell_binary)):
                 
                     cell_qubit = cell_base_index + bit_index
                     
@@ -60,10 +52,7 @@ def initialize_sudoku_circuit(circuit, sudoku_rows, qubits_per_cell, output_qubi
                     print('state:', state)
 
                     circuit.initialize(state, cell_qubit)
-                
-                # print()
-                        
-            
+
             except ValueError:
                 
                 for bit_index in range(qubits_per_cell):
@@ -137,7 +126,7 @@ def build_diffuser(qubit_count):
     diffuser_circuit.name = 'Diffuser'
     
     return diffuser_circuit
-
+    
 
 
 def grover_sudoku(run_values):
@@ -202,7 +191,7 @@ def grover_sudoku(run_values):
     repetitions = (elements_count / SOLUTION_COUNT) ** 0.5 * 3.14 / 4
     
     repetitions_count = min(int(repetitions), REPETITIONS_LIMIT)
-
+    
 
     for i in range(repetitions_count):
     
@@ -217,14 +206,8 @@ def grover_sudoku(run_values):
         circuit.append(diffuser, cell_qubits)
 
 
-    # measure
-    
     circuit.measure(cell_qubits, output_bits)
     
-    
-    quit()
-    
-        
     print(f'SUDOKU run_values: {run_values}')
     print(f'SUDOKU sudoku_maximum_digit: {sudoku_maximum_digit}')
     print(f'SUDOKU input_rows: {input_rows}')    
@@ -232,12 +215,11 @@ def grover_sudoku(run_values):
     print(f'SUDOKU sudoku_integers: {sudoku_integers}')
     print(f'SUDOKU qubits_per_digit: {qubits_per_cell}')
     
-    print(f'SUDOKU row_pairs: {row_pairs}')
-    print(f'SUDOKU column_pairs: {column_pairs}')
+    print(f'SUDOKU cells_count: {cells_count}') 
+    print(f'SUDOKU cell_qubits_count: {cell_qubits_count}') 
     print(f'SUDOKU pairs: {pairs}')
-    
-    print(f'SUDOKU cells_count: {cells_count}')        
     print(f'SUDOKU pairs_count: {pairs_count}')
+    print(f'SUDOKU pair_qubits_count: {pair_qubits_count}')
     
     print(f'SUDOKU elements_count: {elements_count}')
     print(f'SUDOKU repetitions: {repetitions}')
