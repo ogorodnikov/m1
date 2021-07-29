@@ -81,7 +81,7 @@ def task_worker(task_queue, result_queue, worker_active_flag):
                 tasks[task_id]['result'] = result            
                 tasks[task_id]['status'] = 'Done'
                 
-                log(task_id, f'result: {result}')
+                log(task_id, f'RUNNER result: {result}')
                 
                 app.logger.info(f'result_queue.qsize: {result_queue.qsize()}')
                 app.logger.info(f'len(tasks): {len(tasks)}')
