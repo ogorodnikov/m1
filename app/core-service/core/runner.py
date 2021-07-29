@@ -45,6 +45,28 @@ worker_active_flag.set()
 task_workers = []
 
 
+def run_algorithm(algorithm_id, run_values):
+    
+    priority = 1
+
+    global task_id
+    task_id += 1
+    
+    new_task = (priority, task_id, algorithm_id, run_values)
+    
+    tasks[task_id] = {'algorithm_id': algorithm_id,
+                      'run_values': run_values,
+                      'status': 'Running'}
+                      
+    task_queue.put(new_task)
+    
+    app.logger.info(f'RUNNER new_task: {new_task}')
+    app.logger.info(f'RUNNER task_queue.qsize: {task_queue.qsize()}')
+    app.logger.info(f'RUNNER task_id: {task_id}')
+    
+    return task_id
+
+
 def task_worker(task_queue, result_queue, worker_active_flag):
     
     app.logger.info(f'RUNNER task_worker started')
@@ -97,29 +119,7 @@ for i in range(TASK_WORKERS_COUNT):
     
     task_workers.append(task_worker_thread)
     
-app.logger.info(f'RUNNER task_workers: {task_workers}')
-    
-
-def run_algorithm(algorithm_id, run_values):
-    
-    priority = 1
-
-    global task_id
-    task_id += 1
-    
-    new_task = (priority, task_id, algorithm_id, run_values)
-    
-    tasks[task_id] = {'algorithm_id': algorithm_id,
-                      'run_values': run_values,
-                      'status': 'Running'}
-                      
-    task_queue.put(new_task)
-    
-    app.logger.info(f'RUNNER new_task: {new_task}')
-    app.logger.info(f'RUNNER task_queue.qsize: {task_queue.qsize()}')
-    app.logger.info(f'RUNNER task_id: {task_id}')
-    
-    return task_id
+    app.logger.info(f'RUNNER task_workers: {task_workers}')
     
 
 def task_runner(task_id, algorithm_id, run_values_multidict):
