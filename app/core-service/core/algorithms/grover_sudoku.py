@@ -1,4 +1,4 @@
-from itertools import combinations
+from itertools import combinations, zip_longest
 
 from qiskit import Aer, ClassicalRegister, QuantumRegister, QuantumCircuit, execute
 from qiskit.tools.monitor import job_monitor
@@ -8,16 +8,17 @@ ONE_STATE = 0, 1
 ZERO_STATE = 1, 0
 MINUS_STATE = 2**-0.5, -(2**-0.5)
 
-SOLUTION_COUNT = 2
-REPETITIONS_LIMIT = 3
-DEFAULT_MAXIMUM_DIGIT = 1
+DEFAULT_SOLUTIONS_COUNT = 2
+DEFAULT_REPETITIONS_LIMIT = 3
 
-run_values = {'sudoku_width': '2',
-              'sudoku_height': '2',
-              'maximum_digit': '3',
-              'input_row_1': '2',
-              'input_row_2': '',
+run_values = {'input_row_1': '3.',
+              'input_row_2': '.',
               'input_row_3': '',
+              'sudoku_width': 'autodetect',
+              'sudoku_height': 'autodetect',
+              'maximum_digit': 'autodetect',
+              'repetitions_limit': '3',
+              'solutions_count': '2',
               'run_mode': 'simulator',                 
             #   'run_mode': 'quantum_device',                 
              }
@@ -40,7 +41,7 @@ def initialize_sudoku_circuit(circuit, sudoku_rows, qubits_per_cell, output_qubi
                 cell_integer = int(cell_value)
                 cell_binary = f'{cell_integer:0{qubits_per_cell}b}'
                 
-                for bit_index, bit in enumerate(reverse(cell_binary)):
+                for bit_index, bit in enumerate(reversed(cell_binary)):
                 
                     cell_qubit = cell_base_index + bit_index
                     
@@ -128,21 +129,82 @@ def build_diffuser(qubit_count):
     return diffuser_circuit
     
 
-
-def grover_sudoku(run_values):
+def parse_run_values(run_values):
     
     run_mode = run_values.get('run_mode')
     
-    sudoku_width = int(run_values.get('sudoku_width'))
-    sudoku_height = int(run_values.get('sudoku_height'))
-    sudoku_maximum_digit = int(run_values.get('maximum_digit') or DEFAULT_MAXIMUM_DIGIT)
+    input_width = run_values.get('sudoku_width')
+    input_height = run_values.get('sudoku_height')
+    input_maximum_digit = run_values.get('maximum_digit')
+    
+    input_solutions_count = run_values.get('solutions_count')
+    input_repetitions_limit = run_values.get('repetitions_limit')
+
+    input_rows = [value for key, value in run_values.items() if 'input_row' in key and value]
+    
+    if input_width.isdecimal():
+        sudoku_width = int(input_width)
+    else:
+        sudoku_width = max(map(len, input_rows))
+        
+    print('sudoku_width:', sudoku_width)
+        
+    sized_rows = [row.ljust(sudoku_width, '.')[:sudoku_width] for row in input_rows]
+    
+    print('sized_rows:', sized_rows)    
+        
+    input_columns = [''.join(element) for element in zip(*sized_rows)]
+    
+    print('input_columns:', input_columns)    
+    
+    if input_height.isdecimal():
+        sudoku_height = int(input_height)
+    else:
+        sudoku_height = max(map(len, input_columns))
+        
+    print('sudoku_height:', sudoku_height)    
+        
+    sized_columns = [column.ljust(sudoku_height, '.')[:sudoku_height] for column in input_columns]
+
+    print('sized_columns:', sized_columns)
+    
+    sudoku_rows = [''.join(element) for element in zip(*sized_columns)]
+    
+    print('sudoku_rows:', sudoku_rows)
+    
+    sudoku_integers = [int(symbol) for row in sudoku_rows 
+                       for symbol in row 
+                       if symbol.isdecimal()]
+
+    if input_maximum_digit.isdecimal():
+        sudoku_maximum_digit = int(input_maximum_digit)
+    else:
+        sudoku_maximum_digit = max(sudoku_integers)
+    
+    print('sudoku_maximum_digit:', sudoku_maximum_digit)
     
     
-    input_rows = [value for key, value in run_values.items() if 'input_row' in key]
+    if input_solutions_count.isdecimal():
+        solutions_count = int(input_solutions_count)
+    else:
+        solutions_count = DEFAULT_SOLUTIONS_COUNT
+        
+    if input_repetitions_limit.isdecimal():
+        repetitions_limit = int(input_repetitions_limit)
+    else:
+        repetitions_limit = DEFAULT_REPETITIONS_LIMIT
+
+
+    return sudoku_rows, sudoku_height, sudoku_width, \
+    sudoku_integers, sudoku_maximum_digit, run_mode, \
+    solutions_count, repetitions_limit
+
+
+def grover_sudoku(run_values):
     
-    limited_rows = [row[:sudoku_width] for row in input_rows[:sudoku_height]]
-    
-    sudoku_rows = [row.ljust(sudoku_width, '.') for row in limited_rows]
+    sudoku_rows, sudoku_height, sudoku_width, \
+    sudoku_integers, sudoku_maximum_digit, run_mode, \
+    solutions_count, repetitions_limit = parse_run_values(run_values)
 
     cells_count = sudoku_height * sudoku_width
     
@@ -157,10 +219,6 @@ def grover_sudoku(run_values):
     
     pairs = row_pairs + column_pairs
     pairs_count = len(pairs)
-    
-    sudoku_integers = [int(symbol) for row in sudoku_rows 
-                       for symbol in row 
-                       if symbol.isdecimal()]
                        
     possible_integers = sudoku_integers + [sudoku_maximum_digit]
                        
@@ -188,9 +246,9 @@ def grover_sudoku(run_values):
 
     elements_count = 2 ** (cell_qubits_count - defined_qubits_count)
     
-    repetitions = (elements_count / SOLUTION_COUNT) ** 0.5 * 3.14 / 4
+    repetitions = (elements_count / solutions_count) ** 0.5 * 3.14 / 4
     
-    repetitions_count = min(int(repetitions), REPETITIONS_LIMIT)
+    repetitions_count = min(int(repetitions), repetitions_limit)
     
 
     for i in range(repetitions_count):
@@ -210,7 +268,6 @@ def grover_sudoku(run_values):
     
     print(f'SUDOKU run_values: {run_values}')
     print(f'SUDOKU sudoku_maximum_digit: {sudoku_maximum_digit}')
-    print(f'SUDOKU input_rows: {input_rows}')    
     print(f'SUDOKU sudoku_rows: {sudoku_rows}')
     print(f'SUDOKU sudoku_integers: {sudoku_integers}')
     print(f'SUDOKU qubits_per_digit: {qubits_per_cell}')
