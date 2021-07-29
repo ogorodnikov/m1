@@ -13,13 +13,14 @@ from core import app
 from core.algorithms.egcd import egcd
 from core.algorithms.bernvaz import bernvaz
 from core.algorithms.grover import grover
-
+from core.algorithms.grover_sudoku import grover_sudoku
 
 TASK_WORKERS_COUNT = 2
 
 runner_functions = {'egcd': egcd,
                     'bernvaz': bernvaz,
-                    'grover': grover,    
+                    'grover': grover,
+                    'grover_sudoku': grover_sudoku,
                    }
 
 

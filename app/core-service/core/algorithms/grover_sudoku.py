@@ -3,6 +3,8 @@ from itertools import combinations
 from qiskit import Aer, ClassicalRegister, QuantumRegister, QuantumCircuit, execute
 from qiskit.tools.monitor import job_monitor
 
+from core.runner import *
+
 
 ONE_STATE = 0, 1
 ZERO_STATE = 1, 0
@@ -11,17 +13,17 @@ MINUS_STATE = 2**-0.5, -(2**-0.5)
 DEFAULT_SOLUTIONS_COUNT = 2
 DEFAULT_REPETITIONS_LIMIT = 3
 
-run_values = {'input_row_1': '1.',
-              'input_row_2': '.',
-              'input_row_3': '',
-              'sudoku_width': 'autodetect',
-              'sudoku_height': 'autodetect',
-              'maximum_digit': 'autodetect',
-              'repetitions_limit': '3',
-              'solutions_count': '2',
-              'run_mode': 'simulator',                 
-            #   'run_mode': 'quantum_device',                 
-             }
+# run_values = {'input_row_1': '1.',
+#               'input_row_2': '.',
+#               'input_row_3': '',
+#               'sudoku_width': 'autodetect',
+#               'sudoku_height': 'autodetect',
+#               'maximum_digit': 'autodetect',
+#               'repetitions_limit': '3',
+#               'solutions_count': '2',
+#               'run_mode': 'simulator',                 
+#             #   'run_mode': 'quantum_device',                 
+#              }
 
 
 def initialize_sudoku_circuit(circuit, sudoku_rows, qubits_per_cell, output_qubit):
@@ -133,14 +135,15 @@ def parse_run_values(run_values):
     
     run_mode = run_values.get('run_mode')
     
-    input_width = run_values.get('sudoku_width')
-    input_height = run_values.get('sudoku_height')
+    input_width = run_values.get('width')
+    input_height = run_values.get('height')
     input_maximum_digit = run_values.get('maximum_digit')
     
     input_solutions_count = run_values.get('solutions_count')
     input_repetitions_limit = run_values.get('repetitions_limit')
 
-    input_rows = [value for key, value in run_values.items() if 'input_row' in key and value]
+    input_rows = [value for key, value in run_values.items() if 'row' in key and value]
+    
     
     if input_width.isdecimal():
         sudoku_width = int(input_width)
@@ -155,7 +158,8 @@ def parse_run_values(run_values):
         
     input_columns = [''.join(element) for element in zip(*sized_rows)]
     
-    print('input_columns:', input_columns)    
+    print('input_columns:', input_columns) 
+    
     
     if input_height.isdecimal():
         sudoku_height = int(input_height)
@@ -175,6 +179,7 @@ def parse_run_values(run_values):
     sudoku_integers = [int(symbol) for row in sudoku_rows 
                        for symbol in row 
                        if symbol.isdecimal()]
+                       
 
     if input_maximum_digit.isdecimal():
         sudoku_maximum_digit = int(input_maximum_digit)
@@ -248,7 +253,9 @@ def grover_sudoku(run_values):
     
     repetitions = (elements_count / solutions_count) ** 0.5 * 3.14 / 4
     
-    repetitions_count = min(int(repetitions), repetitions_limit)
+    limited_repetitions = min(int(repetitions), repetitions_limit)
+    
+    repetitions_count = max(limited_repetitions, 1)
     
 
     for i in range(repetitions_count):
@@ -286,47 +293,44 @@ def grover_sudoku(run_values):
     print(f'SUDOKU circuit: \n{circuit}')
     
 
-    ###   Run   ###
+    # ###   Run   ###
 
-    if run_mode == 'simulator':
+    # if run_mode == 'simulator':
         
-        backend = Aer.get_backend('qasm_simulator')
+    #     backend = Aer.get_backend('qasm_simulator')
         
         
-    if run_mode == 'quantum_device':
+    # if run_mode == 'quantum_device':
     
-        qiskit_token = app.config.get('QISKIT_TOKEN')
-        IBMQ.save_account(qiskit_token)
+    #     qiskit_token = app.config.get('QISKIT_TOKEN')
+    #     IBMQ.save_account(qiskit_token)
         
-        if not IBMQ.active_account():
-            IBMQ.load_account()
+    #     if not IBMQ.active_account():
+    #         IBMQ.load_account()
             
-        provider = IBMQ.get_provider()
+    #     provider = IBMQ.get_provider()
         
-        print(f'SUDOKU provider: {provider}')
-        print(f'SUDOKU provider.backends(): {provider.backends()}')
+    #     print(f'SUDOKU provider: {provider}')
+    #     print(f'SUDOKU provider.backends(): {provider.backends()}')
         
-        # backend = provider.get_backend('ibmq_manila')
+    #     # backend = provider.get_backend('ibmq_manila')
 
-        backend = get_least_busy_backend(provider, qubit_count)
+    #     backend = get_least_busy_backend(provider, qubit_count)
         
 
-    print(f'SUDOKU run_mode: {run_mode}')
-    print(f'SUDOKU backend: {backend}')
+    # print(f'SUDOKU run_mode: {run_mode}')
+    # print(f'SUDOKU backend: {backend}')
 
 
-    job = execute(circuit, backend=backend, shots=1024)
+    # job = execute(circuit, backend=backend, shots=1024)
     
-    job_monitor(job, interval=5)
+    # job_monitor(job, interval=5)
     
-    result = job.result()
+    # result = job.result()
     
-    counts = result.get_counts()
+    # counts = result.get_counts()
     
-    print(f'SUDOKU counts:')
-    [print(f'{state}: {count}') for state, count in sorted(counts.items())]
+    # print(f'SUDOKU counts:')
+    # [print(f'{state}: {count}') for state, count in sorted(counts.items())]
 
-    return {'Counts:': counts}
-
-
-grover_sudoku(run_values)
+    return circuit
