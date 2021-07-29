@@ -15,6 +15,7 @@
     <thead>
       <tr>
         <th scope="col">Task</th>
+        <th scope="col">Logs</th>
         <th scope="col">Algorithm</th>
         <th scope="col">Run Mode</th>
         <th scope="col">Parameters</th>
@@ -64,7 +65,7 @@
         <td class="col-2">
           {% for name, value in task.run_values.items() %}
             {% if name != 'run_mode' %}
-              {{ name }}: {{ value }}
+              {{ name }}: {{ value }}<br>
             {% endif %}
           {% endfor %}
         </td>

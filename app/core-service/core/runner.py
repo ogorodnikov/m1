@@ -63,7 +63,8 @@ def task_worker(task_queue, result_queue, worker_active_flag):
                 
                 error_message = traceback.format_exc()
                 
-                log(task_id, error_message)
+                for error_line in error_message.split('\n'):
+                    log(task_id, 'EXCEPTION: ' + error_line)
 
                 tasks[task_id]['status'] = 'Failed'
 
@@ -75,8 +76,9 @@ def task_worker(task_queue, result_queue, worker_active_flag):
                 tasks[task_id]['status'] = 'Done'
                 
                 log(task_id, f'result: {result}')
-                log(task_id, f'result_queue.qsize: {result_queue.qsize()}')
-                log(task_id, f'len(tasks): {len(tasks)}')
+                
+                app.logger.info(f'result_queue.qsize: {result_queue.qsize()}')
+                app.logger.info(f'len(tasks): {len(tasks)}')
         
 
 for i in range(TASK_WORKERS_COUNT):
