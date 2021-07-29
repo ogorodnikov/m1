@@ -1,4 +1,4 @@
-from itertools import combinations, zip_longest
+from itertools import combinations
 
 from qiskit import Aer, ClassicalRegister, QuantumRegister, QuantumCircuit, execute
 from qiskit.tools.monitor import job_monitor
@@ -11,7 +11,7 @@ MINUS_STATE = 2**-0.5, -(2**-0.5)
 DEFAULT_SOLUTIONS_COUNT = 2
 DEFAULT_REPETITIONS_LIMIT = 3
 
-run_values = {'input_row_1': '3.',
+run_values = {'input_row_1': '1.',
               'input_row_2': '.',
               'input_row_3': '',
               'sudoku_width': 'autodetect',

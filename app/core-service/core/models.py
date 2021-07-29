@@ -52,6 +52,26 @@ def add_test_data():
               'likes': 457,
               'enabled': True},
               
+              {'id': 'grover_sudoku',
+              'name': 'Grover Mini Sudoku',
+              'type': 'quantum',
+              'description': 'Finds elements in sudoku-style matrix using Grover quantum search algorithm.\n' +
+                             'Classical algorith complexity is O(N) while quantum is O(square root of N).',
+              'link': 'https://en.wikipedia.org/wiki/Grover%27s_algorithm',
+              'image': b'1010',
+              'parameters': [
+                  {'name': 'row_1', 'default_value': '1.'},
+                  {'name': 'row_2', 'default_value': '.'},
+                  {'name': 'row_3', 'default_value': ''},
+                  {'name': 'width', 'default_value': 'autodetect'},
+                  {'name': 'height', 'default_value': 'autodetect'},
+                  {'name': 'maximum_digit', 'default_value': 'autodetect'},
+                  {'name': 'repetitions_limit', 'default_value': '3'},
+                  {'name': 'solutions_count', 'default_value': '2'},
+                  ],
+              'likes': 315,
+              'enabled': True},
+              
               ]
               
     

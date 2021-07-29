@@ -43,18 +43,18 @@
           
             <div class="input-group mb-1">
               
-              <span class="input-group-text" id="parameter">{{ parameter.name }}:</span>
+              <span class="input-group-text bg-secondary text-white col-sm-3" id="parameter">{{ parameter.name }}</span>
               
               <input class="form-control text-light bg-dark"
                      name={{ parameter.name }}
                      type="tel"
-                     pattern="[0-9]{1,10}" 
-                     placeholder="please input value"
-                     value={{ parameter.default_value }}
+                     pattern="[a-z0-9\.]{1,10}"
+                     value="{{ parameter.default_value }}"
                      aria-label="Parameter"
                      aria-describedby="parameters"
-                     title="Integers 1 to 10 digit length"
-                     required>
+                     title="Integers 1 to 10 digit length">
+                  <!--required-->
+                  <!--placeholder="please input value"-->
             </div>
           
           {% endfor %}
@@ -67,11 +67,11 @@
           
           {% if item.type == 'quantum' %}
           
-            <button type="submit" class="btn btn-warning" name="run_mode" value="simulator">
+            <button type="submit" class="btn btn-warning col-sm-3" name="run_mode" value="simulator">
                Run on Simulator
             </button>
             
-            <button type="submit" class="btn btn-danger" name="run_mode" value="quantum_device"
+            <button type="submit" class="btn btn-danger col-sm-4" name="run_mode" value="quantum_device"
               {% if item.type != 'quantum' %}
                 disabled
               {% endif %}>
@@ -80,13 +80,13 @@
           
           {% else %}
           
-            <button type="submit" class="btn btn-warning" name="run_mode" value="classic">
+            <button type="submit" class="btn btn-warning col-sm-3" name="run_mode" value="classic">
                Run
             </button>            
           
           {% endif %}
           
-          <button type="submit" form="like_form" class="btn btn-info">
+          <button type="submit" form="like_form" class="btn btn-info col-sm-2">
             Like
             <span class="badge bg-light text-dark rounded-pill align-text-bottom">
               {{ item.likes }}
