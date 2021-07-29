@@ -1,7 +1,6 @@
 import time
 import threading
-
-# from concurrent.futures import ThreadPoolExecutor
+import traceback
 
 from queue import PriorityQueue
 
@@ -29,10 +28,13 @@ task_queue = PriorityQueue()
 result_queue = PriorityQueue()
 tasks = {}
 
+logs = {}
+
 worker_active_flag = threading.Event()
 worker_active_flag.set()
 
 task_workers = []
+
 
 def task_worker(task_queue, result_queue, worker_active_flag):
     
@@ -50,17 +52,32 @@ def task_worker(task_queue, result_queue, worker_active_flag):
             
             app.logger.info(f'RUNNER pop_task: {pop_task}')
             app.logger.info(f'RUNNER task_queue.qsize: {task_queue.qsize()}')
-
-            result = task_runner(algorithm_id, run_values)
             
-            result_queue.put((task_id, result))
-
-            tasks[task_id]['result'] = result            
-            tasks[task_id]['status'] = 'Done'
+            log(task_id, f'Starting {algorithm_id} task {task_id}')
             
-            app.logger.info(f'RUNNER result: {result}')
-            app.logger.info(f'RUNNER result_queue.qsize: {result_queue.qsize()}')
-            app.logger.info(f'RUNNER len(tasks): {len(tasks)}')
+            try:
+                
+                result = task_runner(algorithm_id, run_values)
+                
+            except Exception as exception:
+                
+                error_message = traceback.format_exc()
+                
+                log(task_id, error_message)
+
+                tasks[task_id]['status'] = 'Failed'
+
+            else:
+            
+                result_queue.put((task_id, result))
+    
+                tasks[task_id]['result'] = result            
+                tasks[task_id]['status'] = 'Done'
+                
+                log(task_id, f'result: {result}')
+                log(task_id, f'result_queue.qsize: {result_queue.qsize()}')
+                log(task_id, f'len(tasks): {len(tasks)}')
+        
 
 for i in range(TASK_WORKERS_COUNT):
 
@@ -133,8 +150,6 @@ def task_runner(algorithm_id, run_values):
         
         app.logger.info(f'RUNNER provider: {provider}')
         app.logger.info(f'RUNNER provider.backends(): {provider.backends()}')
-        
-        # backend = provider.get_backend('ibmq_manila')
 
         backend = get_least_busy_backend(provider, qubit_count)
         
@@ -155,9 +170,7 @@ def task_runner(algorithm_id, run_values):
 
 
 def get_least_busy_backend(provider, qubit_count):
-    
-    # backend_overview()
-    
+
     backend_filter = lambda backend: (not backend.configuration().simulator 
                                       and backend.configuration().n_qubits >= qubit_count
                                       and backend.status().operational==True)
@@ -165,3 +178,14 @@ def get_least_busy_backend(provider, qubit_count):
     least_busy_backend = least_busy(provider.backends(filters=backend_filter))
     
     return least_busy_backend
+    
+    
+def log(task_id, message):
+    
+    app.logger.info(f'RUNNER {message}')
+    
+    if task_id not in logs:
+        logs[task_id] = [message]
+        
+    else:
+        logs[task_id].append(message)

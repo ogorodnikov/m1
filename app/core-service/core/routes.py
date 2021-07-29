@@ -122,7 +122,7 @@ def set_algorithm_state(algorithm_id):
 @app.route('/tasks')
 def get_tasks():
     
-    return render_template("tasks.html", tasks=runner.tasks)
+    return render_template("tasks.html", tasks=runner.tasks, logs=runner.logs)
 
 
 @app.before_request
