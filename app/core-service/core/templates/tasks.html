@@ -96,14 +96,8 @@
       
       <tr class="collapse" id="collapse-{{ task_id }}">
         <td></td>
-        <td colspan=6>
-          <div >
-
-            {% for log in logs[task_id] %}
-              {{ log }}<br>
-            {% endfor %}
-
-          </div>
+        <td colspan=6 style="white-space: pre-wrap; font-family: monospace; line-height:19px">{% for log in logs[task_id] %}{{ log }}
+{% endfor %}
         </td>
       </tr>
       

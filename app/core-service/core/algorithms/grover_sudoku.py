@@ -3,7 +3,7 @@ from itertools import combinations
 from qiskit import Aer, ClassicalRegister, QuantumRegister, QuantumCircuit, execute
 from qiskit.tools.monitor import job_monitor
 
-from core.runner import *
+from core.runner import log
 
 
 ONE_STATE = 0, 1
@@ -133,6 +133,7 @@ def build_diffuser(qubit_count):
 
 def parse_run_values(run_values):
     
+    task_id = run_values.get('task_id')
     run_mode = run_values.get('run_mode')
     
     input_width = run_values.get('width')
@@ -150,15 +151,15 @@ def parse_run_values(run_values):
     else:
         sudoku_width = max(map(len, input_rows))
         
-    print('sudoku_width:', sudoku_width)
+    # print('sudoku_width:', sudoku_width)
         
     sized_rows = [row.ljust(sudoku_width, '.')[:sudoku_width] for row in input_rows]
     
-    print('sized_rows:', sized_rows)    
+    # print('sized_rows:', sized_rows)    
         
     input_columns = [''.join(element) for element in zip(*sized_rows)]
     
-    print('input_columns:', input_columns) 
+    # print('input_columns:', input_columns) 
     
     
     if input_height.isdecimal():
@@ -166,15 +167,15 @@ def parse_run_values(run_values):
     else:
         sudoku_height = max(map(len, input_columns))
         
-    print('sudoku_height:', sudoku_height)    
+    # print('sudoku_height:', sudoku_height)    
         
     sized_columns = [column.ljust(sudoku_height, '.')[:sudoku_height] for column in input_columns]
 
-    print('sized_columns:', sized_columns)
+    # print('sized_columns:', sized_columns)
     
     sudoku_rows = [''.join(element) for element in zip(*sized_columns)]
     
-    print('sudoku_rows:', sudoku_rows)
+    # print('sudoku_rows:', sudoku_rows)
     
     sudoku_integers = [int(symbol) for row in sudoku_rows 
                        for symbol in row 
@@ -186,7 +187,7 @@ def parse_run_values(run_values):
     else:
         sudoku_maximum_digit = max(sudoku_integers)
     
-    print('sudoku_maximum_digit:', sudoku_maximum_digit)
+    # print('sudoku_maximum_digit:', sudoku_maximum_digit)
     
     
     if input_solutions_count.isdecimal():
@@ -202,14 +203,14 @@ def parse_run_values(run_values):
 
     return sudoku_rows, sudoku_height, sudoku_width, \
     sudoku_integers, sudoku_maximum_digit, run_mode, \
-    solutions_count, repetitions_limit
+    solutions_count, repetitions_limit, task_id
 
 
 def grover_sudoku(run_values):
     
     sudoku_rows, sudoku_height, sudoku_width, \
     sudoku_integers, sudoku_maximum_digit, run_mode, \
-    solutions_count, repetitions_limit = parse_run_values(run_values)
+    solutions_count, repetitions_limit, task_id = parse_run_values(run_values)
 
     cells_count = sudoku_height * sudoku_width
     
@@ -273,64 +274,24 @@ def grover_sudoku(run_values):
 
     circuit.measure(cell_qubits, output_bits)
     
-    print(f'SUDOKU run_values: {run_values}')
-    print(f'SUDOKU sudoku_maximum_digit: {sudoku_maximum_digit}')
-    print(f'SUDOKU sudoku_rows: {sudoku_rows}')
-    print(f'SUDOKU sudoku_integers: {sudoku_integers}')
-    print(f'SUDOKU qubits_per_digit: {qubits_per_cell}')
+    log(task_id, f'SUDOKU task_id: {task_id}')
+    log(task_id, f'SUDOKU run_values: {run_values}')
+    log(task_id, f'SUDOKU sudoku_maximum_digit: {sudoku_maximum_digit}')
+    log(task_id, f'SUDOKU sudoku_rows: {sudoku_rows}')
+    log(task_id, f'SUDOKU sudoku_integers: {sudoku_integers}')
+    log(task_id, f'SUDOKU qubits_per_digit: {qubits_per_cell}')
     
-    print(f'SUDOKU cells_count: {cells_count}') 
-    print(f'SUDOKU cell_qubits_count: {cell_qubits_count}') 
-    print(f'SUDOKU pairs: {pairs}')
-    print(f'SUDOKU pairs_count: {pairs_count}')
-    print(f'SUDOKU pair_qubits_count: {pair_qubits_count}')
+    log(task_id, f'SUDOKU cells_count: {cells_count}') 
+    log(task_id, f'SUDOKU cell_qubits_count: {cell_qubits_count}') 
+    log(task_id, f'SUDOKU pairs: {pairs}')
+    log(task_id, f'SUDOKU pairs_count: {pairs_count}')
+    log(task_id, f'SUDOKU pair_qubits_count: {pair_qubits_count}')
     
-    print(f'SUDOKU elements_count: {elements_count}')
-    print(f'SUDOKU repetitions: {repetitions}')
-    print(f'SUDOKU repetitions_count: {repetitions_count}')
+    log(task_id, f'SUDOKU elements_count: {elements_count}')
+    log(task_id, f'SUDOKU repetitions: {repetitions}')
+    log(task_id, f'SUDOKU repetitions_count: {repetitions_count}')
     
-    print(f'SUDOKU sudoku_oracle: \n{sudoku_oracle}')
-    print(f'SUDOKU circuit: \n{circuit}')
-    
-
-    # ###   Run   ###
-
-    # if run_mode == 'simulator':
-        
-    #     backend = Aer.get_backend('qasm_simulator')
-        
-        
-    # if run_mode == 'quantum_device':
-    
-    #     qiskit_token = app.config.get('QISKIT_TOKEN')
-    #     IBMQ.save_account(qiskit_token)
-        
-    #     if not IBMQ.active_account():
-    #         IBMQ.load_account()
-            
-    #     provider = IBMQ.get_provider()
-        
-    #     print(f'SUDOKU provider: {provider}')
-    #     print(f'SUDOKU provider.backends(): {provider.backends()}')
-        
-    #     # backend = provider.get_backend('ibmq_manila')
-
-    #     backend = get_least_busy_backend(provider, qubit_count)
-        
-
-    # print(f'SUDOKU run_mode: {run_mode}')
-    # print(f'SUDOKU backend: {backend}')
-
-
-    # job = execute(circuit, backend=backend, shots=1024)
-    
-    # job_monitor(job, interval=5)
-    
-    # result = job.result()
-    
-    # counts = result.get_counts()
-    
-    # print(f'SUDOKU counts:')
-    # [print(f'{state}: {count}') for state, count in sorted(counts.items())]
+    log(task_id, f'SUDOKU sudoku_oracle: \n{sudoku_oracle}')
+    log(task_id, f'SUDOKU circuit: \n{circuit}')
 
     return circuit

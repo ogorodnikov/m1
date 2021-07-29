@@ -3,12 +3,20 @@ import threading
 import traceback
 
 from queue import PriorityQueue
+from collections import defaultdict
 
 from qiskit import IBMQ, Aer, execute
 from qiskit.providers.ibmq import least_busy
 from qiskit.tools.monitor import backend_overview, job_monitor
 
 from core import app
+
+
+def log(task_id, message):
+    
+    app.logger.info(f'RUNNER {message}')
+    logs[task_id].append(message)
+    
 
 from core.algorithms.egcd import egcd
 from core.algorithms.bernvaz import bernvaz
@@ -29,7 +37,7 @@ task_queue = PriorityQueue()
 result_queue = PriorityQueue()
 tasks = {}
 
-logs = {}
+logs = defaultdict(list)
 
 worker_active_flag = threading.Event()
 worker_active_flag.set()
@@ -53,9 +61,7 @@ def task_worker(task_queue, result_queue, worker_active_flag):
             
             app.logger.info(f'RUNNER pop_task: {pop_task}')
             app.logger.info(f'RUNNER task_queue.qsize: {task_queue.qsize()}')
-            
-            log(task_id, f'Starting {algorithm_id} task {task_id}')
-            
+
             try:
                 
                 result = task_runner(algorithm_id, run_values)
@@ -64,8 +70,7 @@ def task_worker(task_queue, result_queue, worker_active_flag):
                 
                 error_message = traceback.format_exc()
                 
-                for error_line in error_message.split('\n'):
-                    log(task_id, 'EXCEPTION: ' + error_line)
+                log(task_id, error_message)
 
                 tasks[task_id]['status'] = 'Failed'
 
@@ -95,12 +100,15 @@ for i in range(TASK_WORKERS_COUNT):
 app.logger.info(f'RUNNER task_workers: {task_workers}')
     
 
-def run_algorithm(algorithm_id, run_values):
+def run_algorithm(algorithm_id, run_values_multidict):
     
     priority = 1
 
     global task_id
     task_id += 1
+    
+    run_values = dict(run_values_multidict)
+    run_values['task_id'] = task_id
     
     new_task = (priority, task_id, algorithm_id, run_values)
     
@@ -181,14 +189,3 @@ def get_least_busy_backend(provider, qubit_count):
     least_busy_backend = least_busy(provider.backends(filters=backend_filter))
     
     return least_busy_backend
-    
-    
-def log(task_id, message):
-    
-    app.logger.info(f'RUNNER {message}')
-    
-    if task_id not in logs:
-        logs[task_id] = [message]
-        
-    else:
-        logs[task_id].append(message)
