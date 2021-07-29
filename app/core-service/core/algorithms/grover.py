@@ -2,7 +2,7 @@ from qiskit import QuantumCircuit
 
 from qiskit.circuit.library import Diagonal
 
-from core import app
+from core.runner import log
 
 
 def build_phase_oracle(secrets, elements_count):
@@ -53,6 +53,8 @@ def build_diffuser(qubit_count):
 
 def grover(run_values):
     
+    task_id = run_values.get('task_id')
+    
     secrets = [value for key, value in run_values.items() if 'secret' in key]
     secret_count = len(secrets)
     
@@ -64,13 +66,13 @@ def grover(run_values):
     repetitions =  (elements_count / secret_count) ** 0.5 * 3.14 / 4
     repetitions_count = int(repetitions)
     
-    app.logger.info(f'GROVER secrets: {secrets}')
-    app.logger.info(f'GROVER secret_count: {secret_count}')
-    app.logger.info(f'GROVER qubit_count: {qubit_count}')
-    app.logger.info(f'GROVER elements_count: {elements_count}')
+    log(task_id, f'GROVER secrets: {secrets}')
+    log(task_id, f'GROVER secret_count: {secret_count}')
+    log(task_id, f'GROVER qubit_count: {qubit_count}')
+    log(task_id, f'GROVER elements_count: {elements_count}')
     
-    app.logger.info(f'GROVER repetitions: {repetitions}')
-    app.logger.info(f'GROVER repetitions_count: {repetitions_count}')
+    log(task_id, f'GROVER repetitions: {repetitions}')
+    log(task_id, f'GROVER repetitions_count: {repetitions_count}')
     
     phase_oracle = build_phase_oracle(secrets, elements_count)
     
@@ -89,17 +91,17 @@ def grover(run_values):
         
     circuit.measure_all()
     
-    app.logger.info(f'GROVER phase_oracle: \n{phase_oracle}')
-    app.logger.info(f'GROVER phase_oracle 1 decomposition:')
-    app.logger.info(phase_oracle.decompose())
-    app.logger.info(f'GROVER phase_oracle 2 decomposition:')
-    app.logger.info(phase_oracle.decompose().decompose())
-    app.logger.info(f'GROVER phase_oracle 3 decomposition:')
-    app.logger.info(phase_oracle.decompose().decompose().decompose())
+    log(task_id, f'GROVER phase_oracle: \n{phase_oracle}')
+    log(task_id, f'GROVER phase_oracle 1 decomposition:')
+    log(task_id, phase_oracle.decompose())
+    log(task_id, f'GROVER phase_oracle 2 decomposition:')
+    log(task_id, phase_oracle.decompose().decompose())
+    log(task_id, f'GROVER phase_oracle 3 decomposition:')
+    log(task_id, phase_oracle.decompose().decompose().decompose())
 
-    app.logger.info(f'GROVER diffuser: \n{diffuser}')
+    log(task_id, f'GROVER diffuser: \n{diffuser}')
     
-    app.logger.info(f'GROVER circuit: \n{circuit}')
+    log(task_id, f'GROVER circuit: \n{circuit}')
     
     return circuit
 

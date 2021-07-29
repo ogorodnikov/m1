@@ -64,7 +64,7 @@ def task_worker(task_queue, result_queue, worker_active_flag):
 
             try:
                 
-                result = task_runner(algorithm_id, run_values)
+                result = task_runner(task_id, algorithm_id, run_values)
                 
             except Exception as exception:
                 
@@ -100,15 +100,12 @@ for i in range(TASK_WORKERS_COUNT):
 app.logger.info(f'RUNNER task_workers: {task_workers}')
     
 
-def run_algorithm(algorithm_id, run_values_multidict):
+def run_algorithm(algorithm_id, run_values):
     
     priority = 1
 
     global task_id
     task_id += 1
-    
-    run_values = dict(run_values_multidict)
-    run_values['task_id'] = task_id
     
     new_task = (priority, task_id, algorithm_id, run_values)
     
@@ -125,7 +122,10 @@ def run_algorithm(algorithm_id, run_values_multidict):
     return task_id
     
 
-def task_runner(algorithm_id, run_values):
+def task_runner(task_id, algorithm_id, run_values_multidict):
+    
+    run_values = dict(run_values_multidict)
+    run_values['task_id'] = task_id
     
     runner_function = runner_functions[algorithm_id]
     
@@ -159,12 +159,12 @@ def task_runner(algorithm_id, run_values):
             
         provider = IBMQ.get_provider()
         
-        app.logger.info(f'RUNNER provider: {provider}')
-        app.logger.info(f'RUNNER provider.backends(): {provider.backends()}')
+        log(task_id, f'RUNNER provider: {provider}')
+        log(task_id, f'RUNNER provider.backends(): {provider.backends()}')
 
         backend = get_least_busy_backend(provider, qubit_count)
         
-    app.logger.info(f'RUNNER backend: {backend}')
+    log(task_id, f'RUNNER backend: {backend}')
 
     job = execute(circuit, backend=backend, shots=1024)
     
@@ -174,8 +174,8 @@ def task_runner(algorithm_id, run_values):
     
     counts = result.get_counts()
     
-    app.logger.info(f'GROVER counts:')
-    [app.logger.info(f'{state}: {count}') for state, count in sorted(counts.items())]
+    log(task_id, f'RUNNER counts:')
+    [log(task_id, f'{state}: {count}') for state, count in sorted(counts.items())]
 
     return {'Counts:': counts}
 
