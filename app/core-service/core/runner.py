@@ -1,8 +1,9 @@
 import time
-import threading
 import traceback
 
-from multiprocessing import Process
+# import threading
+
+from multiprocessing import Process, Event, Queue
 
 from queue import PriorityQueue
 from collections import defaultdict
@@ -26,7 +27,7 @@ from core.algorithms.grover import grover
 from core.algorithms.grover_sudoku import grover_sudoku
 
 
-TASK_WORKERS_COUNT = 2
+# TASK_WORKERS_COUNT = 2
 
 
 runner_functions = {'egcd': egcd,
@@ -39,46 +40,18 @@ task_process_count = app.config.get('CPU_COUNT', 1)
 
 task_id = 0          
 task_queue = PriorityQueue()
+task_queue = Queue()
 task_results_queue = PriorityQueue()
 tasks = {}
 
 logs = defaultdict(list)
 
-worker_active_flag = threading.Event()
+# worker_active_flag = threading.Event()
+worker_active_flag = Event()
 worker_active_flag.set()
 
-task_worker_threads = []
-
-
-def start_task_worker_threads():
-    
-    for i in range(TASK_WORKERS_COUNT):
-    
-        task_worker_thread = threading.Thread(target=task_worker,
-                                              args=(task_queue, task_results_queue, worker_active_flag),
-                                              daemon=True)
-                                              
-        task_worker_thread.start()
-        
-        task_worker_threads.append(task_worker_thread)
-        
-    app.logger.info(f'RUNNER task_worker_threads: {task_worker_threads}')
-    
-    
-def start_task_worker_processes():
-    
-    for i in range(task_process_count):
-    
-        task_worker_process = Process(target=task_worker,
-                                      args=(task_queue, task_results_queue, worker_active_flag),
-                                      daemon=True)
-                                              
-        task_worker_process.start()
-        
-        task_worker_processes.append(task_worker_process)
-        
-    app.logger.info(f'RUNNER task_process_count: {task_process_count}')
-    app.logger.info(f'RUNNER task_worker_processes: {task_worker_processes}')
+# task_worker_threads = []
+task_worker_processes = []
 
 
 def run_algorithm(algorithm_id, run_values):
@@ -97,10 +70,42 @@ def run_algorithm(algorithm_id, run_values):
     task_queue.put(new_task)
     
     app.logger.info(f'RUNNER new_task: {new_task}')
+    app.logger.info(f'RUNNER task_queue: {task_queue}')
     app.logger.info(f'RUNNER task_queue.qsize: {task_queue.qsize()}')
     app.logger.info(f'RUNNER task_id: {task_id}')
     
     return task_id
+    
+
+# def start_task_worker_threads():
+    
+#     for i in range(TASK_WORKERS_COUNT):
+    
+#         task_worker_thread = threading.Thread(target=task_worker,
+#                                               args=(task_queue, task_results_queue, worker_active_flag),
+#                                               daemon=True)
+                                              
+#         task_worker_thread.start()
+        
+#         task_worker_threads.append(task_worker_thread)
+        
+#     app.logger.info(f'RUNNER task_worker_threads: {task_worker_threads}')
+    
+    
+def start_task_worker_processes():
+    
+    for i in range(task_process_count):
+    
+        task_worker_process = Process(target=task_worker,
+                                      args=(task_queue, task_results_queue, worker_active_flag),
+                                      daemon=True)
+                                              
+        task_worker_process.start()
+        
+        task_worker_processes.append(task_worker_process)
+        
+    app.logger.info(f'RUNNER task_process_count: {task_process_count}')
+    app.logger.info(f'RUNNER task_worker_processes: {task_worker_processes}')
 
 
 def task_worker(task_queue, task_results_queue, worker_active_flag):
@@ -110,6 +115,9 @@ def task_worker(task_queue, task_results_queue, worker_active_flag):
     while True:
         
         time.sleep(1)
+        
+        print(task_queue)
+        print(task_queue.qsize())
     
         if worker_active_flag.is_set() and not task_queue.empty():
             
@@ -145,6 +153,7 @@ def task_worker(task_queue, task_results_queue, worker_active_flag):
                 app.logger.info(f'len(tasks): {len(tasks)}')
         
         # app.logger.info(f'RUNNER task_worker_threads: {task_worker_threads}')
+        app.logger.info(f'RUNNER task_worker_processes: {task_worker_processes}')
         
 
 def task_runner(task_id, algorithm_id, run_values_multidict):
@@ -203,8 +212,8 @@ def task_runner(task_id, algorithm_id, run_values_multidict):
     [log(task_id, f'{state}: {count}') for state, count in sorted(counts.items())]
     
     return {'Counts:': counts}
-
-
+    
+    
 def get_least_busy_backend(provider, qubit_count):
 
     backend_filter = lambda backend: (not backend.configuration().simulator 

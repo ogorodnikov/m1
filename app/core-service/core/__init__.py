@@ -24,7 +24,7 @@ if environ.get('WERKZEUG_RUN_MAIN') == 'true':
 
     app.config.from_object(config.Config)
     
-    runner.start_task_worker_threads()
+    runner.start_task_worker_processes()
     
 
 from core import routes
