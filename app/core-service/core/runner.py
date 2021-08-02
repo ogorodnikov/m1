@@ -2,6 +2,8 @@ import time
 import threading
 import traceback
 
+from multiprocessing import Process
+
 from queue import PriorityQueue
 from collections import defaultdict
 
@@ -23,7 +25,9 @@ from core.algorithms.bernvaz import bernvaz
 from core.algorithms.grover import grover
 from core.algorithms.grover_sudoku import grover_sudoku
 
+
 TASK_WORKERS_COUNT = 2
+
 
 runner_functions = {'egcd': egcd,
                     'bernvaz': bernvaz,
@@ -31,6 +35,7 @@ runner_functions = {'egcd': egcd,
                     'grover_sudoku': grover_sudoku,
                    }
 
+task_process_count = app.config.get('CPU_COUNT', 1)
 
 task_id = 0          
 task_queue = PriorityQueue()
@@ -58,6 +63,22 @@ def start_task_worker_threads():
         task_worker_threads.append(task_worker_thread)
         
     app.logger.info(f'RUNNER task_worker_threads: {task_worker_threads}')
+    
+    
+def start_task_worker_processes():
+    
+    for i in range(task_process_count):
+    
+        task_worker_process = Process(target=task_worker,
+                                      args=(task_queue, task_results_queue, worker_active_flag),
+                                      daemon=True)
+                                              
+        task_worker_process.start()
+        
+        task_worker_processes.append(task_worker_process)
+        
+    app.logger.info(f'RUNNER task_process_count: {task_process_count}')
+    app.logger.info(f'RUNNER task_worker_processes: {task_worker_processes}')
 
 
 def run_algorithm(algorithm_id, run_values):
