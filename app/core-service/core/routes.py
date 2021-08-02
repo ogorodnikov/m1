@@ -104,7 +104,10 @@ def run_algorithm(algorithm_id):
     
     task_id = runner.run_algorithm(algorithm_id, run_values)
     
-    flash(f"Task <a href='/tasks'>#{task_id}</a> scheduled: {algorithm_id}, {dict(run_values)}", category='warning')
+    start_message = f"Task <a href='/tasks?task_id={task_id}'>#{task_id}</a> " + \
+                    f"started: algorithm={algorithm_id}, run_values={dict(run_values)}"
+    
+    flash(start_message, category='warning')
 
     return redirect(request.referrer)
     
@@ -122,8 +125,21 @@ def set_algorithm_state(algorithm_id):
 @app.route('/tasks')
 def get_tasks():
     
-    return render_template("tasks.html", tasks=runner.tasks, logs=runner.logs)
-
+    task_id_str = request.args.get('task_id')
+    
+    if task_id_str:
+        
+        task_id = int(task_id_str)
+        
+        task = runner.tasks[task_id]
+        logs = runner.logs[task_id]
+    
+        return render_template("task.html", task_id=task_id, task=task, logs=logs)
+        
+    else:
+    
+        return render_template("tasks.html", tasks=runner.tasks, logs=runner.logs)
+    
 
 @app.before_request
 def show_task_results():
@@ -132,5 +148,8 @@ def show_task_results():
     
         task_id, result, status = task_result
         
-        flash(f"Task <a href='/tasks'>#{task_id}</a> Status: {status}, Result: {result}", category='info')
+        result_message = f"Task <a href='/tasks?task_id={task_id}'>#{task_id}</a> " + \
+                         f"Status: {status}, Result: {result}"
+        
+        flash(result_message, category='info')
 

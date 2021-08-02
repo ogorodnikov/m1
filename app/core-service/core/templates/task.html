@@ -1,16 +1,12 @@
 {% extends 'base.html' %}
 
 {% block title %}
-  Tasks
+  Task {{ task_id }}
 {% endblock %}
 
 {% block content %}
 
-{% set LOGS_COUNT = 10 %}
-
 <div class="row justify-content-center m-3">
-   
-  <h5 class="mb-3">Tasks:</h5>
   
   <table class="table table-hover table-dark">
     
@@ -27,8 +23,6 @@
     </thead>
     
     <tbody>
-       
-      {% for task_id, task in tasks.items() %}
       
         <tr>
           
@@ -40,7 +34,7 @@
             <button class="btn btn-info" 
                     data-toggle="collapse"
                     data-target="#collapse-{{ task_id }}">
-              <i class="fa fa-angle-down"></i> Logs
+              <i class="fa fa-angle-up"></i> Logs
             </button>
           </td>
           
@@ -96,38 +90,15 @@
           </td>
         </tr>
         
-        {% set logs_tail = logs[task_id][-LOGS_COUNT:] %}
-        {% set logs_length = logs[task_id]|length %}
-        {% if logs_length > LOGS_COUNT %}
-          {% set preambula = "=== Last " + LOGS_COUNT|string + " logs: ===\n\n" %}
-        {% endif%}
+
         
-        <tr class="collapse" id="collapse-{{ task_id }}">
+        <tr class="collapse show" id="collapse-{{ task_id }}">
           <td></td>
-          <td colspan=6 style="white-space: pre-wrap; font-family: monospace; line-height:19px">{{ preambula }}{% for log in logs_tail %}{{ log }}
+          <td colspan=6 style="white-space: pre-wrap; font-family: monospace; line-height:19px">{% for log in logs %}{{ log }}
 {% endfor %}
           </td>
         </tr>
-        
-        {% if logs_length > 10 %}
-          <tr class="collapse" id="collapse-{{ task_id }}">
-            <td></td>
-            <td colspan=6>
 
-              <a href={{ url_for('get_tasks', task_id=task_id) }}
-                 class="btn btn-light"
-                 role="button"
-                 target="_blank"
-                 rel="noopener noreferrer">
-                <i class="fa fa-angle-right"></i> Full Logs
-              </a>
-              
-            </td>
-          </tr>
-        {% endif%}
-        
-      {% endfor %}
-      
     </tbody>
   </table>
 
