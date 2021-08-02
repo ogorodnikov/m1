@@ -7,30 +7,21 @@ from logging.config import dictConfig
 from core import config
 
 
+dictConfig(config.LOGGING_CONFIG)
+
 app = Flask(__name__)
-CORS(app)
 
 
 from core import runner
 
 
-if environ.get('WERKZEUG_RUN_MAIN') != 'true':
+if environ.get('WERKZEUG_RUN_MAIN') == 'true':
     
-    print('Werkzeug main == FALSE')
+    app.logger.info(f'INIT Werkzeug Main')
     
-else:
-    
-    print('Werkzeug main == TRUE')
-    
-    app.config.from_object(config.Config)
-    
-    print('++++ APP:', app)
-        
-    print('++++ Config loaded:')
+    CORS(app)
 
-    print(app.config)   
-    
-    dictConfig(config.LOGGING_CONFIG)
+    app.config.from_object(config.Config)
     
     runner.start_task_worker_threads()
     

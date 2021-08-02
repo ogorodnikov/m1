@@ -123,6 +123,8 @@ def task_worker(task_queue, task_results_queue, worker_active_flag):
                 app.logger.info(f'task_results_queue.qsize: {task_results_queue.qsize()}')
                 app.logger.info(f'len(tasks): {len(tasks)}')
         
+        # app.logger.info(f'RUNNER task_worker_threads: {task_worker_threads}')
+        
 
 def task_runner(task_id, algorithm_id, run_values_multidict):
     
@@ -170,7 +172,7 @@ def task_runner(task_id, algorithm_id, run_values_multidict):
 
     job = execute(circuit, backend=backend, shots=1024)
     
-    job_monitor(job, interval=5)
+    job_monitor(job, interval=0.5)
     
     result = job.result()
     
@@ -178,7 +180,7 @@ def task_runner(task_id, algorithm_id, run_values_multidict):
     
     log(task_id, f'RUNNER counts:')
     [log(task_id, f'{state}: {count}') for state, count in sorted(counts.items())]
-
+    
     return {'Counts:': counts}
 
 
