@@ -1,10 +1,9 @@
 import time
 import traceback
 
-from multiprocessing import Process, Event, Queue
+from multiprocessing import Process, Event, Queue, Manager
 
 from queue import PriorityQueue
-from collections import defaultdict
 
 from qiskit import IBMQ, Aer, execute
 from qiskit.providers.ibmq import least_busy
@@ -14,10 +13,14 @@ from core import app
 
 
 def log(task_id, message):
-    
+
     app.logger.info(f'{message}')
-    logs[task_id].append(message)
     
+    if task_id in logs:
+        logs[task_id] += [message]
+    else:
+        logs[task_id] = [message]
+
 
 from core.algorithms.egcd import egcd
 from core.algorithms.bernvaz import bernvaz
@@ -35,10 +38,11 @@ task_process_count = app.config.get('CPU_COUNT', 1)
 
 task_id = 0          
 task_queue = Queue()
-task_results_queue = PriorityQueue()
+task_results_queue = Queue()
 tasks = {}
 
-logs = defaultdict(list)
+manager = Manager()
+logs = manager.dict()
 
 worker_active_flag = Event()
 worker_active_flag.set()
@@ -81,9 +85,6 @@ def start_task_worker_processes():
         
         task_worker_processes.append(task_worker_process)
         
-    app.logger.info(f'RUNNER task_process_count: {task_process_count}')
-    app.logger.info(f'RUNNER task_worker_processes: {task_worker_processes}')
-
 
 def task_worker(task_queue, task_results_queue, worker_active_flag):
     
@@ -93,9 +94,6 @@ def task_worker(task_queue, task_results_queue, worker_active_flag):
         
         time.sleep(1)
         
-        print(task_queue)
-        print(task_queue.qsize())
-    
         if worker_active_flag.is_set() and not task_queue.empty():
             
             pop_task = task_queue.get()
@@ -127,8 +125,6 @@ def task_worker(task_queue, task_results_queue, worker_active_flag):
             
             app.logger.info(f'task_results_queue.qsize: {task_results_queue.qsize()}')
             app.logger.info(f'len(tasks): {len(tasks)}')
-        
-        # app.logger.info(f'RUNNER task_worker_processes: {task_worker_processes}')
         
 
 def task_runner(task_id, algorithm_id, run_values_multidict):
