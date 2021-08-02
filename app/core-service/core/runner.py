@@ -14,7 +14,7 @@ from core import app
 
 def log(task_id, message):
     
-    app.logger.info(f'RUNNER {message}')
+    app.logger.info(f'{message}')
     logs[task_id].append(message)
     
 
@@ -34,7 +34,7 @@ runner_functions = {'egcd': egcd,
 
 task_id = 0          
 task_queue = PriorityQueue()
-result_queue = PriorityQueue()
+task_results_queue = PriorityQueue()
 tasks = {}
 
 logs = defaultdict(list)
@@ -42,7 +42,22 @@ logs = defaultdict(list)
 worker_active_flag = threading.Event()
 worker_active_flag.set()
 
-task_workers = []
+task_worker_threads = []
+
+
+def start_task_worker_threads():
+    
+    for i in range(TASK_WORKERS_COUNT):
+    
+        task_worker_thread = threading.Thread(target=task_worker,
+                                              args=(task_queue, task_results_queue, worker_active_flag),
+                                              daemon=True)
+                                              
+        task_worker_thread.start()
+        
+        task_worker_threads.append(task_worker_thread)
+        
+    app.logger.info(f'RUNNER task_worker_threads: {task_worker_threads}')
 
 
 def run_algorithm(algorithm_id, run_values):
@@ -67,7 +82,7 @@ def run_algorithm(algorithm_id, run_values):
     return task_id
 
 
-def task_worker(task_queue, result_queue, worker_active_flag):
+def task_worker(task_queue, task_results_queue, worker_active_flag):
     
     app.logger.info(f'RUNNER task_worker started')
     
@@ -98,29 +113,16 @@ def task_worker(task_queue, result_queue, worker_active_flag):
 
             else:
             
-                result_queue.put((task_id, result))
+                task_results_queue.put((task_id, result))
     
                 tasks[task_id]['result'] = result            
                 tasks[task_id]['status'] = 'Done'
                 
-                log(task_id, f'RUNNER result: {result}')
+                log(task_id, f'Result: {result}')
                 
-                app.logger.info(f'result_queue.qsize: {result_queue.qsize()}')
+                app.logger.info(f'task_results_queue.qsize: {task_results_queue.qsize()}')
                 app.logger.info(f'len(tasks): {len(tasks)}')
         
-
-for i in range(TASK_WORKERS_COUNT):
-
-    task_worker_thread = threading.Thread(target=task_worker,
-                                          args=(task_queue, result_queue, worker_active_flag),
-                                          daemon=True)
-                                          
-    task_worker_thread.start()
-    
-    task_workers.append(task_worker_thread)
-    
-    app.logger.info(f'RUNNER task_workers: {task_workers}')
-    
 
 def task_runner(task_id, algorithm_id, run_values_multidict):
     

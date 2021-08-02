@@ -126,12 +126,12 @@ def get_tasks():
 
 
 @app.before_request
-def test():
+def flash_task_results():
     
-    result_queue = runner.result_queue
+    task_results_queue = runner.task_results_queue
     
-    while not result_queue.empty():
+    while not task_results_queue.empty():
         
-        task_id, result = result_queue.get()
+        task_id, result = task_results_queue.get()
         flash(f"Task <a href='/tasks'>#{task_id}</a> done: {result}", category='info')
 
