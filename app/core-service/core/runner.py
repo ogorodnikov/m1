@@ -1,8 +1,6 @@
 import time
 import traceback
 
-# import threading
-
 from multiprocessing import Process, Event, Queue
 
 from queue import PriorityQueue
@@ -27,9 +25,6 @@ from core.algorithms.grover import grover
 from core.algorithms.grover_sudoku import grover_sudoku
 
 
-# TASK_WORKERS_COUNT = 2
-
-
 runner_functions = {'egcd': egcd,
                     'bernvaz': bernvaz,
                     'grover': grover,
@@ -39,18 +34,15 @@ runner_functions = {'egcd': egcd,
 task_process_count = app.config.get('CPU_COUNT', 1)
 
 task_id = 0          
-task_queue = PriorityQueue()
 task_queue = Queue()
 task_results_queue = PriorityQueue()
 tasks = {}
 
 logs = defaultdict(list)
 
-# worker_active_flag = threading.Event()
 worker_active_flag = Event()
 worker_active_flag.set()
 
-# task_worker_threads = []
 task_worker_processes = []
 
 
@@ -77,21 +69,6 @@ def run_algorithm(algorithm_id, run_values):
     return task_id
     
 
-# def start_task_worker_threads():
-    
-#     for i in range(TASK_WORKERS_COUNT):
-    
-#         task_worker_thread = threading.Thread(target=task_worker,
-#                                               args=(task_queue, task_results_queue, worker_active_flag),
-#                                               daemon=True)
-                                              
-#         task_worker_thread.start()
-        
-#         task_worker_threads.append(task_worker_thread)
-        
-#     app.logger.info(f'RUNNER task_worker_threads: {task_worker_threads}')
-    
-    
 def start_task_worker_processes():
     
     for i in range(task_process_count):
@@ -134,26 +111,24 @@ def task_worker(task_queue, task_results_queue, worker_active_flag):
                 
             except Exception as exception:
                 
+                status = 'Failed'
+                
                 error_message = traceback.format_exc()
-                
                 log(task_id, error_message)
-
-                tasks[task_id]['status'] = 'Failed'
-
+                
             else:
+                
+                status = 'Done'
             
-                task_results_queue.put((task_id, result))
-    
-                tasks[task_id]['result'] = result            
-                tasks[task_id]['status'] = 'Done'
-                
-                log(task_id, f'Result: {result}')
-                
-                app.logger.info(f'task_results_queue.qsize: {task_results_queue.qsize()}')
-                app.logger.info(f'len(tasks): {len(tasks)}')
+            task_results_queue.put((task_id, result, status))
+
+            log(task_id, f'result: {result}')
+            log(task_id, f'status: {status}')
+            
+            app.logger.info(f'task_results_queue.qsize: {task_results_queue.qsize()}')
+            app.logger.info(f'len(tasks): {len(tasks)}')
         
-        # app.logger.info(f'RUNNER task_worker_threads: {task_worker_threads}')
-        app.logger.info(f'RUNNER task_worker_processes: {task_worker_processes}')
+        # app.logger.info(f'RUNNER task_worker_processes: {task_worker_processes}')
         
 
 def task_runner(task_id, algorithm_id, run_values_multidict):
@@ -213,6 +188,20 @@ def task_runner(task_id, algorithm_id, run_values_multidict):
     
     return {'Counts:': counts}
     
+
+def get_task_results():
+    
+    while not task_results_queue.empty():
+        
+        task_result = task_results_queue.get()
+        
+        task_id, result, status = task_result
+        
+        tasks[task_id]['result'] = result            
+        tasks[task_id]['status'] = status
+        
+        yield task_result
+
     
 def get_least_busy_backend(provider, qubit_count):
 
