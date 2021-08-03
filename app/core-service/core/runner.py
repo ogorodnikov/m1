@@ -16,10 +16,12 @@ def log(task_id, message):
 
     app.logger.info(f'{message}')
     
-    if task_id in logs:
-        logs[task_id] += [message]
-    else:
-        logs[task_id] = [message]
+    logs[task_id] += [message]
+    
+    # if task_id in logs:
+    #     logs[task_id] += [message]
+    # else:
+    #     logs[task_id] = [message]
 
 
 from core.algorithms.egcd import egcd
@@ -62,6 +64,8 @@ def run_algorithm(algorithm_id, run_values):
     tasks[task_id] = {'algorithm_id': algorithm_id,
                       'run_values': run_values,
                       'status': 'Running'}
+                      
+    logs[task_id] = [f"Starting Task {task_id})"]
                       
     task_queue.put(new_task)
     
