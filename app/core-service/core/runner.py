@@ -60,7 +60,7 @@ def run_algorithm(algorithm_id, run_values):
     
     tasks[task_id] = {'algorithm_id': algorithm_id,
                       'run_values': run_values,
-                      'status': 'Running'}
+                      'status': 'Queued'}
                       
     logs[task_id] = []
                       
@@ -103,29 +103,28 @@ def task_worker(task_queue, task_results_queue, worker_active_flag):
             
             task_id, algorithm_id, run_values = pop_task
             
+            task_results_queue.put((task_id, '', 'Running'))
+            
             app.logger.info(f'RUNNER pop_task: {pop_task}')
             app.logger.info(f'RUNNER task_queue.qsize: {task_queue.qsize()}')
 
             try:
                 
                 result = task_runner(task_id, algorithm_id, run_values)
+                status = 'Done'
                 
             except Exception as exception:
                 
-                status = 'Failed'
-                
                 error_message = traceback.format_exc()
-                
                 task_log(task_id, error_message)
                 
-            else:
-                
-                status = 'Done'
+                result = None
+                status = 'Failed'
             
             task_results_queue.put((task_id, result, status))
 
-            task_log(task_id, f'result: {result}')
-            task_log(task_id, f'status: {status}')
+            task_log(task_id, f'Result: {result}')
+            task_log(task_id, f'Status: {status}')
             
             app.logger.info(f'task_results_queue.qsize: {task_results_queue.qsize()}')
             app.logger.info(f'len(tasks): {len(tasks)}')
@@ -188,7 +187,7 @@ def task_runner(task_id, algorithm_id, run_values_multidict):
     task_log(task_id, f'RUNNER counts:')
     [task_log(task_id, f'{state}: {count}') for state, count in sorted(counts.items())]
     
-    return {'Counts:': counts}
+    return {'Counts': counts}
     
 
 def get_task_results():

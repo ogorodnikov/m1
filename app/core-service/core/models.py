@@ -72,6 +72,30 @@ def add_test_data():
               'likes': 315,
               'enabled': True},
               
+              {'id': 'dj',
+              'name': 'Deutsch Josza',
+              'type': 'quantum',
+              'description': 'Determines if black-box function is constant (returns all 1 or all 0) or balanced (returns half of 1 and half of 0).\n' +
+                             'Classical algorith complexity is O(2^N) while quantum is O(1).',
+              'link': 'https://en.wikipedia.org/wiki/Deutsch%E2%80%93Jozsa_algorithm',
+              'image': b'1010',
+              'image_url_1': 'https://www.ae-info.org/attach/User/Jozsa_Richard/Jozsa_Richard_small.jpg',
+              'image_url_2': 'https://media.springernature.com/m685/springer-static/image/art%3A10.1038%2F526S16a/MediaObjects/41586_2015_Article_BF526S16a_Figa_HTML.jpg',
+              'parameters': [{'name': 'secret', 'default_value': '1010'}],
+              'likes': 459,
+              'enabled': True},
+
+              {'id': 'simon',
+              'name': 'Simon',
+              'type': 'quantum',
+              'description': 'Finds period of black-box function.\n' +
+                             'Classical algorith complexity is O(2^N) while quantum is O(N).',
+              'link': 'https://en.wikipedia.org/wiki/Deutsch%E2%80%93Jozsa_algorithm',
+              'image': b'1010',
+              'parameters': [{'name': 'secret', 'default_value': '1010'}],
+              'likes': 781,
+              'enabled': True},
+              
               ]
               
     

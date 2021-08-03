@@ -38,12 +38,15 @@
               {{ task_id }}
             </td>
             
+
             <td class="col-1">
-              <button class="btn btn-info" 
-                      data-toggle="collapse"
-                      data-target="#collapse-{{ task_id }}">
-                <i class="fa fa-angle-down"></i> Logs
-              </button>
+              {% if task.status in ('Running', 'Done', 'Failed') %}
+                <button class="btn btn-info" 
+                        data-toggle="collapse"
+                        data-target="#collapse-{{ task_id }}">
+                  <i class="fa fa-angle-down"></i> Logs
+                </button>
+              {% endif %}
             </td>
             
             <td class="col-1">
@@ -53,6 +56,8 @@
                   class="btn btn-success"
                 {% elif task.status == 'Running' %}
                   class="btn btn-warning"
+                {% elif task.status == 'Queued' %}
+                  class="btn btn-info"
                 {% else%}
                   class="btn btn-danger"            
                 {% endif %}
@@ -88,7 +93,9 @@
                   class="btn btn-success"
                 {% elif task.status == 'Running' %}
                   class="btn btn-warning"
-                {% else%}
+                {% elif task.status == 'Queued' %}
+                  class="btn btn-info"
+                {% else %}
                   class="btn btn-danger"            
                 {% endif %}>
                 
