@@ -94,7 +94,7 @@ def add_test_data():
               'image': b'1010',
               'parameters': [{'name': 'secret', 'default_value': '1010'}],
               'likes': 781,
-              'enabled': True},
+              'enabled': False},
               
               ]
               

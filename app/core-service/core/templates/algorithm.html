@@ -67,14 +67,19 @@
           
           {% if item.type == 'quantum' %}
           
-            <button type="submit" class="btn btn-warning col-sm-3" name="run_mode" value="simulator">
+            <button type="submit" 
+                    class="btn btn-warning col-sm-3" 
+                    name="run_mode"
+                    {% if not item.enabled %} disabled {% endif %}
+                    value="simulator">
                Run on Simulator
             </button>
             
-            <button type="submit" class="btn btn-danger col-sm-4" name="run_mode" value="quantum_device"
-              {% if item.type != 'quantum' %}
-                disabled
-              {% endif %}>
+            <button type="submit" 
+                    class="btn btn-danger col-sm-4"
+                    name="run_mode"
+                    {% if not item.enabled %} disabled {% endif %}
+                    value="quantum_device">
                Run on Quantum Device
             </button>
           

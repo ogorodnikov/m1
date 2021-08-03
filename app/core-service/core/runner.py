@@ -201,6 +201,9 @@ def get_task_results():
         tasks[task_id]['result'] = result            
         tasks[task_id]['status'] = status
         
+        if status == 'Running':
+            continue
+        
         yield task_result
 
     
