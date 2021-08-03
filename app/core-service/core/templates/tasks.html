@@ -96,8 +96,10 @@
           </td>
         </tr>
         
-        {% set logs_tail = logs[task_id][-LOGS_COUNT:] %}
         {% set logs_length = logs[task_id]|length %}
+        
+        {% set logs_tail = logs[task_id][-LOGS_COUNT:] %}
+        
         {% if logs_length > LOGS_COUNT %}
           {% set preambula = "=== Last " + LOGS_COUNT|string + " logs: ===\n\n" %}
         {% endif%}
