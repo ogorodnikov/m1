@@ -3,8 +3,6 @@ from itertools import combinations
 from qiskit import Aer, ClassicalRegister, QuantumRegister, QuantumCircuit, execute
 from qiskit.tools.monitor import job_monitor
 
-from core.runner import log
-
 
 ONE_STATE = 0, 1
 ZERO_STATE = 1, 0
@@ -133,9 +131,6 @@ def build_diffuser(qubit_count):
 
 def parse_run_values(run_values):
     
-    task_id = run_values.get('task_id')
-    run_mode = run_values.get('run_mode')
-    
     input_width = run_values.get('width')
     input_height = run_values.get('height')
     input_maximum_digit = run_values.get('maximum_digit')
@@ -202,15 +197,15 @@ def parse_run_values(run_values):
 
 
     return sudoku_rows, sudoku_height, sudoku_width, \
-    sudoku_integers, sudoku_maximum_digit, run_mode, \
-    solutions_count, repetitions_limit, task_id
+    sudoku_integers, sudoku_maximum_digit, \
+    solutions_count, repetitions_limit
 
 
-def grover_sudoku(run_values):
+def grover_sudoku(run_values, task_log):
     
     sudoku_rows, sudoku_height, sudoku_width, \
-    sudoku_integers, sudoku_maximum_digit, run_mode, \
-    solutions_count, repetitions_limit, task_id = parse_run_values(run_values)
+    sudoku_integers, sudoku_maximum_digit, \
+    solutions_count, repetitions_limit = parse_run_values(run_values)
 
     cells_count = sudoku_height * sudoku_width
     
@@ -274,24 +269,23 @@ def grover_sudoku(run_values):
 
     circuit.measure(cell_qubits, output_bits)
     
-    log(task_id, f'SUDOKU task_id: {task_id}')
-    log(task_id, f'SUDOKU run_values: {run_values}')
-    log(task_id, f'SUDOKU sudoku_maximum_digit: {sudoku_maximum_digit}')
-    log(task_id, f'SUDOKU sudoku_rows: {sudoku_rows}')
-    log(task_id, f'SUDOKU sudoku_integers: {sudoku_integers}')
-    log(task_id, f'SUDOKU qubits_per_digit: {qubits_per_cell}')
+    task_log(f'SUDOKU run_values: {run_values}')
+    task_log(f'SUDOKU sudoku_maximum_digit: {sudoku_maximum_digit}')
+    task_log(f'SUDOKU sudoku_rows: {sudoku_rows}')
+    task_log(f'SUDOKU sudoku_integers: {sudoku_integers}')
+    task_log(f'SUDOKU qubits_per_digit: {qubits_per_cell}')
     
-    log(task_id, f'SUDOKU cells_count: {cells_count}') 
-    log(task_id, f'SUDOKU cell_qubits_count: {cell_qubits_count}') 
-    log(task_id, f'SUDOKU pairs: {pairs}')
-    log(task_id, f'SUDOKU pairs_count: {pairs_count}')
-    log(task_id, f'SUDOKU pair_qubits_count: {pair_qubits_count}')
+    task_log(f'SUDOKU cells_count: {cells_count}') 
+    task_log(f'SUDOKU cell_qubits_count: {cell_qubits_count}') 
+    task_log(f'SUDOKU pairs: {pairs}')
+    task_log(f'SUDOKU pairs_count: {pairs_count}')
+    task_log(f'SUDOKU pair_qubits_count: {pair_qubits_count}')
     
-    log(task_id, f'SUDOKU elements_count: {elements_count}')
-    log(task_id, f'SUDOKU repetitions: {repetitions}')
-    log(task_id, f'SUDOKU repetitions_count: {repetitions_count}')
+    task_log(f'SUDOKU elements_count: {elements_count}')
+    task_log(f'SUDOKU repetitions: {repetitions}')
+    task_log(f'SUDOKU repetitions_count: {repetitions_count}')
     
-    log(task_id, f'SUDOKU sudoku_oracle: \n{sudoku_oracle}')
-    log(task_id, f'SUDOKU circuit: \n{circuit}')
+    task_log(f'SUDOKU sudoku_oracle: \n{sudoku_oracle}')
+    task_log(f'SUDOKU circuit: \n{circuit}')
 
     return circuit

@@ -12,7 +12,7 @@ from qiskit.tools.monitor import backend_overview, job_monitor
 from core import app
 
 
-def log(task_id, message):
+def task_log(task_id, message):
 
     app.logger.info(f'{message}')
     
@@ -116,7 +116,7 @@ def task_worker(task_queue, task_results_queue, worker_active_flag):
                 
                 error_message = traceback.format_exc()
                 
-                log(task_id, error_message)
+                task_log(task_id, error_message)
                 
             else:
                 
@@ -124,8 +124,8 @@ def task_worker(task_queue, task_results_queue, worker_active_flag):
             
             task_results_queue.put((task_id, result, status))
 
-            log(task_id, f'result: {result}')
-            log(task_id, f'status: {status}')
+            task_log(task_id, f'result: {result}')
+            task_log(task_id, f'status: {status}')
             
             app.logger.info(f'task_results_queue.qsize: {task_results_queue.qsize()}')
             app.logger.info(f'len(tasks): {len(tasks)}')
@@ -142,17 +142,17 @@ def task_runner(task_id, algorithm_id, run_values_multidict):
     
     app.logger.info(f'RUNNER run_mode: {run_mode}')
     app.logger.info(f'RUNNER run_values: {run_values}')
-    app.logger.info(f'RUNNER runner_function: {runner_function}')  
+    app.logger.info(f'RUNNER runner_function: {runner_function}') 
+    
+    log_callback = partial(task_log, task_id)
     
     if run_mode == 'classic':
-        
-        log_callback = partial(log, task_id)
         
         return runner_function(run_values, log_callback)
     
     elif run_mode == 'simulator':
         
-        circuit = runner_function(run_values)
+        circuit = runner_function(run_values, log_callback)
         qubit_count = circuit.num_qubits
         
         backend = Aer.get_backend('qasm_simulator')
@@ -167,15 +167,15 @@ def task_runner(task_id, algorithm_id, run_values_multidict):
             
         ibmq_provider = IBMQ.get_provider()
         
-        log(task_id, f'RUNNER ibmq_provider: {ibmq_provider}')
-        log(task_id, f'RUNNER ibmq_provider.backends(): {ibmq_provider.backends()}')
+        task_log(task_id, f'RUNNER ibmq_provider: {ibmq_provider}')
+        task_log(task_id, f'RUNNER ibmq_provider.backends(): {ibmq_provider.backends()}')
         
-        circuit = runner_function(run_values)
+        circuit = runner_function(run_values, log_callback)
         qubit_count = circuit.num_qubits        
 
         backend = get_least_busy_backend(ibmq_provider, qubit_count)
         
-    log(task_id, f'RUNNER backend: {backend}')
+    task_log(task_id, f'RUNNER backend: {backend}')
 
     job = execute(circuit, backend=backend, shots=1024)
     
@@ -185,8 +185,8 @@ def task_runner(task_id, algorithm_id, run_values_multidict):
     
     counts = result.get_counts()
     
-    log(task_id, f'RUNNER counts:')
-    [log(task_id, f'{state}: {count}') for state, count in sorted(counts.items())]
+    task_log(task_id, f'RUNNER counts:')
+    [task_log(task_id, f'{state}: {count}') for state, count in sorted(counts.items())]
     
     return {'Counts:': counts}
     
