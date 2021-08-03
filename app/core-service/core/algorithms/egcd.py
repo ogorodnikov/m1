@@ -1,7 +1,7 @@
-from core.runner import log
+# from core.runner import log
 
 
-def egcd(run_values):
+def egcd(run_values, log):
     
     task_id = run_values.get('task_id')
     
@@ -17,14 +17,14 @@ def egcd(run_values):
         old_s, s = s, old_s - quotient * s
         old_t, t = t, old_t - quotient * t
         
-    log(task_id, f'A, B: {a}, {b}')
-    log(task_id, f'GCD (Old remainder): {old_r}')
-    log(task_id, f'Bézout coefficients (Old S, Old T): {old_s}, {old_t}')
-    log(task_id, f'')
-    log(task_id, f'Formula:')
-    log(task_id, f'a * x + b * y = d')
-    log(task_id, f'{a} * {old_s} + {b} * {old_t} = {old_r}')
-    log(task_id, f'')
+    log(f'A, B: {a}, {b}')
+    log(f'GCD (Old remainder): {old_r}')
+    log(f'Bézout coefficients (Old S, Old T): {old_s}, {old_t}')
+    log(f'')
+    log(f'Formula:')
+    log(f'a * x + b * y = d')
+    log(f'{a} * {old_s} + {b} * {old_t} = {old_r}')
+    log(f'')
     
     return {'GCD': old_r,
             'Bézout coefficients': (old_s, old_t)}

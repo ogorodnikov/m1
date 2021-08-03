@@ -1,9 +1,9 @@
 import time
 import traceback
 
+from os import getpid
+from functools import partial
 from multiprocessing import Process, Event, Queue, Manager
-
-from queue import PriorityQueue
 
 from qiskit import IBMQ, Aer, execute
 from qiskit.providers.ibmq import least_busy
@@ -17,31 +17,30 @@ def log(task_id, message):
     app.logger.info(f'{message}')
     
     logs[task_id] += [message]
-    
-    # if task_id in logs:
-    #     logs[task_id] += [message]
-    # else:
-    #     logs[task_id] = [message]
 
 
 from core.algorithms.egcd import egcd
 from core.algorithms.bernvaz import bernvaz
 from core.algorithms.grover import grover
 from core.algorithms.grover_sudoku import grover_sudoku
+from core.algorithms.dj import dj
+from core.algorithms.simon import simon
 
 
 runner_functions = {'egcd': egcd,
                     'bernvaz': bernvaz,
                     'grover': grover,
                     'grover_sudoku': grover_sudoku,
+                    'dj': dj,
+                    'simon': simon,
                    }
 
 task_process_count = app.config.get('CPU_COUNT', 1)
 
-task_id = 0          
+task_id = 0
+tasks = {}
 task_queue = Queue()
 task_results_queue = Queue()
-tasks = {}
 
 manager = Manager()
 logs = manager.dict()
@@ -54,25 +53,23 @@ task_worker_processes = []
 
 def run_algorithm(algorithm_id, run_values):
     
-    priority = 1
-
     global task_id
     task_id += 1
     
-    new_task = (priority, task_id, algorithm_id, run_values)
+    new_task = (task_id, algorithm_id, run_values)
     
     tasks[task_id] = {'algorithm_id': algorithm_id,
                       'run_values': run_values,
                       'status': 'Running'}
                       
-    logs[task_id] = [f"Starting Task {task_id})"]
+    logs[task_id] = []
                       
     task_queue.put(new_task)
     
+    app.logger.info(f'RUNNER task_id: {task_id}')
     app.logger.info(f'RUNNER new_task: {new_task}')
     app.logger.info(f'RUNNER task_queue: {task_queue}')
     app.logger.info(f'RUNNER task_queue.qsize: {task_queue.qsize()}')
-    app.logger.info(f'RUNNER task_id: {task_id}')
     
     return task_id
     
@@ -92,7 +89,9 @@ def start_task_worker_processes():
 
 def task_worker(task_queue, task_results_queue, worker_active_flag):
     
-    app.logger.info(f'RUNNER task_worker started')
+    process_id = getpid()
+    
+    app.logger.info(f'RUNNER task_worker started: {process_id}')
     
     while True:
         
@@ -102,7 +101,7 @@ def task_worker(task_queue, task_results_queue, worker_active_flag):
             
             pop_task = task_queue.get()
             
-            priority, task_id, algorithm_id, run_values = pop_task
+            task_id, algorithm_id, run_values = pop_task
             
             app.logger.info(f'RUNNER pop_task: {pop_task}')
             app.logger.info(f'RUNNER task_queue.qsize: {task_queue.qsize()}')
@@ -116,6 +115,7 @@ def task_worker(task_queue, task_results_queue, worker_active_flag):
                 status = 'Failed'
                 
                 error_message = traceback.format_exc()
+                
                 log(task_id, error_message)
                 
             else:
@@ -146,15 +146,14 @@ def task_runner(task_id, algorithm_id, run_values_multidict):
     
     if run_mode == 'classic':
         
-        return runner_function(run_values)
+        log_callback = partial(log, task_id)
+        
+        return runner_function(run_values, log_callback)
     
-    else:
-    
+    elif run_mode == 'simulator':
+        
         circuit = runner_function(run_values)
-        
         qubit_count = circuit.num_qubits
-        
-    if run_mode == 'simulator':
         
         backend = Aer.get_backend('qasm_simulator')
         
@@ -166,12 +165,15 @@ def task_runner(task_id, algorithm_id, run_values_multidict):
         if not IBMQ.active_account():
             IBMQ.load_account()
             
-        provider = IBMQ.get_provider()
+        ibmq_provider = IBMQ.get_provider()
         
-        log(task_id, f'RUNNER provider: {provider}')
-        log(task_id, f'RUNNER provider.backends(): {provider.backends()}')
+        log(task_id, f'RUNNER ibmq_provider: {ibmq_provider}')
+        log(task_id, f'RUNNER ibmq_provider.backends(): {ibmq_provider.backends()}')
+        
+        circuit = runner_function(run_values)
+        qubit_count = circuit.num_qubits        
 
-        backend = get_least_busy_backend(provider, qubit_count)
+        backend = get_least_busy_backend(ibmq_provider, qubit_count)
         
     log(task_id, f'RUNNER backend: {backend}')
 
