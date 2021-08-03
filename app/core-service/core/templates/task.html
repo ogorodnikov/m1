@@ -8,99 +8,102 @@
 
 <div class="row justify-content-center m-3">
   
-  <table class="table table-hover table-dark">
-    
-    <thead>
-      <tr>
-        <th scope="col">Task</th>
-        <th scope="col">Logs</th>
-        <th scope="col">Algorithm</th>
-        <th scope="col">Run Mode</th>
-        <th scope="col">Parameters</th>
-        <th scope="col">Result</th>
-        <th scope="col">Status</th>
-      </tr>
-    </thead>
-    
-    <tbody>
+  <div class="table-responsive">
+  
+    <table class="table table-hover table-dark">
       
+      <thead>
         <tr>
-          
-          <td width="10">
-            {{ task_id }}
-          </td>
-          
-          <td class="col-1">
-            <button class="btn btn-info" 
-                    data-toggle="collapse"
-                    data-target="#collapse-{{ task_id }}">
-              <i class="fa fa-angle-up"></i> Logs
-            </button>
-          </td>
-          
-          <td class="col-1">
-            <a href={{ url_for('get_algorithm', algorithm_id=task.algorithm_id) }}
+          <!--<th scope="col">Task</th>-->
+          <th scope="col">Logs</th>
+          <th scope="col">Algorithm</th>
+          <th scope="col">Run Mode</th>
+          <th scope="col">Parameters</th>
+          <th scope="col">Result</th>
+          <th scope="col">Status</th>
+        </tr>
+      </thead>
+      
+      <tbody>
+        
+          <tr>
+            <!--<td column-width="10" class="d-none d-sm-none d-md-block">-->
+            <!--  {{ task_id }}-->
+            <!--</td>-->
             
-              {% if task.status == 'Done' %}
-                class="btn btn-success"
-              {% elif task.status == 'Running' %}
-                class="btn btn-warning"
-              {% else%}
-                class="btn btn-danger"            
-              {% endif %}
+            <td class="col-1">
+              <button class="btn btn-info" 
+                      data-toggle="collapse"
+                      data-target="#collapse-{{ task_id }}">
+                <i class="fa fa-angle-up"></i> Logs
+              </button>
+            </td>
+            
+            <td class="col-1">
+              <a href={{ url_for('get_algorithm', algorithm_id=task.algorithm_id) }}
               
-              role="button">
-              {{ task.algorithm_id }}
-            </a>
-          </td>
-          
-          <td class="col-1">
-            {{ task.run_values.run_mode }}
-          </td>
-          
-          <td class="col-2">
-            {% for name, value in task.run_values.items() %}
-              {% if name != 'run_mode' %}
-                {{ name }}: {{ value }}<br>
-              {% endif %}
-            {% endfor %}
-          </td>
-          
-          <td class="col-auto">
-            {% if task.result %}
-              {% for name, value in task.result.items() %}
-                {{ name }}: {{ value }}
+                {% if task.status == 'Done' %}
+                  class="btn btn-success"
+                {% elif task.status == 'Running' %}
+                  class="btn btn-warning"
+                {% else%}
+                  class="btn btn-danger"            
+                {% endif %}
+                
+                role="button">
+                {{ task.algorithm_id }}
+              </a>
+            </td>
+            
+            <td class="col-1">
+              {{ task.run_values.run_mode }}
+            </td>
+            
+            <td class="col-2">
+              {% for name, value in task.run_values.items() %}
+                {% if name != 'run_mode' %}
+                  {{ name }}: {{ value }}<br>
+                {% endif %}
               {% endfor %}
-            {% endif %}
-          </td>
+            </td>
+            
+            <td class="col-auto">
+              {% if task.result %}
+                {% for name, value in task.result.items() %}
+                  {{ name }}: {{ value }}
+                {% endfor %}
+              {% endif %}
+            </td>
+            
+            <td class="col-1">
+              <button
+                {% if task.status == 'Done' %}
+                  class="btn btn-success"
+                {% elif task.status == 'Running' %}
+                  class="btn btn-warning"
+                {% else%}
+                  class="btn btn-danger"            
+                {% endif %}>
+                
+                {{ task.status }}
+                
+              </button>
+            </td>
+          </tr>
           
-          <td class="col-1">
-            <button
-              {% if task.status == 'Done' %}
-                class="btn btn-success"
-              {% elif task.status == 'Running' %}
-                class="btn btn-warning"
-              {% else%}
-                class="btn btn-danger"            
-              {% endif %}>
-              
-              {{ task.status }}
-              
-            </button>
-          </td>
-        </tr>
-        
-
-        
-        <tr class="collapse show" id="collapse-{{ task_id }}">
-          <td></td>
-          <td colspan=6 style="white-space: pre-wrap; font-family: monospace; line-height:19px">{% for log in logs %}{{ log }}
+  
+          
+          <tr class="collapse show" id="collapse-{{ task_id }}">
+            <!--<td></td>-->
+            <td colspan=6 style="white-space: pre-wrap; font-family: monospace; line-height:19px">{% for log in logs %}{{ log }}
 {% endfor %}
-          </td>
-        </tr>
-
-    </tbody>
-  </table>
+            </td>
+          </tr>
+  
+      </tbody>
+    </table>
+    
+  </div>
 
 {% endblock %}
 

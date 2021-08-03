@@ -9,129 +9,133 @@
 {% set LOGS_COUNT = 10 %}
 
 <div class="row justify-content-center m-3">
-   
+  
   <h5 class="mb-3">Tasks:</h5>
   
-  <table class="table table-hover table-dark">
+  <div class="table-responsive">
     
-    <thead>
-      <tr>
-        <th scope="col">Task</th>
-        <th scope="col">Logs</th>
-        <th scope="col">Algorithm</th>
-        <th scope="col">Run Mode</th>
-        <th scope="col">Parameters</th>
-        <th scope="col">Result</th>
-        <th scope="col">Status</th>
-      </tr>
-    </thead>
-    
-    <tbody>
-       
-      {% for task_id, task in tasks.items() %}
+    <table class="table table-hover table-dark">
       
+      <thead>
         <tr>
-          
-          <td width="10">
-            {{ task_id }}
-          </td>
-          
-          <td class="col-1">
-            <button class="btn btn-info" 
-                    data-toggle="collapse"
-                    data-target="#collapse-{{ task_id }}">
-              <i class="fa fa-angle-down"></i> Logs
-            </button>
-          </td>
-          
-          <td class="col-1">
-            <a href={{ url_for('get_algorithm', algorithm_id=task.algorithm_id) }}
+          <th scope="col">Task</th>
+          <th scope="col">Logs</th>
+          <th scope="col">Algorithm</th>
+          <th scope="col">Run Mode</th>
+          <th scope="col">Parameters</th>
+          <th scope="col">Result</th>
+          <th scope="col">Status</th>
+        </tr>
+      </thead>
+      
+      <tbody>
+         
+        {% for task_id, task in tasks.items() %}
+        
+          <tr>
             
-              {% if task.status == 'Done' %}
-                class="btn btn-success"
-              {% elif task.status == 'Running' %}
-                class="btn btn-warning"
-              {% else%}
-                class="btn btn-danger"            
-              {% endif %}
+            <td width="10">
+              {{ task_id }}
+            </td>
+            
+            <td class="col-1">
+              <button class="btn btn-info" 
+                      data-toggle="collapse"
+                      data-target="#collapse-{{ task_id }}">
+                <i class="fa fa-angle-down"></i> Logs
+              </button>
+            </td>
+            
+            <td class="col-1">
+              <a href={{ url_for('get_algorithm', algorithm_id=task.algorithm_id) }}
               
-              role="button">
-              {{ task.algorithm_id }}
-            </a>
-          </td>
-          
-          <td class="col-1">
-            {{ task.run_values.run_mode }}
-          </td>
-          
-          <td class="col-2">
-            {% for name, value in task.run_values.items() %}
-              {% if name != 'run_mode' %}
-                {{ name }}: {{ value }}<br>
-              {% endif %}
-            {% endfor %}
-          </td>
-          
-          <td class="col-auto">
-            {% if task.result %}
-              {% for name, value in task.result.items() %}
-                {{ name }}: {{ value }}
-              {% endfor %}
-            {% endif %}
-          </td>
-          
-          <td class="col-1">
-            <button
-              {% if task.status == 'Done' %}
-                class="btn btn-success"
-              {% elif task.status == 'Running' %}
-                class="btn btn-warning"
-              {% else%}
-                class="btn btn-danger"            
-              {% endif %}>
-              
-              {{ task.status }}
-              
-            </button>
-          </td>
-        </tr>
-        
-        {% set logs_length = logs[task_id]|length %}
-        
-        {% set logs_tail = logs[task_id][-LOGS_COUNT:] %}
-        
-        {% if logs_length > LOGS_COUNT %}
-          {% set preambula = "=== Last " + LOGS_COUNT|string + " logs: ===\n\n" %}
-        {% endif%}
-        
-        <tr class="collapse" id="collapse-{{ task_id }}">
-          <td></td>
-          <td colspan=6 style="white-space: pre-wrap; font-family: monospace; line-height:19px">{{ preambula }}{% for log in logs_tail %}{{ log }}
-{% endfor %}
-          </td>
-        </tr>
-        
-        {% if logs_length > 10 %}
-          <tr class="collapse" id="collapse-{{ task_id }}">
-            <td></td>
-            <td colspan=6>
-
-              <a href={{ url_for('get_tasks', task_id=task_id) }}
-                 class="btn btn-light"
-                 role="button"
-                 target="_blank"
-                 rel="noopener noreferrer">
-                <i class="fa fa-angle-right"></i> Full Logs
+                {% if task.status == 'Done' %}
+                  class="btn btn-success"
+                {% elif task.status == 'Running' %}
+                  class="btn btn-warning"
+                {% else%}
+                  class="btn btn-danger"            
+                {% endif %}
+                
+                role="button">
+                {{ task.algorithm_id }}
               </a>
-              
+            </td>
+            
+            <td class="col-1">
+              {{ task.run_values.run_mode }}
+            </td>
+            
+            <td class="col-1">
+              {% for name, value in task.run_values.items() %}
+                {% if name != 'run_mode' %}
+                  {{ name }}: {{ value }}<br>
+                {% endif %}
+              {% endfor %}
+            </td>
+            
+            <td class="col-sm-auto">
+              {% if task.result %}
+                {% for name, value in task.result.items() %}
+                  {{ name }}: {{ value }}
+                {% endfor %}
+              {% endif %}
+            </td>
+            
+            <td class="col-1">
+              <button
+                {% if task.status == 'Done' %}
+                  class="btn btn-success"
+                {% elif task.status == 'Running' %}
+                  class="btn btn-warning"
+                {% else%}
+                  class="btn btn-danger"            
+                {% endif %}>
+                
+                {{ task.status }}
+                
+              </button>
             </td>
           </tr>
-        {% endif%}
+          
+          {% set logs_length = logs[task_id]|length %}
+          
+          {% set logs_tail = logs[task_id][-LOGS_COUNT:] %}
+          
+          {% if logs_length > LOGS_COUNT %}
+            {% set preambula = "=== Last " + LOGS_COUNT|string + " logs: ===\n\n" %}
+          {% endif%}
+          
+          <tr class="collapse" id="collapse-{{ task_id }}">
+            <td></td>
+            <td colspan=6 style="white-space: pre-wrap; font-family: monospace; line-height:19px">{{ preambula }}{% for log in logs_tail %}{{ log }}
+{% endfor %}
+            </td>
+          </tr>
+          
+          {% if logs_length > 10 %}
+            <tr class="collapse" id="collapse-{{ task_id }}">
+              <td></td>
+              <td colspan=6>
+  
+                <a href={{ url_for('get_tasks', task_id=task_id) }}
+                   class="btn btn-light"
+                   role="button"
+                   target="_blank"
+                   rel="noopener noreferrer">
+                  <i class="fa fa-angle-right"></i> Full Logs
+                </a>
+                
+              </td>
+            </tr>
+          {% endif%}
+          
+        {% endfor %}
         
-      {% endfor %}
-      
-    </tbody>
-  </table>
+      </tbody>
+    </table>
+  
+  </div>
 
 {% endblock %}
 

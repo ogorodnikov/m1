@@ -33,7 +33,7 @@ def add_test_data():
               
               {'id': 'egcd',
               'name': 'Extended Euclidean',
-              'type': 'classic',
+              'type': 'classical',
               'description': 'Calculates GCD (Greatest common divisor) and Bézout coefficents.',
               'link': 'https://en.wikipedia.org/wiki/Extended_Euclidean_algorithm',
               'image': b'1010',
