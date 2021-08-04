@@ -7,20 +7,13 @@ from qiskit.circuit.library import Diagonal
 
 
 def build_dj_oracle(secret):
-    
-    return
-    
-    diagonal_elements = [1] * elements_count
-    
-    for secret in secrets:
-        secret_string = ''.join('1' if letter == '1' else '0' for letter in secret)
-        secret_index = int(secret_string, 2)
-        diagonal_elements[secret_index] = -1
 
-    phase_oracle = Diagonal(diagonal_elements)
-    phase_oracle.name = 'Phase Oracle'
+    diagonal_elements = secret
     
-    return phase_oracle
+    dj_oracle = Diagonal(diagonal_elements)
+    dj_oracle.name = 'DJ Oracle'
+    
+    return dj_oracle
     
     
 def dj(run_values, task_log):

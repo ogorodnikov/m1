@@ -104,7 +104,9 @@ def run_algorithm(algorithm_id):
     
     task_id = runner.run_algorithm(algorithm_id, run_values)
     
-    start_message = f"Task <a href='/tasks?task_id={task_id}'>#{task_id}</a> " + \
+    start_message = f"Task <a href='/tasks?task_id={task_id}' " + \
+                    f"target='_blank' rel='noopener noreferrer'>" + \
+                    f"#{task_id}</a> " + \
                     f"started: algorithm={algorithm_id}, run_values={dict(run_values)}"
     
     flash(start_message, category='warning')
@@ -148,7 +150,9 @@ def show_task_results():
     
         task_id, result, status = task_result
         
-        result_message = f"Task <a href='/tasks?task_id={task_id}'>#{task_id}</a> " + \
+        result_message = f"Task <a href='/tasks?task_id={task_id}' " + \
+                         f"target='_blank' rel='noopener noreferrer'>" + \
+                         f"#{task_id}</a> " + \
                          f"Status: {status}, Result: {result}"
         
         flash(result_message, category='info')
