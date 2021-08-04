@@ -12,7 +12,7 @@ from qiskit import QuantumCircuit
 def dj(run_values, task_log):
     
     full_secret = run_values.get('secret')
-    secret_len = 2 ** int(len(full_secret) ** 0.5)
+    secret_len = 2 ** int((len(full_secret).bit_length() + 1) ** 0.5)
     secret = full_secret[:secret_len]
     
     input_qubit_count = int(len(secret) ** 0.5)
@@ -41,37 +41,37 @@ def dj(run_values, task_log):
 
     circuit = QuantumCircuit(qubit_count, measure_bit_count)
     
-    
-    
     for input_qubit in input_qubits:    
-        circuit.cx(input_qubit, output_qubit)
-    
-    
+        circuit.h(input_qubit)
+        
+    circuit.x(output_qubit)
+    circuit.h(output_qubit)
+        
     circuit.barrier()
     
-    for state, _ in sorted(inverted_states):
+    # for input_qubit in input_qubits:    
+    #     circuit.cx(input_qubit, output_qubit)
+    
+    # circuit.barrier()
+    
+    
+    # for state, _ in sorted(inverted_states):
         
-        for qubit, value in enumerate(state):
-            if value == '0':
-                circuit.x(qubit)
+    #     for qubit, value in enumerate(state):
+    #         if value == '0':
+    #             circuit.x(qubit)
                 
-        circuit.mct(list(input_qubits), output_qubit)
+    #     circuit.mct(list(input_qubits), output_qubit)
         
-        for qubit, value in enumerate(state):
-            if value == '0':
-                circuit.x(qubit)        
+    #     for qubit, value in enumerate(state):
+    #         if value == '0':
+    #             circuit.x(qubit)        
 
-        circuit.barrier()   
+    #     circuit.barrier()
     
-    # circuit.x(output_qubit_index)
-    
-    # for qubit_index in range(qubit_count):    
-    #     circuit.h(qubit_index)    
-    
-    # circuit.append(dj_oracle, range(qubit_count))
-    
-    # for qubit_index in input_qubits:    
-    #     circuit.h(qubit_index)
+        
+    for input_qubit in input_qubits:    
+        circuit.h(input_qubit)
         
         
     circuit.measure(input_qubits, measure_bits)
@@ -79,6 +79,7 @@ def dj(run_values, task_log):
 
     task_log(f'DJ full_secret: {full_secret}')
     task_log(f'DJ secret: {secret}')
+    task_log(f'DJ secret_len: {secret_len}')
     task_log(f'DJ qubit_count: {qubit_count}')
     
     task_log(f'DJ truth_table: {truth_table}')
