@@ -23,7 +23,7 @@ def dj(run_values, task_log):
     qubit_count = input_qubit_count + 1
     qubits = range(qubit_count)
     
-    measure_bit_count = input_qubit_count
+    measure_bit_count = input_qubit_count + 1
     measure_bits = range(measure_bit_count)
     
     states = range(secret_len)
@@ -32,50 +32,55 @@ def dj(run_values, task_log):
     
     truth_table = {f"{state:{bin_template}}": secret[state] for state in states}
     
-    mod2_truth_table = {f"{state:{bin_template}}": str(state % 2) for state in states}
+    # mod2_truth_table = {f"{state:{bin_template}}": str(state % 2) for state in states}
     
-    inverted_states = set(truth_table.items()) - set(mod2_truth_table.items())
+    # inverted_states = set(truth_table.items()) - set(mod2_truth_table.items())
     
     
     # dj_oracle = build_dj_oracle(secret)
 
     circuit = QuantumCircuit(qubit_count, measure_bit_count)
     
-    for input_qubit in input_qubits:    
-        circuit.h(input_qubit)
+    # for input_qubit in input_qubits:    
+    #     circuit.h(input_qubit)
         
-    circuit.x(output_qubit)
-    circuit.h(output_qubit)
+    # circuit.x(output_qubit)
+    # circuit.h(output_qubit)
+    
+    # circuit.x(0)
+    # circuit.x(1)
         
     circuit.barrier()
     
     # for input_qubit in input_qubits:    
     #     circuit.cx(input_qubit, output_qubit)
     
-    # circuit.barrier()
+    circuit.barrier()
     
-    
-    # for state, _ in sorted(inverted_states):
+    for state, secret_digit in truth_table.items():
         
-    #     for qubit, value in enumerate(state):
-    #         if value == '0':
-    #             circuit.x(qubit)
+        if secret_digit == '0':
+            continue
+        
+        for state_digit_index, state_digit in enumerate(state):
+            if state_digit == '0':
+                circuit.x(state_digit_index)
                 
-    #     circuit.mct(list(input_qubits), output_qubit)
+        circuit.mct(list(input_qubits), output_qubit)
         
-    #     for qubit, value in enumerate(state):
-    #         if value == '0':
-    #             circuit.x(qubit)        
+        for state_digit_index, state_digit in enumerate(state):
+            if state_digit == '0':
+                circuit.x(state_digit_index)    
 
-    #     circuit.barrier()
+        circuit.barrier()
     
         
-    for input_qubit in input_qubits:    
-        circuit.h(input_qubit)
+    # for input_qubit in input_qubits:    
+    #     circuit.h(input_qubit)
         
         
-    circuit.measure(input_qubits, measure_bits)
-    
+    circuit.measure([2, 1, 0], measure_bits)
+
 
     task_log(f'DJ full_secret: {full_secret}')
     task_log(f'DJ secret: {secret}')
@@ -83,8 +88,8 @@ def dj(run_values, task_log):
     task_log(f'DJ qubit_count: {qubit_count}')
     
     task_log(f'DJ truth_table: {truth_table}')
-    task_log(f'DJ mod2_truth_table: {mod2_truth_table}')
-    task_log(f'DJ inverted_states: {inverted_states}')
+    # task_log(f'DJ mod2_truth_table: {mod2_truth_table}')
+    # task_log(f'DJ inverted_states: {inverted_states}')
 
     # task_log(f'DJ dj_oracle: \n{dj_oracle}')
     task_log(f'DJ circuit: \n{circuit}')
