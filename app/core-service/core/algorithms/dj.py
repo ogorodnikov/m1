@@ -23,7 +23,7 @@ def dj(run_values, task_log):
     qubit_count = input_qubit_count + 1
     qubits = range(qubit_count)
     
-    measure_bit_count = input_qubit_count + 1
+    measure_bit_count = input_qubit_count
     measure_bits = range(measure_bit_count)
     
     states = range(secret_len)
@@ -41,21 +41,16 @@ def dj(run_values, task_log):
 
     circuit = QuantumCircuit(qubit_count, measure_bit_count)
     
-    # for input_qubit in input_qubits:    
-    #     circuit.h(input_qubit)
+    for input_qubit in input_qubits:    
+        circuit.h(input_qubit)
         
-    # circuit.x(output_qubit)
-    # circuit.h(output_qubit)
+    circuit.x(output_qubit)
+    circuit.h(output_qubit)
     
-    # circuit.x(0)
-    # circuit.x(1)
-        
     circuit.barrier()
     
-    # for input_qubit in input_qubits:    
-    #     circuit.cx(input_qubit, output_qubit)
     
-    circuit.barrier()
+    
     
     for state, secret_digit in truth_table.items():
         
@@ -73,13 +68,19 @@ def dj(run_values, task_log):
                 circuit.x(state_digit_index)    
 
         circuit.barrier()
+        
+        
     
         
-    # for input_qubit in input_qubits:    
-    #     circuit.h(input_qubit)
+    for input_qubit in input_qubits:    
+        circuit.h(input_qubit)
+        
+    circuit.barrier()
         
         
-    circuit.measure([2, 1, 0], measure_bits)
+    # circuit.measure([2, 1, 0], measure_bits)
+    
+    circuit.measure([1, 0], measure_bits)
 
 
     task_log(f'DJ full_secret: {full_secret}')
