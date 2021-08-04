@@ -46,6 +46,8 @@
                   class="btn btn-success"
                 {% elif task.status == 'Running' %}
                   class="btn btn-warning"
+                {% elif task.status == 'Queued' %}
+                  class="btn btn-info"
                 {% else%}
                   class="btn btn-danger"            
                 {% endif %}
@@ -81,9 +83,12 @@
                   class="btn btn-success"
                 {% elif task.status == 'Running' %}
                   class="btn btn-warning"
+                {% elif task.status == 'Queued' %}
+                  class="btn btn-info"
                 {% else%}
                   class="btn btn-danger"            
-                {% endif %}>
+                {% endif %}
+                >
                 
                 {{ task.status }}
                 

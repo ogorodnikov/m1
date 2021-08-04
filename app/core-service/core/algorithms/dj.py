@@ -3,41 +3,8 @@ from qiskit import QuantumCircuit
 
 # def build_dj_oracle(secret):
     
-#     qubit_count = len(secret) ** 0.5
-    
-#     input_qubits = range(qubit_count - 1)
-#     output_qubit = qubit_count - 1
-    
-#     # int_to_bin_template = 
-    
-#     truth_table = {f"{state:0{qubit_count}b}": secret[state] for state in input_qubits}
-    
-#     print(truth_table)
-    
-    
 #     dj_oracle = QuantumCircuit(qubit_count)
 #     dj_oracle.name = 'DJ Oracle'
-    
-#     for input_qubit in input_qubits:
-#         dj_oracle.cx(input_qubit, output_qubit)
-    
-    
-    
-    
-    # for input_qubit_index, digit in enumerate(reversed(secret)):
-    #     if digit == '1':
-    #         dj_oracle.x(input_qubit_index)
-            
-    # dj_oracle.barrier()
-            
-    # for input_qubit_index in range(qubit_count - 1):    
-    #     dj_oracle.cx(input_qubit_index, output_qubit_index)
-        
-    # dj_oracle.barrier()
-        
-    # for input_qubit_index, digit in enumerate(reversed(secret)):
-    #     if digit == '1':
-    #         dj_oracle.x(input_qubit_index)
     
     # return dj_oracle
     
@@ -51,7 +18,7 @@ def dj(run_values, task_log):
     input_qubit_count = int(len(secret) ** 0.5)
     input_qubits = range(input_qubit_count)
     
-    output_qubit_index = input_qubit_count
+    output_qubit = input_qubit_count
     
     qubit_count = input_qubit_count + 1
     qubits = range(qubit_count)
@@ -59,17 +26,42 @@ def dj(run_values, task_log):
     measure_bit_count = input_qubit_count
     measure_bits = range(measure_bit_count)
     
-    #     # int_to_bin_template =
-    
     states = range(secret_len)
     
-    truth_table = {f"{state:0{input_qubit_count}b}": secret[state] for state in states}
+    bin_template = f"0{input_qubit_count}b"
+    
+    truth_table = {f"{state:{bin_template}}": secret[state] for state in states}
+    
+    mod2_truth_table = {f"{state:{bin_template}}": str(state % 2) for state in states}
+    
+    inverted_states = set(truth_table.items()) - set(mod2_truth_table.items())
     
     
     # dj_oracle = build_dj_oracle(secret)
 
     circuit = QuantumCircuit(qubit_count, measure_bit_count)
     
+    
+    
+    for input_qubit in input_qubits:    
+        circuit.cx(input_qubit, output_qubit)
+    
+    
+    circuit.barrier()
+    
+    for state, _ in sorted(inverted_states):
+        
+        for qubit, value in enumerate(state):
+            if value == '0':
+                circuit.x(qubit)
+                
+        circuit.mct(list(input_qubits), output_qubit)
+        
+        for qubit, value in enumerate(state):
+            if value == '0':
+                circuit.x(qubit)        
+
+        circuit.barrier()   
     
     # circuit.x(output_qubit_index)
     
@@ -82,13 +74,16 @@ def dj(run_values, task_log):
     #     circuit.h(qubit_index)
         
         
-    # circuit.measure(input_qubits, measure_bits)
+    circuit.measure(input_qubits, measure_bits)
     
 
     task_log(f'DJ full_secret: {full_secret}')
     task_log(f'DJ secret: {secret}')
     task_log(f'DJ qubit_count: {qubit_count}')
+    
     task_log(f'DJ truth_table: {truth_table}')
+    task_log(f'DJ mod2_truth_table: {mod2_truth_table}')
+    task_log(f'DJ inverted_states: {inverted_states}')
 
     # task_log(f'DJ dj_oracle: \n{dj_oracle}')
     task_log(f'DJ circuit: \n{circuit}')
