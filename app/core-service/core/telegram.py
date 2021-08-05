@@ -2,7 +2,7 @@ import telebot
 
 from threading import Thread
 
-from core import app
+from core import app, models
 
 
 telegram_token = app.config.get('TELEGRAM_TOKEN')
@@ -26,6 +26,31 @@ def send_welcome(message):
     app.logger.info(f'BOT user_name {user_name}')
 
     bot.reply_to(message, f"{bot_name} welcomes you, {user_name}!")
+    
+    
+@bot.message_handler(commands=['algorithms'])
+def send_welcome(message):
+    
+    algorithms = models.get_all_algorithms()
+    
+    app.logger.info(f'BOT /algorithms')
+    app.logger.info(f'BOT algorithms {algorithms}')
+    
+    bot.reply_to(message, f"Algorithms:")
+        
+    for i, algorithm in enumerate(algorithms, 1):
+        
+        name = algorithm['name']
+        description = algorithm['description']
+        link = algorithm['link']
+        
+        bot.send_message(message.chat.id, f"{i}) {name}")
+        bot.send_message(message.chat.id, f"{description}")
+        
+        # bot.send_message(message.chat.id, f"{link}")
+        
+        # bot.reply_to(message, f"{description}")
+        # bot.reply_to(message, f"{link}")
 	
 
 @bot.message_handler(func=lambda message: True)

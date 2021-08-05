@@ -1,4 +1,4 @@
-import boto3, json
+import boto3
 
 
 ###   Credential check   ###
