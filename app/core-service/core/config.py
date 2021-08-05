@@ -73,6 +73,7 @@ class Config(object):
     CPU_COUNT = os.cpu_count()
     
     QISKIT_TOKEN = os.getenv('QISKIT_TOKEN')
+    TELEGRAM_TOKEN = os.getenv('TELEGRAM_TOKEN')
     
     
 

@@ -105,7 +105,6 @@ def dj(run_values, task_log):
     task_log(f'DJ output_qubit: {output_qubit}')
     task_log(f'DJ qubits_measurement_list: {qubits_measurement_list}')
     
-    task_log(f'DJ states: {states}')
     task_log(f'DJ truth_table: {truth_table}')
     task_log(f'DJ truth_table_oracle: \n{truth_table_oracle}')
     task_log(f'DJ circuit: \n{circuit}')
