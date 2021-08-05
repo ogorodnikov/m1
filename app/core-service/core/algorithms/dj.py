@@ -1,55 +1,19 @@
 from qiskit import QuantumCircuit
 
 
-# def build_dj_oracle(secret):
-    
-#     dj_oracle = QuantumCircuit(qubit_count)
-#     dj_oracle.name = 'DJ Oracle'
-    
-    # return dj_oracle
+def build_truth_table_oracle(truth_table, task_log):
     
     
-def dj(run_values, task_log):
-    
-    full_secret = run_values.get('secret')
-    secret_len = 2 ** int((len(full_secret).bit_length() + 1) ** 0.5)
-    secret = full_secret[:secret_len]
-    
-    input_qubit_count = int(len(secret) ** 0.5)
-    input_qubits = range(input_qubit_count)
-    
-    output_qubit = input_qubit_count
-    
-    qubit_count = input_qubit_count + 1
-    qubits = range(qubit_count)
-    
-    measure_bit_count = input_qubit_count
-    measure_bits = range(measure_bit_count)
-    
-    states = range(secret_len)
-    
-    bin_template = f"0{input_qubit_count}b"
-    
-    truth_table = {f"{state:{bin_template}}": secret[state] for state in states}
-    
-    # mod2_truth_table = {f"{state:{bin_template}}": str(state % 2) for state in states}
-    
-    # inverted_states = set(truth_table.items()) - set(mod2_truth_table.items())
-    
-    
-    # dj_oracle = build_dj_oracle(secret)
+    input_qubits_count = len(next(iter(truth_table)))
+    input_qubits = range(input_qubits_count)
 
-    circuit = QuantumCircuit(qubit_count, measure_bit_count)
+    all_qubits_count = input_qubits_count + 1
     
-    for input_qubit in input_qubits:    
-        circuit.h(input_qubit)
-        
-    circuit.x(output_qubit)
-    circuit.h(output_qubit)
-    
-    circuit.barrier()
+    output_qubit = all_qubits_count - 1
     
     
+    oracle = QuantumCircuit(all_qubits_count)
+    oracle.name = 'Truth Table Oracle'
     
     
     for state, secret_digit in truth_table.items():
@@ -59,17 +23,64 @@ def dj(run_values, task_log):
         
         for state_digit_index, state_digit in enumerate(state):
             if state_digit == '0':
-                circuit.x(state_digit_index)
+                oracle.x(state_digit_index)
                 
-        circuit.mct(list(input_qubits), output_qubit)
+        oracle.mct(list(input_qubits), output_qubit)
         
         for state_digit_index, state_digit in enumerate(state):
             if state_digit == '0':
-                circuit.x(state_digit_index)    
+                oracle.x(state_digit_index)    
 
-        circuit.barrier()
+        oracle.barrier()
         
+    
+    return oracle
+    
+    
+def dj(run_values, task_log):
+    
+    input_secret = run_values.get('secret')
+    
+    full_secret = ''.join('1' if digit == '1' else '0' for digit in input_secret)
+    
+    secret_bit_len = (len(full_secret) - 1).bit_length()
+    
+    secret_len = 2 ** secret_bit_len
         
+    secret = full_secret.ljust(secret_len, '0')[:secret_len]
+    
+    input_qubits_count = secret_bit_len
+    input_qubits = range(input_qubits_count)
+    
+    all_qubits_count = input_qubits_count + 1
+    all_qubits = range(all_qubits_count)
+    
+    output_qubit = input_qubits_count
+    
+    measure_bits_count = input_qubits_count
+    measure_bits = range(measure_bits_count)
+
+    
+    states = range(secret_len)
+    
+    bin_template = f"0{input_qubits_count}b"
+    
+    truth_table = {f"{state:{bin_template}}": secret[state] for state in states}
+    
+    
+    truth_table_oracle = build_truth_table_oracle(truth_table, task_log)
+    
+
+    circuit = QuantumCircuit(all_qubits_count, measure_bits_count)
+    
+    for input_qubit in input_qubits:    
+        circuit.h(input_qubit)
+        
+    circuit.x(output_qubit)
+    circuit.h(output_qubit)
+    
+
+    circuit.append(truth_table_oracle, all_qubits)
     
         
     for input_qubit in input_qubits:    
@@ -77,23 +88,31 @@ def dj(run_values, task_log):
         
     circuit.barrier()
         
-        
-    # circuit.measure([2, 1, 0], measure_bits)
+
+    qubits_measurement_list = list(reversed(input_qubits))
     
-    circuit.measure([1, 0], measure_bits)
-
-
+    circuit.measure(qubits_measurement_list, measure_bits)
+    
+    
+    task_log(f'DJ input_secret: {input_secret}')
     task_log(f'DJ full_secret: {full_secret}')
     task_log(f'DJ secret: {secret}')
+    task_log(f'DJ secret_bit_len: {secret_bit_len}')
     task_log(f'DJ secret_len: {secret_len}')
-    task_log(f'DJ qubit_count: {qubit_count}')
     
+    task_log(f'DJ input_qubits_count: {input_qubits_count}')
+    task_log(f'DJ all_qubits_count: {all_qubits_count}')
+    task_log(f'DJ output_qubit: {output_qubit}')
+    task_log(f'DJ qubits_measurement_list: {qubits_measurement_list}')
+    
+    task_log(f'DJ states: {states}')
     task_log(f'DJ truth_table: {truth_table}')
-    # task_log(f'DJ mod2_truth_table: {mod2_truth_table}')
-    # task_log(f'DJ inverted_states: {inverted_states}')
-
-    # task_log(f'DJ dj_oracle: \n{dj_oracle}')
+    task_log(f'DJ truth_table_oracle: \n{truth_table_oracle}')
     task_log(f'DJ circuit: \n{circuit}')
+    
+    task_log(f'DJ if majority of counts is all 0 - secret is constant')
+    task_log(f'DJ if majority of counts is any other state - secret is balanced')
+    task_log(f'DJ if counts are distributed via multiple states - probably secret is unbalanced')
     
 
     return circuit

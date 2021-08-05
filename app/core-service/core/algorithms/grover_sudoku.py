@@ -11,18 +11,6 @@ MINUS_STATE = 2**-0.5, -(2**-0.5)
 DEFAULT_SOLUTIONS_COUNT = 2
 DEFAULT_REPETITIONS_LIMIT = 3
 
-# run_values = {'input_row_1': '1.',
-#               'input_row_2': '.',
-#               'input_row_3': '',
-#               'sudoku_width': 'autodetect',
-#               'sudoku_height': 'autodetect',
-#               'maximum_digit': 'autodetect',
-#               'repetitions_limit': '3',
-#               'solutions_count': '2',
-#               'run_mode': 'simulator',                 
-#             #   'run_mode': 'quantum_device',                 
-#              }
-
 
 def initialize_sudoku_circuit(circuit, sudoku_rows, qubits_per_cell, output_qubit):
     
@@ -146,15 +134,9 @@ def parse_run_values(run_values):
     else:
         sudoku_width = max(map(len, input_rows))
         
-    # print('sudoku_width:', sudoku_width)
-        
     sized_rows = [row.ljust(sudoku_width, '.')[:sudoku_width] for row in input_rows]
     
-    # print('sized_rows:', sized_rows)    
-        
     input_columns = [''.join(element) for element in zip(*sized_rows)]
-    
-    # print('input_columns:', input_columns) 
     
     
     if input_height.isdecimal():
@@ -162,15 +144,9 @@ def parse_run_values(run_values):
     else:
         sudoku_height = max(map(len, input_columns))
         
-    # print('sudoku_height:', sudoku_height)    
-        
     sized_columns = [column.ljust(sudoku_height, '.')[:sudoku_height] for column in input_columns]
 
-    # print('sized_columns:', sized_columns)
-    
     sudoku_rows = [''.join(element) for element in zip(*sized_columns)]
-    
-    # print('sudoku_rows:', sudoku_rows)
     
     sudoku_integers = [int(symbol) for row in sudoku_rows 
                        for symbol in row 
@@ -181,8 +157,6 @@ def parse_run_values(run_values):
         sudoku_maximum_digit = int(input_maximum_digit)
     else:
         sudoku_maximum_digit = max(sudoku_integers)
-    
-    # print('sudoku_maximum_digit:', sudoku_maximum_digit)
     
     
     if input_solutions_count.isdecimal():
@@ -287,5 +261,6 @@ def grover_sudoku(run_values, task_log):
     
     task_log(f'SUDOKU sudoku_oracle: \n{sudoku_oracle}')
     task_log(f'SUDOKU circuit: \n{circuit}')
+    
 
     return circuit
