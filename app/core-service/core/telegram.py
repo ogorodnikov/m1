@@ -10,8 +10,6 @@ telegram_token = app.config.get('TELEGRAM_TOKEN')
 
 bot = telebot.TeleBot(telegram_token)
 
-app.logger.info(f'BOT starting telegram bot: {bot}')
-
 
 # @bot.message_handler(commands=['start', 'help'])
 
@@ -40,5 +38,6 @@ bot_polling_thread = Thread(target=bot.polling,
 
 bot_polling_thread.start()
 
+app.logger.info(f'BOT starting telegram bot: {bot}')
 app.logger.info(f'BOT bot_polling_thread: {bot_polling_thread}')                                      
 
