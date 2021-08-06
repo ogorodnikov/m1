@@ -1,6 +1,8 @@
 import telebot
 
-from threading import Thread
+from time import sleep
+
+from threading import Thread, Event, enumerate as e
 
 from core import app, models
 
@@ -8,9 +10,63 @@ from core import app, models
 telegram_token = app.config.get('TELEGRAM_TOKEN')
 
 
-bot = telebot.TeleBot(telegram_token)
+bot = telebot.TeleBot(telegram_token, threaded=False)
+
+app.logger.info(f'BOT starting telegram bot: {bot}')
+
+polling_active_flag = Event()
+polling_active_flag.set()
 
 
+def bot_polling_worker(polling_active_flag):
+    
+    while True:
+        
+        sleep(1)
+        
+        polling_active_flag.wait()
+        
+        bot.get_updates()
+        
+        app.logger.info(f'BOT get_updates()')
+        
+
+
+def start_bot_polling():
+    
+    # bot_polling_thread = Thread(target=bot_polling_worker,
+    #                             args=(polling_active_flag, ),
+    #                             # daemon=True,
+    #                             )
+    
+    bot_polling_thread = Thread(
+                            target=bot.polling,
+                            # args=(polling_active_flag, ),
+                            # daemon=True,
+                            )
+
+    bot_polling_thread.start()
+    
+    # bot.polling()
+    
+    app.logger.info(f'BOT bot_polling_thread: {bot_polling_thread}')
+
+    
+
+def pause_bot_polling():
+    
+    bot.__stop_polling.set()
+    
+    app.logger.info(f'BOT pause_bot_polling')
+    
+    
+def resume_bot_polling():
+    
+    bot.__stop_polling.clear()
+    
+    app.logger.info(f'BOT resume_bot_polling')    
+    
+    
 # @bot.message_handler(commands=['start', 'help'])
 
 @bot.message_handler(commands=['start'])
@@ -44,8 +100,8 @@ def send_welcome(message):
         description = algorithm['description']
         link = algorithm['link']
         
-        bot.send_message(message.chat.id, f"{i}) {name}")
-        bot.send_message(message.chat.id, f"{description}")
+        bot.send_message(message.chat.id, f"{i}) {name}", disable_notification=True)
+        bot.send_message(message.chat.id, f"{description}", disable_notification=True)
         
         # bot.send_message(message.chat.id, f"{link}")
         
@@ -56,13 +112,5 @@ def send_welcome(message):
 @bot.message_handler(func=lambda message: True)
 def echo_all(message):
 	bot.reply_to(message, message.text)
-	
-bot_polling_thread = Thread(target=bot.polling,
-                            # args=(task_queue, task_results_queue, worker_active_flag),
-                            daemon=True)
-
-bot_polling_thread.start()
-
-app.logger.info(f'BOT starting telegram bot: {bot}')
-app.logger.info(f'BOT bot_polling_thread: {bot_polling_thread}')                                      
+                                
 
