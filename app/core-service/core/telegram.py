@@ -2,72 +2,39 @@ import telebot
 
 from time import sleep
 
-from threading import Thread, Event, enumerate as e
+from threading import Thread
 
 from core import app, models
 
 
-telegram_token = app.config.get('TELEGRAM_TOKEN')
-
-
-bot = telebot.TeleBot(telegram_token, threaded=False)
-
-app.logger.info(f'BOT starting telegram bot: {bot}')
-
-polling_active_flag = Event()
-polling_active_flag.set()
-
-
-def bot_polling_worker(polling_active_flag):
+telegram_token = app.config.get('TELEGRAM_TOKEN')  
     
-    while True:
-        
-        sleep(1)
-        
-        polling_active_flag.wait()
-        
-        bot.get_updates()
-        
-        app.logger.info(f'BOT get_updates()')
-        
+bot = telebot.TeleBot(telegram_token)
 
 
-def start_bot_polling():
+def start_bot():
     
-    # bot_polling_thread = Thread(target=bot_polling_worker,
-    #                             args=(polling_active_flag, ),
-    #                             # daemon=True,
-    #                             )
+    if not bot:
     
-    bot_polling_thread = Thread(
-                            target=bot.polling,
-                            # args=(polling_active_flag, ),
-                            # daemon=True,
-                            )
+        bot = telebot.TeleBot(telegram_token)
+
+    bot_polling_thread = Thread(target=bot.polling,
+                                # args=(polling_active_flag, ),
+                                # daemon=True,
+                                )
 
     bot_polling_thread.start()
     
-    # bot.polling()
+    app.session['telegram_bot_state'] = 'started'
     
+    app.logger.info(f'BOT started telegram bot: {bot}')
     app.logger.info(f'BOT bot_polling_thread: {bot_polling_thread}')
+    
+    
+def stop_bot():
+    
+    bot.stop_bot()
 
-    
-
-def pause_bot_polling():
-    
-    bot.__stop_polling.set()
-    
-    app.logger.info(f'BOT pause_bot_polling')
-    
-    
-def resume_bot_polling():
-    
-    bot.__stop_polling.clear()
-    
-    app.logger.info(f'BOT resume_bot_polling')    
-    
-    
-# @bot.message_handler(commands=['start', 'help'])
 
 @bot.message_handler(commands=['start'])
 def send_welcome(message):

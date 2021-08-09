@@ -141,6 +141,27 @@ def get_tasks():
     else:
     
         return render_template("tasks.html", tasks=runner.tasks, logs=runner.logs)
+        
+
+@app.route('/set')
+def set_application_parameter():
+    
+    telegram_bot_state = request.args.get('bot')
+    
+    if telegram_bot_state == 'start':
+        
+        
+        
+        task_id = int(task_id_str)
+        
+        task = runner.tasks[task_id]
+        logs = runner.logs[task_id]
+    
+        return render_template("task.html", task_id=task_id, task=task, logs=logs)
+        
+    else:
+    
+        return render_template("tasks.html", tasks=runner.tasks, logs=runner.logs)
     
 
 @app.before_request

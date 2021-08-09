@@ -29,20 +29,23 @@ if environ.get('WERKZEUG_RUN_MAIN') == 'true':
     app.config.from_object(config.Config)
     
     from core import runner
-    from core import telegram
     
     runner.start_task_worker_processes()
     
-    telegram.start_bot_polling()
     
-    app.logger.info(f'e(): {e()}')
     
-    sleep(5)
+    # from core import telegram
     
-    telegram.bot.stop_bot()
+    # telegram.start_bot_polling()
     
-    app.logger.info(f'Stop')
-    app.logger.info(f'e(): {e()}')
+    # app.logger.info(f'e(): {e()}')
+    
+    # sleep(5)
+    
+    # telegram.bot.stop_bot()
+    
+    # app.logger.info(f'Stop')
+    # app.logger.info(f'e(): {e()}')
     
     # sleep(5)
     
