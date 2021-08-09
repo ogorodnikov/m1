@@ -1,9 +1,9 @@
 import telebot
 import traceback
 
-from threading import Thread
+from threading import Thread, enumerate as e
 
-from core import app
+from core import app, models
 
 
 def start_bot():
@@ -23,6 +23,8 @@ def start_bot():
             app.logger.info(f'BOT started telegram bot: {bot}')
             app.logger.info(f'BOT polling')
             app.logger.info(f'BOT app.config TELEGRAM_BOT: {app.config["TELEGRAM_BOT"]}')
+            
+            app.logger.info(f'BOT e: {e()}')
             
             response = "Telegram bot started"
             
@@ -57,18 +59,20 @@ def stop_bot():
             
             app.logger.info(f'BOT stop_polling: {bot}')
             
-            bot.log_out()
+            # bot.log_out()
             
-            app.logger.info(f'BOT log_out: {bot}')
+            # app.logger.info(f'BOT log_out: {bot}')
     
-            # bot = None
+            bot = None
             
-            # app.logger.info(f'BOT None: {bot}')
+            app.logger.info(f'BOT None: {bot}')
             
             
             app.config['TELEGRAM_BOT'] = None
             
             app.logger.info(f'BOT app.config TELEGRAM_BOT: {app.config["TELEGRAM_BOT"]}')
+            
+            app.logger.info(f'BOT e: {e()}')
             
             response = 'Telegram bot stopped'
             
