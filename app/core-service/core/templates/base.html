@@ -95,7 +95,7 @@
             
           {% endif %}
           
-          {% if config['TELEGRAM_BOT_STATE'] == 'Started' %}
+          {% if config['TELEGRAM_BOT'] %}
             
             <li class="nav-item">
               <a class="nav-link" href="{{ url_for('set_application_parameter', bot="stop") }}">Stop Bot</a>
