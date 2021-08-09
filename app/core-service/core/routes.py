@@ -1,4 +1,4 @@
-from core import app, models, users, fb, runner
+from core import app, models, users, fb, runner, telegram
 
 from flask import render_template, redirect, url_for, flash, request, session
 
@@ -150,18 +150,17 @@ def set_application_parameter():
     
     if telegram_bot_state == 'start':
         
+        telegram.start_bot()
         
+        flash("Telegram bot started", category='info')
         
-        task_id = int(task_id_str)
+    if telegram_bot_state == 'stop':
         
-        task = runner.tasks[task_id]
-        logs = runner.logs[task_id]
-    
-        return render_template("task.html", task_id=task_id, task=task, logs=logs)
+        telegram.stop_bot()
         
-    else:
-    
-        return render_template("tasks.html", tasks=runner.tasks, logs=runner.logs)
+        flash("Telegram bot stopped", category='warning')
+        
+    return redirect(request.referrer)
     
 
 @app.before_request
