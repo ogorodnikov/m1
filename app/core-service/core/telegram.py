@@ -1,11 +1,15 @@
 import telebot
 
+import traceback
+
 from threading import Thread, enumerate as e
 
-from core import app, models
+from core import app
 
 
 bot = None
+
+app.config['TELEGRAM_BOT_STATE'] = 'None'
 
 
 def start_bot():
@@ -14,22 +18,39 @@ def start_bot():
     
     if not bot:
         
-        try:
+        # try:
     
-            telegram_token = app.config.get('TELEGRAM_TOKEN')  
-                
-            bot = telebot.TeleBot(telegram_token, threaded=False)
+        telegram_token = app.config.get('TELEGRAM_TOKEN')  
             
-            register_handlers(bot)
+        bot = telebot.TeleBot(telegram_token, threaded=False)
+        
+        register_handlers(bot)
+        
+        response = "Telegram bot started"
+        
+        app.config['TELEGRAM_BOT_STATE'] = 'Started'
+        
+        app.logger.info(f'BOT started telegram bot: {bot}')
+        app.logger.info(f'BOT polling')
+        
+        bot.polling()
             
-            bot.infinity_polling()
-            
-            app.logger.info(f'BOT started telegram bot: {bot}')
-            app.logger.info(f'BOT infinity_polling')
 
-        except Exception as e:
+
+    #     except Exception as exception:
             
-            print(e)
+    #         error_message = traceback.format_exc()
+            
+    #         response = error_message
+            
+    #         app.logger.info(f'BOT error_message {error_message}')
+            
+    # else:
+        
+    #     response = "Bot already running"
+        
+    return response
+                
     
     
 def stop_bot():
@@ -37,18 +58,38 @@ def stop_bot():
     global bot
     
     if bot:
+        
+        try:
 
-        bot.stop_bot()
+            bot.stop_polling()
+            
+            app.logger.info(f'BOT stop_polling: {bot}')
+            
+            bot.log_out()
+            
+            app.logger.info(f'BOT log_out: {bot}')
+    
+            bot = None
+            
+            app.logger.info(f'BOT None: {bot}')
+            
+            app.config['TELEGRAM_BOT_STATE'] = 'Stopped'
+            
+            response = 'Telegram bot stopped'
+            
+        except Exception as exception:
+            
+            error_message = traceback.format_exc()
+            
+            response = error_message
+            
+            app.logger.info(f'BOT error_message {error_message}')
+            
+    else:
         
-        app.logger.info(f'BOT stop_bot: {bot}')
+        response = "Bot is not running" 
         
-        bot.log_out()
-        
-        app.logger.info(f'BOT log_out: {bot}')
-
-        bot = None
-        
-        app.logger.info(f'BOT None: {bot}')
+    return response
 
 
 def register_handlers(bot):

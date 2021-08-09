@@ -51,12 +51,6 @@
           <li class="nav-item">
             <a class="nav-link" href="{{ url_for('get_tasks') }}">Tasks</a>
           </li>
-          <li class="nav-item">
-            <a class="nav-link" href="{{ url_for('set_application_parameter', bot="start") }}">Start Bot</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="{{ url_for('set_application_parameter', bot="stop") }}">Stop Bot</a>
-          </li>
         </ul>
         
         
@@ -101,6 +95,20 @@
             
           {% endif %}
           
+          {% if config['TELEGRAM_BOT_STATE'] == 'Started' %}
+            
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('set_application_parameter', bot="stop") }}">Stop Bot</a>
+            </li>
+            
+          {% else %}
+            
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('set_application_parameter', bot="start") }}">Start Bot</a>
+            </li>
+            
+          {% endif %}
+          
           <li class="nav-item">
             <a class="nav-link" href="{{ 'https://ogoro.me' }}"
              target="_blank" rel="noopener noreferrer">About</a>
@@ -111,7 +119,6 @@
           </li>
           
         </ul>
-          
       </div>
     </nav>
     

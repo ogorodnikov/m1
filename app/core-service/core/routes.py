@@ -150,15 +150,15 @@ def set_application_parameter():
     
     if telegram_bot_state == 'start':
         
-        telegram.start_bot()
+        response = telegram.start_bot()
         
-        flash("Telegram bot started", category='info')
+        flash(f"{response}", category='info')
         
     if telegram_bot_state == 'stop':
         
-        telegram.stop_bot()
+        response = telegram.stop_bot()
         
-        flash("Telegram bot stopped", category='warning')
+        flash(f"{response}", category='warning')
         
     return redirect(request.referrer)
     
