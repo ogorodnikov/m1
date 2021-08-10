@@ -1,4 +1,4 @@
-import telebot
+import telebot, json
 
 from core import app, models
 
@@ -81,7 +81,10 @@ class Bot(telebot.TeleBot):
         
         @self.message_handler(func=lambda message: True)
         def echo_all(message):
-        	self.reply_to(message, message.text)
+            
+            app.logger.info(f'BOT message: {message}')
+            
+            self.reply_to(message, message.text)
         	
         	
         
