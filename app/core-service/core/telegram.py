@@ -84,6 +84,8 @@ class Bot(telebot.TeleBot):
             
             app.logger.info(f'BOT message: {message}')
             
+            
+            
             self.reply_to(message, message.text)
         	
         	
