@@ -28,7 +28,8 @@ if environ.get('WERKZEUG_RUN_MAIN') == 'true':
     
     runner.start_task_worker_processes()
     
-    telegram.Bot()
+    bot = telegram.Bot()
+    bot.start()
     
 
 

@@ -160,6 +160,14 @@ def set_application_parameter():
     return redirect(request.referrer)
     
 
+# @app.route('/webhook', methods=['GET', 'POST'])
+# def telegram_bot_webhook():
+    
+#     print("telegram_bot_webhook")
+    
+#     return ''
+    
+
 @app.before_request
 def show_task_results():
     
