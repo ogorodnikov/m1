@@ -7,6 +7,9 @@ from threading import Thread, enumerate as enumerate_threads
 from core import app, models
 
 
+BUBO_CELEBRATE_STICKER_FILE_ID = "CAACAgIAAxkBAAIF6GES9nEyKUKbGVt4XFzpjOeYv09dAAIUAAPp2BMo6LwZ1x6IhdYgBA"
+
+
 class Bot(telebot.TeleBot):
     
     def __init__(self, *args, **kwargs):
@@ -60,7 +63,9 @@ class Bot(telebot.TeleBot):
             app.logger.info(f'BOT bot_name {bot_name}')
             app.logger.info(f'BOT user_name {user_name}')
         
-            self.reply_to(message, f"{bot_name} welcomes you, {user_name}!")
+            self.send_message(message.chat.id, f"{bot_name} welcomes you, {user_name}!")
+            
+            self.send_sticker(message.chat.id, BUBO_CELEBRATE_STICKER_FILE_ID)
             
             
         @self.message_handler(commands=['algorithms'])
