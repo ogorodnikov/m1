@@ -1,6 +1,7 @@
 import json, jsonpickle
 
-import telebot
+from telebot import TeleBot
+from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 from threading import Thread, enumerate as enumerate_threads
 
@@ -10,7 +11,7 @@ from core import app, models
 BUBO_CELEBRATE_STICKER_FILE_ID = "CAACAgIAAxkBAAIF6GES9nEyKUKbGVt4XFzpjOeYv09dAAIUAAPp2BMo6LwZ1x6IhdYgBA"
 
 
-class Bot(telebot.TeleBot):
+class Bot(TeleBot):
     
     def __init__(self, *args, **kwargs):
         
@@ -52,7 +53,7 @@ class Bot(telebot.TeleBot):
     def register_handlers(self):
 
         @self.message_handler(commands=['start'])
-        def send_welcome(message):
+        def welcome(message):
             
             bot_data = self.get_me()
             bot_name = bot_data.first_name
@@ -69,29 +70,67 @@ class Bot(telebot.TeleBot):
             
             
         @self.message_handler(commands=['algorithms'])
-        def send_welcome(message):
+        def get_algorithms(message):
             
             algorithms = models.get_all_algorithms()
-            
-            app.logger.info(f'BOT /algorithms')
-            app.logger.info(f'BOT algorithms {algorithms}')
 
             self.send_message(message.chat.id, f"Algorithms:", disable_notification=True)
+            
                 
-            for i, algorithm in enumerate(algorithms, 1):
+            for algorithm_index, algorithm in enumerate(algorithms, 1):
                 
+                algorithm_id = algorithm['id']
                 name = algorithm['name']
                 description = algorithm['description']
                 link = algorithm['link']
                 
-                self.send_message(message.chat.id, f"{i}) {name}", disable_notification=True)
-                self.send_message(message.chat.id, f"{description}", disable_notification=True)
+                open_callback = f"open_{algorithm_id}"
+                like_callback = f"like_{algorithm_id}"
                 
-                # self.send_message(message.chat.id, f"{link}")
+                markup = InlineKeyboardMarkup()
+                markup.row_width = 3
                 
-                # self.reply_to(message, f"{description}")
-                # self.reply_to(message, f"{link}")
+                markup.add(
+                    InlineKeyboardButton("Open 🌻", callback_data=open_callback),
+                    InlineKeyboardButton("Like 👍", callback_data=like_callback),
+                    InlineKeyboardButton("Wiki 🌌", url=link)
+                )
+                       
                 
+                self.send_message(message.chat.id, f"{algorithm_index}) {name}", disable_notification=True)
+                self.send_message(message.chat.id, f"{description}", disable_notification=True, reply_markup=markup)
+                               
+            app.logger.info(f'BOT /algorithms')
+
+            
+        
+        @self.callback_query_handler(func=lambda call: True)
+        def callback_handler(callback):
+
+            callback_query_id = callback.id                
+            callback_data = callback.data
+
+            app.logger.info(f'BOT callback_query_id {callback_query_id}')            
+            app.logger.info(f'BOT callback_data {callback_data}')
+
+            
+            self.answer_callback_query(
+                callback_query_id=callback_query_id, 
+                text="answer", 
+                show_alert=True, 
+                # url: ,
+                )
+            
+            # app.logger.info(f'BOT data {data}')
+
+            corrected_callback = jsonpickle.encode(callback)
+
+            callback_json = json.loads(corrected_callback)
+            
+            pretty_callback = json.dumps(callback_json, indent=4)
+            
+            app.logger.info(f'BOT pretty_callback: {pretty_callback}')
+
                 
         @self.message_handler(content_types=['sticker'])
         def sticker_handler(message):
