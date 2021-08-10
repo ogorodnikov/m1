@@ -6,10 +6,6 @@ from logging.config import dictConfig
 
 from core import config
 
-from threading import enumerate as e
-
-
-from time import sleep
 
 
 dictConfig(config.LOGGING_CONFIG)
@@ -28,9 +24,11 @@ if environ.get('WERKZEUG_RUN_MAIN') == 'true':
 
     app.config.from_object(config.Config)
     
-    from core import runner
+    from core import runner, telegram
     
     runner.start_task_worker_processes()
+    
+    telegram.Bot()
     
 
 

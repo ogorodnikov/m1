@@ -146,19 +146,16 @@ def get_tasks():
 @app.route('/set')
 def set_application_parameter():
     
-    telegram_bot_state = request.args.get('bot')
+    telegram_bot = app.config.get('TELEGRAM_BOT')
+    telegram_bot_action = request.args.get('bot')
     
-    if telegram_bot_state == 'start':
-        
-        response = telegram.start_bot()
-        
-        flash(f"{response}", category='info')
-        
-    if telegram_bot_state == 'stop':
-        
-        response = telegram.stop_bot()
-        
-        flash(f"{response}", category='warning')
+    if telegram_bot_action == 'start':
+        telegram_bot.start()
+        flash("Telegram bot started", category='info')
+
+    if telegram_bot_action == 'stop':
+        response = telegram_bot.stop()
+        flash("Telegram bot stopped", category='warning')
         
     return redirect(request.referrer)
     
