@@ -138,9 +138,9 @@ class Bot(TeleBot):
             parameter_names = (parameter.get('name') for parameter in algorithm_parameters)
             parameter_names_string = ', '.join(parameter_names)
             
-            text = (f"{algorithm_name}\n\n"
+            text = (f"<b>{algorithm_name}</b>\n\n"
                     f"{algorithm_description}\n\n"
-                    f"Parameters: {parameter_names_string}")
+                    f"<b>Parameters:</b> {parameter_names_string}")
             
             markup = InlineKeyboardMarkup()
                 
@@ -193,7 +193,7 @@ class Bot(TeleBot):
         
     
     def collect_parameters(self, message, **kwargs):
-        
+
         chat_id = message.chat.id
         
         parameters = kwargs.get('parameters')
@@ -242,36 +242,28 @@ class Bot(TeleBot):
             run_values = {parameter['name']: parameter['value'] 
                           for parameter in parameters}
             
-            app.logger.info(f'BOT run_values: {run_values}')
-            
             run_values['run_mode'] = 'classical'
             
             task_id = runner.run_algorithm(algorithm_id, run_values)
-                
-            app.logger.info(f'BOT task_id: {task_id}')  
             
-
-        
-    
-    # def process_parameter(self, *args, **kwargs):
-
-    #     name = kwargs.get('name')
-    #     chat_id = kwargs.get('chat_identifier')
-    #     parameters = kwargs.get('parameters')
-    #     default_value = kwargs.get('default_value')
-        
-    #     message = kwargs.get('message')
-        
-    #     message_response = self.send_message(chat_id, f"Processing {name}")
-        
-    #     self.register_next_step_handler(message_response, 
-    #                                     self.collect_parameters,
-    #                                     chat_id=chat_id,
-    #                                     parameters=parameters)        
-        
-        
-        
-        
+            app.logger.info(f'BOT run_values: {run_values}')
+            app.logger.info(f'BOT task_id: {task_id}')
+            
+            # self.send_message(chat_id, f"Task <a href='/tasks?task_id={task_id}' " + \
+            #                           f"target='_blank' rel='noopener noreferrer'>" + \
+            #                           f"#{task_id}</a> " + \
+            #                           f"started: algorithm={algorithm_id}, run_values={dict(run_values)}",
+            #                   parse_mode='HTML')
+            
+            # self.send_message(chat_id, f"<a href='https://google.com'>Google</a>")
+                
+            # self.send_message(chat_id, f"<a href='https://t.me/ogoro_bot?start'>Start</a>")
+            
+            # self.send_message(chat_id, f"<pre><code class='language-python'>Example Code</code></pre>")
+                
+            self.send_message(chat_id, f"Task <a href='https://m1.ogoro.me/tasks?task_id={task_id}'>#{task_id}</a> " + \
+                                       f"started: algorithm={algorithm_id}, run_values={run_values}", parse_mode='HTML')
+                                       
 
     def sticker_handler(self, message):
         
