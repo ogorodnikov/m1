@@ -53,7 +53,7 @@ class Bot(TeleBot):
     def register_handlers(self):
 
         @self.message_handler(commands=['start'])
-        def welcome(message):
+        def start_command_handler(message):
             
             bot_data = self.get_me()
             bot_name = bot_data.first_name
@@ -70,7 +70,7 @@ class Bot(TeleBot):
             
             
         @self.message_handler(commands=['algorithms'])
-        def get_algorithms(message):
+        def algorithms_command_handler(message):
             
             algorithms = models.get_all_algorithms()
 
@@ -137,17 +137,6 @@ class Bot(TeleBot):
                         f"{algorithm_description}\n\n"
                         f"Parameters: {parameter_names_string}")
                 
-                # self.send_message(callback.message.chat.id, f"{algorithm_name}")
-                # self.send_message(callback.message.chat.id, f"{algorithm_description}")
-                # self.send_message(callback.message.chat.id, f"Parameters:")
-                
-                # for parameter in algorithm_parameters:
-                    
-                #     parameter_name = parameter.get('name')
-                #     parameter_default_value = parameter.get('default_value')
-                    
-                #     self.send_message(callback.message.chat.id, f"{parameter_name}: {parameter_default_value}")
-                
                 markup = InlineKeyboardMarkup()
                     
                 if algorithm_type == 'quantum':
@@ -158,8 +147,6 @@ class Bot(TeleBot):
                                InlineKeyboardButton("Run on Quantum Device 🍒", callback_data=run_on_quantum_device_callback),
                                InlineKeyboardButton("Like 👍", callback_data=like_callback))
 
-                    # self.send_message(callback.message.chat.id, f"Actions:", disable_notification=True, reply_markup=markup)
-
                 if algorithm_type == 'classical':
                 
                     markup.row_width = 2
@@ -167,9 +154,9 @@ class Bot(TeleBot):
                     markup.add(InlineKeyboardButton("Run 🎺", callback_data=run_classical_callback),
                                InlineKeyboardButton("Like 👍", callback_data=like_callback))
 
-                    # self.send_message(callback.message.chat.id, f"Actions:", disable_notification=True, reply_markup=markup)
-                    
-                self.send_message(callback.message.chat.id, f"{text}", reply_markup=markup)
+                msg = self.send_message(callback.message.chat.id, f"{text}", reply_markup=markup)
+                
+                app.logger.info(f'BOT msg: {msg}')
 
                 flash_text = "Opening..."
                 
@@ -178,26 +165,24 @@ class Bot(TeleBot):
                 
                 run_values = {'run_mode': 'classical'}
                 
-                force_reply_markup = ForceReply()
-                
                 for parameter in algorithm_parameters:
                     
                     parameter_name = parameter.get('name')
                     parameter_default_value = parameter.get('default_value')
                     
-                    self.send_message(callback.message.chat.id, 
-                                      f"{parameter_name}:",
-                                      reply_markup=force_reply_markup)
+                    message_response = self.send_message(callback.message.chat.id, 
+                                                         f"{parameter_name}:")
+                                      
+                    self.register_next_step_handler(message_response, 
+                                                    self.process_parameter,
+                                                    chat_identifier=callback.message.chat.id,
+                                                    name=parameter_name,
+                                                    default_value=parameter_default_value)
                     
                     run_values[parameter_name] = parameter_default_value
     
                 task_id = runner.run_algorithm(algorithm_id, run_values)
 
-                # flash_text = f"Task <a href='/tasks?task_id={task_id}' " + \
-                #     f"target='_blank' rel='noopener noreferrer'>" + \
-                #     f"#{task_id}</a> " + \
-                #     f"started: algorithm={algorithm_id}, run_values={dict(run_values)}"
-                
                 flash_text = "Running!"
                     
                 app.logger.info(f'BOT run_values: {run_values}')    
@@ -217,20 +202,12 @@ class Bot(TeleBot):
             app.logger.info(f'BOT callback_data: {callback_data}')
             
             
-            # app.logger.info(f'BOT data {callback_data}')
-            # corrected_callback = jsonpickle.encode(callback)
-            # callback_json = json.loads(corrected_callback)
-            # pretty_callback = json.dumps(callback_json, indent=4)
-            # app.logger.info(f'BOT pretty_callback: {pretty_callback}')
+
+
 
                 
         @self.message_handler(content_types=['sticker'])
         def sticker_handler(message):
-            
-            # corrected_message = jsonpickle.encode(message)
-            # message_json = json.loads(corrected_message)
-            # pretty_message = json.dumps(message_json, indent=4)
-            # app.logger.info(f'BOT pretty_message: {pretty_message}')
             
             file_id = message.sticker.file_id
             
@@ -247,4 +224,10 @@ class Bot(TeleBot):
             self.reply_to(message, message.text)
         	
         	
+    def process_parameter(self, *args, **kwargs):
         
+        chat_id = kwargs.get('chat_identifier')
+        name = kwargs.get('name')
+        default_value = kwargs.get('default_value')
+        
+        self.send_message(chat_id, f"Processing {name}: {default_value}")
