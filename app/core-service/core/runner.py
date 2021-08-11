@@ -145,7 +145,7 @@ def task_runner(task_id, algorithm_id, run_values_multidict):
     
     log_callback = partial(task_log, task_id)
     
-    if run_mode == 'classic':
+    if run_mode == 'classical':
         
         return runner_function(run_values, log_callback)
     

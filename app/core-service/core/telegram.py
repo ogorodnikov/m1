@@ -5,7 +5,7 @@ from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 from threading import Thread, enumerate as enumerate_threads
 
-from core import app, models
+from core import app, models, runner
 
 
 BUBO_CELEBRATE_STICKER_FILE_ID = "CAACAgIAAxkBAAIF6GES9nEyKUKbGVt4XFzpjOeYv09dAAIUAAPp2BMo6LwZ1x6IhdYgBA"
@@ -90,52 +90,45 @@ class Bot(TeleBot):
                 markup = InlineKeyboardMarkup()
                 markup.row_width = 3
                 
-                markup.add(
-                    InlineKeyboardButton("Open 🌻", callback_data=open_callback),
-                    InlineKeyboardButton("Like 👍", callback_data=like_callback),
-                    InlineKeyboardButton("Wiki 🌌", url=link)
-                )
-                       
+                markup.add(InlineKeyboardButton("Open 🌻", callback_data=open_callback),
+                           InlineKeyboardButton("Like 👍", callback_data=like_callback),
+                           InlineKeyboardButton("Wiki 🌌", url=link))
                 
                 self.send_message(message.chat.id, f"{algorithm_index}) {name}", disable_notification=True)
                 self.send_message(message.chat.id, f"{description}", disable_notification=True, reply_markup=markup)
                                
             app.logger.info(f'BOT /algorithms')
-
             
         
         @self.callback_query_handler(func=lambda call: True)
         def callback_handler(callback):
 
-            callback_query_id = callback.id                
             callback_data = callback.data
-
-            app.logger.info(f'BOT callback_query_id: {callback_query_id}')            
-            app.logger.info(f'BOT callback_data: {callback_data}')
-
+            callback_query_id = callback.id                
+            callback_parts = callback_data.rsplit('_', maxsplit=1)
+            
+            algorithm_id = callback_parts[-1]
+            algorithm = models.get_algorithm(algorithm_id)
+            
+            algorithm_name = algorithm.get('name')
+            algorithm_type = algorithm.get('type')
+            algorithm_parameters = algorithm.get('parameters')
+            algorithm_description = algorithm.get('description')
+            
+            like_callback = f"like_{algorithm_id}"
+            run_classical_callback = f"run_classical_{algorithm_id}"
+            run_on_simulator_callback = f"run_on_simulator_{algorithm_id}"
+            run_on_quantum_device_callback = f"run_on_quantum_device_{algorithm_id}"
+            
             
             if callback_data.startswith("like_"):
                 
-                prefix_len = len('like_')
-                
-                algorithm_id = callback_data[prefix_len:]
-                
                 models.like_algorithm(algorithm_id)
 
-                answer = "Thank you!)"
+                flash_text = "Thank you!)"
                 
             
             if callback_data.startswith("open_"):
-                
-                prefix_len = len('open_')
-                
-                algorithm_id = callback_data[prefix_len:]
-                
-                algorithm = models.get_algorithm(algorithm_id)
-                
-                algorithm_name = algorithm.get('name')
-                algorithm_description = algorithm.get('description')
-                algorithm_parameters = algorithm.get('parameters')
                 
                 self.send_message(callback.message.chat.id, f"{algorithm_name}")
                 self.send_message(callback.message.chat.id, f"{algorithm_description}")
@@ -147,21 +140,72 @@ class Bot(TeleBot):
                     parameter_default_value = parameter.get('default_value')
                     
                     self.send_message(callback.message.chat.id, f"{parameter_name}: {parameter_default_value}")
+                    
+                if algorithm_type == 'quantum':
+                
+                    markup = InlineKeyboardMarkup()
+                    markup.row_width = 3
+                    
+                    markup.add(InlineKeyboardButton("Run on Simulator 🎸", callback_data=run_on_simulator_callback),
+                               InlineKeyboardButton("Run on Quantum Device 🍒", callback_data=run_on_quantum_device_callback),
+                               InlineKeyboardButton("Like 👍", callback_data=like_callback))
 
-                answer = "Opening..."
+                    self.send_message(callback.message.chat.id, f"Message", disable_notification=True, reply_markup=markup)
+
+                if algorithm_type == 'classical':
+                
+                    markup = InlineKeyboardMarkup()
+                    markup.row_width = 2
+                    
+                    markup.add(InlineKeyboardButton("Run 🎺", callback_data=run_classical_callback),
+                               InlineKeyboardButton("Like 👍", callback_data=like_callback))
+
+                    self.send_message(callback.message.chat.id, f"Message", disable_notification=True, reply_markup=markup)               
+
+                flash_text = "Opening..."
                 
             
-            self.answer_callback_query(callback_query_id=callback_query_id, 
-                                       text=answer)
-            
-            # app.logger.info(f'BOT data {data}')
+            if callback_data.startswith("run_classical_"):
+                
+                run_values = {'run_mode': 'classical'}
+                
+                for parameter in algorithm_parameters:
+                    
+                    parameter_name = parameter.get('name')
+                    parameter_default_value = parameter.get('default_value')
+                    
+                    self.send_message(callback.message.chat.id, f"{parameter_name}: {parameter_default_value}")
+                    
+                    run_values[parameter_name] = parameter_default_value
+    
+                task_id = runner.run_algorithm(algorithm_id, run_values)
 
-            corrected_callback = jsonpickle.encode(callback)
+                flash_text = f"Task <a href='/tasks?task_id={task_id}' " + \
+                    f"target='_blank' rel='noopener noreferrer'>" + \
+                    f"#{task_id}</a> " + \
+                    f"started: algorithm={algorithm_id}, run_values={dict(run_values)}"
+                    
+                app.logger.info(f'BOT run_values: {run_values}')    
 
-            callback_json = json.loads(corrected_callback)
+                
+            try:
+                
+                self.answer_callback_query(callback_query_id=callback_query_id, 
+                                           text=flash_text)
+                                           
+            except Exception as exception:
+                
+                app.logger.info(f'BOT exception: {exception}')
+                
+                
+            app.logger.info(f'BOT callback_query_id: {callback_query_id}')            
+            app.logger.info(f'BOT callback_data: {callback_data}')
             
-            pretty_callback = json.dumps(callback_json, indent=4)
             
+            # app.logger.info(f'BOT data {callback_data}')
+            # corrected_callback = jsonpickle.encode(callback)
+            # callback_json = json.loads(corrected_callback)
+            # pretty_callback = json.dumps(callback_json, indent=4)
             # app.logger.info(f'BOT pretty_callback: {pretty_callback}')
 
                 
