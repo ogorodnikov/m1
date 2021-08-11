@@ -17,7 +17,8 @@ class Bot(TeleBot):
         
         telegram_token = app.config.get('TELEGRAM_TOKEN')
         
-        super().__init__(telegram_token, *args, threaded=False, **kwargs)
+        super().__init__(telegram_token, *args, 
+                         parse_mode='HTML', threaded=False, **kwargs)
         
         self.register_handlers()
 
@@ -104,7 +105,6 @@ class Bot(TeleBot):
                            
         app.logger.info(f'BOT /algorithms')
             
-        
     
     def callback_handler(self, callback):
 
@@ -159,39 +159,19 @@ class Bot(TeleBot):
                 markup.add(InlineKeyboardButton("Run 🎺", callback_data=run_classical_callback),
                            InlineKeyboardButton("Like 👍", callback_data=like_callback))
 
-            msg = self.send_message(callback.message.chat.id, f"{text}", reply_markup=markup)
-            
-            app.logger.info(f'BOT msg: {msg}')
+            self.send_message(callback.message.chat.id, f"{text}", reply_markup=markup)
 
             flash_text = "Opening..."
             
         
         if callback_data.startswith("run_classical_"):
-            
-            run_values = {'run_mode': 'classical'}
-            
-            for parameter in algorithm_parameters:
-                
-                parameter_name = parameter.get('name')
-                parameter_default_value = parameter.get('default_value')
-                
-                message_response = self.send_message(callback.message.chat.id, 
-                                                     f"{parameter_name}:")
-                                  
-                self.register_next_step_handler(message_response, 
-                                                self.process_parameter,
-                                                chat_identifier=callback.message.chat.id,
-                                                name=parameter_name,
-                                                default_value=parameter_default_value)
-                
-                run_values[parameter_name] = parameter_default_value
 
-            task_id = runner.run_algorithm(algorithm_id, run_values)
-
-            flash_text = "Running!"
-                
-            app.logger.info(f'BOT run_values: {run_values}')    
-
+            self.collect_parameters(parameters=algorithm_parameters,
+                                    message=callback.message,
+                                    algorithm_id=algorithm_id,
+                                    run_mode='classical')
+             
+            flash_text = "Please enter parameters"
             
         try:
             
@@ -206,14 +186,91 @@ class Bot(TeleBot):
         app.logger.info(f'BOT callback_query_id: {callback_query_id}')            
         app.logger.info(f'BOT callback_data: {callback_data}')
         
+        
     
-    def process_parameter(self, *args, **kwargs):
+    ###   COLLECT   ###
+    
         
-        chat_id = kwargs.get('chat_identifier')
-        name = kwargs.get('name')
-        default_value = kwargs.get('default_value')
+    
+    def collect_parameters(self, message, **kwargs):
         
-        self.send_message(chat_id, f"Processing {name}: {default_value}")
+        chat_id = message.chat.id
+        
+        parameters = kwargs.get('parameters')
+        collected_name = kwargs.get('collected_name')
+        
+        algorithm_id = kwargs.get('algorithm_id')
+
+        app.logger.info(f'BOT chat_id: {chat_id}')
+        app.logger.info(f'BOT message: {message}')
+        app.logger.info(f'BOT message.text: {message.text}')
+        app.logger.info(f'BOT parameters: {parameters}')
+        app.logger.info(f'BOT collected_name: {collected_name}')
+        app.logger.info(f'BOT algorithm_id: {algorithm_id}')
+        
+        if collected_name:
+            
+            parameter = next(parameter for parameter in parameters
+                             if parameter['name'] == collected_name)
+                             
+            parameter['value'] = message.text
+            
+        not_collected_parameters = (parameter for parameter in parameters
+                                    if 'value' not in parameter)
+        
+        next_parameter = next(not_collected_parameters, None)
+
+        app.logger.info(f'BOT next_parameter: {next_parameter}')
+        
+        
+        if next_parameter:
+        
+            name = next_parameter.get('name')
+            default_value = next_parameter.get('default_value')
+            
+            message_response = self.send_message(chat_id, f"Please enter {name}:")
+                              
+            self.register_next_step_handler(message_response, 
+                                            self.collect_parameters,
+                                            chat_identifier=chat_id,
+                                            collected_name=name,
+                                            algorithm_id=algorithm_id,
+                                            parameters=parameters)
+                                            
+        else:
+            
+            run_values = {parameter['name']: parameter['value'] 
+                          for parameter in parameters}
+            
+            app.logger.info(f'BOT run_values: {run_values}')
+            
+            run_values['run_mode'] = 'classical'
+            
+            task_id = runner.run_algorithm(algorithm_id, run_values)
+                
+            app.logger.info(f'BOT task_id: {task_id}')  
+            
+
+        
+    
+    # def process_parameter(self, *args, **kwargs):
+
+    #     name = kwargs.get('name')
+    #     chat_id = kwargs.get('chat_identifier')
+    #     parameters = kwargs.get('parameters')
+    #     default_value = kwargs.get('default_value')
+        
+    #     message = kwargs.get('message')
+        
+    #     message_response = self.send_message(chat_id, f"Processing {name}")
+        
+    #     self.register_next_step_handler(message_response, 
+    #                                     self.collect_parameters,
+    #                                     chat_id=chat_id,
+    #                                     parameters=parameters)        
+        
+        
+        
         
 
     def sticker_handler(self, message):
