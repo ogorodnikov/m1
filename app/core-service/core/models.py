@@ -90,7 +90,7 @@ def add_test_data():
               'type': 'quantum',
               'description': 'Finds period of black-box function.\n' +
                              'Classical algorith complexity is O(2^N) while quantum is O(N).',
-              'link': 'https://en.wikipedia.org/wiki/Deutsch%E2%80%93Jozsa_algorithm',
+              'link': 'https://en.wikipedia.org/wiki/Simon%27s_problem',
               'image': b'1010',
               'parameters': [{'name': 'secret', 'default_value': '1010'}],
               'likes': 781,

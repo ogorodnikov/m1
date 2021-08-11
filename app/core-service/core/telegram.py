@@ -110,16 +110,49 @@ class Bot(TeleBot):
             callback_query_id = callback.id                
             callback_data = callback.data
 
-            app.logger.info(f'BOT callback_query_id {callback_query_id}')            
-            app.logger.info(f'BOT callback_data {callback_data}')
+            app.logger.info(f'BOT callback_query_id: {callback_query_id}')            
+            app.logger.info(f'BOT callback_data: {callback_data}')
 
             
-            self.answer_callback_query(
-                callback_query_id=callback_query_id, 
-                text="answer", 
-                show_alert=True, 
-                # url: ,
-                )
+            if callback_data.startswith("like_"):
+                
+                prefix_len = len('like_')
+                
+                algorithm_id = callback_data[prefix_len:]
+                
+                models.like_algorithm(algorithm_id)
+
+                answer = "Thank you!)"
+                
+            
+            if callback_data.startswith("open_"):
+                
+                prefix_len = len('open_')
+                
+                algorithm_id = callback_data[prefix_len:]
+                
+                algorithm = models.get_algorithm(algorithm_id)
+                
+                algorithm_name = algorithm.get('name')
+                algorithm_description = algorithm.get('description')
+                algorithm_parameters = algorithm.get('parameters')
+                
+                self.send_message(callback.message.chat.id, f"{algorithm_name}")
+                self.send_message(callback.message.chat.id, f"{algorithm_description}")
+                self.send_message(callback.message.chat.id, f"Parameters:")
+                
+                for parameter in algorithm_parameters:
+                    
+                    parameter_name = parameter.get('name')
+                    parameter_default_value = parameter.get('default_value')
+                    
+                    self.send_message(callback.message.chat.id, f"{parameter_name}: {parameter_default_value}")
+
+                answer = "Opening..."
+                
+            
+            self.answer_callback_query(callback_query_id=callback_query_id, 
+                                       text=answer)
             
             # app.logger.info(f'BOT data {data}')
 
@@ -129,19 +162,16 @@ class Bot(TeleBot):
             
             pretty_callback = json.dumps(callback_json, indent=4)
             
-            app.logger.info(f'BOT pretty_callback: {pretty_callback}')
+            # app.logger.info(f'BOT pretty_callback: {pretty_callback}')
 
                 
         @self.message_handler(content_types=['sticker'])
         def sticker_handler(message):
             
-            corrected_message = jsonpickle.encode(message)
-
-            message_json = json.loads(corrected_message)
-            
-            pretty_message = json.dumps(message_json, indent=4)
-            
-            app.logger.info(f'BOT pretty_message: {pretty_message}')
+            # corrected_message = jsonpickle.encode(message)
+            # message_json = json.loads(corrected_message)
+            # pretty_message = json.dumps(message_json, indent=4)
+            # app.logger.info(f'BOT pretty_message: {pretty_message}')
             
             file_id = message.sticker.file_id
             
@@ -153,19 +183,8 @@ class Bot(TeleBot):
         @self.message_handler(func=lambda message: True)
         def echo_all(message):
             
-            app.logger.info(f'BOT message: {message}')
+            app.logger.info(f'BOT message')
 
-            # json_object = json.loads(jsonpickle.encode(message))
-                        
-            
-            # obj = jsonpickle.encode(message)
-            
-            # print(type(obj))
-            
-            # print()
-            
-            # print(json.dumps(json_object, indent=2))
-            
             self.reply_to(message, message.text)
         	
         	
