@@ -104,7 +104,7 @@ def run_algorithm(algorithm_id):
     
     task_id = runner.run_algorithm(algorithm_id, run_values)
     
-    task_url = "/tasks?task_id={task_id}"
+    task_url = f"/tasks?task_id={task_id}"
     
     run_message = (f"<a href='{task_url}' class='mb-0'"
                    f"target='_blank' rel='noopener noreferrer'>"
@@ -179,10 +179,14 @@ def show_task_results():
     
         task_id, result, status = task_result
         
-        result_message = f"Task <a href='/tasks?task_id={task_id}' " + \
-                         f"target='_blank' rel='noopener noreferrer'>" + \
-                         f"#{task_id}</a> " + \
-                         f"Status: {status}, Result: {result}"
+        task_url = f"/tasks?task_id={task_id}"
+        
+        result_message = (f"<a href='{task_url}' class='mb-0'"
+                          f"target='_blank' rel='noopener noreferrer'>"
+                          f"Task {task_id}</a>"
+                          f"<hr class='mb-0 mt-1'>"
+                          f"<p class='mb-0'>Status: {status}</p>"
+                          f"<p class='mb-0'>Result: {result}</p>")
         
         flash(result_message, category='info')
 

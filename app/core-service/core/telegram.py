@@ -1,7 +1,7 @@
 import json, jsonpickle
 
 from telebot import TeleBot
-from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton, ForceReply
+from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeyboardMarkup
 
 from threading import Thread, enumerate as enumerate_threads
 
@@ -195,19 +195,20 @@ class Bot(TeleBot):
     def collect_parameters(self, message, **kwargs):
 
         chat_id = message.chat.id
-        
+
+        run_mode = kwargs.get('run_mode')        
         parameters = kwargs.get('parameters')
-        collected_name = kwargs.get('collected_name')
-        
         algorithm_id = kwargs.get('algorithm_id')
+        collected_name = kwargs.get('collected_name')
 
         app.logger.info(f'BOT chat_id: {chat_id}')
-        # app.logger.info(f'BOT message: {message}')
-        app.logger.info(f'BOT message.text: {message.text}')
+        app.logger.info(f'BOT run_mode: {run_mode}')
         app.logger.info(f'BOT parameters: {parameters}')
-        app.logger.info(f'BOT collected_name: {collected_name}')
         app.logger.info(f'BOT algorithm_id: {algorithm_id}')
+        app.logger.info(f'BOT collected_name: {collected_name}')
+        app.logger.info(f'BOT message.text: {message.text}')
         
+
         if collected_name:
             
             parameter = next(parameter for parameter in parameters
@@ -217,8 +218,8 @@ class Bot(TeleBot):
             
         not_collected_parameters = (parameter for parameter in parameters
                                     if 'value' not in parameter)
-        
-        next_parameter = next(not_collected_parameters, None)
+
+        next_parameter = next(iter(not_collected_parameters), None)
 
         app.logger.info(f'BOT next_parameter: {next_parameter}')
         
@@ -226,9 +227,22 @@ class Bot(TeleBot):
         if next_parameter:
         
             name = next_parameter.get('name')
+            
             default_value = next_parameter.get('default_value')
             
-            message_response = self.send_message(chat_id, f"Please enter {name}:")
+            keyboard = ['7', '8', '9',
+                        '4', '5', '6',
+                        '1', '2', '3',
+                             '0']
+
+            keyboard_markup = ReplyKeyboardMarkup(resize_keyboard=True,
+                                                  one_time_keyboard=True,
+                                                  row_width=3,
+                                                  input_field_placeholder="555")
+                                               
+            keyboard_markup.add(*keyboard)
+            
+            message_response = self.send_message(chat_id, f"Please enter {name}:", reply_markup=keyboard_markup)
                               
             self.register_next_step_handler(message_response, 
                                             self.collect_parameters,
@@ -248,18 +262,6 @@ class Bot(TeleBot):
             
             app.logger.info(f'BOT run_values: {run_values}')
             app.logger.info(f'BOT task_id: {task_id}')
-            
-            # self.send_message(chat_id, f"Task <a href='/tasks?task_id={task_id}' " + \
-            #                           f"target='_blank' rel='noopener noreferrer'>" + \
-            #                           f"#{task_id}</a> " + \
-            #                           f"started: algorithm={algorithm_id}, run_values={dict(run_values)}",
-            #                   parse_mode='HTML')
-            
-            # self.send_message(chat_id, f"<a href='https://google.com'>Google</a>")
-                
-            # self.send_message(chat_id, f"<a href='https://t.me/ogoro_bot?start'>Start</a>")
-            
-            # self.send_message(chat_id, f"<pre><code class='language-python'>Example Code</code></pre>")
             
             domain = app.config.get('DOMAIN')
             
