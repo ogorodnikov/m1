@@ -55,9 +55,11 @@ class Bot(TeleBot):
 
         self.message_handler(commands=['start'])(self.start_handler)
         self.message_handler(commands=['algorithms'])(self.algorithms_handler)
-        self.callback_query_handler(func=lambda call: True)(self.callback_handler)
         self.message_handler(content_types=['sticker'])(self.sticker_handler)
         self.message_handler(func=lambda message: True)(self.echo_handler)
+        
+        self.callback_query_handler(func=lambda callback: callback.data.startswith("get_algorithms"))(self.algorithms_handler)
+        self.callback_query_handler(func=lambda call: True)(self.callback_handler)
         
         
     def start_handler(self, message):
@@ -157,7 +159,9 @@ class Bot(TeleBot):
                 markup.row_width = 2
                 
                 markup.add(InlineKeyboardButton("Run 🎺", callback_data=run_classical_callback),
-                           InlineKeyboardButton("Like 👍", callback_data=like_callback))
+                           InlineKeyboardButton("Like 👍", callback_data=like_callback),
+                        #   InlineKeyboardButton("Back 🐍", callback_data="get_algorithms")
+                        )
 
             self.send_message(callback.message.chat.id, f"{text}", reply_markup=markup)
 
@@ -230,24 +234,22 @@ class Bot(TeleBot):
             
             default_value = next_parameter.get('default_value')
             
-            keyboard = ['7', '8', '9',
-                        '4', '5', '6',
-                        '1', '2', '3',
-                             '0']
-
-            keyboard_markup = ReplyKeyboardMarkup(resize_keyboard=True,
-                                                  one_time_keyboard=True,
+            keyboard_markup = ReplyKeyboardMarkup(one_time_keyboard=True,
+                                                  resize_keyboard=True,
                                                   row_width=3,
-                                                  input_field_placeholder="555")
+                                                  input_field_placeholder=f"Please enter '{name}'")
                                                
-            keyboard_markup.add(*keyboard)
+            keyboard_markup.add(default_value)
             
-            message_response = self.send_message(chat_id, f"Please enter {name}:", reply_markup=keyboard_markup)
+            message_response = self.send_message(chat_id,
+                                                 f"Please enter '{name}':",
+                                                 reply_markup=keyboard_markup)
                               
             self.register_next_step_handler(message_response, 
                                             self.collect_parameters,
                                             chat_identifier=chat_id,
                                             collected_name=name,
+                                            run_mode=run_mode,
                                             algorithm_id=algorithm_id,
                                             parameters=parameters)
                                             
@@ -256,7 +258,7 @@ class Bot(TeleBot):
             run_values = {parameter['name']: parameter['value'] 
                           for parameter in parameters}
             
-            run_values['run_mode'] = 'classical'
+            run_values['run_mode'] = run_mode
             
             task_id = runner.run_algorithm(algorithm_id, run_values)
             
