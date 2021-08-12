@@ -104,12 +104,16 @@ def run_algorithm(algorithm_id):
     
     task_id = runner.run_algorithm(algorithm_id, run_values)
     
-    start_message = f"Task <a href='/tasks?task_id={task_id}' " + \
-                    f"target='_blank' rel='noopener noreferrer'>" + \
-                    f"#{task_id}</a> " + \
-                    f"started: algorithm={algorithm_id}, run_values={dict(run_values)}"
+    task_url = "/tasks?task_id={task_id}"
     
-    flash(start_message, category='warning')
+    run_message = (f"<a href='{task_url}' class='mb-0'"
+                   f"target='_blank' rel='noopener noreferrer'>"
+                   f"Task {task_id}</a>"
+                   f"<hr class='mb-0 mt-1'>"
+                   f"<p class='mb-0'>Algorithm: {algorithm_id}</p>"
+                   f"<p class='mb-0'>Run values: {dict(run_values)}</p>")
+    
+    flash(run_message, category='warning')
 
     return redirect(request.referrer)
     

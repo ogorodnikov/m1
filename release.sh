@@ -21,3 +21,8 @@ cd ~/environment/release-folder/
 git add .
 git commit -m "M1 Core $VERSION"
 git push --set-upstream origin main
+
+# cd ~/environment/m1/
+
+# git tag $VERSION
+# git push origin tag $VERSION

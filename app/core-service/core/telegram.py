@@ -202,7 +202,7 @@ class Bot(TeleBot):
         algorithm_id = kwargs.get('algorithm_id')
 
         app.logger.info(f'BOT chat_id: {chat_id}')
-        app.logger.info(f'BOT message: {message}')
+        # app.logger.info(f'BOT message: {message}')
         app.logger.info(f'BOT message.text: {message.text}')
         app.logger.info(f'BOT parameters: {parameters}')
         app.logger.info(f'BOT collected_name: {collected_name}')
@@ -260,9 +260,27 @@ class Bot(TeleBot):
             # self.send_message(chat_id, f"<a href='https://t.me/ogoro_bot?start'>Start</a>")
             
             # self.send_message(chat_id, f"<pre><code class='language-python'>Example Code</code></pre>")
-                
-            self.send_message(chat_id, f"Task <a href='https://m1.ogoro.me/tasks?task_id={task_id}'>#{task_id}</a> " + \
-                                       f"started: algorithm={algorithm_id}, run_values={run_values}", parse_mode='HTML')
+            
+            domain = app.config.get('DOMAIN')
+            
+            task_url = f"https://{domain}/tasks?task_id={task_id}"
+            
+            run_message = (f"<b>Task {task_id} started:</b>\n\n"
+                           f"Algorithm: {algorithm_id}\n"
+                           f"Run values: {run_values}")
+                           
+            back_callback = f"open_{algorithm_id}"
+            like_callback = f"like_{algorithm_id}"
+                           
+            markup = InlineKeyboardMarkup()
+            
+            markup.row_width = 3
+            
+            markup.add(InlineKeyboardButton("Open 🍉", url=task_url),
+                       InlineKeyboardButton("Like 👍", callback_data=like_callback),
+                       InlineKeyboardButton("Back 🐊", callback_data=back_callback))
+
+            self.send_message(chat_id, run_message, reply_markup=markup)
                                        
 
     def sticker_handler(self, message):
