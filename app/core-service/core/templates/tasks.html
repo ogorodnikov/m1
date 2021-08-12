@@ -41,7 +41,7 @@
 
             <td class="col-1">
               {% if task.status in ('Running', 'Done', 'Failed') %}
-                <button class="btn btn-info" 
+                <button class="btn btn-info text-nowrap" 
                         data-toggle="collapse"
                         data-target="#collapse-{{ task_id }}">
                   <i class="fa fa-angle-down"></i> Logs

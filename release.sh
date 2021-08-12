@@ -16,13 +16,19 @@ VERSION=$(cat $ENV_PATH | grep -o -P '(?<=VERSION = ).*')
 echo  'Release VERSION:' $VERSION
 echo
 
+
+# Push to AWS CodeCommit
+
 cd ~/environment/release-folder/
 
 git add .
 git commit -m "M1 Core $VERSION"
 git push --set-upstream origin main
 
-# cd ~/environment/m1/
 
-# git tag $VERSION
-# git push origin tag $VERSION
+# Push Version Tag to GitHub
+
+cd ~/environment/m1/
+
+git tag $VERSION
+git push origin tag $VERSION

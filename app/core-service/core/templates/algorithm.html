@@ -68,7 +68,7 @@
           {% if item.type == 'quantum' %}
           
             <button type="submit" 
-                    class="btn btn-warning col-sm-3" 
+                    class="btn btn-warning col-sm-3 mb-1" 
                     name="run_mode"
                     {% if not item.enabled %} disabled {% endif %}
                     value="simulator">
@@ -76,7 +76,7 @@
             </button>
             
             <button type="submit" 
-                    class="btn btn-danger col-sm-4"
+                    class="btn btn-danger col-sm-4 mb-1"
                     name="run_mode"
                     {% if not item.enabled %} disabled {% endif %}
                     value="quantum_device">
@@ -85,13 +85,13 @@
           
           {% else %}
           
-            <button type="submit" class="btn btn-warning col-sm-3" name="run_mode" value="classical">
+            <button type="submit" class="btn btn-warning col-sm-3 mb-1" name="run_mode" value="classical">
                Run
             </button>            
           
           {% endif %}
           
-          <button type="submit" form="like_form" class="btn btn-info col-sm-2">
+          <button type="submit" form="like_form" class="btn btn-info col-sm-3 mb-1 text-nowrap">
             Like
             <span class="badge bg-light text-dark rounded-pill align-text-bottom">
               {{ item.likes }}
