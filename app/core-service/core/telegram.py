@@ -150,17 +150,17 @@ class Bot(TeleBot):
                 
                 markup.row_width = 3
                 
-                markup.add(InlineKeyboardButton("Run on Simulator 🎸", callback_data=run_on_simulator_callback),
-                           InlineKeyboardButton("Run on Quantum Device 🍒", callback_data=run_on_quantum_device_callback),
+                markup.add(InlineKeyboardButton("Run on Simulator 🎲", callback_data=run_on_simulator_callback),
+                           InlineKeyboardButton("Run on Quantum Device 🌈", callback_data=run_on_quantum_device_callback),
                            InlineKeyboardButton("Like 👍", callback_data=like_callback))
 
             if algorithm_type == 'classical':
             
                 markup.row_width = 2
                 
-                markup.add(InlineKeyboardButton("Run 🎺", callback_data=run_classical_callback),
+                markup.add(InlineKeyboardButton("Run 🎸", callback_data=run_classical_callback),
                            InlineKeyboardButton("Like 👍", callback_data=like_callback),
-                        #   InlineKeyboardButton("Back 🐍", callback_data="get_algorithms")
+                        #   InlineKeyboardButton("Back 🌈", callback_data="get_algorithms")
                         )
 
             self.send_message(callback.message.chat.id, f"{text}", reply_markup=markup)
@@ -168,15 +168,25 @@ class Bot(TeleBot):
             flash_text = "Opening..."
             
         
-        if callback_data.startswith("run_classical_"):
+        if callback_data.startswith("run_"):
+            
+            if callback_data.startswith("run_classical_"):
+                run_mode = 'classical'
+                
+            elif callback_data.startswith("run_on_simulator_"):
+                run_mode = 'simulator'
+
+            elif callback_data.startswith("run_on_quantum_device_"):
+                run_mode = 'quantum_device'
 
             self.collect_parameters(parameters=algorithm_parameters,
                                     message=callback.message,
                                     algorithm_id=algorithm_id,
-                                    run_mode='classical')
+                                    run_mode=run_mode)
              
             flash_text = "Please enter parameters"
             
+
         try:
             
             self.answer_callback_query(callback_query_id=callback_query_id, 
@@ -280,9 +290,9 @@ class Bot(TeleBot):
             
             markup.row_width = 3
             
-            markup.add(InlineKeyboardButton("Open 🍉", url=task_url),
+            markup.add(InlineKeyboardButton("Open 🎸", url=task_url),
                        InlineKeyboardButton("Like 👍", callback_data=like_callback),
-                       InlineKeyboardButton("Back 🐊", callback_data=back_callback))
+                       InlineKeyboardButton("Back 🌈", callback_data=back_callback))
 
             self.send_message(chat_id, run_message, reply_markup=markup)
                                        
@@ -298,6 +308,6 @@ class Bot(TeleBot):
 
     def echo_handler(self, message):
         
-        app.logger.info(f'BOT message')
+        app.logger.info(f'BOT echo_handler message')
 
         self.reply_to(message, message.text)
