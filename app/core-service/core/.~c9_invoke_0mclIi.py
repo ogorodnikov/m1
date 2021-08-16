@@ -81,12 +81,13 @@ class Bot(TeleBot):
     def algorithms_handler(self, message_or_callback):
         
         algorithms = models.get_all_algorithms()
-
-        if isinstance(message_or_callback, Message):
-            message = message_or_callback
         
-        elif isinstance(message_or_callback, CallbackQuery):
+        if isinstance(message_or_callback, CallbackQuery):
             message = message_or_callback.message
+            
+        else:
+            print()
+            
 
         self.send_message(message.chat.id, f"Algorithms:", disable_notification=True)
         
