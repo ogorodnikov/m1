@@ -1,9 +1,8 @@
-import json, jsonpickle
+from threading import Thread, enumerate as enumerate_threads
 
 from telebot import TeleBot
-from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeyboardMarkup, CallbackQuery, Message
-
-from threading import Thread, enumerate as enumerate_threads
+from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
+from telebot.types import ReplyKeyboardMarkup, CallbackQuery, Message
 
 from core import app, models, runner
 
@@ -74,11 +73,12 @@ class Bot(TeleBot):
         app.logger.info(f'BOT user_name {user_name}')
     
         self.send_message(message.chat.id, f"{bot_name} welcomes you, {user_name}!")
-        
         self.send_sticker(message.chat.id, BUBO_CELEBRATE_STICKER_FILE_ID)
             
 
     def algorithms_handler(self, message_or_callback):
+        
+        app.logger.info(f'BOT /algorithms')
         
         algorithms = models.get_all_algorithms()
 
@@ -93,26 +93,24 @@ class Bot(TeleBot):
             
         for algorithm_index, algorithm in enumerate(algorithms, 1):
             
-            algorithm_id = algorithm['id']
             name = algorithm['name']
-            description = algorithm['description']
             link = algorithm['link']
+            algorithm_id = algorithm['id']
+            description = algorithm['description']
             
             open_callback = f"open_{algorithm_id}"
             like_callback = f"like_{algorithm_id}"
             
             markup = InlineKeyboardMarkup()
-            markup.row_width = 3
-            
+
             markup.add(InlineKeyboardButton("Open 🌻", callback_data=open_callback),
                        InlineKeyboardButton("Like 👍", callback_data=like_callback),
-                       InlineKeyboardButton("Wiki 🌌", url=link))
+                       InlineKeyboardButton("Wiki 📖", url=link))
+                       
+            algorithm_text = f"<b>{algorithm_index}) {name}</b>\n\n{description}"
             
-            self.send_message(message.chat.id, f"{algorithm_index}) {name}", disable_notification=True)
-            self.send_message(message.chat.id, f"{description}", disable_notification=True, reply_markup=markup)
-                           
-        app.logger.info(f'BOT /algorithms')
-            
+            self.send_message(message.chat.id, algorithm_text, reply_markup=markup)
+
     
     def callback_handler(self, callback):
 
@@ -120,19 +118,25 @@ class Bot(TeleBot):
         callback_query_id = callback.id                
         callback_parts = callback_data.rsplit('_', maxsplit=1)
         
+        app.logger.info(f'BOT callback_data: {callback_data}')
+        
         algorithm_id = callback_parts[-1]
         algorithm = models.get_algorithm(algorithm_id)
+        
+        flash_text = None
+        
         
         if callback_data.startswith("like_"):
             
             models.like_algorithm(algorithm_id)
             flash_text = "Thank you!)"
+            
         
         if callback_data.startswith("open_"):
             
             chat_id = callback.message.chat.id
             self.open_algorithm(chat_id, algorithm)
-            flash_text = "Opening..."
+
         
         if callback_data.startswith("run_"):
             
@@ -154,10 +158,11 @@ class Bot(TeleBot):
              
             flash_text = "Please enter parameters"
             
+            
         if callback_data.startswith("get_algorithms"):
             
             self.algorithms_handler(callback.message)
-            
+
 
         try:
             
@@ -168,10 +173,7 @@ class Bot(TeleBot):
             
             app.logger.info(f'BOT exception: {exception}')
             
-            
-        app.logger.info(f'BOT callback_query_id: {callback_query_id}')            
-        app.logger.info(f'BOT callback_data: {callback_data}')
-        
+
         
     def open_algorithm(self, chat_id, algorithm):
         
@@ -180,6 +182,7 @@ class Bot(TeleBot):
         algorithm_id = algorithm.get('id')
         algorithm_name = algorithm.get('name')
         algorithm_type = algorithm.get('type')
+        algorithm_link = algorithm.get('link')
         algorithm_parameters = algorithm.get('parameters')
         algorithm_description = algorithm.get('description')
         
@@ -198,17 +201,17 @@ class Bot(TeleBot):
         markup = InlineKeyboardMarkup()
             
         if algorithm_type == 'quantum':
-            
-            markup.row_width = 1
-            
-            markup.add(InlineKeyboardButton("Run on Simulator 🎲", callback_data=run_on_simulator_callback),
-                       InlineKeyboardButton("Run on Quantum Device 🌈", callback_data=run_on_quantum_device_callback),
-                       InlineKeyboardButton("Like 👍", callback_data=like_callback),
+
+            markup.add(InlineKeyboardButton("Like 👍", callback_data=like_callback),
+                       InlineKeyboardButton("Wiki 📖", url=algorithm_link),
                        InlineKeyboardButton("Back 🌻", callback_data="get_algorithms"))
+                       
+            markup.add(InlineKeyboardButton("Run on Simulator 🎲", callback_data=run_on_simulator_callback))
+            markup.add(InlineKeyboardButton("Run on Quantum Device 🌈", callback_data=run_on_quantum_device_callback))
 
         if algorithm_type == 'classical':
         
-            markup.row_width = 2
+            markup.row_width = 3
             
             markup.add(InlineKeyboardButton("Run 🎸", callback_data=run_classical_callback),
                        InlineKeyboardButton("Like 👍", callback_data=like_callback),
@@ -226,61 +229,58 @@ class Bot(TeleBot):
         algorithm_id = kwargs.get('algorithm_id')
         collected_name = kwargs.get('collected_name')
 
-        app.logger.info(f'BOT collect_parameters')
-        app.logger.info(f'BOT chat_id: {chat_id}')
-        app.logger.info(f'BOT run_mode: {run_mode}')
-        app.logger.info(f'BOT parameters: {parameters}')
-        app.logger.info(f'BOT algorithm_id: {algorithm_id}')
-        app.logger.info(f'BOT collected_name: {collected_name}')
-        app.logger.info(f'BOT message.text: {message.text}')
-
         if collected_name:
             
-            collected_parameter = next(parameter for parameter in parameters
-                                       if parameter['name'] == collected_name)
-                             
+            collected_parameters = (parameter for parameter in parameters
+                                    if parameter['name'] == collected_name)
+            
+            collected_parameter = next(collected_parameters)
+                                       
             collected_parameter['value'] = message.text
             
         not_collected_parameters = (parameter for parameter in parameters
                                     if 'value' not in parameter)
 
         next_parameter = next(iter(not_collected_parameters), None)
-
+        
+        app.logger.info(f'BOT chat_id: {chat_id}')
+        app.logger.info(f'BOT run_mode: {run_mode}')
+        app.logger.info(f'BOT parameters: {parameters}')
+        app.logger.info(f'BOT algorithm_id: {algorithm_id}')
+        app.logger.info(f'BOT message.text: {message.text}')
+        app.logger.info(f'BOT collected_name: {collected_name}')
         app.logger.info(f'BOT next_parameter: {next_parameter}')
         
-        
         if next_parameter:
-            
-            self.collect_next_parameter(next_parameter, chat_id, algorithm_id, run_mode, parameters)
+            self.query_next_parameter(next_parameter, chat_id, algorithm_id, run_mode, parameters)
                                             
         else:
-            
             self.run_algorithm(chat_id, algorithm_id, run_mode, parameters)
             
 
-    def collect_next_parameter(self, next_parameter, chat_id, algorithm_id, run_mode, parameters):
+    def query_next_parameter(self, next_parameter, chat_id, algorithm_id, run_mode, parameters):
     
-        name = next_parameter.get('name')
+        next_parameter_name = next_parameter.get('name')
         default_value = next_parameter.get('default_value')
         
-        keyboard_markup = ReplyKeyboardMarkup(one_time_keyboard=True,
-                                              resize_keyboard=True,
-                                              row_width=3,
-                                              input_field_placeholder=f"Please enter '{name}'")
+        query_text = f"Please enter '{next_parameter_name}':"
+        
+        keyboard_markup = ReplyKeyboardMarkup(resize_keyboard=True,
+                                              one_time_keyboard=True,
+                                              input_field_placeholder=query_text)
                                            
         keyboard_markup.add(default_value)
         
         message_response = self.send_message(chat_id,
-                                             f"Please enter '{name}':",
+                                             query_text,
                                              reply_markup=keyboard_markup)
                           
         self.register_next_step_handler(message_response, 
                                         self.collect_parameters,
-                                        chat_identifier=chat_id,
-                                        collected_name=name,
                                         run_mode=run_mode,
+                                        parameters=parameters,
                                         algorithm_id=algorithm_id,
-                                        parameters=parameters)
+                                        collected_name=next_parameter_name)
                                         
                                         
     def run_algorithm(self, chat_id, algorithm_id, run_mode, parameters):
@@ -292,6 +292,7 @@ class Bot(TeleBot):
         
         task_id = runner.run_algorithm(algorithm_id, run_values)
         
+        app.logger.info(f'BOT algorithm_id: {algorithm_id}')
         app.logger.info(f'BOT run_values: {run_values}')
         app.logger.info(f'BOT task_id: {task_id}')
         
