@@ -123,58 +123,16 @@ class Bot(TeleBot):
         algorithm_id = callback_parts[-1]
         algorithm = models.get_algorithm(algorithm_id)
         
-        algorithm_name = algorithm.get('name')
-        algorithm_type = algorithm.get('type')
-        algorithm_parameters = algorithm.get('parameters')
-        algorithm_description = algorithm.get('description')
-        
-        like_callback = f"like_{algorithm_id}"
-        run_classical_callback = f"run_classical_{algorithm_id}"
-        run_on_simulator_callback = f"run_on_simulator_{algorithm_id}"
-        run_on_quantum_device_callback = f"run_on_quantum_device_{algorithm_id}"
-        
-        
         if callback_data.startswith("like_"):
             
             models.like_algorithm(algorithm_id)
-
             flash_text = "Thank you!)"
-            
         
         if callback_data.startswith("open_"):
             
-            parameter_names = (parameter.get('name') for parameter in algorithm_parameters)
-            parameter_names_string = ', '.join(parameter_names)
-            
-            text = (f"<b>{algorithm_name}</b>\n\n"
-                    f"{algorithm_description}\n\n"
-                    f"<b>Parameters:</b> {parameter_names_string}")
-            
-            markup = InlineKeyboardMarkup()
-                
-            if algorithm_type == 'quantum':
-                
-                markup.row_width = 1
-                
-                markup.add(InlineKeyboardButton("Run on Simulator 🎲", callback_data=run_on_simulator_callback),
-                           InlineKeyboardButton("Run on Quantum Device 🌈", callback_data=run_on_quantum_device_callback),
-                           InlineKeyboardButton("Like 👍", callback_data=like_callback),
-                           InlineKeyboardButton("Back 🌻", callback_data="get_algorithms"),
-                           )
-
-            if algorithm_type == 'classical':
-            
-                markup.row_width = 2
-                
-                markup.add(InlineKeyboardButton("Run 🎸", callback_data=run_classical_callback),
-                           InlineKeyboardButton("Like 👍", callback_data=like_callback),
-                           InlineKeyboardButton("Back 🌻", callback_data="get_algorithms"),
-                          )
-
-            self.send_message(callback.message.chat.id, f"{text}", reply_markup=markup)
-
+            chat_id = callback.message.chat.id
+            self.open_algorithm(chat_id, algorithm)
             flash_text = "Opening..."
-            
         
         if callback_data.startswith("run_"):
             
@@ -186,6 +144,8 @@ class Bot(TeleBot):
 
             elif callback_data.startswith("run_on_quantum_device_"):
                 run_mode = 'quantum_device'
+                
+            algorithm_parameters = algorithm.get('parameters')
 
             self.collect_parameters(parameters=algorithm_parameters,
                                     message=callback.message,
@@ -193,7 +153,6 @@ class Bot(TeleBot):
                                     run_mode=run_mode)
              
             flash_text = "Please enter parameters"
-            
             
         if callback_data.startswith("get_algorithms"):
             
@@ -214,11 +173,50 @@ class Bot(TeleBot):
         app.logger.info(f'BOT callback_data: {callback_data}')
         
         
-    
-    ###   COLLECT   ###
-    
+    def open_algorithm(self, chat_id, algorithm):
         
-    
+        app.logger.info(f'BOT open algorithm: {algorithm}')
+        
+        algorithm_id = algorithm.get('id')
+        algorithm_name = algorithm.get('name')
+        algorithm_type = algorithm.get('type')
+        algorithm_parameters = algorithm.get('parameters')
+        algorithm_description = algorithm.get('description')
+        
+        like_callback = f"like_{algorithm_id}"
+        run_classical_callback = f"run_classical_{algorithm_id}"
+        run_on_simulator_callback = f"run_on_simulator_{algorithm_id}"
+        run_on_quantum_device_callback = f"run_on_quantum_device_{algorithm_id}"
+        
+        parameter_names = (parameter.get('name') for parameter in algorithm_parameters)
+        parameter_names_string = ', '.join(parameter_names)
+        
+        text = (f"<b>{algorithm_name}</b>\n\n"
+                f"{algorithm_description}\n\n"
+                f"<b>Parameters:</b> {parameter_names_string}")
+        
+        markup = InlineKeyboardMarkup()
+            
+        if algorithm_type == 'quantum':
+            
+            markup.row_width = 1
+            
+            markup.add(InlineKeyboardButton("Run on Simulator 🎲", callback_data=run_on_simulator_callback),
+                       InlineKeyboardButton("Run on Quantum Device 🌈", callback_data=run_on_quantum_device_callback),
+                       InlineKeyboardButton("Like 👍", callback_data=like_callback),
+                       InlineKeyboardButton("Back 🌻", callback_data="get_algorithms"))
+
+        if algorithm_type == 'classical':
+        
+            markup.row_width = 2
+            
+            markup.add(InlineKeyboardButton("Run 🎸", callback_data=run_classical_callback),
+                       InlineKeyboardButton("Like 👍", callback_data=like_callback),
+                       InlineKeyboardButton("Back 🌻", callback_data="get_algorithms"))
+
+        self.send_message(chat_id, f"{text}", reply_markup=markup)
+        
+
     def collect_parameters(self, message, **kwargs):
 
         chat_id = message.chat.id
@@ -228,20 +226,20 @@ class Bot(TeleBot):
         algorithm_id = kwargs.get('algorithm_id')
         collected_name = kwargs.get('collected_name')
 
+        app.logger.info(f'BOT collect_parameters')
         app.logger.info(f'BOT chat_id: {chat_id}')
         app.logger.info(f'BOT run_mode: {run_mode}')
         app.logger.info(f'BOT parameters: {parameters}')
         app.logger.info(f'BOT algorithm_id: {algorithm_id}')
         app.logger.info(f'BOT collected_name: {collected_name}')
         app.logger.info(f'BOT message.text: {message.text}')
-        
 
         if collected_name:
             
-            parameter = next(parameter for parameter in parameters
-                             if parameter['name'] == collected_name)
+            collected_parameter = next(parameter for parameter in parameters
+                                       if parameter['name'] == collected_name)
                              
-            parameter['value'] = message.text
+            collected_parameter['value'] = message.text
             
         not_collected_parameters = (parameter for parameter in parameters
                                     if 'value' not in parameter)
