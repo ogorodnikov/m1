@@ -1,7 +1,7 @@
 from qiskit import QuantumCircuit
 
 
-def build_truth_table_oracle(truth_table, task_log):
+def build_truth_table_oracle(truth_table):
     
     
     input_qubits_count = len(next(iter(truth_table)))
@@ -68,7 +68,7 @@ def dj(run_values, task_log):
     truth_table = {f"{state:{bin_template}}": secret[state] for state in states}
     
     
-    truth_table_oracle = build_truth_table_oracle(truth_table, task_log)
+    truth_table_oracle = build_truth_table_oracle(truth_table)
     
 
     circuit = QuantumCircuit(all_qubits_count, measure_bits_count)

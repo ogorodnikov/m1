@@ -1,12 +1,9 @@
 from qiskit import QuantumCircuit
 
 
-def simon(run_values, task_log):
+def build_simon_oracle(period, masquerade=True):
     
-    pass
-
-def build_simon_oracle(input_qubits_count, masquerade=True):
-    
+    input_qubits_count = len(period)
     
     output_qubits_count = input_qubits_count
     qubits_count = input_qubits_count + output_qubits_count
@@ -14,13 +11,9 @@ def build_simon_oracle(input_qubits_count, masquerade=True):
     input_qubits = range(input_qubits_count)
     qubits = range(qubits_count)
     
-#     all_qubits_count = input_qubits_count + 1
+    oracle = QuantumCircuit(qubits_count)
+    oracle.name = 'Simon Oracle'
     
-#     output_qubit = all_qubits_count - 1
-    
-    
-#     oracle = QuantumCircuit(all_qubits_count)
-#     oracle.name = 'Truth Table Oracle'
     
     
 #     for state, secret_digit in truth_table.items():
@@ -44,38 +37,25 @@ def build_simon_oracle(input_qubits_count, masquerade=True):
 #     return oracle
     
     
-# def dj(run_values, task_log):
-    
-#     input_secret = run_values.get('secret')
-    
-#     full_secret = ''.join('1' if digit == '1' else '0' for digit in input_secret)
-    
-#     secret_bit_len = (len(full_secret) - 1).bit_length()
-    
-#     secret_len = 2 ** secret_bit_len
+def simon(run_values, task_log):
         
-#     secret = full_secret.ljust(secret_len, '0')[:secret_len]
+    input_period = run_values.get('period')
     
-#     input_qubits_count = secret_bit_len
-#     input_qubits = range(input_qubits_count)
+    period = ''.join('1' if digit == '1' else '0' for digit in input_period)
     
-#     all_qubits_count = input_qubits_count + 1
-#     all_qubits = range(all_qubits_count)
+    input_qubits_count = len(period)
     
-#     output_qubit = input_qubits_count
+    output_qubits_count = input_qubits_count
+    qubits_count = input_qubits_count + output_qubits_count
     
-#     measure_bits_count = input_qubits_count
-#     measure_bits = range(measure_bits_count)
+    input_qubits = range(input_qubits_count)
+    qubits = range(qubits_count)
+    
+    measure_bits_count = input_qubits_count
+    measure_bits = range(measure_bits_count)
 
-    
-#     states = range(secret_len)
-    
-#     bin_template = f"0{input_qubits_count}b"
-    
-#     truth_table = {f"{state:{bin_template}}": secret[state] for state in states}
-    
-    
-#     truth_table_oracle = build_truth_table_oracle(truth_table, task_log)
+
+#     simon_oracle = build_simon_oracle(period, task_log)
     
 
 #     circuit = QuantumCircuit(all_qubits_count, measure_bits_count)
