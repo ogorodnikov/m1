@@ -153,13 +153,13 @@ def like_algorithm(algorithm_id):
     return {'status_code': status_code}
     
 
-def set_algorithm_state(algorithm_id, state):
+def set_algorithm_state(algorithm_id, is_enabled):
 
     response = table.update_item(
         
         Key={'id': algorithm_id},
         UpdateExpression="SET enabled = :b",
-        ExpressionAttributeValues={':b': state})
+        ExpressionAttributeValues={':b': is_enabled})
 
     status_code = response['ResponseMetadata']['HTTPStatusCode']
         

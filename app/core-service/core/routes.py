@@ -118,14 +118,17 @@ def run_algorithm(algorithm_id):
     return redirect(request.referrer)
     
 
-@app.route("/algorithms/<algorithm_id>/state", methods=['POST'])
+@app.route("/algorithms/<algorithm_id>/state")
 def set_algorithm_state(algorithm_id):
     
-    state = request.args.get('state')
-    response = models.set_algorithm_state(algorithm_id, state)
+    is_enabled = request.args.get('enabled')
+    response = models.set_algorithm_state(algorithm_id, is_enabled)
     
+    print(f'is_enabled', is_enabled)
     
-    return response, 204
+    flash(f"Algorithm {algorithm_id} set enabled: {is_enabled}: {response}", category='warning')
+    
+    return redirect(request.referrer)
     
 
 @app.route('/tasks')
