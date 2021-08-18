@@ -125,8 +125,6 @@ def set_algorithm_state(algorithm_id):
     
     response = models.set_algorithm_state(algorithm_id, is_enabled)
     
-    print(f'is_enabled', is_enabled)
-    
     flash(f"Algorithm {algorithm_id} - "
           f"Set enabled: {is_enabled} - "
           f"Response: {response}", category='warning')

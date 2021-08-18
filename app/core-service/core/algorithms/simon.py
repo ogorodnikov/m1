@@ -5,13 +5,13 @@ def build_simon_oracle(period, masquerade=True):
     
     input_qubits_count = len(period)
     output_qubits_count = input_qubits_count
-    qubits_count = input_qubits_count + output_qubits_count
+    all_qubits_count = input_qubits_count + output_qubits_count
     
     input_qubits = range(input_qubits_count)
-    output_qubits = range(output_qubits_count)
-    qubits = range(qubits_count)
+    output_qubits = range(output_qubits_count, 2 * output_qubits_count)
+    all_qubits = range(all_qubits_count)
     
-    oracle = QuantumCircuit(qubits_count)
+    oracle = QuantumCircuit(all_qubits_count)
     oracle.name = 'Simon Oracle'
     
     
@@ -51,10 +51,10 @@ def simon(run_values, task_log):
     input_qubits_count = len(period)
     
     output_qubits_count = input_qubits_count
-    qubits_count = input_qubits_count + output_qubits_count
+    all_qubits_count = input_qubits_count + output_qubits_count
     
     input_qubits = range(input_qubits_count)
-    qubits = range(qubits_count)
+    all_qubits = range(all_qubits_count)
     
     measure_bits_count = input_qubits_count
     measure_bits = range(measure_bits_count)
@@ -63,7 +63,7 @@ def simon(run_values, task_log):
     simon_oracle = build_simon_oracle(period)
     
 
-    circuit = QuantumCircuit(qubits_count, measure_bits_count)
+    circuit = QuantumCircuit(all_qubits_count, measure_bits_count)
     
     for input_qubit in input_qubits:    
         circuit.h(input_qubit)
@@ -84,7 +84,7 @@ def simon(run_values, task_log):
     task_log(f'SIMON period: {period}')
 
     task_log(f'SIMON input_qubits_count: {input_qubits_count}')
-    task_log(f'SIMON all_qubits_count: {all_qubits_count}')
+    task_log(f'SIMON qubits_count: {all_qubits}')
     task_log(f'SIMON qubits_measurement_list: {qubits_measurement_list}')
     
     task_log(f'SIMON simon_oracle: {simon_oracle}')
