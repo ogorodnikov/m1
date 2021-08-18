@@ -84,9 +84,9 @@ def get_algorithms():
 @app.route('/algorithms/<algorithm_id>')
 def get_algorithm(algorithm_id):
     
-    item = models.get_algorithm(algorithm_id)
+    algorithm = models.get_algorithm(algorithm_id)
     
-    return render_template("algorithm.html", item=item)
+    return render_template("algorithm.html", algorithm=algorithm)
     
     
 @app.route("/algorithms/<algorithm_id>/like", methods = ['GET'])
@@ -121,16 +121,17 @@ def run_algorithm(algorithm_id):
 @app.route("/algorithms/<algorithm_id>/state")
 def set_algorithm_state(algorithm_id):
     
-    print('STATE')
-    
     is_enabled = request.args.get('enabled')
+    
     response = models.set_algorithm_state(algorithm_id, is_enabled)
     
     print(f'is_enabled', is_enabled)
     
-    flash(f"Algorithm {algorithm_id} set enabled: {is_enabled}: {response}", category='warning')
+    flash(f"Algorithm {algorithm_id} - "
+          f"Set enabled: {is_enabled} - "
+          f"Response: {response}", category='warning')
     
-    return redirect(request.referrer)
+    return redirect(f'/algorithms/{algorithm_id}')
     
 
 @app.route('/tasks')

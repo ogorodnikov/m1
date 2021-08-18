@@ -146,6 +146,7 @@ def set_algorithm_state(algorithm_id, is_enabled):
         
         Key={'id': algorithm_id},
         UpdateExpression="SET enabled = :b",
+        ConditionExpression=f"attribute_exists(id)",
         ExpressionAttributeValues={':b': is_enabled})
 
     status_code = response['ResponseMetadata']['HTTPStatusCode']

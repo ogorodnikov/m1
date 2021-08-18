@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block title %}
-  {{ item.name }}
+  {{ algorithm.name }}
 {% endblock %}
 
 {% block content %}
@@ -10,13 +10,16 @@
      
     <div class="row">
       <div class="col-sm-12 mt-4 mb-3">
-        <h5>{{ item.name }}:</h5>
+        <h5>{{ algorithm.name }}:</h5>
+        
+          {{ algorithm }}
+          
       </div>
     </div>
     
     <div class="row">
       <div class="col-sm-5 mb-3">
-        {{ item.description }}
+        {{ algorithm.description }}
       </div>
     </div>
 
@@ -32,14 +35,14 @@
     
 
     
-    <form action={{ url_for('run_algorithm', algorithm_id=item.id) }} method="POST">
+    <form action={{ url_for('run_algorithm', algorithm_id=algorithm.id) }} method="POST">
           
       <div class="row">        
         <div class="col-sm-5 mb-3">
           
           <label for="parameters" class="form-label mb-3">Parameters:</label>
           
-          {% for parameter in item.parameters %}
+          {% for parameter in algorithm.parameters %}
           
             <div class="input-group mb-1">
               
@@ -65,12 +68,12 @@
       <div class="row">
         <div class="col-sm-5 mb-3">
           
-          {% if item.type == 'quantum' %}
+          {% if algorithm.type == 'quantum' %}
           
             <button type="submit" 
                     class="btn btn-warning col-sm-3 mb-1" 
                     name="run_mode"
-                    {% if not item.enabled %} disabled {% endif %}
+                    {% if algorithm.enabled == 'false' %} disabled {% endif %}
                     value="simulator">
                Run on Simulator
             </button>
@@ -78,14 +81,18 @@
             <button type="submit" 
                     class="btn btn-danger col-sm-4 mb-1"
                     name="run_mode"
-                    {% if not item.enabled %} disabled {% endif %}
+                    {% if algorithm.enabled == 'false' %} disabled {% endif %}
                     value="quantum_device">
                Run on Quantum Device
             </button>
           
           {% else %}
           
-            <button type="submit" class="btn btn-warning col-sm-3 mb-1" name="run_mode" value="classical">
+            <button type="submit"
+                    class="btn btn-warning col-sm-3 mb-1"
+                    name="run_mode"
+                    {% if algorithm.enabled == 'false' %} disabled {% endif %}
+                    value="classical">
                Run
             </button>            
           
@@ -94,7 +101,7 @@
           <button type="submit" form="like_form" class="btn btn-info col-sm-3 mb-1 text-nowrap">
             Like
             <span class="badge bg-light text-dark rounded-pill align-text-bottom">
-              {{ item.likes }}
+              {{ algorithm.likes }}
             </span>
           </button>
           
@@ -103,7 +110,7 @@
       
     </form>
 
-    <form id="like_form" action={{ url_for('like_algorithm', algorithm_id=item.id) }} method="GET">
+    <form id="like_form" action={{ url_for('like_algorithm', algorithm_id=algorithm.id) }} method="GET">
     </form>
     
   </div>
