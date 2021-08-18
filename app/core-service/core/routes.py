@@ -121,6 +121,8 @@ def run_algorithm(algorithm_id):
 @app.route("/algorithms/<algorithm_id>/state")
 def set_algorithm_state(algorithm_id):
     
+    print('STATE')
+    
     is_enabled = request.args.get('enabled')
     response = models.set_algorithm_state(algorithm_id, is_enabled)
     
@@ -165,14 +167,6 @@ def set_application_parameter():
         flash("Telegram bot stopped", category='warning')
         
     return redirect(request.referrer)
-    
-
-# @app.route('/webhook', methods=['GET', 'POST'])
-# def telegram_bot_webhook():
-    
-#     print("telegram_bot_webhook")
-    
-#     return ''
     
 
 @app.before_request

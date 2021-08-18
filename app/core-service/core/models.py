@@ -1,19 +1,6 @@
 import boto3
 
 
-###   Credential check   ###
-
-# import os
-# os.environ['AWS_PROFILE'] = "default"
-# os.environ['AWS_DEFAULT_REGION'] = "us-east-1"
-
-# print("Profiles:", boto3.session.Session().available_profiles)
-# boto3.setup_default_session(profile_name='default')
-
-# table.scan()
-# print("Connected to 'm1-algorithms-table'")
-
-
 dynamodb = boto3.resource('dynamodb')
 table = dynamodb.Table('m1-algorithms-table')
 
@@ -164,3 +151,19 @@ def set_algorithm_state(algorithm_id, is_enabled):
     status_code = response['ResponseMetadata']['HTTPStatusCode']
         
     return {'status_code': status_code}
+    
+    
+def check_credentials():
+    
+    import os
+    
+    os.environ['AWS_PROFILE'] = "default"
+    os.environ['AWS_DEFAULT_REGION'] = "us-east-1"
+    
+    print("MODELS available_profiles:", boto3.session.Session().available_profiles)
+    
+    boto3.setup_default_session(profile_name='default')
+    
+    table.scan()
+    
+    print("Connected to 'm1-algorithms-table'")
