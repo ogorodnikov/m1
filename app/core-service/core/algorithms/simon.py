@@ -125,7 +125,15 @@ def simon(run_values, task_log):
 
 def simon_post_processing(counts, task_log):
     
-    # task_log(f'SIMON simon_post_processing')
-    task_log(f'SIMON counts: \n{counts}')
+    counts_median = max(counts.values()) / 2
+    
+    filtered_solutions = [solution for solution, count in counts.items()
+                          if set(solution) != {'0'}
+                          and count > counts_median]
+    
+    task_log(f'SIMON simon_post_processing')
+    task_log(f'SIMON counts: {counts}')
+    task_log(f'SIMON counts_median: {counts_median}')
+    task_log(f'SIMON filtered_solutions: {filtered_solutions}')
     
     return {'Period': 'period'}
