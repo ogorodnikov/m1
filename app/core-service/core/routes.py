@@ -163,10 +163,14 @@ def set_application_parameter():
         flash("Telegram bot started", category='info')
 
     if telegram_bot_action == 'stop':
-        response = telegram_bot.stop()
+        telegram_bot.stop()
         flash("Telegram bot stopped", category='warning')
+    
+    if 'add_test_data' in request.args:
+        models.add_test_data()
+        flash(f"Test data added to m1-algorithms-table {request.args}", category='warning')
         
-    return redirect(request.referrer)
+    return redirect(request.referrer or url_for('home')) 
     
 
 @app.before_request

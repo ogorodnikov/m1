@@ -1,5 +1,5 @@
-from itertools import combinations
 from random import randint
+from itertools import combinations
 
 from qiskit import QuantumCircuit
 
@@ -121,3 +121,8 @@ def simon(run_values, task_log):
     task_log(f'SIMON circuit: \n{circuit}')
     
     return circuit
+    
+
+def simon_post_processing():
+    
+    pass

@@ -79,23 +79,17 @@ def add_test_data():
                              'Classical algorithm complexity is O(2^N) while quantum is O(N^3).',
               'link': 'https://en.wikipedia.org/wiki/Simon%27s_problem',
               'image': b'1010',
-              'parameters': [{'name': 'secret', 'default_value': '1010'}],
+              'parameters': [{'name': 'period', 'default_value': '110'}],
               'likes': 781,
               'enabled': False},
               
               ]
-              
     
     with table.batch_writer(overwrite_by_pkeys=['id']) as batch:
         for item in items:
             batch.put_item(item)
          
             
-# add_test_data()
-
-# print("Test data added to 'm1-algorithms-table'")
-
-
 def get_all_algorithms():
     
     response = table.scan()

@@ -24,7 +24,7 @@ from core.algorithms.bernvaz import bernvaz
 from core.algorithms.grover import grover
 from core.algorithms.grover_sudoku import grover_sudoku
 from core.algorithms.dj import dj
-from core.algorithms.simon import simon
+from core.algorithms.simon import simon, simon_post_processing
 
 
 runner_functions = {'egcd': egcd,
@@ -34,6 +34,8 @@ runner_functions = {'egcd': egcd,
                     'dj': dj,
                     'simon': simon,
                    }
+                   
+post_processing = {'simon': simon_post_processing}
 
 task_process_count = app.config.get('CPU_COUNT', 1)
 
@@ -187,7 +189,15 @@ def task_runner(task_id, algorithm_id, run_values_multidict):
     task_log(task_id, f'RUNNER counts:')
     [task_log(task_id, f'{state}: {count}') for state, count in sorted(counts.items())]
     
-    return {'Counts': counts}
+    if algorithm_id not in post_processing:
+        
+        task_result = {'Counts': counts}
+        
+    else:
+        
+        task_result = {'Counts': counts}
+    
+    return task_result
     
 
 def get_task_results():
