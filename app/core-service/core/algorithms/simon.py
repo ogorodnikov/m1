@@ -1,7 +1,7 @@
 from qiskit import QuantumCircuit
 
 
-def build_simon_oracle(period, masquerade=True):
+def build_simon_oracle(period, task_log, masquerade=True):
     
     input_qubits_count = len(period)
     output_qubits_count = input_qubits_count
@@ -19,8 +19,8 @@ def build_simon_oracle(period, masquerade=True):
         
         oracle.cx(input_qubit, output_qubit)
         
-    
-    is_one_to_one_mapping = '1' in period
+        
+    is_one_to_one_mapping = '1' not in period
     
     if is_one_to_one_mapping:
         
@@ -29,22 +29,32 @@ def build_simon_oracle(period, masquerade=True):
     
     first_period_one_bit = period.find('1')
     
+    task_log(f'SIMON first_period_one_bit: {first_period_one_bit}')
+    
     for output_qubit, digit in enumerate(period, input_qubits_count):
+        
+        task_log(f'SIMON output_qubit, digit: {output_qubit, digit}')
         
         if digit == '1':
             
             oracle.cx(first_period_one_bit, output_qubit)
+            
+    if masquerade:
+        
+        pass
+    
+        # oracle.barrier()
         
     return oracle
     
-    if masquerade:
-        
-        oracle.barrier()
+
     
 
 def simon(run_values, task_log):
         
     input_period = run_values.get('period')
+    
+    input_period = '110'
     
     period = ''.join('1' if digit == '1' else '0' for digit in input_period)
     
@@ -60,7 +70,7 @@ def simon(run_values, task_log):
     measure_bits = range(measure_bits_count)
 
 
-    simon_oracle = build_simon_oracle(period)
+    simon_oracle = build_simon_oracle(period, task_log)
     
 
     circuit = QuantumCircuit(all_qubits_count, measure_bits_count)
@@ -90,9 +100,4 @@ def simon(run_values, task_log):
     task_log(f'SIMON simon_oracle: {simon_oracle}')
     task_log(f'SIMON circuit: \n{circuit}')
     
-#     task_log(f'SIMON if majority of counts is all 0 - secret is constant')
-#     task_log(f'SIMON if majority of counts is any other state - secret is balanced')
-#     task_log(f'SIMON if counts are distributed via multiple states - probably secret is unbalanced')
-    
-
     return circuit
