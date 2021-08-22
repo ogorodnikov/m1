@@ -1,3 +1,6 @@
+from itertools import combinations
+from random import randint
+
 from qiskit import QuantumCircuit
 
 
@@ -38,13 +41,43 @@ def build_simon_oracle(period, task_log, masquerade=True):
         if digit == '1':
             
             oracle.cx(first_period_one_bit, output_qubit)
+    
+    
+    task_log(f'SIMON masquerade: {masquerade}')
+    
             
     if masquerade:
         
-        pass
-    
-        # oracle.barrier()
+        oracle.barrier()
         
+        qubit_pairs = list(combinations(output_qubits, 2))
+        
+        task_log(f'SIMON qubit_pairs: {qubit_pairs}')
+        
+        for a, b in qubit_pairs:
+            
+            is_swapped = randint(0, 1)
+            
+            task_log(f'SIMON is_swapped: {is_swapped}')      
+            
+            if is_swapped:
+                
+                oracle.swap(a, b)
+                
+
+        oracle.barrier()
+        
+        for output_qubit in output_qubits:
+            
+            is_flipped = randint(0, 1)
+            
+            task_log(f'SIMON is_flipped: {is_flipped}')
+            
+            if is_flipped:
+                
+                oracle.x(output_qubit)  
+    
+    
     return oracle
     
 
