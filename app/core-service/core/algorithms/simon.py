@@ -32,18 +32,11 @@ def build_simon_oracle(period, task_log, masquerade=True):
     
     first_period_one_bit = period.find('1')
     
-    task_log(f'SIMON first_period_one_bit: {first_period_one_bit}')
-    
     for output_qubit, digit in enumerate(period, input_qubits_count):
-        
-        task_log(f'SIMON output_qubit, digit: {output_qubit, digit}')
         
         if digit == '1':
             
             oracle.cx(first_period_one_bit, output_qubit)
-    
-    
-    task_log(f'SIMON masquerade: {masquerade}')
     
             
     if masquerade:
@@ -52,13 +45,9 @@ def build_simon_oracle(period, task_log, masquerade=True):
         
         qubit_pairs = list(combinations(output_qubits, 2))
         
-        task_log(f'SIMON qubit_pairs: {qubit_pairs}')
-        
         for a, b in qubit_pairs:
             
             is_swapped = randint(0, 1)
-            
-            task_log(f'SIMON is_swapped: {is_swapped}')      
             
             if is_swapped:
                 
@@ -70,8 +59,6 @@ def build_simon_oracle(period, task_log, masquerade=True):
         for output_qubit in output_qubits:
             
             is_flipped = randint(0, 1)
-            
-            task_log(f'SIMON is_flipped: {is_flipped}')
             
             if is_flipped:
                 
@@ -87,7 +74,7 @@ def simon(run_values, task_log):
         
     input_period = run_values.get('period')
     
-    input_period = '110'
+    # input_period = '111'
     
     period = ''.join('1' if digit == '1' else '0' for digit in input_period)
     
@@ -103,7 +90,7 @@ def simon(run_values, task_log):
     measure_bits = range(measure_bits_count)
 
 
-    simon_oracle = build_simon_oracle(period, task_log)
+    simon_oracle = build_simon_oracle(period, task_log, masquerade=False)
     
 
     circuit = QuantumCircuit(all_qubits_count, measure_bits_count)

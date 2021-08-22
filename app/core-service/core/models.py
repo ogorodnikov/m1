@@ -76,7 +76,7 @@ def add_test_data():
               'name': 'Simon',
               'type': 'quantum',
               'description': 'Finds period of black-box function.\n' +
-                             'Classical algorith complexity is O(2^N) while quantum is O(N).',
+                             'Classical algorithm complexity is O(2^N) while quantum is O(N^3).',
               'link': 'https://en.wikipedia.org/wiki/Simon%27s_problem',
               'image': b'1010',
               'parameters': [{'name': 'secret', 'default_value': '1010'}],
@@ -141,7 +141,7 @@ def like_algorithm(algorithm_id):
     
 
 def set_algorithm_state(algorithm_id, is_enabled):
-
+    
     response = table.update_item(
         
         Key={'id': algorithm_id},

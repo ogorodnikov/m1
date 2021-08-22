@@ -11,6 +11,7 @@
     <div class="row">
       <div class="col-sm-12 mt-4 mb-3">
         <h5>{{ algorithm.name }}:</h5>
+        {{ algorithm }}
       </div>
     </div>
     
@@ -70,7 +71,7 @@
             <button type="submit" 
                     class="btn btn-warning col-sm-3 mb-1" 
                     name="run_mode"
-                    {% if algorithm.enabled == 'false' %} disabled {% endif %}
+                    {% if not algorithm.enabled %} disabled {% endif %}
                     value="simulator">
                Run on Simulator
             </button>
@@ -78,7 +79,7 @@
             <button type="submit" 
                     class="btn btn-danger col-sm-4 mb-1"
                     name="run_mode"
-                    {% if algorithm.enabled == 'false' %} disabled {% endif %}
+                    {% if not algorithm.enabled %} disabled {% endif %}
                     value="quantum_device">
                Run on Quantum Device
             </button>

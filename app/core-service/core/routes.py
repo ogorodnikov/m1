@@ -122,8 +122,9 @@ def run_algorithm(algorithm_id):
 def set_algorithm_state(algorithm_id):
     
     is_enabled = request.args.get('enabled')
+    is_enabled_bool = is_enabled.lower() != 'false'
     
-    response = models.set_algorithm_state(algorithm_id, is_enabled)
+    response = models.set_algorithm_state(algorithm_id, is_enabled_bool)
     
     flash(f"Algorithm {algorithm_id} - "
           f"Set enabled: {is_enabled} - "
