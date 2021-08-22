@@ -123,6 +123,9 @@ def simon(run_values, task_log):
     return circuit
     
 
-def simon_post_processing():
+def simon_post_processing(counts, task_log):
     
-    pass
+    # task_log(f'SIMON simon_post_processing')
+    task_log(f'SIMON counts: \n{counts}')
+    
+    return {'Period': 'period'}

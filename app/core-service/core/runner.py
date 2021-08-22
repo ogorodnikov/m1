@@ -145,15 +145,15 @@ def task_runner(task_id, algorithm_id, run_values_multidict):
     app.logger.info(f'RUNNER run_values: {run_values}')
     app.logger.info(f'RUNNER runner_function: {runner_function}') 
     
-    log_callback = partial(task_log, task_id)
+    task_log_callback = partial(task_log, task_id)
     
     if run_mode == 'classical':
         
-        return runner_function(run_values, log_callback)
+        return runner_function(run_values, task_log_callback)
     
     elif run_mode == 'simulator':
         
-        circuit = runner_function(run_values, log_callback)
+        circuit = runner_function(run_values, task_log_callback)
         qubit_count = circuit.num_qubits
         
         backend = Aer.get_backend('qasm_simulator')
@@ -171,7 +171,7 @@ def task_runner(task_id, algorithm_id, run_values_multidict):
         task_log(task_id, f'RUNNER ibmq_provider: {ibmq_provider}')
         task_log(task_id, f'RUNNER ibmq_provider.backends(): {ibmq_provider.backends()}')
         
-        circuit = runner_function(run_values, log_callback)
+        circuit = runner_function(run_values, task_log_callback)
         qubit_count = circuit.num_qubits        
 
         backend = get_least_busy_backend(ibmq_provider, qubit_count)
@@ -183,20 +183,19 @@ def task_runner(task_id, algorithm_id, run_values_multidict):
     job_monitor(job, interval=0.5)
     
     result = job.result()
-    
     counts = result.get_counts()
     
     task_log(task_id, f'RUNNER counts:')
     [task_log(task_id, f'{state}: {count}') for state, count in sorted(counts.items())]
     
+    
     if algorithm_id not in post_processing:
-        
         task_result = {'Counts': counts}
         
     else:
+        task_result = post_processing[algorithm_id](counts, task_log_callback)
         
-        task_result = {'Counts': counts}
-    
+
     return task_result
     
 
