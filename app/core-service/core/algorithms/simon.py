@@ -1,6 +1,9 @@
 from random import randint
 from itertools import combinations
 
+from sympy import Matrix, mod_inverse, linsolve, symbols
+from sympy.core.numbers import Zero
+
 from qiskit import QuantumCircuit
 
 
@@ -74,7 +77,7 @@ def simon(run_values, task_log):
         
     input_period = run_values.get('period')
     
-    # input_period = '111'
+    # input_period = '11'
     
     period = ''.join('1' if digit == '1' else '0' for digit in input_period)
     
@@ -122,6 +125,13 @@ def simon(run_values, task_log):
     
     return circuit
     
+    
+def sympy_modulus(x, modulus):
+
+    numerator, denominator = x.as_numer_denom()
+
+    return numerator * mod_inverse(denominator, modulus) % modulus
+
 
 def simon_post_processing(counts, task_log):
     
@@ -130,10 +140,53 @@ def simon_post_processing(counts, task_log):
     filtered_solutions = [solution for solution, count in counts.items()
                           if set(solution) != {'0'}
                           and count > counts_median]
+                          
+    digits = [list(map(int, solution)) for solution in filtered_solutions]
     
+    
+    modulus_two = lambda x: sympy_modulus(x, 2)
+    
+    is_even = lambda x: x % 2 == 0
+    
+    
+    matrix = Matrix(digits)
+    
+    rref_matrix = matrix.rref(pivots=False, iszerofunc=is_even)
+    
+    rref_mod_matrix = rref_matrix.applyfunc(modulus_two)
+    
+    
+    qubit_count = len(digits[0])
+    
+    variables = symbols(f'z:{qubit_count}')
+    
+    zeros = Matrix.zeros(rref_mod_matrix.rows, 1)
+    
+    system = rref_mod_matrix, zeros
+    
+    
+    solutions = linsolve(system, *variables)
+    
+    first_solution = next(iter(solutions))
+    
+    period = ''.join('0' if isinstance(symbol, Zero) else '1'
+                     for symbol in first_solution)
+    
+
     task_log(f'SIMON simon_post_processing')
     task_log(f'SIMON counts: {counts}')
     task_log(f'SIMON counts_median: {counts_median}')
     task_log(f'SIMON filtered_solutions: {filtered_solutions}')
+
+    task_log(f'SIMON matrix: ' + repr(matrix))
+    task_log(f'SIMON rref_matrix: ' + repr(rref_matrix))
+    task_log(f'SIMON rref_mod_matrix: ' + repr(rref_mod_matrix))
     
-    return {'Period': 'period'}
+    task_log(f'SIMON qubit_count: {qubit_count}')
+    task_log(f'SIMON variables: {variables}')
+
+    task_log(f'SIMON solutions: {solutions}')  
+    task_log(f'SIMON period: {period}')
+    
+    
+    return {'Period': period}
