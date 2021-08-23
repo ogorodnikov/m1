@@ -83,6 +83,17 @@ def add_test_data():
                              {'name': 'masquerade', 'default_value': 'True'},],
               'likes': 781,
               'enabled': True},
+
+              {'id': 'qft',
+              'name': 'Quantum Fourier Transform',
+              'type': 'quantum',
+              'description': 'Applies discrete Fourier transform to quantum state amplitudes.\n' +
+                             'Classical algorithm complexity is O(N*2^N) while quantum is O(N*log(N)).',
+              'link': 'https://en.wikipedia.org/wiki/Quantum_Fourier_transform',
+              'image': b'1010',
+              'parameters': [{'name': 'number', 'default_value': '101'}],
+              'likes': 432,
+              'enabled': True},
               
               ]
     
@@ -100,8 +111,6 @@ def get_all_algorithms():
 
 def query_algorithms(query_parameters):
 
-    # query_parameters = [{'filter': 'value'}]
-    
     key_conditions = {}
     
     for filter, value in query_parameters.items():

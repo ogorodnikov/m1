@@ -25,6 +25,7 @@ from core.algorithms.grover import grover
 from core.algorithms.grover_sudoku import grover_sudoku
 from core.algorithms.dj import dj
 from core.algorithms.simon import simon, simon_post_processing
+from core.algorithms.qft import qft
 
 
 runner_functions = {'egcd': egcd,
@@ -33,6 +34,7 @@ runner_functions = {'egcd': egcd,
                     'grover_sudoku': grover_sudoku,
                     'dj': dj,
                     'simon': simon,
+                    'qft': qft
                    }
                    
 post_processing = {'simon': simon_post_processing}
