@@ -79,9 +79,10 @@ def add_test_data():
                              'Classical algorithm complexity is O(2^N) while quantum is O(N^3).',
               'link': 'https://en.wikipedia.org/wiki/Simon%27s_problem',
               'image': b'1010',
-              'parameters': [{'name': 'period', 'default_value': '110'}],
+              'parameters': [{'name': 'period', 'default_value': '1010'},
+                             {'name': 'masquerade', 'default_value': 'True'},],
               'likes': 781,
-              'enabled': False},
+              'enabled': True},
               
               ]
     

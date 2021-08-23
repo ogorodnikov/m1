@@ -168,7 +168,7 @@ def set_application_parameter():
     
     if 'add_test_data' in request.args:
         models.add_test_data()
-        flash(f"Test data added to m1-algorithms-table {request.args}", category='warning')
+        flash(f"Test data added to m1-algorithms-table", category='warning')
         
     return redirect(request.referrer or url_for('home')) 
     
