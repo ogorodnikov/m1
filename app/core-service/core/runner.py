@@ -179,6 +179,8 @@ def task_runner(task_id, algorithm_id, run_values_multidict):
         backend = get_least_busy_backend(ibmq_provider, qubit_count)
         
     task_log(task_id, f'RUNNER backend: {backend}')
+    
+    # circuit.save_statevector()
 
     job = execute(circuit, backend=backend, shots=1024)
     
@@ -186,10 +188,13 @@ def task_runner(task_id, algorithm_id, run_values_multidict):
     
     result = job.result()
     counts = result.get_counts()
+
+    # statevector = result.get_statevector()
     
     task_log(task_id, f'RUNNER counts:')
     [task_log(task_id, f'{state}: {count}') for state, count in sorted(counts.items())]
     
+    # task_log(task_id, f'RUNNER statevector: {statevector}')
     
     if algorithm_id not in post_processing:
         task_result = {'Counts': counts}

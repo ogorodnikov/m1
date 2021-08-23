@@ -5,14 +5,15 @@ from qiskit import QuantumCircuit
 
 from qiskit import Aer
 
+from qiskit.visualization import plot_bloch_multivector
 
-def append_qft_circuit(circuit, qubits_count, task_log):
+
+def append_qft_circuit(circuit, task_log):
     
+    qubits_count = circuit.num_qubits
     qubits = range(qubits_count)
-    pairs = combinations_with_replacement(qubits, 2)
     
-    # circuit = QuantumCircuit(qubits_count)
-    # circuit.name = 'QFT Circuit'    
+    pairs = combinations_with_replacement(qubits, 2)
     
     for control_qubit, target_qubit in pairs:
         
@@ -31,9 +32,6 @@ def append_qft_circuit(circuit, qubits_count, task_log):
         task_log(f'QFT control_qubit: {control_qubit}')
         task_log(f'QFT target_qubit: {target_qubit}')
         task_log(f'QFT circuit: \n{circuit}')
-    
-    # return circuit
-    
     
 
 def qft(run_values, task_log):
@@ -57,24 +55,18 @@ def qft(run_values, task_log):
         if digit == '1':
             circuit.x(input_qubit)
             
-    append_qft_circuit(circuit, qubits_count, task_log)
-        
-    # circuit.append(qft_circuit, qubits)
-        
-    # for input_qubit in input_qubits:    
-    #     circuit.h(input_qubit)
+    append_qft_circuit(circuit, task_log)
         
 
-    # qubits_measurement_list = list(reversed(qubits))
-    
-    # circuit.measure(qubits_measurement_list, measure_bits)
     
     backend = Aer.get_backend("qasm_simulator")
     
     circuit_copy = circuit.copy()
-    circuit_copy.save_statevector()
+    circuit.save_statevector()
     
-    statevector = backend.run(circuit_copy).result().get_statevector()
+    statevector = backend.run(circuit).result().get_statevector()
+    
+    figure = plot_bloch_multivector(statevector)
 
     
     task_log(f'QFT input_number: {input_number}')
@@ -88,7 +80,11 @@ def qft(run_values, task_log):
     for state in statevector:
         
         task_log(f'QFT state: {state:.2f}')
+
+    task_log(f'QFT figure: {figure}')
     
+    figure.savefig('/home/ec2-user/environment/m1/app/core-service/core/static/spheres.png',
+                   transparent=True)
     
     
     return circuit

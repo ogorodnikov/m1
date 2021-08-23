@@ -118,7 +118,7 @@ def simon(run_values, task_log):
     task_log(f'SIMON masquerade_bool: {masquerade_bool}')
 
     task_log(f'SIMON input_qubits_count: {input_qubits_count}')
-    task_log(f'SIMON qubits_count: {qubits_count}')
+    task_log(f'SIMON all_qubits_count: {all_qubits_count}')
     task_log(f'SIMON qubits_measurement_list: {qubits_measurement_list}')
     
     task_log(f'SIMON simon_oracle: \n{simon_oracle}')
@@ -157,9 +157,9 @@ def simon_post_processing(counts, task_log):
     rref_mod_matrix = rref_matrix.applyfunc(modulus_two)
     
     
-    qubit_count = len(digits[0])
+    qubits_count = len(digits[0])
     
-    variables = symbols(f'z:{qubit_count}')
+    variables = symbols(f'z:{qubits_count}')
     
     zeros = Matrix.zeros(rref_mod_matrix.rows, 1)
     
@@ -183,7 +183,7 @@ def simon_post_processing(counts, task_log):
     task_log(f'SIMON rref_matrix: ' + repr(rref_matrix))
     task_log(f'SIMON rref_mod_matrix: ' + repr(rref_mod_matrix))
     
-    task_log(f'SIMON qubit_count: {qubit_count}')
+    task_log(f'SIMON qubits_count: {qubits_count}')
     task_log(f'SIMON variables: {variables}')
 
     task_log(f'SIMON solutions: {solutions}')  
