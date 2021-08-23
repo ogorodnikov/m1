@@ -118,7 +118,7 @@ def simon(run_values, task_log):
     task_log(f'SIMON masquerade_bool: {masquerade_bool}')
 
     task_log(f'SIMON input_qubits_count: {input_qubits_count}')
-    task_log(f'SIMON qubits_count: {all_qubits}')
+    task_log(f'SIMON qubits_count: {qubits_count}')
     task_log(f'SIMON qubits_measurement_list: {qubits_measurement_list}')
     
     task_log(f'SIMON simon_oracle: \n{simon_oracle}')

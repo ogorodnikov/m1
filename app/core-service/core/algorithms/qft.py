@@ -1,29 +1,82 @@
+from math import pi
+from itertools import combinations_with_replacement
+
 from qiskit import QuantumCircuit
 
 
+def build_qft_circuit(qubits_count, task_log):
+    
+    qubits = range(qubits_count)
+    pairs = combinations_with_replacement(qubits, 2)
+    
+    circuit = QuantumCircuit(qubits_count)
+    circuit.name = 'QFT Circuit'    
+    
+    for control_qubit, target_qubit in pairs:
+        
+        if control_qubit == target_qubit:
+            circuit.barrier()
+            circuit.h(control_qubit)
+            
+        else:
+            distance = abs(control_qubit - target_qubit)
+            theta = pi / 2 ** distance
+            circuit.cp(theta, control_qubit, target_qubit)
+            
+            task_log(f'QFT distance: {distance}')
+            task_log(f'QFT theta: {theta}')
+            
+        task_log(f'QFT control_qubit: {control_qubit}')
+        task_log(f'QFT target_qubit: {target_qubit}')
+        task_log(f'QFT circuit: \n{circuit}')
+    
+    
+    # if qubit_index == qubits_count:
+    #     return
+    
+    # circuit = QuantumCircuit(qubits_count)
+
+    # circuit.h(qubit_index)
+    
+    # for target_qubit in range(qubit_index + 1, qubits_count):
+
+    #     task_log(f'QFT qubit_index: {qubit_index}')
+    #     task_log(f'QFT target_qubit: {target_qubit}')
+        
+    #     theta = pi / 2 ** target_qubit
+        
+    #     circuit.cp(theta, qubit_index, target_qubit)
+
+    #     task_log(f'QFT theta: {theta}')
+    #     task_log(f'QFT circuit: \n{circuit}')
+        
+    
+    # next_circuit_part = build_qft_circuit(qubits_count, task_log, qubit_index + 1)
+    
+    # if next_circuit_part:
+
+    #     task_log(f'QFT qargs: {list(range(qubit_index, qubits_count))}')       
+        
+    #     circuit.append(next_circuit_part, qargs=range(qubit_index, qubits_count))
+    
+    return circuit
+    
+    
+
 def qft(run_values, task_log):
     
-    pass
-        
-    # input_period = run_values.get('period')
-    # masquerade = run_values.get('masquerade')
-    # masquerade_bool = masquerade.lower() == 'true'
+    input_number = run_values.get('number')
+
+    number = ''.join('1' if digit == '1' else '0' for digit in input_number)
     
-    # period = ''.join('1' if digit == '1' else '0' for digit in input_period)
+    qubits_count = len(number)
+    qubits = range(qubits_count)
     
-    # input_qubits_count = len(period)
-    
-    # output_qubits_count = input_qubits_count
-    # all_qubits_count = input_qubits_count + output_qubits_count
-    
-    # input_qubits = range(input_qubits_count)
-    # all_qubits = range(all_qubits_count)
-    
-    # measure_bits_count = input_qubits_count
-    # measure_bits = range(measure_bits_count)
+    measure_bits_count = qubits_count
+    measure_bits = range(measure_bits_count)
 
 
-    # simon_oracle = build_simon_oracle(period, task_log, masquerade=masquerade_bool)
+    circuit = build_qft_circuit(qubits_count, task_log)
     
 
     # circuit = QuantumCircuit(all_qubits_count, measure_bits_count)
@@ -37,21 +90,16 @@ def qft(run_values, task_log):
     #     circuit.h(input_qubit)
         
 
-    # qubits_measurement_list = list(reversed(input_qubits))
+    # qubits_measurement_list = list(reversed(qubits))
     
     # circuit.measure(qubits_measurement_list, measure_bits)
     
     
-    # task_log(f'SIMON input_period: {input_period}')
-    # task_log(f'SIMON period: {period}')
-    # task_log(f'SIMON masquerade: {masquerade}')
-    # task_log(f'SIMON masquerade_bool: {masquerade_bool}')
+    task_log(f'QFT input_number: {input_number}')
+    task_log(f'QFT number: {number}')
+    task_log(f'QFT qubits_count: {qubits_count}')
 
-    # task_log(f'SIMON input_qubits_count: {input_qubits_count}')
-    # task_log(f'SIMON qubits_count: {all_qubits}')
-    # task_log(f'SIMON qubits_measurement_list: {qubits_measurement_list}')
+    task_log(f'QFT circuit: \n{circuit}')
     
-    # task_log(f'SIMON simon_oracle: \n{simon_oracle}')
-    # task_log(f'SIMON circuit: \n{circuit}')
     
-    # return circuit
+    return circuit
