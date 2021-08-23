@@ -3,14 +3,16 @@ from itertools import combinations_with_replacement
 
 from qiskit import QuantumCircuit
 
+from qiskit import Aer
 
-def build_qft_circuit(qubits_count, task_log):
+
+def append_qft_circuit(circuit, qubits_count, task_log):
     
     qubits = range(qubits_count)
     pairs = combinations_with_replacement(qubits, 2)
     
-    circuit = QuantumCircuit(qubits_count)
-    circuit.name = 'QFT Circuit'    
+    # circuit = QuantumCircuit(qubits_count)
+    # circuit.name = 'QFT Circuit'    
     
     for control_qubit, target_qubit in pairs:
         
@@ -30,36 +32,7 @@ def build_qft_circuit(qubits_count, task_log):
         task_log(f'QFT target_qubit: {target_qubit}')
         task_log(f'QFT circuit: \n{circuit}')
     
-    
-    # if qubit_index == qubits_count:
-    #     return
-    
-    # circuit = QuantumCircuit(qubits_count)
-
-    # circuit.h(qubit_index)
-    
-    # for target_qubit in range(qubit_index + 1, qubits_count):
-
-    #     task_log(f'QFT qubit_index: {qubit_index}')
-    #     task_log(f'QFT target_qubit: {target_qubit}')
-        
-    #     theta = pi / 2 ** target_qubit
-        
-    #     circuit.cp(theta, qubit_index, target_qubit)
-
-    #     task_log(f'QFT theta: {theta}')
-    #     task_log(f'QFT circuit: \n{circuit}')
-        
-    
-    # next_circuit_part = build_qft_circuit(qubits_count, task_log, qubit_index + 1)
-    
-    # if next_circuit_part:
-
-    #     task_log(f'QFT qargs: {list(range(qubit_index, qubits_count))}')       
-        
-    #     circuit.append(next_circuit_part, qargs=range(qubit_index, qubits_count))
-    
-    return circuit
+    # return circuit
     
     
 
@@ -76,15 +49,17 @@ def qft(run_values, task_log):
     measure_bits = range(measure_bits_count)
 
 
-    circuit = build_qft_circuit(qubits_count, task_log)
+    circuit = QuantumCircuit(qubits_count, measure_bits_count)
+    circuit.name = 'QFT Circuit'
     
-
-    # circuit = QuantumCircuit(all_qubits_count, measure_bits_count)
-    
-    # for input_qubit in input_qubits:    
-    #     circuit.h(input_qubit)
+    for input_qubit, digit in enumerate(number):
         
-    # circuit.append(simon_oracle, all_qubits)
+        if digit == '1':
+            circuit.x(input_qubit)
+            
+    append_qft_circuit(circuit, qubits_count, task_log)
+        
+    # circuit.append(qft_circuit, qubits)
         
     # for input_qubit in input_qubits:    
     #     circuit.h(input_qubit)
@@ -94,12 +69,26 @@ def qft(run_values, task_log):
     
     # circuit.measure(qubits_measurement_list, measure_bits)
     
+    backend = Aer.get_backend("qasm_simulator")
+    
+    circuit_copy = circuit.copy()
+    circuit_copy.save_statevector()
+    
+    statevector = backend.run(circuit_copy).result().get_statevector()
+
     
     task_log(f'QFT input_number: {input_number}')
     task_log(f'QFT number: {number}')
     task_log(f'QFT qubits_count: {qubits_count}')
 
     task_log(f'QFT circuit: \n{circuit}')
+    
+    task_log(f'QFT statevector: {statevector}')
+    
+    for state in statevector:
+        
+        task_log(f'QFT state: {state:.2f}')
+    
     
     
     return circuit
