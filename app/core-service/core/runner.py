@@ -40,6 +40,7 @@ runner_functions = {'egcd': egcd,
 post_processing = {'simon': simon_post_processing}
 
 task_process_count = app.config.get('CPU_COUNT', 1)
+task_rollover_size = app.config.get('TASK_ROLLOVER_SIZE', 100)
 
 task_id = 0
 tasks = {}
@@ -58,7 +59,7 @@ task_worker_processes = []
 def run_algorithm(algorithm_id, run_values):
     
     global task_id
-    task_id += 1
+    task_id = task_id % task_rollover_size + 1
     
     new_task = (task_id, algorithm_id, run_values)
     

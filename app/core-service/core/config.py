@@ -59,6 +59,7 @@ class Config(object):
     DOMAIN = os.getenv('DOMAIN')
     VERSION = os.getenv('VERSION')
     SECRET_KEY = os.getenv('SECRET_KEY')
+    TASK_ROLLOVER_SIZE = int(os.getenv('TASK_ROLLOVER_SIZE'))
     
     COGNITO_USER_POOL_ID = user_pool_id
     COGNITO_USER_POOL_CLIENT_ID = user_pool_client_id
