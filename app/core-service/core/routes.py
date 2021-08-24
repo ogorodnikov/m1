@@ -1,6 +1,7 @@
 from core import app, models, users, fb, runner, telegram
 
 from flask import render_template, redirect, url_for, flash, request, session
+from flask import send_from_directory
 
 import boto3
 import botocore.exceptions
@@ -171,6 +172,23 @@ def set_application_parameter():
         flash(f"Test data added to m1-algorithms-table", category='warning')
         
     return redirect(request.referrer or url_for('home')) 
+
+
+@app.route('/download')
+def download():
+    
+    task_id = request.args.get('task_id')
+    content = request.args.get('content')
+    
+    if content == 'statevector':
+        
+        # path = "/home/ec2-user/environment/m1/app/core-service/core/static/figures/"
+        path = "static/figures/"
+        filename = f"statevector_task_{task_id}.png"
+        
+        return send_from_directory(path, filename, as_attachment=True)
+        
+    return redirect(request.referrer or url_for('home'))
     
 
 @app.before_request

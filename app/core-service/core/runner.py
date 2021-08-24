@@ -7,6 +7,7 @@ from multiprocessing import Process, Event, Queue, Manager
 
 from qiskit import IBMQ, Aer, execute
 from qiskit.providers.ibmq import least_busy
+from qiskit.visualization import plot_bloch_multivector
 from qiskit.tools.monitor import backend_overview, job_monitor
 
 from core import app
@@ -181,7 +182,10 @@ def task_runner(task_id, algorithm_id, run_values_multidict):
         
     task_log(task_id, f'RUNNER backend: {backend}')
     
-    # circuit.save_statevector()
+    # circuit_copy = circuit.copy()
+    # circuit_copy.save_statevector()
+    
+    circuit.save_statevector()
 
     job = execute(circuit, backend=backend, shots=1024)
     
@@ -190,12 +194,18 @@ def task_runner(task_id, algorithm_id, run_values_multidict):
     result = job.result()
     counts = result.get_counts()
 
-    # statevector = result.get_statevector()
+
+    statevector = result.get_statevector()
+    figure = plot_bloch_multivector(statevector)
+    
+    figure.savefig(f"/home/ec2-user/environment/m1/app/core-service/core/static/figures/statevector_task_{task_id}.png",
+                   transparent=True)
+                   
     
     task_log(task_id, f'RUNNER counts:')
     [task_log(task_id, f'{state}: {count}') for state, count in sorted(counts.items())]
     
-    # task_log(task_id, f'RUNNER statevector: {statevector}')
+    task_log(task_id, f'RUNNER statevector: {statevector}')
     
     if algorithm_id not in post_processing:
         task_result = {'Counts': counts}

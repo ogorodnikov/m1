@@ -31,6 +31,8 @@ if environ.get('WERKZEUG_RUN_MAIN') == 'true':
     bot = telegram.Bot()
     bot.start()
     
+    # os.remove("/static/figures/*")
+    
 
 
 from core import routes

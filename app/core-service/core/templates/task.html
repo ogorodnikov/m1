@@ -110,7 +110,14 @@
     
   </div>
   
-  <img src="/static/spheres.png">
+  <img src="/static/figures/statevector_task_{{ task_id }}.png">
+  
+              <a href={{ url_for('download', task_id=task_id, content='statevector') }}
+                class="btn btn-info"
+                role="button">
+                Download Statevector
+              </a>
+  
 
 {% endblock %}
 
