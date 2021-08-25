@@ -153,9 +153,11 @@ def task_runner(task_id, algorithm_id, run_values_multidict):
     
     task_log_callback = partial(task_log, task_id)
     
+    
     if run_mode == 'classical':
         
         return runner_function(run_values, task_log_callback)
+        
     
     elif run_mode == 'simulator':
         
@@ -166,38 +168,8 @@ def task_runner(task_id, algorithm_id, run_values_multidict):
         
         circuit.save_statevector()
         
-    elif run_mode == 'quantum_device':
-    
-        qiskit_token = app.config.get('QISKIT_TOKEN')
-        IBMQ.save_account(qiskit_token)
-        
-        if not IBMQ.active_account():
-            IBMQ.load_account()
-            
-        ibmq_provider = IBMQ.get_provider()
-        
-        task_log(task_id, f'RUNNER ibmq_provider: {ibmq_provider}')
-        task_log(task_id, f'RUNNER ibmq_provider.backends(): {ibmq_provider.backends()}')
-        
-        circuit = runner_function(run_values, task_log_callback)
-        qubit_count = circuit.num_qubits        
-
-        backend = get_least_busy_backend(ibmq_provider, qubit_count)
-        
-    task_log(task_id, f'RUNNER backend: {backend}')
-    
-    job = execute(circuit, backend=backend, shots=1024)
-    
-    job_monitor(job, interval=0.5)
-    
-    result = job.result()
-    counts = result.get_counts()
-    
-    task_log(task_id, f'RUNNER counts:')
-    [task_log(task_id, f'{state}: {count}') for state, count in sorted(counts.items())]
-    
-    
-    if run_mode == 'simulator':
+        result = execute_task(task_id, circuit, backend)
+        counts = result.get_counts()
         
         statevector = result.get_statevector(decimals=3)
         
@@ -218,7 +190,29 @@ def task_runner(task_id, algorithm_id, run_values_multidict):
             
             task_log(task_id, f'{state}: {probability_amplitude}')
         
+        
+    elif run_mode == 'quantum_device':
     
+        qiskit_token = app.config.get('QISKIT_TOKEN')
+        IBMQ.save_account(qiskit_token)
+        
+        if not IBMQ.active_account():
+            IBMQ.load_account()
+            
+        ibmq_provider = IBMQ.get_provider()
+        
+        task_log(task_id, f'RUNNER ibmq_provider: {ibmq_provider}')
+        task_log(task_id, f'RUNNER ibmq_provider.backends(): {ibmq_provider.backends()}')
+        
+        circuit = runner_function(run_values, task_log_callback)
+        qubit_count = circuit.num_qubits        
+
+        backend = get_least_busy_backend(ibmq_provider, qubit_count)
+        
+        result = execute_task(task_id, circuit, backend)
+        counts = result.get_counts()
+        
+        
     if algorithm_id not in post_processing:
         task_result = {'Counts': counts}
         
@@ -229,9 +223,21 @@ def task_runner(task_id, algorithm_id, run_values_multidict):
     return task_result
     
     
-# def execute_task():
+def execute_task(task_id, circuit, backend):
     
+    task_log(task_id, f'RUNNER backend: {backend}')
     
+    job = execute(circuit, backend=backend, shots=1024)
+    
+    job_monitor(job, interval=0.5)
+    
+    result = job.result()
+    counts = result.get_counts()
+    
+    task_log(task_id, f'RUNNER counts:')
+    [task_log(task_id, f'{state}: {count}') for state, count in sorted(counts.items())]
+    
+    return result
     
 
 def get_task_results():

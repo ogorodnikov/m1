@@ -7,6 +7,8 @@ DOMAIN = m1.ogoro.me
 
 SECRET_KEY = ***
 
+TASK_ROLLOVER_SIZE = 100
+
 NLB_NAME = m1-core-nlb
 
 USER_POOL = m1-user-pool
