@@ -179,13 +179,14 @@ def download():
     
     task_id = request.args.get('task_id')
     content = request.args.get('content')
+    as_attachment = request.args.get('as_attachment', False)
     
     if content == 'statevector':
         
         path = "static/figures/"
         filename = f"bloch_multivector_task_{task_id}.png"
         
-        return send_from_directory(path, filename, as_attachment=True)
+        return send_from_directory(path, filename, as_attachment=as_attachment)
         
     return redirect(request.referrer or url_for('home'))
     
