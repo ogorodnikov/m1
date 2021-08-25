@@ -10,6 +10,8 @@ from qiskit.providers.ibmq import least_busy
 from qiskit.visualization import plot_bloch_multivector
 from qiskit.tools.monitor import backend_overview, job_monitor
 
+# from qiskit import __qiskit_version__
+
 from core import app
 
 
@@ -162,6 +164,8 @@ def task_runner(task_id, algorithm_id, run_values_multidict):
         
         backend = Aer.get_backend('qasm_simulator')
         
+        circuit.save_statevector()
+        
     elif run_mode == 'quantum_device':
     
         qiskit_token = app.config.get('QISKIT_TOKEN')
@@ -182,30 +186,38 @@ def task_runner(task_id, algorithm_id, run_values_multidict):
         
     task_log(task_id, f'RUNNER backend: {backend}')
     
-    # circuit_copy = circuit.copy()
-    # circuit_copy.save_statevector()
-    
-    circuit.save_statevector()
-
     job = execute(circuit, backend=backend, shots=1024)
     
     job_monitor(job, interval=0.5)
     
     result = job.result()
     counts = result.get_counts()
-
-
-    statevector = result.get_statevector()
-    figure = plot_bloch_multivector(statevector)
-    
-    figure.savefig(f"/home/ec2-user/environment/m1/app/core-service/core/static/figures/statevector_task_{task_id}.png",
-                   transparent=True)
-                   
     
     task_log(task_id, f'RUNNER counts:')
     [task_log(task_id, f'{state}: {count}') for state, count in sorted(counts.items())]
     
-    task_log(task_id, f'RUNNER statevector: {statevector}')
+    
+    if run_mode == 'simulator':
+        
+        statevector = result.get_statevector(decimals=3)
+        
+        figure = plot_bloch_multivector(statevector)
+        
+        figure_path = app.static_folder + f'/figures/bloch_multivector_task_{task_id}.png'
+                        
+        figure.savefig(figure_path, transparent=True)
+
+        task_log(task_id, f'RUNNER statevector:')
+        
+        for state_index, probability_amplitude in enumerate(statevector):
+            
+            if not probability_amplitude:
+                continue
+            
+            state = f'{state_index:0{qubit_count}b}'
+            
+            task_log(task_id, f'{state}: {probability_amplitude}')
+        
     
     if algorithm_id not in post_processing:
         task_result = {'Counts': counts}
@@ -215,6 +227,11 @@ def task_runner(task_id, algorithm_id, run_values_multidict):
         
 
     return task_result
+    
+    
+# def execute_task():
+    
+    
     
 
 def get_task_results():

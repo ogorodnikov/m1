@@ -6,6 +6,7 @@
 
 {% block content %}
 
+
 <div class="row justify-content-center m-3">
 
   <div class="table-responsive">
@@ -104,19 +105,32 @@
 {% endfor %}
             </td>
           </tr>
+          
+          
+          {% if task.status == 'Done' and task.run_values.run_mode == 'simulator' %}
+          
+            <!--<tr class="collapse show" id="collapse-{{ task_id }}" style="background-color:#212121">-->
+            <tr class="collapse show" id="collapse-{{ task_id }}">
+              <td colspan=6>
+                
+                <img class="img-fluid" src="/static/figures/bloch_multivector_task_{{ task_id }}.png">
+  
+                <a href={{ url_for('download', task_id=task_id, content='statevector') }}
+                  class="btn btn-info"
+                  role="button">
+                  Download Statevector
+                </a>
+                
+              </td>
+            </tr>
+            
+          {% endif %}
+          
   
       </tbody>
     </table>
     
   </div>
-  
-  <img src="/static/figures/statevector_task_{{ task_id }}.png">
-  
-              <a href={{ url_for('download', task_id=task_id, content='statevector') }}
-                class="btn btn-info"
-                role="button">
-                Download Statevector
-              </a>
   
 
 {% endblock %}

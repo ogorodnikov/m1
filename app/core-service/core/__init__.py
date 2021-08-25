@@ -1,7 +1,7 @@
 from flask import Flask
 from flask_cors import CORS
 
-from os import environ
+from os import environ, listdir, remove, path
 from logging.config import dictConfig
 
 from core import config
@@ -31,7 +31,13 @@ if environ.get('WERKZEUG_RUN_MAIN') == 'true':
     bot = telegram.Bot()
     bot.start()
     
-    # os.remove("/static/figures/*")
+    
+    figures_folder = path.join(app.static_folder, 'figures')
+    
+    for figure in listdir(figures_folder):
+        remove(path.join(figures_folder, figure))
+        
+        
     
 
 

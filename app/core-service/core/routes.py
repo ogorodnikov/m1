@@ -182,9 +182,8 @@ def download():
     
     if content == 'statevector':
         
-        # path = "/home/ec2-user/environment/m1/app/core-service/core/static/figures/"
         path = "static/figures/"
-        filename = f"statevector_task_{task_id}.png"
+        filename = f"bloch_multivector_task_{task_id}.png"
         
         return send_from_directory(path, filename, as_attachment=True)
         
