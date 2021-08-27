@@ -6,6 +6,7 @@ from logging.config import dictConfig
 
 from core import config
 
+import sys
 
 
 dictConfig(config.LOGGING_CONFIG)
@@ -29,6 +30,6 @@ if environ.get('WERKZEUG_RUN_MAIN') == 'true':
     bot.start()
     
     config.clear_figures_folder(app)
-
+    
 
 from core import routes
