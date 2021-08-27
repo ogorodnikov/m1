@@ -345,6 +345,9 @@ Resources:
       HealthCheckProtocol: HTTP
       HealthyThresholdCount: 3
       UnhealthyThresholdCount: 3
+      TargetGroupAttributes:
+        - Key: deregistration_delay.timeout_seconds
+          Value: 10
 
   CoreListener:
     Type: AWS::ElasticLoadBalancingV2::Listener
