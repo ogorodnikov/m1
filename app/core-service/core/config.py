@@ -91,3 +91,13 @@ LOGGING_CONFIG = {'version': 1,
                                        
                   'root': {'level': 'INFO',
                            'handlers': ['wsgi']}}
+                           
+                           
+def clear_figures_folder(app):
+    
+    figures_folder = os.path.join(app.static_folder, 'figures')
+
+    for figure in os.listdir(figures_folder):
+        if figure == 'README.md':
+            continue
+        os.remove(os.path.join(figures_folder, figure))
