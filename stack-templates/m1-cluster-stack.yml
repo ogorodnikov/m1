@@ -211,6 +211,9 @@ Resources:
       DeploymentConfiguration:
         MaximumPercent: 300
         MinimumHealthyPercent: 100
+        DeploymentCircuitBreaker: 
+          Enable: true
+          Rollback: true
       DesiredCount: 0
       NetworkConfiguration:
         AwsvpcConfiguration:
@@ -262,6 +265,9 @@ Resources:
       DeploymentConfiguration:
         MaximumPercent: 300
         MinimumHealthyPercent: 100
+        DeploymentCircuitBreaker: 
+          Enable: true
+          Rollback: true
       DesiredCount: 0
       NetworkConfiguration:
         AwsvpcConfiguration:
