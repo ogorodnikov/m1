@@ -19,10 +19,7 @@
     
       <div class="row">
         
-        
-        
         <div class="col-auto">
-  
   
           {% if config['TELEGRAM_BOT_STATE'] == 'Started' %}
           
@@ -33,67 +30,40 @@
               Stop Bot
             </button>
             
-            <!--<a href="{{ url_for('admin', bot="stop") }}"-->
-            <!--   class="btn btn-warning"-->
-            <!--   role="button">-->
-            <!--  Stop Bot-->
-            <!--</a>-->
-        
           {% else %}
           
             <button type="submit" 
-                    class="btn btn-warning" 
+                    class="btn btn-success" 
                     name="command"
                     value="start_bot">
               Start Bot
             </button>
         
-            <!--<a href="{{ url_for('admin', bot="start") }}"-->
-            <!--   class="btn btn-success"-->
-            <!--   role="button">-->
-            <!--  Start Bot-->
-            <!--</a>-->
-            
           {% endif %}
-    
   
         </div>
       
         <div class="col-auto">
           
           <button type="submit" 
-                  class="btn btn-warning" 
+                  class="btn btn-info" 
                   name="command"
                   value="add_test_data">
             Add Test Data
           </button>          
-  
-          <!--<a href="{{ url_for('admin', add_test_data="") }}"-->
-          <!--  class="btn btn-info"-->
-          <!--  role="button">-->
-          <!--  Add Test Data to DB-->
-          <!--</a>-->
   
         </div>
         
         <div class="col-auto">
           
           <button type="submit" 
-                  class="btn btn-warning" 
+                  class="btn btn-danger" 
                   name="command"
                   value="terminate">
             Terminate
           </button>          
   
-  
-          <!--<a href="{{ url_for('admin', _method="POST") }}"-->
-          <!--  class="btn btn-danger"-->
-          <!--  role="button">-->
-          <!--  Terminate-->
-          <!--</a>-->
-  
         </div>
-  
             
       </div>
       

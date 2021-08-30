@@ -8,8 +8,6 @@ import botocore.exceptions
 
 import requests
 
-import time
-
 
 ###   Login   ###
 
@@ -202,9 +200,7 @@ def admin():
         
     if command == 'terminate':
         flash(f"Terminating", category='danger')
-        
-        # time.sleep(3)
-        # exit()
+        exit()
     
     flash(request.form)
 
