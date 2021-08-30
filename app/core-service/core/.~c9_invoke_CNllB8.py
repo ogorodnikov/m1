@@ -180,31 +180,26 @@ def download():
 @app.route('/admin', methods=["GET", "POST"])
 def admin():
     
-    command = request.form.get('command')
+    # telegram_bot = app.config.get('TELEGRAM_BOT')
+    # telegram_bot_action = request.args.get('bot')
     
-    if not command:
-        
-        return render_template("admin.html")
-    
-    telegram_bot = app.config.get('TELEGRAM_BOT')
-    
-    if command == 'start_bot':
-        telegram_bot.start()
-        flash("Telegram bot started", category='info')
+    # if telegram_bot_action == 'start':
+    #     telegram_bot.start()
+    #     flash("Telegram bot started", category='info')
 
-    if command == 'stop_bot':
-        telegram_bot.stop()
-        flash("Telegram bot stopped", category='warning')
+    # if telegram_bot_action == 'stop':
+    #     telegram_bot.stop()
+    #     flash("Telegram bot stopped", category='warning')
     
-    if command == 'add_test_data':
-        models.add_test_data()
-        flash(f"Test data added to m1-algorithms-table", category='warning')
+    # if 'add_test_data' in request.args:
+    #     models.add_test_data()
+    #     flash(f"Test data added to m1-algorithms-table", category='warning')
         
-    if command == 'terminate':
-        flash(f"Terminating", category='danger')
-        
-        # time.sleep(3)
-        # exit()
+    # if 'terminate' in request.args:
+
+    #     flash(f"Terminating", category='danger')
+    #     # time.sleep(3)
+    #     # exit()
     
     flash(request.form)
 
