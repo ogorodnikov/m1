@@ -191,6 +191,12 @@ def download():
     return redirect(request.referrer or url_for('home'))
     
 
+@app.route('/admin')
+def admin():
+    
+    return render_template("admin.html")
+    
+
 @app.before_request
 def show_task_results():
     
