@@ -6,9 +6,6 @@
 
 {% block content %}
 
-{{ tasks }}
-
-
 <div class="row justify-content-center m-3">
 
   <div class="table-responsive">
@@ -119,7 +116,9 @@
                 
                 <!--<img class="img-fluid" src="/static/figures/bloch_multivector_task_{{ task_id }}.png">-->
                 <img class="img-fluid" src={{ url_for('download', task_id=task_id, content='statevector') }}>
-  
+                
+                <br>
+                
                 <a href={{ url_for('download', task_id=task_id, content='statevector', as_attachment=True) }}
                   class="btn btn-info"
                   role="button">

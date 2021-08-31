@@ -10,8 +10,6 @@ from qiskit.providers.ibmq import least_busy
 from qiskit.visualization import plot_bloch_multivector
 from qiskit.tools.monitor import backend_overview, job_monitor
 
-# from sys import exit
-
 from core import app
 
 
@@ -178,7 +176,7 @@ def task_runner(task_id, algorithm_id, run_values_multidict):
         
         backend = Aer.get_backend('qasm_simulator')
         
-        # circuit.save_statevector()
+        circuit.save_statevector()
         
         result = execute_task(task_id, circuit, backend)
         
@@ -188,28 +186,28 @@ def task_runner(task_id, algorithm_id, run_values_multidict):
         
         task_log(task_id, f'RUNNER counts: {counts}')
         
-        # statevector = result.get_statevector(decimals=3)
+        statevector = result.get_statevector(decimals=3)
         
-        # task_log(task_id, f'RUNNER statevector: {statevector}')
+        task_log(task_id, f'RUNNER statevector: {statevector}')
         
-        # figure = plot_bloch_multivector(statevector)
+        figure = plot_bloch_multivector(statevector)
         
-        # task_log(task_id, f'RUNNER figure: {figure}')        
+        task_log(task_id, f'RUNNER figure: {figure}')        
         
-        # figure_path = app.static_folder + f'/figures/bloch_multivector_task_{task_id}.png'
+        figure_path = app.static_folder + f'/figures/bloch_multivector_task_{task_id}.png'
                         
-        # figure.savefig(figure_path, transparent=True)
+        figure.savefig(figure_path, transparent=True, bbox_inches='tight')
 
-        # task_log(task_id, f'RUNNER statevector:')
+        task_log(task_id, f'RUNNER statevector:')
         
-        # for state_index, probability_amplitude in enumerate(statevector):
+        for state_index, probability_amplitude in enumerate(statevector):
             
-        #     if not probability_amplitude:
-        #         continue
+            if not probability_amplitude:
+                continue
             
-        #     state = f'{state_index:0{qubit_count}b}'
+            state = f'{state_index:0{qubit_count}b}'
             
-        #     task_log(task_id, f'{state}: {probability_amplitude}')
+            task_log(task_id, f'{state}: {probability_amplitude}')
         
         
     elif run_mode == 'quantum_device':
