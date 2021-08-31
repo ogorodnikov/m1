@@ -145,7 +145,7 @@ def get_tasks():
         
         task = runner.tasks[task_id]
         logs = runner.logs[task_id]
-    
+        
         return render_template("task.html", task_id=task_id, task=task, logs=logs)
         
     else:

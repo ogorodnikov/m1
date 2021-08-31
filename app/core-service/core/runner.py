@@ -43,15 +43,25 @@ runner_functions = {'egcd': egcd,
 post_processing = {'simon': simon_post_processing}
 
 task_process_count = app.config.get('CPU_COUNT', 1)
+
+
+### Test
+
+task_process_count = 2
+
+
+
 task_rollover_size = app.config.get('TASK_ROLLOVER_SIZE', 100)
 
 task_id = 0
-tasks = {}
+
 task_queue = Queue()
 task_results_queue = Queue()
 
 manager = Manager()
+
 logs = manager.dict()
+tasks = manager.dict()
 
 worker_active_flag = Event()
 worker_active_flag.set()
@@ -66,13 +76,15 @@ def run_algorithm(algorithm_id, run_values):
     
     new_task = (task_id, algorithm_id, run_values)
     
-    tasks[task_id] = {'algorithm_id': algorithm_id,
-                      'run_values': run_values,
-                      'status': 'Queued'}
-                      
-    logs[task_id] = []
-                      
     task_queue.put(new_task)
+    
+    new_task_record = {'algorithm_id': algorithm_id,
+                       'run_values': run_values,
+                       'status': 'Queued'}
+    
+    tasks[task_id] = manager.dict(new_task_record)
+    
+    logs[task_id] = manager.list()
     
     app.logger.info(f'RUNNER task_id: {task_id}')
     app.logger.info(f'RUNNER new_task: {new_task}')
@@ -131,11 +143,11 @@ def task_worker(task_queue, task_results_queue, worker_active_flag):
             
             task_results_queue.put((task_id, result, status))
 
-            task_log(task_id, f'Result: {result}')
-            task_log(task_id, f'Status: {status}')
+            task_log(task_id, f'RUNNER Result: {result}')
+            task_log(task_id, f'RUNNER Status: {status}')
             
-            app.logger.info(f'task_results_queue.qsize: {task_results_queue.qsize()}')
-            app.logger.info(f'len(tasks): {len(tasks)}')
+            app.logger.info(f'RUNNER task_results_queue.qsize: {task_results_queue.qsize()}')
+            app.logger.info(f'RUNNER len(tasks): {len(tasks)}')
         
 
 def task_runner(task_id, algorithm_id, run_values_multidict):
@@ -166,29 +178,38 @@ def task_runner(task_id, algorithm_id, run_values_multidict):
         
         backend = Aer.get_backend('qasm_simulator')
         
-        circuit.save_statevector()
+        # circuit.save_statevector()
         
         result = execute_task(task_id, circuit, backend)
+        
+        task_log(task_id, f'RUNNER result: {result}')
+
         counts = result.get_counts()
         
-        statevector = result.get_statevector(decimals=3)
+        task_log(task_id, f'RUNNER counts: {counts}')
         
-        figure = plot_bloch_multivector(statevector)
+        # statevector = result.get_statevector(decimals=3)
         
-        figure_path = app.static_folder + f'/figures/bloch_multivector_task_{task_id}.png'
+        # task_log(task_id, f'RUNNER statevector: {statevector}')
+        
+        # figure = plot_bloch_multivector(statevector)
+        
+        # task_log(task_id, f'RUNNER figure: {figure}')        
+        
+        # figure_path = app.static_folder + f'/figures/bloch_multivector_task_{task_id}.png'
                         
-        figure.savefig(figure_path, transparent=True)
+        # figure.savefig(figure_path, transparent=True)
 
-        task_log(task_id, f'RUNNER statevector:')
+        # task_log(task_id, f'RUNNER statevector:')
         
-        for state_index, probability_amplitude in enumerate(statevector):
+        # for state_index, probability_amplitude in enumerate(statevector):
             
-            if not probability_amplitude:
-                continue
+        #     if not probability_amplitude:
+        #         continue
             
-            state = f'{state_index:0{qubit_count}b}'
+        #     state = f'{state_index:0{qubit_count}b}'
             
-            task_log(task_id, f'{state}: {probability_amplitude}')
+        #     task_log(task_id, f'{state}: {probability_amplitude}')
         
         
     elif run_mode == 'quantum_device':
@@ -218,7 +239,8 @@ def task_runner(task_id, algorithm_id, run_values_multidict):
         
     else:
         task_result = post_processing[algorithm_id](counts, task_log_callback)
-        
+    
+    task_log(task_id, f'RUNNER task_result: {task_result}')
 
     return task_result
     
@@ -242,14 +264,26 @@ def execute_task(task_id, circuit, backend):
 
 def get_task_results():
     
+    # app.logger.info(f'RUNNER get_task_results:')
+    # app.logger.info(f'RUNNER task_results_queue: {task_results_queue}')
+    # app.logger.info(f'RUNNER task_results_queue.qsize: {task_results_queue.qsize()}')
+
     while not task_results_queue.empty():
         
         task_result = task_results_queue.get()
         
         task_id, result, status = task_result
         
+        # app.logger.info(f'RUNNER task_result: {task_result}')
+        
+        # app.logger.info(f'RUNNER status: {status}')
+        
+        # app.logger.info(f'RUNNER tasks[task_id]["status"]: {tasks[task_id]["status"]}')
+        
         tasks[task_id]['result'] = result            
         tasks[task_id]['status'] = status
+        
+        # app.logger.info(f'RUNNER tasks: {tasks}')
         
         if status == 'Running':
             continue
