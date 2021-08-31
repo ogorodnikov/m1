@@ -1,7 +1,7 @@
 import time
 import traceback
 
-from os import getpid
+from os import getpid, _exit
 from functools import partial
 from multiprocessing import Process, Event, Queue, Manager
 
@@ -10,7 +10,7 @@ from qiskit.providers.ibmq import least_busy
 from qiskit.visualization import plot_bloch_multivector
 from qiskit.tools.monitor import backend_overview, job_monitor
 
-from sys import exit
+# from sys import exit
 
 from core import app
 
@@ -270,4 +270,4 @@ def get_least_busy_backend(provider, qubit_count):
     
 def terminate_application(message):
     app.logger.info(f'RUNNER terminate_application: {message}')
-    exit(message)
+    _exit(0)
