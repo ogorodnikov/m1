@@ -27,6 +27,7 @@ from core.algorithms.grover_sudoku import grover_sudoku
 from core.algorithms.dj import dj
 from core.algorithms.simon import simon, simon_post_processing
 from core.algorithms.qft import qft
+from core.algorithms.qpe import qpe
 
 
 runner_functions = {'egcd': egcd,
@@ -35,7 +36,8 @@ runner_functions = {'egcd': egcd,
                     'grover_sudoku': grover_sudoku,
                     'dj': dj,
                     'simon': simon,
-                    'qft': qft
+                    'qft': qft,
+                    'qpe': qpe
                    }
                    
 post_processing = {'simon': simon_post_processing}
@@ -45,8 +47,7 @@ task_process_count = app.config.get('CPU_COUNT', 1)
 
 ### Test
 
-task_process_count = 2
-
+# task_process_count = 2
 
 
 task_rollover_size = app.config.get('TASK_ROLLOVER_SIZE', 100)

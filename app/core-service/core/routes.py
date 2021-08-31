@@ -153,11 +153,6 @@ def get_tasks():
         return render_template("tasks.html", tasks=runner.tasks, logs=runner.logs)
         
 
-# @app.route('/set')
-# def set_application_parameter():
-#     ...
-
-
 @app.route('/download')
 def download():
     
