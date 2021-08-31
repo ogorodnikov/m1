@@ -54,6 +54,7 @@ task_process_count = app.config.get('CPU_COUNT', 1)
 task_rollover_size = app.config.get('TASK_ROLLOVER_SIZE', 100)
 
 PLOT_STATEVECTOR_TIMEOUT = 5
+TASK_TIMEOUT = 3
 
 task_id = 0
 
@@ -129,10 +130,18 @@ def task_worker(task_queue, task_results_queue, worker_active_flag):
             
             app.logger.info(f'RUNNER pop_task: {pop_task}')
             app.logger.info(f'RUNNER task_queue.qsize: {task_queue.qsize()}')
+            
+            signal.signal(signal.SIGALRM, task_timeout_handler)
+            signal.alarm(TASK_TIMEOUT)
 
             try:
                 
+
+                
                 result = task_runner(task_id, algorithm_id, run_values)
+                
+                time.sleep(10)                
+                
                 status = 'Done'
                 
             except Exception as exception:
@@ -142,6 +151,8 @@ def task_worker(task_queue, task_results_queue, worker_active_flag):
                 
                 result = None
                 status = 'Failed'
+            
+            signal.alarm(0)
             
             task_results_queue.put((task_id, result, status))
 
@@ -285,10 +296,20 @@ def get_least_busy_backend(provider, qubit_count):
     
     return least_busy_backend
     
+
+def task_timeout_handler(signal_number, stack_frame):
+    
+    raise TimeoutError(f"Task timeout: {TASK_TIMEOUT} seconds")
+    
+
+def plot_timeout_handler(signal_number, stack_frame):
+    
+    raise TimeoutError(f"Plot timeout: {PLOT_STATEVECTOR_TIMEOUT} seconds")
+    
     
 def plot_statevector_figure(task_id, statevector):
     
-    signal.signal(signal.SIGALRM, lambda signal_number, stack_frame: 1/0)
+    signal.signal(signal.SIGALRM, plot_timeout_handler)
 
     signal.alarm(PLOT_STATEVECTOR_TIMEOUT)
 
@@ -304,9 +325,9 @@ def plot_statevector_figure(task_id, statevector):
                     
         figure.savefig(figure_path, transparent=True, bbox_inches='tight')
         
-    except ZeroDivisionError:
+    except TimeoutError as exception:
         
-        task_log(task_id, f'RUNNER plotting timeout')
+        task_log(task_id, exception)
 
     signal.alarm(0)
     
