@@ -202,7 +202,7 @@ def admin():
         flash(f"Terminating", category='danger')
         exit()
     
-    flash(request.form)
+    # flash(request.form)
 
     return render_template("admin.html")
     
