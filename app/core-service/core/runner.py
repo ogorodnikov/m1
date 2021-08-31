@@ -1,4 +1,5 @@
 import time
+import signal
 import traceback
 
 from os import getpid, _exit
@@ -51,6 +52,8 @@ task_process_count = app.config.get('CPU_COUNT', 1)
 
 
 task_rollover_size = app.config.get('TASK_ROLLOVER_SIZE', 100)
+
+PLOT_STATEVECTOR_TIMEOUT = 5
 
 task_id = 0
 
@@ -181,23 +184,17 @@ def task_runner(task_id, algorithm_id, run_values_multidict):
         
         result = execute_task(task_id, circuit, backend)
         
-        task_log(task_id, f'RUNNER result: {result}')
+        # task_log(task_id, f'RUNNER result: {result}')
 
         counts = result.get_counts()
         
-        task_log(task_id, f'RUNNER counts: {counts}')
+        # task_log(task_id, f'RUNNER counts: {counts}')
         
         statevector = result.get_statevector(decimals=3)
         
-        task_log(task_id, f'RUNNER statevector: {statevector}')
         
-        figure = plot_bloch_multivector(statevector)
+        plot_statevector_figure(task_id, statevector)
         
-        task_log(task_id, f'RUNNER figure: {figure}')        
-        
-        figure_path = app.static_folder + f'/figures/bloch_multivector_task_{task_id}.png'
-                        
-        figure.savefig(figure_path, transparent=True, bbox_inches='tight')
 
         task_log(task_id, f'RUNNER statevector:')
         
@@ -263,26 +260,14 @@ def execute_task(task_id, circuit, backend):
 
 def get_task_results():
     
-    # app.logger.info(f'RUNNER get_task_results:')
-    # app.logger.info(f'RUNNER task_results_queue: {task_results_queue}')
-    # app.logger.info(f'RUNNER task_results_queue.qsize: {task_results_queue.qsize()}')
-
     while not task_results_queue.empty():
         
         task_result = task_results_queue.get()
         
         task_id, result, status = task_result
         
-        # app.logger.info(f'RUNNER task_result: {task_result}')
-        
-        # app.logger.info(f'RUNNER status: {status}')
-        
-        # app.logger.info(f'RUNNER tasks[task_id]["status"]: {tasks[task_id]["status"]}')
-        
         tasks[task_id]['result'] = result            
         tasks[task_id]['status'] = status
-        
-        # app.logger.info(f'RUNNER tasks: {tasks}')
         
         if status == 'Running':
             continue
@@ -299,6 +284,31 @@ def get_least_busy_backend(provider, qubit_count):
     least_busy_backend = least_busy(provider.backends(filters=backend_filter))
     
     return least_busy_backend
+    
+    
+def plot_statevector_figure(task_id, statevector):
+    
+    signal.signal(signal.SIGALRM, lambda signal_number, stack_frame: 1/0)
+
+    signal.alarm(PLOT_STATEVECTOR_TIMEOUT)
+
+    try:
+        
+        figure = plot_bloch_multivector(statevector)
+        
+        # time.sleep(10)
+        
+        task_log(task_id, f'RUNNER figure: {figure}')        
+    
+        figure_path = app.static_folder + f'/figures/bloch_multivector_task_{task_id}.png'
+                    
+        figure.savefig(figure_path, transparent=True, bbox_inches='tight')
+        
+    except ZeroDivisionError:
+        
+        task_log(task_id, f'RUNNER plotting timeout')
+
+    signal.alarm(0)
     
     
 def terminate_application(message):
