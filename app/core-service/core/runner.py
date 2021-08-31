@@ -10,7 +10,7 @@ from qiskit.providers.ibmq import least_busy
 from qiskit.visualization import plot_bloch_multivector
 from qiskit.tools.monitor import backend_overview, job_monitor
 
-# from qiskit import __qiskit_version__
+from sys import exit
 
 from core import app
 
@@ -266,3 +266,8 @@ def get_least_busy_backend(provider, qubit_count):
     least_busy_backend = least_busy(provider.backends(filters=backend_filter))
     
     return least_busy_backend
+    
+    
+def terminate_application(message):
+    app.logger.info(f'RUNNER terminate_application: {message}')
+    exit(message)

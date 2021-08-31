@@ -200,10 +200,8 @@ def admin():
         
     if command == 'terminate':
         flash(f"Terminating", category='danger')
-        exit()
+        runner.terminate_application("Terminated by admin")
     
-    # flash(request.form)
-
     return render_template("admin.html")
     
 
