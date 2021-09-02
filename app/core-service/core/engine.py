@@ -48,15 +48,15 @@ class Runner():
         ### Test
         # self.task_process_count = 2
         
-        self.task_id = 0
+        self.task_count = 0
         
         self.task_queue = Queue()
         self.task_results_queue = Queue()
         
         self.manager = Manager()
         
-        self.logs = manager.dict()
-        self.tasks = manager.dict()
+        self.logs = self.manager.dict()
+        self.tasks = self.manager.dict()
         
         self.worker_active_flag = Event()
         self.worker_active_flag.set()
@@ -64,26 +64,28 @@ class Runner():
         self.start_task_worker_processes()
         
         
-        self.tasks_pool = Pool(processes=task_process_count)
+        self.tasks_pool = Pool(processes=self.task_process_count)
         
 
         app.logger.info(f'RUNNER initiated: {self}')
         
         
-    def task_log(task_id, message):
+    def task_log(self, task_id, message):
 
         app.logger.info(f'{message}')
         
-        logs[task_id] += [message]
+        self.logs[task_id] += [message]
 
 
 
 
     def run_algorithm(self, algorithm_id, run_values):
         
-        self.task_id = self.task_id % self.task_rollover_size + 1
+        self.task_count = self.task_count % self.task_rollover_size + 1
         
-        new_task = (self.task_id, algorithm_id, run_values)
+        task_id = self.task_count
+        
+        new_task = (task_id, algorithm_id, run_values)
         
         self.task_queue.put(new_task)
         
@@ -96,10 +98,10 @@ class Runner():
         
         app.logger.info(f'RUNNER task_id: {task_id}')
         app.logger.info(f'RUNNER new_task: {new_task}')
-        app.logger.info(f'RUNNER task_queue: {task_queue}')
-        app.logger.info(f'RUNNER task_queue.qsize: {task_queue.qsize()}')
+        app.logger.info(f'RUNNER task_queue: {self.task_queue}')
+        app.logger.info(f'RUNNER task_queue.qsize: {self.task_queue.qsize()}')
         
-        return self.task_id
+        return task_id
         
     
     def start_task_worker_processes(self):
@@ -189,7 +191,7 @@ class Runner():
             
             circuit.save_statevector()
             
-            result = execute_task(task_id, circuit, backend)
+            result = self.execute_task(task_id, circuit, backend)
             
             # self.task_log(task_id, f'RUNNER result: {result}')
     
@@ -199,7 +201,7 @@ class Runner():
             
             statevector = result.get_statevector(decimals=3)
             
-            plot_statevector_figure(task_id, statevector)
+            self.plot_statevector_figure(task_id, statevector)
     
             self.task_log(task_id, f'RUNNER statevector:')
             
@@ -229,9 +231,9 @@ class Runner():
             circuit = runner_function(run_values, task_log_callback)
             qubit_count = circuit.num_qubits        
     
-            backend = get_least_busy_backend(ibmq_provider, qubit_count)
+            backend = self.get_least_busy_backend(ibmq_provider, qubit_count)
             
-            result = execute_task(task_id, circuit, backend)
+            result = self.execute_task(task_id, circuit, backend)
             counts = result.get_counts()
             
             

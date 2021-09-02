@@ -12,20 +12,29 @@ dictConfig(config.LOGGING_CONFIG)
 
 app = Flask(__name__)
 
-app.logger.info(f'INIT WERKZEUG_RUN_MAIN')
 
 
-if environ.get('WERKZEUG_RUN_MAIN') == 'true':
+
+if not environ.get('WERKZEUG_RUN_MAIN'):
     
-    app.logger.info(f'INIT WERKZEUG_RUN_MAIN == True')
+    app.logger.info(f'environ.get"(WERKZEUG_RUN_MAIN"): {environ.get("WERKZEUG_RUN_MAIN")}')
+    
+
+
+
+else:
+    
+    app.logger.info(f'environ.get("WERKZEUG_RUN_MAIN"): {environ.get("WERKZEUG_RUN_MAIN")}')
     
     CORS(app)
 
     app.config.from_object(config.Config)
     
-    from core import run, telegram
+    from core import engine
     
-    runner = run.Runner()
+    runner = engine.Runner()
+    
+    from core import telegram
     
     bot = telegram.Bot()
     bot.start()
@@ -33,4 +42,4 @@ if environ.get('WERKZEUG_RUN_MAIN') == 'true':
     config.clear_figures_folder(app)
     
 
-from core import routes
+    from core import routes

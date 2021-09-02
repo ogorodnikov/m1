@@ -1,4 +1,4 @@
-from core import app, models, users, fb, runner, telegram
+from core import app, models, users, fb, runner
 
 from flask import render_template, redirect, url_for, flash, request, session
 from flask import send_from_directory
