@@ -6,20 +6,19 @@
 
 {% block content %}
 
-  <div class="container-fluid">
-    
+  <div class="container-fluid align-items-center">
+
     <div class="row">
-      <div class="col-sm-12 mt-4 mb-3">
+      <div class="col text-center m-3">
         <h5>Admin:</h5>
       </div>
     </div>
-    
-    
+
     <form action={{ url_for('admin') }} method="POST">
     
-      <div class="row">
+      <div class="row justify-content-start m-0">
         
-        <div class="col-auto">
+        <div class="col-auto mb-3">
   
           {% if config['TELEGRAM_BOT_STATE'] == 'Started' %}
           
@@ -43,7 +42,7 @@
   
         </div>
       
-        <div class="col-auto">
+        <div class="col-auto mb-3">
           
           <button type="submit" 
                   class="btn btn-info" 
@@ -54,7 +53,7 @@
   
         </div>
         
-        <div class="col-auto">
+        <div class="col-auto mb-3">
           
           <button type="submit" 
                   class="btn btn-danger" 
@@ -66,9 +65,8 @@
         </div>
             
       </div>
-      
     </form>
-    
+  </div>
     
     
     <!-- Button trigger modal -->
