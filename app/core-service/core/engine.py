@@ -42,11 +42,13 @@ class Runner():
     
     def __init__(self, *args, **kwargs):
         
-        self.task_process_count = app.config.get('CPU_COUNT', 1)
+        self.task_workers_count = app.config.get('CPU_COUNT', 1)
         self.task_rollover_size = app.config.get('TASK_ROLLOVER_SIZE', 100)
         
+        self.queue_workers_count = 1
+        
         ### Test
-        # self.task_process_count = 2
+        # self.task_worker_count = 2
         
         self.task_count = 0
         
@@ -61,11 +63,12 @@ class Runner():
         self.worker_active_flag = Event()
         self.worker_active_flag.set()
         
-        self.start_task_worker_processes()
         
         
-        self.tasks_pool = Pool(processes=self.task_process_count)
         
+        self.task_workers_pool = Pool(processes=self.task_workers_count)
+        
+        self.start_queue_workers()
 
         app.logger.info(f'RUNNER initiated: {self}')
         
@@ -75,8 +78,6 @@ class Runner():
         app.logger.info(f'{message}')
         
         self.logs[task_id] += [message]
-
-
 
 
     def run_algorithm(self, algorithm_id, run_values):
@@ -103,24 +104,24 @@ class Runner():
         
         return task_id
         
-    
-    def start_task_worker_processes(self):
         
-        self.task_worker_processes = []
+    def start_queue_workers(self):
         
-        for i in range(self.task_process_count):
-        
-            task_worker_process = Process(
-                                      target=self.task_worker,
-                                      args=(self.task_queue, self.task_results_queue, self.worker_active_flag),
-                                      daemon=True)
-                                                  
-            task_worker_process.start()
+        self.queue_workers = []
+
+        for i in range(self.queue_workers_count):
             
-            self.task_worker_processes.append(task_worker_process)
+            queue_worker = Process(target=self.task_worker,
+                                   args=(),
+                                   name=f"Process-queue-worker-{i}",
+                                   daemon=True)
+                                      
+            queue_worker.start()
             
-    
-    def task_worker(self, task_queue, task_results_queue, worker_active_flag):
+            self.queue_workers.append(queue_worker)        
+            
+            
+    def task_worker(self):
         
         app.logger.info(f'RUNNER task_worker started: {getpid()}')
         
@@ -139,7 +140,21 @@ class Runner():
                 app.logger.info(f'RUNNER pop_task: {pop_task}')
                 app.logger.info(f'RUNNER task_queue.qsize: {self.task_queue.qsize()}')
                 
+                
+                # def test():
+                #     print('test ok')
+                
                 try:
+                    
+                    # app.logger.info(f'RUNNER dir(self): {dir(self)}')
+                    # app.logger.info(f'RUNNER task_workers_pool: {self.task_workers_pool}')
+                    
+                    # res = self.task_workers_pool.apply_async(test, ())
+                    
+                    # test_res = res.get(timeout=10)
+                    
+                    # app.logger.info(f'RUNNER test_res: {test_res}')
+                    
                     
                     result = self.task_runner(task_id, algorithm_id, run_values)
                     status = 'Done'
@@ -152,7 +167,7 @@ class Runner():
                     result = None
                     status = 'Failed'
                 
-                task_results_queue.put((task_id, result, status))
+                self.task_results_queue.put((task_id, result, status))
     
                 self.task_log(task_id, f'RUNNER Result: {result}')
                 self.task_log(task_id, f'RUNNER Status: {status}')
@@ -202,6 +217,8 @@ class Runner():
             statevector = result.get_statevector(decimals=3)
             
             self.plot_statevector_figure(task_id, statevector)
+            
+            self.task_log(task_id, f'RUNNER after plot_statevector_figure')
     
             self.task_log(task_id, f'RUNNER statevector:')
             
@@ -300,8 +317,12 @@ class Runner():
         self.task_log(task_id, f'RUNNER figure: {figure}')        
     
         figure_path = app.static_folder + f'/figures/bloch_multivector_task_{task_id}.png'
+        
+        self.task_log(task_id, f'RUNNER figure_path: {figure_path}')
                     
         figure.savefig(figure_path, transparent=True, bbox_inches='tight')
+        
+        self.task_log(task_id, f'RUNNER figure saved')
         
         
     def terminate_application(self, message):
