@@ -3,7 +3,7 @@ import traceback
 
 from os import getpid, _exit
 from functools import partial
-from multiprocessing import Process, Event, Queue, Manager
+from multiprocessing import Process, Event, Queue, Manager, Pool
 
 from qiskit import IBMQ, Aer, execute
 from qiskit.providers.ibmq import least_busy
@@ -29,6 +29,36 @@ from core.algorithms.simon import simon, simon_post_processing
 from core.algorithms.qft import qft
 from core.algorithms.qpe import qpe
 
+
+
+class Bot(TeleBot):
+    
+    def __init__(self, *args, **kwargs):
+        
+        telegram_token = app.config.get('TELEGRAM_TOKEN')
+        
+        super().__init__(telegram_token, *args, 
+                         parse_mode='HTML', threaded=False, **kwargs)
+        
+        self.register_handlers()
+
+        app.config['TELEGRAM_BOT'] = self
+        app.config['TELEGRAM_BOT_STATE'] = 'Stopped'
+
+        app.logger.info(f'BOT initiated: {self}')
+        
+        
+    def start(self):
+        
+        polling_worker_thread = Thread(target=self.polling, daemon=True)
+        
+        polling_worker_thread.name = "Telegram bot polling"
+        polling_worker_thread.start()
+        
+        app.config['TELEGRAM_BOT_STATE'] = 'Started'
+
+        app.logger.info(f'BOT polling: {self}')
+        app.logger.info(f'BOT enumerate_threads: {enumerate_threads()}')
 
 runner_functions = {'egcd': egcd,
                     'bernvaz': bernvaz,
@@ -62,11 +92,6 @@ task_results_queue = Queue()
 
 manager = Manager()
 
-app.logger.info(f'RUNNER manager: {manager}')
-
-print()
-
-
 logs = manager.dict()
 tasks = manager.dict()
 
@@ -74,6 +99,9 @@ worker_active_flag = Event()
 worker_active_flag.set()
 
 task_worker_processes = []
+
+
+tasks_pool = Pool(processes=task_process_count)
 
 
 def run_algorithm(algorithm_id, run_values):
@@ -109,10 +137,6 @@ def start_task_worker_processes():
                                   target=task_worker,
                                   args=(task_queue, task_results_queue, worker_active_flag),
                                   daemon=True)
-                                  
-        app.logger.info(f'RUNNER task_worker_process: {task_worker_process}')                
-        app.logger.info(f'RUNNER task_worker_process.daemon: {task_worker_process.daemon}')                
-        app.logger.info(f'RUNNER task_worker_process.pid: {task_worker_process.pid}')                
                                               
         task_worker_process.start()
         
@@ -142,35 +166,46 @@ def task_worker(task_queue, task_results_queue, worker_active_flag):
             
             try:
                 
-                result = None
+                # result = None
                 
-                task_runner_process = Process(target=task_runner,
-                                              args=(task_id, algorithm_id, run_values, result),
-                                              name=f'Process-task-id-{task_id}',
-                                              daemon=False)
-                    
-                
-                # task_thread = threading.Thread(target=task_runner,
+                # task_runner_process = Process(target=task_runner,
                 #                               args=(task_id, algorithm_id, run_values, result),
-                #                               name=f'Thread-{task_id}',
-                #                               daemon=True)
+                #                               name=f'Process-task-id-{task_id}',
+                #                               daemon=False)
+                    
                 
-                task_runner_process.start()
-                task_runner_process.join(3)
+                # # task_thread = threading.Thread(target=task_runner,
+                # #                               args=(task_id, algorithm_id, run_values, result),
+                # #                               name=f'Thread-{task_id}',
+                # #                               daemon=True)
+                
+                # task_runner_process.start()
+                # task_runner_process.join(3)
 
-                if task_runner_process.is_alive():
+                # if task_runner_process.is_alive():
                     
-                    app.logger.info(f'RUNNER task_runner_process.is_alive()')
+                #     app.logger.info(f'RUNNER task_runner_process.is_alive()')
                     
-                    task_runner_process.terminate()
+                #     task_runner_process.terminate()
                     
-                    raise TimeoutError
-                    
-                # result = task_runner(task_id, algorithm_id, run_values)
+                #     raise TimeoutError
                 
+                def test_func(data):
+                    
+                    task_log(task_id, f'RUNNER test_func: {data}')
+                    
+                    return "result" + data
+                
+                
+                # pool_result = tasks_pool.apply_async(task_runner, (task_id, algorithm_id, run_values))
+                pool_result = tasks_pool.apply_async(test_func, ("ok",))
+                pool_result_data = pool_result.get(timeout=10)
+                
+                task_log(task_id, f'RUNNER pool_result: {pool_result}')
+                task_log(task_id, f'RUNNER pool_result_data: {pool_result_data}')
+                    
+                result = task_runner(task_id, algorithm_id, run_values)
                 status = 'Done'
-                
-                
                 
             except Exception as exception:
                 
@@ -189,7 +224,7 @@ def task_worker(task_queue, task_results_queue, worker_active_flag):
             app.logger.info(f'RUNNER len(tasks): {len(tasks)}')
         
 
-def task_runner(task_id, algorithm_id, run_values_multidict, result):
+def task_runner(task_id, algorithm_id, run_values_multidict):
     
     run_values = dict(run_values_multidict)
     run_values['task_id'] = task_id
@@ -207,13 +242,7 @@ def task_runner(task_id, algorithm_id, run_values_multidict, result):
     
     if run_mode == 'classical':
         
-        result = runner_function(run_values, task_log_callback)
-        
-        time.sleep(1000)
-        
-        return
-    
-        # return runner_function(run_values, task_log_callback)
+        return runner_function(run_values, task_log_callback)
         
     
     elif run_mode == 'simulator':
@@ -279,11 +308,7 @@ def task_runner(task_id, algorithm_id, run_values_multidict, result):
     
     task_log(task_id, f'RUNNER task_result: {task_result}')
 
-    result = task_result
-    
-    # time.sleep(10)
-    
-    # return task_result
+    return task_result
     
     
 def execute_task(task_id, circuit, backend):
