@@ -23,9 +23,9 @@ if environ.get('WERKZEUG_RUN_MAIN') == 'true':
 
     app.config.from_object(config.Config)
     
-    from core import runner, telegram
+    from core import run, telegram
     
-    runner.start_task_worker_processes()
+    runner = run.Runner()
     
     bot = telegram.Bot()
     bot.start()
