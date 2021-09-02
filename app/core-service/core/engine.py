@@ -46,7 +46,7 @@ class Runner():
         self.task_rollover_size = app.config.get('TASK_ROLLOVER_SIZE', 100)
         
         ### Test
-        # self.task_process_count = 2
+        self.task_process_count = 2
         
         self.task_count = 0
         
