@@ -45,7 +45,7 @@ class Runner():
         self.task_workers_count = app.config.get('CPU_COUNT', 1)
         self.task_rollover_size = app.config.get('TASK_ROLLOVER_SIZE', 100)
         
-        self.queue_workers_count = 1
+        self.queue_workers_count = self.task_workers_count
         
         ### Test
         # self.task_worker_count = 2
@@ -66,7 +66,7 @@ class Runner():
         
         
         
-        self.task_workers_pool = Pool(processes=self.task_workers_count)
+        # self.task_workers_pool = Pool(processes=self.task_workers_count)
         
         self.start_queue_workers()
 
