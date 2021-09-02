@@ -1,5 +1,4 @@
 import time
-import signal
 import traceback
 
 from os import getpid, _exit
@@ -63,6 +62,11 @@ task_results_queue = Queue()
 
 manager = Manager()
 
+app.logger.info(f'RUNNER manager: {manager}')
+
+print()
+
+
 logs = manager.dict()
 tasks = manager.dict()
 
@@ -84,7 +88,7 @@ def run_algorithm(algorithm_id, run_values):
     new_task_record = {'algorithm_id': algorithm_id,
                        'run_values': run_values,
                        'status': 'Queued'}
-    
+                       
     tasks[task_id] = manager.dict(new_task_record)
     
     logs[task_id] = manager.list()
@@ -101,9 +105,14 @@ def start_task_worker_processes():
     
     for i in range(task_process_count):
     
-        task_worker_process = Process(target=task_worker,
-                                      args=(task_queue, task_results_queue, worker_active_flag),
-                                      daemon=True)
+        task_worker_process = HiddenDaemonProcess(
+                                  target=task_worker,
+                                  args=(task_queue, task_results_queue, worker_active_flag),
+                                  daemon=True)
+                                  
+        app.logger.info(f'RUNNER task_worker_process: {task_worker_process}')                
+        app.logger.info(f'RUNNER task_worker_process.daemon: {task_worker_process.daemon}')                
+        app.logger.info(f'RUNNER task_worker_process.pid: {task_worker_process.pid}')                
                                               
         task_worker_process.start()
         
@@ -131,18 +140,37 @@ def task_worker(task_queue, task_results_queue, worker_active_flag):
             app.logger.info(f'RUNNER pop_task: {pop_task}')
             app.logger.info(f'RUNNER task_queue.qsize: {task_queue.qsize()}')
             
-            signal.signal(signal.SIGALRM, task_timeout_handler)
-            signal.alarm(TASK_TIMEOUT)
-
             try:
                 
+                result = None
+                
+                task_runner_process = Process(target=task_runner,
+                                              args=(task_id, algorithm_id, run_values, result),
+                                              name=f'Process-task-id-{task_id}',
+                                              daemon=False)
+                    
+                
+                # task_thread = threading.Thread(target=task_runner,
+                #                               args=(task_id, algorithm_id, run_values, result),
+                #                               name=f'Thread-{task_id}',
+                #                               daemon=True)
+                
+                task_runner_process.start()
+                task_runner_process.join(3)
 
-                
-                result = task_runner(task_id, algorithm_id, run_values)
-                
-                time.sleep(10)                
+                if task_runner_process.is_alive():
+                    
+                    app.logger.info(f'RUNNER task_runner_process.is_alive()')
+                    
+                    task_runner_process.terminate()
+                    
+                    raise TimeoutError
+                    
+                # result = task_runner(task_id, algorithm_id, run_values)
                 
                 status = 'Done'
+                
+                
                 
             except Exception as exception:
                 
@@ -151,8 +179,6 @@ def task_worker(task_queue, task_results_queue, worker_active_flag):
                 
                 result = None
                 status = 'Failed'
-            
-            signal.alarm(0)
             
             task_results_queue.put((task_id, result, status))
 
@@ -163,7 +189,7 @@ def task_worker(task_queue, task_results_queue, worker_active_flag):
             app.logger.info(f'RUNNER len(tasks): {len(tasks)}')
         
 
-def task_runner(task_id, algorithm_id, run_values_multidict):
+def task_runner(task_id, algorithm_id, run_values_multidict, result):
     
     run_values = dict(run_values_multidict)
     run_values['task_id'] = task_id
@@ -181,7 +207,13 @@ def task_runner(task_id, algorithm_id, run_values_multidict):
     
     if run_mode == 'classical':
         
-        return runner_function(run_values, task_log_callback)
+        result = runner_function(run_values, task_log_callback)
+        
+        time.sleep(1000)
+        
+        return
+    
+        # return runner_function(run_values, task_log_callback)
         
     
     elif run_mode == 'simulator':
@@ -203,9 +235,7 @@ def task_runner(task_id, algorithm_id, run_values_multidict):
         
         statevector = result.get_statevector(decimals=3)
         
-        
         plot_statevector_figure(task_id, statevector)
-        
 
         task_log(task_id, f'RUNNER statevector:')
         
@@ -249,7 +279,11 @@ def task_runner(task_id, algorithm_id, run_values_multidict):
     
     task_log(task_id, f'RUNNER task_result: {task_result}')
 
-    return task_result
+    result = task_result
+    
+    # time.sleep(10)
+    
+    # return task_result
     
     
 def execute_task(task_id, circuit, backend):
@@ -297,41 +331,38 @@ def get_least_busy_backend(provider, qubit_count):
     return least_busy_backend
     
 
-def task_timeout_handler(signal_number, stack_frame):
-    
-    raise TimeoutError(f"Task timeout: {TASK_TIMEOUT} seconds")
-    
-
-def plot_timeout_handler(signal_number, stack_frame):
-    
-    raise TimeoutError(f"Plot timeout: {PLOT_STATEVECTOR_TIMEOUT} seconds")
-    
-    
 def plot_statevector_figure(task_id, statevector):
+        
+    figure = plot_bloch_multivector(statevector)
     
-    signal.signal(signal.SIGALRM, plot_timeout_handler)
+    task_log(task_id, f'RUNNER figure: {figure}')        
 
-    signal.alarm(PLOT_STATEVECTOR_TIMEOUT)
-
-    try:
-        
-        figure = plot_bloch_multivector(statevector)
-        
-        # time.sleep(10)
-        
-        task_log(task_id, f'RUNNER figure: {figure}')        
-    
-        figure_path = app.static_folder + f'/figures/bloch_multivector_task_{task_id}.png'
-                    
-        figure.savefig(figure_path, transparent=True, bbox_inches='tight')
-        
-    except TimeoutError as exception:
-        
-        task_log(task_id, exception)
-
-    signal.alarm(0)
+    figure_path = app.static_folder + f'/figures/bloch_multivector_task_{task_id}.png'
+                
+    figure.savefig(figure_path, transparent=True, bbox_inches='tight')
     
     
 def terminate_application(message):
+    
     app.logger.info(f'RUNNER terminate_application: {message}')
+    
     _exit(0)
+    
+    
+class HiddenDaemonProcess(Process):
+
+    @property
+    def daemon(self):
+        return False
+        
+    @daemon.setter
+    def daemon(self, value):
+        app.logger.info(f'RUNNER Before')
+        app.logger.info(f'RUNNER super().daemon: {super().daemon}')
+        app.logger.info(f'RUNNER self.daemon: {self.daemon}')
+
+        super(HiddenDaemonProcess, self.__class__).daemon.fset(self, value)
+        
+        app.logger.info(f'RUNNER After')
+        app.logger.info(f'RUNNER super().daemon: {super().daemon}')
+        app.logger.info(f'RUNNER self.daemon: {self.daemon}')

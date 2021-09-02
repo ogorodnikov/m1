@@ -2,21 +2,22 @@ from flask import Flask
 from flask_cors import CORS
 
 from os import environ
+
 from logging.config import dictConfig
 
 from core import config
-
-import sys
 
 
 dictConfig(config.LOGGING_CONFIG)
 
 app = Flask(__name__)
 
+app.logger.info(f'INIT WERKZEUG_RUN_MAIN')
+
 
 if environ.get('WERKZEUG_RUN_MAIN') == 'true':
     
-    app.logger.info(f'INIT Werkzeug Main')
+    app.logger.info(f'INIT WERKZEUG_RUN_MAIN == True')
     
     CORS(app)
 
