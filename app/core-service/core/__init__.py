@@ -7,25 +7,18 @@ from logging.config import dictConfig
 
 from core import config
 
+import time
 
-dictConfig(config.LOGGING_CONFIG)
 
 app = Flask(__name__)
 
+dictConfig(config.LOGGING_CONFIG)
+
+app.logger.info(f'INIT Werkzeug run main: {environ.get("WERKZEUG_RUN_MAIN")}')
 
 
+if environ.get('WERKZEUG_RUN_MAIN'):
 
-if not environ.get('WERKZEUG_RUN_MAIN'):
-    
-    app.logger.info(f'environ.get"(WERKZEUG_RUN_MAIN"): {environ.get("WERKZEUG_RUN_MAIN")}')
-    
-
-
-
-else:
-    
-    app.logger.info(f'environ.get("WERKZEUG_RUN_MAIN"): {environ.get("WERKZEUG_RUN_MAIN")}')
-    
     CORS(app)
 
     app.config.from_object(config.Config)
