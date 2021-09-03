@@ -1,35 +1,61 @@
 from multiprocessing import Process, Event, Queue, Manager, Pool
 
+from concurrent.futures import ProcessPoolExecutor
+
 import os
 
 
-def test_func(data):
+class Test():
     
-    print(f'RUNNER test_func: {data}')
-    
-    return "result" + data
     
 
-task_process_count = 1
-
-tasks_pool = Pool(processes=task_process_count)
-
-
-
-
-
-def run_task(number):
-
-    for i in range(number):
+    
+    
+    def __init__(self):
         
-        pool_result = tasks_pool.apply_async(test_func, ("ok",))
+        # queue_workers_pool = Pool(processes=1)
         
-        # pool_result = tasks_pool.apply_async(os.getpid, ())
+        # print(f'RUNNER queue_workers_pool: {queue_workers_pool}') 
         
-        pool_result_data = pool_result.get(timeout=10)
         
-        print(f'RUNNER pool_result: {pool_result}')
-        print(f'RUNNER pool_result_data: {pool_result_data}')
+        # pool_result = queue_workers_pool.apply_async(self.task_worker, ("ok",))
+    
+        # pool_result_data = pool_result.get(timeout=5)
+            
+        # print(f'RUNNER pool_result: {pool_result}')
+        # print(f'RUNNER pool_result_data: {pool_result_data}')
+        
+        
+        self.start_pool_executor()
         
 
-run_task(1000)
+        
+        
+
+    def task_worker(self, message):
+        
+        print(f'RUNNER task_worker started: {os.getpid()} - {message}')
+        
+        task_worker_process = Process(target=os.getpid,
+                                       args=(),
+                                       name=f"Process-task-worker",
+                                       daemon=False)
+                       
+        task_worker_process.start()
+        
+        
+    def start_pool_executor(self):
+        
+        queue_workers_pool = ProcessPoolExecutor(max_workers=3, 
+                                                 initializer=self.task_worker,
+                                                 initargs=("test message",))
+
+        # print(f'RUNNER queue_workers_pool: {queue_workers_pool}')
+        
+        queue_workers_pool.submit(self.task_worker)        
+
+        
+
+test = Test()
+
+# test.run_task(1)

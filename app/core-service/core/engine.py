@@ -40,6 +40,13 @@ class Runner():
     TASK_TIMEOUT = 3
     
     
+    def test_func(self, data):
+        
+        print(f'RUNNER test_func: {data}')
+        
+        return "result" + data
+    
+    
     def __init__(self, *args, **kwargs):
         
         self.task_workers_count = app.config.get('CPU_COUNT', 1)
@@ -64,9 +71,54 @@ class Runner():
         self.worker_active_flag.set()
         
         
+        self.task_workers_pool = Pool(processes=self.task_workers_count)
+        
+        app.logger.info(f'RUNNER self.task_workers_count: {self.task_workers_count}')   
+        app.logger.info(f'RUNNER self.task_workers_pool: {self.task_workers_pool}')   
+        
+        try:
+            
+            print(self.task_workers_pool.map(self.test_func, ("ok", )))
+        
+            # res = self.task_workers_pool.apply_async(self.test, ())
+            
+            # test_res = res.get(timeout=5)
+            
+            # app.logger.info(f'RUNNER test_res: {test_res}')        
+            
+            
+        except Exception as exception:
+            
+            error_message = traceback.format_exc()
+            app.logger.info(f'RUNNER error_message: {error_message}')        
+            
+   
+            
+        # try:
+            
+            # app.logger.info(f'RUNNER dir(self): {dir(self)}')
+            # app.logger.info(f'RUNNER task_workers_pool: {self.task_workers_pool}')
+            
+            # res = self.task_workers_pool.apply_async(test, ())
+            
+            # test_res = res.get(timeout=10)
+            
+            # app.logger.info(f'RUNNER test_res: {test_res}')
+            
+            
+            # result = self.task_runner(task_id, algorithm_id, run_values)
+            # status = 'Done'
+            
+        # except Exception as exception:
+            
+        #     error_message = traceback.format_exc()
+        #     self.task_log(task_id, error_message)
+            
+        #     result = None
+        #     status = 'Failed'
+
         
         
-        # self.task_workers_pool = Pool(processes=self.task_workers_count)
         
         self.start_queue_workers()
 
