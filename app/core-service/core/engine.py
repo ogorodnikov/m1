@@ -133,17 +133,18 @@ class Runner():
                 app.logger.info(f'RUNNER task_queue.qsize: {self.task_queue.qsize()}')
                 
                 
-                def test_func():
-                    app.logger.info(f'>>>> RUNNER test_func')
-
-                    time.sleep(3)
-                    
-                    raise Exception
+                # def test_func():
+                #     app.logger.info(f'>>>> RUNNER test_func')
+                #     time.sleep(3)
+                #     raise Exception
+                
                     
                 try:
                     
-                    task_process = Process(target=test_func,
-                                           args=(),
+                    result = self.manager.dict()
+                    
+                    task_process = Process(target=self.task_runner,
+                                           args=(task_id, algorithm_id, run_values, result),
                                            name=f"Task-process-{getpid()}",
                                            daemon=False)
                                              
@@ -157,8 +158,12 @@ class Runner():
                         task_process.terminate()
                         task_process.join()
                     
+                    # result = self.task_runner(task_id, algorithm_id, run_values)
                     
-                    result = self.task_runner(task_id, algorithm_id, run_values)
+                    # time.sleep(1)
+                    
+                    app.logger.info(f'RUNNER queue_worker result: {result}')
+                    
                     status = 'Done'
                     
                 except Exception as exception:
@@ -169,7 +174,9 @@ class Runner():
                     result = None
                     status = 'Failed'
                 
-                self.task_results_queue.put((task_id, result, status))
+                result_dict = dict(result)
+                
+                self.task_results_queue.put((task_id, result_dict, status))
     
                 self.task_log(task_id, f'RUNNER Result: {result}')
                 self.task_log(task_id, f'RUNNER Status: {status}')
@@ -178,7 +185,7 @@ class Runner():
                 app.logger.info(f'RUNNER len(tasks): {len(self.tasks)}')
             
     
-    def task_runner(self, task_id, algorithm_id, run_values_multidict):
+    def task_runner(self, task_id, algorithm_id, run_values_multidict, result):
         
         run_values = dict(run_values_multidict)
         run_values['task_id'] = task_id
@@ -196,7 +203,13 @@ class Runner():
         
         if run_mode == 'classical':
             
-            return runner_function(run_values, task_log_callback)
+            result.update(runner_function(run_values, task_log_callback))
+            
+            self.task_log(task_id, f'RUNNER task_runner result: {result}')
+            
+            return
+            
+            # return runner_function(run_values, task_log_callback)
             
         
         elif run_mode == 'simulator':
@@ -263,8 +276,18 @@ class Runner():
             task_result = Runner.post_processing[algorithm_id](counts, task_log_callback)
         
         self.task_log(task_id, f'RUNNER task_result: {task_result}')
+        
+        
+        result.update(task_result)
+        
+        self.task_log(task_id, f'RUNNER queue_worker result: {result}')
+        
     
-        return task_result
+        # return task_result
+        
+        
+        
+        
         
         
     def execute_task(self, task_id, circuit, backend):
