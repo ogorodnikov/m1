@@ -2,14 +2,10 @@ from multiprocessing import Process, Event, Queue, Manager, Pool
 
 from concurrent.futures import ProcessPoolExecutor
 
-import os
+import os, time
 
 
 class Test():
-    
-    
-
-    
     
     def __init__(self):
         
@@ -25,24 +21,12 @@ class Test():
         # print(f'RUNNER pool_result: {pool_result}')
         # print(f'RUNNER pool_result_data: {pool_result_data}')
         
+        self.manager = Manager()
+        self.results = self.manager.list()
         
         self.start_pool_executor()
         
 
-        
-        
-
-    def task_worker(self, message):
-        
-        print(f'RUNNER task_worker started: {os.getpid()} - {message}')
-        
-        task_worker_process = Process(target=os.getpid,
-                                       args=(),
-                                       name=f"Process-task-worker",
-                                       daemon=False)
-                       
-        task_worker_process.start()
-        
         
     def start_pool_executor(self):
         
@@ -52,7 +36,30 @@ class Test():
 
         # print(f'RUNNER queue_workers_pool: {queue_workers_pool}')
         
-        queue_workers_pool.submit(self.task_worker)        
+        queue_workers_pool.submit(self.task_worker)
+        
+        
+
+    def task_worker(self, message):
+        
+        print(f'RUNNER task_worker started: {os.getpid()} - {message}')
+        
+        task_worker_process = Process(target=self.run_function,
+                                       args=(self.results,),
+                                       name=f"Process-task-worker",
+                                       daemon=False)
+                       
+        task_worker_process.start()
+        
+        time.sleep(3)
+        
+        print(f'RUNNER self.results: {self.results}')
+        
+        
+    def run_function(self, results):
+        
+        print(f'RUNNER self.results: {self.results}')
+        results.append(os.getpid())
 
         
 
