@@ -36,9 +36,8 @@ class Runner():
                        }
                    
     post_processing = {'simon': simon_post_processing}
-    
-    PLOT_STATEVECTOR_TIMEOUT = 5
-    TASK_TIMEOUT = 3
+
+    TASK_TIMEOUT = 300
     
     
     def test_func(self, data):
@@ -132,13 +131,6 @@ class Runner():
                 app.logger.info(f'RUNNER pop_task: {pop_task}')
                 app.logger.info(f'RUNNER task_queue.qsize: {self.task_queue.qsize()}')
                 
-                
-                # def test_func():
-                #     app.logger.info(f'>>>> RUNNER test_func')
-                #     time.sleep(3)
-                #     raise Exception
-                
-                    
                 try:
                     
                     result = self.manager.dict()
@@ -149,30 +141,27 @@ class Runner():
                                            daemon=False)
                                              
                     task_process.start()
-                    task_process.join(20)
+                    task_process.join(Runner.TASK_TIMEOUT)
+                    
+                    status = 'Done'
 
                     if task_process.is_alive():
-                        
-                        app.logger.info(f'RUNNER task_process.is_alive()')
 
                         task_process.terminate()
                         task_process.join()
-                    
-                    # result = self.task_runner(task_id, algorithm_id, run_values)
-                    
-                    # time.sleep(1)
-                    
-                    app.logger.info(f'RUNNER queue_worker result: {result}')
-                    
-                    status = 'Done'
+                        
+                        app.logger.info(f'RUNNER Runner.TASK_TIMEOUT {Runner.TASK_TIMEOUT}')
+                        
+                        raise TimeoutError
                     
                 except Exception as exception:
                     
                     error_message = traceback.format_exc()
                     self.task_log(task_id, error_message)
-                    
-                    result = None
                     status = 'Failed'
+                    
+                
+                app.logger.info(f'RUNNER queue_worker result: {result}')
                 
                 result_dict = dict(result)
                 
@@ -208,9 +197,7 @@ class Runner():
             self.task_log(task_id, f'RUNNER task_runner result: {result}')
             
             return
-            
-            # return runner_function(run_values, task_log_callback)
-            
+
         
         elif run_mode == 'simulator':
             
@@ -221,15 +208,15 @@ class Runner():
             
             circuit.save_statevector()
             
-            result = self.execute_task(task_id, circuit, backend)
+            run_result = self.execute_task(task_id, circuit, backend)
             
-            # self.task_log(task_id, f'RUNNER result: {result}')
+            self.task_log(task_id, f'RUNNER run_result: {run_result}')
     
-            counts = result.get_counts()
+            counts = run_result.get_counts()
             
-            # self.task_log(task_id, f'RUNNER counts: {counts}')
+            self.task_log(task_id, f'RUNNER counts: {counts}')
             
-            statevector = result.get_statevector(decimals=3)
+            statevector = run_result.get_statevector(decimals=3)
             
             self.plot_statevector_figure(task_id, statevector)
             
@@ -265,8 +252,8 @@ class Runner():
     
             backend = self.get_least_busy_backend(ibmq_provider, qubit_count)
             
-            result = self.execute_task(task_id, circuit, backend)
-            counts = result.get_counts()
+            run_result = self.execute_task(task_id, circuit, backend)
+            counts = run_result.get_counts()
             
             
         if algorithm_id not in Runner.post_processing:
@@ -282,13 +269,7 @@ class Runner():
         
         self.task_log(task_id, f'RUNNER queue_worker result: {result}')
         
-    
-        # return task_result
-        
-        
-        
-        
-        
+
         
     def execute_task(self, task_id, circuit, backend):
         
