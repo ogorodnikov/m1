@@ -153,6 +153,9 @@ class Runner():
                         app.logger.info(f'RUNNER Runner.TASK_TIMEOUT {Runner.TASK_TIMEOUT}')
                         
                         raise TimeoutError
+                        
+                    if task_process.exitcode > 0:
+                        raise ValueError(f'RUNNER task_process EXIT CODE {task_process.exitcode}')
                     
                 except Exception as exception:
                     
