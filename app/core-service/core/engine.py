@@ -50,14 +50,12 @@ class Runner():
     
     def __init__(self, *args, **kwargs):
         
-        self.task_workers_count = app.config.get('CPU_COUNT', 1)
+        self.queue_workers_count = app.config.get('CPU_COUNT', 1)
         self.task_rollover_size = app.config.get('TASK_ROLLOVER_SIZE', 100)
 
         ### Test
-        self.task_workers_count = 2
-        
-        self.queue_workers_count = self.task_workers_count
-        
+        self.queue_workers_count = 2
+
         self.task_count = 0
         
         self.task_queue = Queue()
@@ -72,9 +70,9 @@ class Runner():
         self.worker_active_flag.set()
         
         queue_pool = ProcessPoolExecutor(max_workers=self.queue_workers_count, 
-                                         initializer=self.task_worker)
+                                         initializer=self.queue_worker)
 
-        queue_pool.submit(self.task_worker)
+        queue_pool.submit(self.queue_worker)
         
         app.logger.info(f'RUNNER queue_pool: {queue_pool}')
         
@@ -115,25 +113,9 @@ class Runner():
         return task_id
         
         
-    # def start_queue_workers(self):
+    def queue_worker(self):
         
-    #     self.queue_workers = []
-
-    #     for i in range(self.queue_workers_count):
-            
-    #         queue_worker = Process(target=self.task_worker,
-    #                               args=(),
-    #                               name=f"Process-queue-worker-{i}",
-    #                               daemon=True)
-                                      
-    #         queue_worker.start()
-            
-    #         self.queue_workers.append(queue_worker)        
-            
-            
-    def task_worker(self):
-        
-        app.logger.info(f'RUNNER task_worker started: {getpid()}')
+        app.logger.info(f'RUNNER queue_worker started: {getpid()}')
         
         while True:
             
@@ -153,26 +135,27 @@ class Runner():
                 
                 def test_func():
                     app.logger.info(f'>>>> RUNNER test_func')
-                    time.sleep(30)
+
+                    time.sleep(3)
+                    
+                    raise Exception
                     
                 try:
                     
-                    runner_process = Process(target=test_func,
-                                             args=(),
-                                             name=f"Process-runner-worker",
-                                             daemon=False)
+                    task_process = Process(target=test_func,
+                                           args=(),
+                                           name=f"Task-process-{getpid()}",
+                                           daemon=False)
                                              
-                    runner_process.start()
-                    runner_process.join(20)
+                    task_process.start()
+                    task_process.join(20)
 
-                    if runner_process.is_alive():
+                    if task_process.is_alive():
                         
-                        app.logger.info(f'RUNNER runner_process.is_alive()')
+                        app.logger.info(f'RUNNER task_process.is_alive()')
 
-                        runner_process.terminate()
-                        # runner_process.kill()
-
-                        runner_process.join()
+                        task_process.terminate()
+                        task_process.join()
                     
                     
                     result = self.task_runner(task_id, algorithm_id, run_values)
