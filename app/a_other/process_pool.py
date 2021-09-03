@@ -9,34 +9,41 @@ class Test():
     
     def __init__(self):
         
-        # queue_workers_pool = Pool(processes=1)
-        
-        # print(f'RUNNER queue_workers_pool: {queue_workers_pool}') 
-        
-        
-        # pool_result = queue_workers_pool.apply_async(self.task_worker, ("ok",))
-    
-        # pool_result_data = pool_result.get(timeout=5)
-            
-        # print(f'RUNNER pool_result: {pool_result}')
-        # print(f'RUNNER pool_result_data: {pool_result_data}')
+
         
         self.manager = Manager()
         self.results = self.manager.list()
         
+        
+        # self.start_pool()
+        
         self.start_pool_executor()
+        
+        
+    def start_pool(self):
+        
+        pool = Pool(processes=1)
+        
+        print(f'RUNNER pool: {pool}') 
+        
+        pool_result = pool.apply_async(self.task_worker, ("ok",))
+    
+        pool_result_data = pool_result.get(timeout=5)
+            
+        print(f'RUNNER pool_result: {pool_result}')
+        print(f'RUNNER pool_result_data: {pool_result_data}')
         
 
         
     def start_pool_executor(self):
         
-        queue_workers_pool = ProcessPoolExecutor(max_workers=3, 
-                                                 initializer=self.task_worker,
-                                                 initargs=("test message",))
+        pool_executor = ProcessPoolExecutor(max_workers=3, 
+                                            initializer=self.task_worker,
+                                            initargs=("test message",))
 
-        # print(f'RUNNER queue_workers_pool: {queue_workers_pool}')
+        print(f'RUNNER pool_executor: {pool_executor}')
         
-        queue_workers_pool.submit(self.task_worker)
+        pool_executor.submit(self.task_worker)
         
         
 
@@ -51,18 +58,18 @@ class Test():
                        
         task_worker_process.start()
         
-        time.sleep(3)
+        time.sleep(1)
         
-        print(f'RUNNER self.results: {self.results}')
+        print(f'RUNNER task_worker results: {self.results}')
         
         
     def run_function(self, results):
         
-        print(f'RUNNER self.results: {self.results}')
         results.append(os.getpid())
+        
+        print(f'RUNNER run_function results: {self.results}')
+        
 
         
 
 test = Test()
-
-# test.run_task(1)

@@ -4,6 +4,7 @@ import traceback
 from os import getpid, _exit
 from functools import partial
 from multiprocessing import Process, Event, Queue, Manager, Pool
+from concurrent.futures import ProcessPoolExecutor
 
 from qiskit import IBMQ, Aer, execute
 from qiskit.providers.ibmq import least_busy
@@ -51,11 +52,11 @@ class Runner():
         
         self.task_workers_count = app.config.get('CPU_COUNT', 1)
         self.task_rollover_size = app.config.get('TASK_ROLLOVER_SIZE', 100)
+
+        ### Test
+        self.task_workers_count = 2
         
         self.queue_workers_count = self.task_workers_count
-        
-        ### Test
-        # self.task_worker_count = 2
         
         self.task_count = 0
         
@@ -71,52 +72,19 @@ class Runner():
         self.worker_active_flag.set()
         
         
-        self.task_workers_pool = Pool(processes=self.task_workers_count)
+        def test_func():
+            
+            app.logger.info(f'RUNNER test_func')
         
-        app.logger.info(f'RUNNER self.task_workers_count: {self.task_workers_count}')   
-        app.logger.info(f'RUNNER self.task_workers_pool: {self.task_workers_pool}')   
+        app.logger.info(f'RUNNER self.queue_workers_count: {self.queue_workers_count}')
         
-        try:
-            
-            print(self.task_workers_pool.map(self.test_func, ("ok", )))
-        
-            # res = self.task_workers_pool.apply_async(self.test, ())
-            
-            # test_res = res.get(timeout=5)
-            
-            # app.logger.info(f'RUNNER test_res: {test_res}')        
-            
-            
-        except Exception as exception:
-            
-            error_message = traceback.format_exc()
-            app.logger.info(f'RUNNER error_message: {error_message}')        
-            
-   
-            
-        # try:
-            
-            # app.logger.info(f'RUNNER dir(self): {dir(self)}')
-            # app.logger.info(f'RUNNER task_workers_pool: {self.task_workers_pool}')
-            
-            # res = self.task_workers_pool.apply_async(test, ())
-            
-            # test_res = res.get(timeout=10)
-            
-            # app.logger.info(f'RUNNER test_res: {test_res}')
-            
-            
-            # result = self.task_runner(task_id, algorithm_id, run_values)
-            # status = 'Done'
-            
-        # except Exception as exception:
-            
-        #     error_message = traceback.format_exc()
-        #     self.task_log(task_id, error_message)
-            
-        #     result = None
-        #     status = 'Failed'
+        queue_pool = ProcessPoolExecutor(max_workers=self.queue_workers_count, 
+                                         initializer=test_func,
+                                         initargs=())
 
+        queue_pool.submit(test_func)
+        
+        app.logger.info(f'RUNNER queue_pool: {queue_pool}') 
         
         
         
