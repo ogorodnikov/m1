@@ -71,24 +71,14 @@ class Runner():
         self.worker_active_flag = Event()
         self.worker_active_flag.set()
         
-        
-        def test_func():
-            
-            app.logger.info(f'RUNNER test_func')
-        
-        app.logger.info(f'RUNNER self.queue_workers_count: {self.queue_workers_count}')
-        
         queue_pool = ProcessPoolExecutor(max_workers=self.queue_workers_count, 
-                                         initializer=test_func,
-                                         initargs=())
+                                         initializer=self.task_worker)
 
-        queue_pool.submit(test_func)
+        queue_pool.submit(self.task_worker)
         
-        app.logger.info(f'RUNNER queue_pool: {queue_pool}') 
+        app.logger.info(f'RUNNER queue_pool: {queue_pool}')
         
-        
-        
-        self.start_queue_workers()
+        # self.start_queue_workers()
 
         app.logger.info(f'RUNNER initiated: {self}')
         
@@ -125,20 +115,20 @@ class Runner():
         return task_id
         
         
-    def start_queue_workers(self):
+    # def start_queue_workers(self):
         
-        self.queue_workers = []
+    #     self.queue_workers = []
 
-        for i in range(self.queue_workers_count):
+    #     for i in range(self.queue_workers_count):
             
-            queue_worker = Process(target=self.task_worker,
-                                   args=(),
-                                   name=f"Process-queue-worker-{i}",
-                                   daemon=True)
+    #         queue_worker = Process(target=self.task_worker,
+    #                               args=(),
+    #                               name=f"Process-queue-worker-{i}",
+    #                               daemon=True)
                                       
-            queue_worker.start()
+    #         queue_worker.start()
             
-            self.queue_workers.append(queue_worker)        
+    #         self.queue_workers.append(queue_worker)        
             
             
     def task_worker(self):
@@ -161,19 +151,28 @@ class Runner():
                 app.logger.info(f'RUNNER task_queue.qsize: {self.task_queue.qsize()}')
                 
                 
-                # def test():
-                #     print('test ok')
-                
+                def test_func():
+                    app.logger.info(f'>>>> RUNNER test_func')
+                    time.sleep(30)
+                    
                 try:
                     
-                    # app.logger.info(f'RUNNER dir(self): {dir(self)}')
-                    # app.logger.info(f'RUNNER task_workers_pool: {self.task_workers_pool}')
-                    
-                    # res = self.task_workers_pool.apply_async(test, ())
-                    
-                    # test_res = res.get(timeout=10)
-                    
-                    # app.logger.info(f'RUNNER test_res: {test_res}')
+                    runner_process = Process(target=test_func,
+                                             args=(),
+                                             name=f"Process-runner-worker",
+                                             daemon=False)
+                                             
+                    runner_process.start()
+                    runner_process.join(20)
+
+                    if runner_process.is_alive():
+                        
+                        app.logger.info(f'RUNNER runner_process.is_alive()')
+
+                        runner_process.terminate()
+                        # runner_process.kill()
+
+                        runner_process.join()
                     
                     
                     result = self.task_runner(task_id, algorithm_id, run_values)
