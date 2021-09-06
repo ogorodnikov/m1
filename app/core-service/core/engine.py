@@ -5,6 +5,7 @@ from os import getpid, _exit
 from functools import partial
 from multiprocessing import Process, Event, Queue, Manager, Pool
 from concurrent.futures import ProcessPoolExecutor
+from threading import Timer
 
 from qiskit import IBMQ, Aer, execute
 from qiskit.providers.ibmq import least_busy
@@ -111,7 +112,7 @@ class Runner():
         
         return task_id
         
-        
+
     def queue_worker(self):
         
         app.logger.info(f'RUNNER queue_worker started: {getpid()}')
@@ -136,9 +137,9 @@ class Runner():
                     result = self.manager.dict()
                     
                     task_process = Process(target=self.task_runner,
-                                           args=(task_id, algorithm_id, run_values, result),
-                                           name=f"Task-process-{getpid()}",
-                                           daemon=False)
+                                          args=(task_id, algorithm_id, run_values, result),
+                                          name=f"Task-process-{getpid()}",
+                                          daemon=False)
                                              
                     task_process.start()
                     task_process.join(Runner.TASK_TIMEOUT)
@@ -150,20 +151,21 @@ class Runner():
                         task_process.terminate()
                         task_process.join()
                         
-                        app.logger.info(f'RUNNER Runner.TASK_TIMEOUT {Runner.TASK_TIMEOUT}')
+                        timeout_message = f'RUNNER timeout: {Runner.TASK_TIMEOUT}'
+
+                        self.task_log(task_id, timeout_message)
+                        result.update({'Failed': timeout_message})
                         
-                        raise TimeoutError
+                        raise TimeoutError(f'RUNNER timeout: {Runner.TASK_TIMEOUT}')
                         
-                    if task_process.exitcode > 0:
+                    if task_process.exitcode != 0:
+                        
                         raise ValueError(f'RUNNER task_process EXIT CODE {task_process.exitcode}')
-                    
+                        
                 except Exception as exception:
                     
-                    error_message = traceback.format_exc()
-                    self.task_log(task_id, error_message)
                     status = 'Failed'
                     
-                
                 app.logger.info(f'RUNNER queue_worker result: {result}')
                 
                 result_dict = dict(result)
@@ -175,8 +177,26 @@ class Runner():
                 
                 app.logger.info(f'RUNNER task_results_queue.qsize: {self.task_results_queue.qsize()}')
                 app.logger.info(f'RUNNER len(tasks): {len(self.tasks)}')
+                
+
+    def task_exception_decorator( task_runner):
+        
+        def task_runner_wrapper(self, task_id, algorithm_id, run_values_multidict, result):
             
-    
+            try:
+                task_runner(self, task_id, algorithm_id, run_values_multidict, result)
+                
+            except Exception as exception:
+                
+                self.task_log(task_id, traceback.format_exc())
+                result.update({'Failed': repr(exception)})
+
+                raise exception
+        
+        return task_runner_wrapper
+        
+        
+    @task_exception_decorator
     def task_runner(self, task_id, algorithm_id, run_values_multidict, result):
         
         run_values = dict(run_values_multidict)
@@ -273,7 +293,6 @@ class Runner():
         self.task_log(task_id, f'RUNNER queue_worker result: {result}')
         
 
-        
     def execute_task(self, task_id, circuit, backend):
         
         self.task_log(task_id, f'RUNNER backend: {backend}')
