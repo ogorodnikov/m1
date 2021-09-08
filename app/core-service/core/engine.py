@@ -41,13 +41,6 @@ class Runner():
     TASK_TIMEOUT = 300
     
     
-    def test_func(self, data):
-        
-        print(f'RUNNER test_func: {data}')
-        
-        return "result" + data
-    
-    
     def __init__(self, *args, **kwargs):
         
         self.queue_workers_count = app.config.get('CPU_COUNT', 1)
@@ -176,11 +169,13 @@ class Runner():
                 
             except Exception as exception:
                 
-                self.task_log(task_id, traceback.format_exc())
+                stack_trace = traceback.format_exc()
+                
+                self.task_log(task_id, stack_trace)
                 
                 result.update({'Status': 'Failed',
-                               'Result': repr(exception),
-                               'Stack trace': traceback.format_exc()})
+                               'Result': {'Exception': repr(exception)},
+                               'Stack trace': stack_trace})
 
                 raise exception
         
