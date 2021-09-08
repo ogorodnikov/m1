@@ -20,7 +20,7 @@ from core.algorithms.grover_sudoku import grover_sudoku
 from core.algorithms.dj import dj
 from core.algorithms.simon import simon, simon_post_processing
 from core.algorithms.qft import qft
-from core.algorithms.qpe import qpe
+from core.algorithms.qpe import qpe, qpe_post_processing
 
 
 class Runner():
@@ -35,7 +35,9 @@ class Runner():
                         'qpe': qpe
                        }
                    
-    post_processing = {'simon': simon_post_processing}
+    post_processing = {'simon': simon_post_processing,
+                       'qpe': qpe_post_processing
+                      }
 
     TASK_TIMEOUT = 300
     

@@ -101,7 +101,7 @@ def add_test_data():
               'description': 'Estimates phase for unitary operator.',
               'link': 'https://en.wikipedia.org/wiki/Quantum_phase_estimation_algorithm',
               'image': b'1010',
-              'parameters': [{'name': 'theta', 'default_value': '0.25'},
+              'parameters': [{'name': 'angle', 'default_value': '0.25'},
                              {'name': 'precision', 'default_value': '3'},],              
               'likes': 395,
               'enabled': True},

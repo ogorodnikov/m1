@@ -11,10 +11,17 @@ def build_qft_circuit(qubits_count, inverted=False):
     
     qubit_pairs = combinations_with_replacement(qubits, 2)
     
-    pairs = reversed(tuple(qubit_pairs)) if inverted else qubit_pairs
-    
     circuit = QuantumCircuit(qubits_count)
-    circuit.name = 'QFT Circuit'
+
+    if not inverted:
+        
+        pairs = qubit_pairs
+        circuit.name = 'QFT Circuit'
+        
+    else:
+    
+        pairs = reversed(tuple(qubit_pairs))
+        circuit.name = 'QFT† Circuit'
 
     for control_qubit, target_qubit in pairs:
         
@@ -24,7 +31,12 @@ def build_qft_circuit(qubits_count, inverted=False):
             
         else:
             distance = abs(control_qubit - target_qubit)
-            theta = pi / 2 ** distance
+            
+            if not inverted:
+                theta = pi / 2 ** distance
+            else:
+                theta = -pi / 2 ** distance
+                
             circuit.cp(theta, control_qubit, target_qubit)
             
         #     task_log(f'QFT distance: {distance}')
