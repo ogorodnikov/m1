@@ -3,9 +3,8 @@ import traceback
 
 from os import getpid, _exit
 from functools import partial
-from multiprocessing import Process, Event, Queue, Manager, Pool
 from concurrent.futures import ProcessPoolExecutor
-from threading import Timer
+from multiprocessing import Process, Event, Queue, Manager
 
 from qiskit import IBMQ, Aer, execute
 from qiskit.providers.ibmq import least_busy
@@ -46,8 +45,7 @@ class Runner():
         self.queue_workers_count = app.config.get('CPU_COUNT', 1)
         self.task_rollover_size = app.config.get('TASK_ROLLOVER_SIZE', 100)
 
-        ### Test
-        self.queue_workers_count = 2
+        # self.queue_workers_count = 2
 
         self.task_count = 0
         
@@ -67,10 +65,6 @@ class Runner():
 
         queue_pool.submit(self.queue_worker)
         
-        app.logger.info(f'RUNNER queue_pool: {queue_pool}')
-        
-        # self.start_queue_workers()
-
         app.logger.info(f'RUNNER initiated: {self}')
         
         
@@ -203,7 +197,7 @@ class Runner():
             
             function_result = runner_function(run_values, task_log_callback)
             
-            task_result = {'Result': function_result, 'Status': 'Done'}
+            task_result = {'Result': function_result}
 
         
         elif run_mode == 'simulator':
@@ -235,7 +229,7 @@ class Runner():
                 
             self.plot_statevector_figure(task_id, statevector)
                 
-            task_result = {'Result': {'Counts': counts}, 'Status': 'Done'}
+            task_result = {'Result': {'Counts': counts}}
             
             
         elif run_mode == 'quantum_device':
@@ -259,7 +253,7 @@ class Runner():
             run_result = self.execute_task(task_id, circuit, backend)
             counts = run_result.get_counts()
             
-            task_result = {'Result': {'Counts': counts}, 'Status': 'Done'}
+            task_result = {'Result': {'Counts': counts}}
             
             
         if algorithm_id in Runner.post_processing:
@@ -268,9 +262,11 @@ class Runner():
             
             post_processing_result = post_processing_function(counts, task_log_callback)
             
-            task_result = {'Result': post_processing_result, 'Status': 'Done'}
+            task_result = {'Result': post_processing_result}
             
 
+        result.update({'Status': 'Done'})
+        
         result.update(task_result)
 
 
@@ -322,16 +318,12 @@ class Runner():
     def plot_statevector_figure(self, task_id, statevector):
             
         figure = plot_bloch_multivector(statevector)
-        
-        self.task_log(task_id, f'RUNNER figure: {figure}')        
     
         figure_path = app.static_folder + f'/figures/bloch_multivector_task_{task_id}.png'
-        
-        self.task_log(task_id, f'RUNNER figure_path: {figure_path}')
                     
         figure.savefig(figure_path, transparent=True, bbox_inches='tight')
         
-        self.task_log(task_id, f'RUNNER figure saved')
+        self.task_log(task_id, f'RUNNER statevector figure: {figure}')    
 
         
     def terminate_application(self, message):
@@ -339,22 +331,3 @@ class Runner():
         app.logger.info(f'RUNNER terminate_application: {message}')
         
         _exit(0)
-        
-        
-class HiddenDaemonProcess(Process):
-
-    @property
-    def daemon(self):
-        return False
-        
-    @daemon.setter
-    def daemon(self, value):
-        app.logger.info(f'RUNNER Before')
-        app.logger.info(f'RUNNER super().daemon: {super().daemon}')
-        app.logger.info(f'RUNNER self.daemon: {self.daemon}')
-
-        super(HiddenDaemonProcess, self.__class__).daemon.fset(self, value)
-        
-        app.logger.info(f'RUNNER After')
-        app.logger.info(f'RUNNER super().daemon: {super().daemon}')
-        app.logger.info(f'RUNNER self.daemon: {self.daemon}')
