@@ -149,7 +149,7 @@ class Runner():
                     task_process.join()
                     
                     run_result.update({'Status': 'Failed',
-                                       'Result': {'Timeout': f'{Runner.TASK_TIMEOUT} seconds'}})
+                                       'Result': 'Timeout:' + Runner.TASK_TIMEOUT})
                     
                     self.task_log(task_id, f'RUNNER timeout: {Runner.TASK_TIMEOUT}')
                 
