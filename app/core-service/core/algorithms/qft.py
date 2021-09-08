@@ -5,34 +5,6 @@ from qiskit import QuantumCircuit
 from qiskit import Aer
 
 
-# def append_qft_circuit(circuit, inverted=False):
-    
-#     qubits_count = circuit.num_qubits
-#     qubits = range(qubits_count)
-    
-#     qubit_pairs = combinations_with_replacement(qubits, 2)
-    
-#     pairs = reversed(tuple(qubit_pairs)) if inverted else qubit_pairs
-
-#     for control_qubit, target_qubit in pairs:
-        
-#         if control_qubit == target_qubit:
-#             circuit.barrier()
-#             circuit.h(control_qubit)
-            
-#         else:
-#             distance = abs(control_qubit - target_qubit)
-#             theta = pi / 2 ** distance
-#             circuit.cp(theta, control_qubit, target_qubit)
-            
-#         #     task_log(f'QFT distance: {distance}')
-#         #     task_log(f'QFT theta: {theta}')
-            
-#         # task_log(f'QFT control_qubit: {control_qubit}')
-#         # task_log(f'QFT target_qubit: {target_qubit}')
-#         # task_log(f'QFT circuit: \n{circuit}')
-
-
 def build_qft_circuit(qubits_count, inverted=False):
     
     qubits = range(qubits_count)
