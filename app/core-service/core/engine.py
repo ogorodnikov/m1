@@ -152,11 +152,12 @@ class Runner():
                         task_process.join()
                         
                         timeout_message = f'RUNNER timeout: {Runner.TASK_TIMEOUT}'
+                        
+                        result.update({'Failed': timeout_message})
 
                         self.task_log(task_id, timeout_message)
-                        result.update({'Failed': timeout_message})
                         
-                        raise TimeoutError(f'RUNNER timeout: {Runner.TASK_TIMEOUT}')
+                        raise TimeoutError(timeout_message)
                         
                     if task_process.exitcode != 0:
                         
@@ -179,7 +180,7 @@ class Runner():
                 app.logger.info(f'RUNNER len(tasks): {len(self.tasks)}')
                 
 
-    def task_exception_decorator( task_runner):
+    def task_exception_decorator(task_runner):
         
         def task_runner_wrapper(self, task_id, algorithm_id, run_values_multidict, result):
             
@@ -189,7 +190,7 @@ class Runner():
             except Exception as exception:
                 
                 self.task_log(task_id, traceback.format_exc())
-                result.update({'Failed': repr(exception)})
+                result.update({'Status': 'Failed', 'Results': repr(exception)})
 
                 raise exception
         
@@ -200,26 +201,24 @@ class Runner():
     def task_runner(self, task_id, algorithm_id, run_values_multidict, result):
         
         run_values = dict(run_values_multidict)
+        run_mode = run_values.get('run_mode')
+        
         run_values['task_id'] = task_id
         
         runner_function = Runner.runner_functions[algorithm_id]
         
-        run_mode = run_values.get('run_mode')
+        task_log_callback = partial(self.task_log, task_id)
         
         app.logger.info(f'RUNNER run_mode: {run_mode}')
         app.logger.info(f'RUNNER run_values: {run_values}')
         app.logger.info(f'RUNNER runner_function: {runner_function}') 
         
-        task_log_callback = partial(self.task_log, task_id)
-        
         
         if run_mode == 'classical':
             
-            result.update(runner_function(run_values, task_log_callback))
+            function_result = runner_function(run_values, task_log_callback)
             
-            self.task_log(task_id, f'RUNNER task_runner result: {result}')
-            
-            return
+            task_result = {'Result': function_result, 'Status': 'Done'}
 
         
         elif run_mode == 'simulator':
@@ -255,6 +254,8 @@ class Runner():
                 state = f'{state_index:0{qubit_count}b}'
                 
                 self.task_log(task_id, f'{state}: {probability_amplitude}')
+                
+            task_result = {'Result': {'Counts': counts}, 'Status': 'Done'}
             
             
         elif run_mode == 'quantum_device':
@@ -278,19 +279,23 @@ class Runner():
             run_result = self.execute_task(task_id, circuit, backend)
             counts = run_result.get_counts()
             
+            task_result = {'Result': {'Counts': counts}, 'Status': 'Done'}
             
-        if algorithm_id not in Runner.post_processing:
-            task_result = {'Counts': counts}
             
-        else:
-            task_result = Runner.post_processing[algorithm_id](counts, task_log_callback)
+        if algorithm_id in Runner.post_processing:
+            
+            post_processing_function = Runner.post_processing[algorithm_id]
+            
+            post_processing_result = post_processing_function(counts, task_log_callback)
+            
+            task_result = {'Result': post_processing_result, 'Status': 'Done'}
+        
         
         self.task_log(task_id, f'RUNNER task_result: {task_result}')
         
-        
         result.update(task_result)
         
-        self.task_log(task_id, f'RUNNER queue_worker result: {result}')
+        self.task_log(task_id, f'RUNNER task_runner result: {result}')
         
 
     def execute_task(self, task_id, circuit, backend):
