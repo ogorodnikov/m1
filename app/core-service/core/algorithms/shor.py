@@ -17,11 +17,9 @@ def get_period_classical(modulo, x):
         period += 1
         
     return period
-        
-    
 
 
-def shor(run_values, task_log):
+def shor_classical():
     
     number_input = run_values.get('number')
     number = int(number_input)
@@ -60,3 +58,10 @@ def shor(run_values, task_log):
     
     task_log(f'SHOR factor_p: {factor_p}')
     task_log(f'SHOR factor_q: {factor_q}')
+    
+    return factor_p, factor_q
+    
+    
+def shor(run_values, task_log):
+    
+    shor_classical()
