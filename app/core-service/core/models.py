@@ -114,7 +114,7 @@ def add_test_data():
                              'Classical algorithm complexity is O(2 ^ square root of N) while quantum is O(N^3).',
               'link': 'https://en.wikipedia.org/wiki/Shor%27s_algorithm',
               'image': b'1010',
-              'parameters': [{'name': 'integer', 'default_value': '330023'}],              
+              'parameters': [{'name': 'number', 'default_value': '330023'}],              
               'likes': 2045,
               'enabled': True},
                             
