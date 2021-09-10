@@ -64,12 +64,28 @@ class Runner():
         self.worker_active_flag = Event()
         self.worker_active_flag.set()
         
-        queue_pool = ProcessPoolExecutor(max_workers=self.queue_workers_count, 
+        queue_pool = ProcessPoolExecutor(max_workers=self.queue_workers_count,
                                          initializer=self.queue_worker)
+        
+        worker_future = queue_pool.submit(self.queue_worker)
+        
+        
+        # worker_future = queue_pool.submit(pow, 12, 133)
 
-        queue_pool.submit(self.queue_worker)
+        # canceled = worker_future.cancel()
+        
+        # result = worker_future.result(timeout=3)
+        
+        # app.logger.info(f'RUNNER worker_future: {worker_future}')
+        # app.logger.info(f'RUNNER result: {result}')
+        
+        # app.logger.info(f'RUNNER worker_future.done(): {worker_future.done()}')
+        # app.logger.info(f'RUNNER canceled: {canceled}')
+        
         
         app.logger.info(f'RUNNER initiated: {self}')
+        
+
         
         
     def task_log(self, task_id, message):
@@ -77,7 +93,7 @@ class Runner():
         app.logger.info(f'{message}')
         
         self.logs[task_id] += [message]
-
+        
 
     def run_algorithm(self, algorithm_id, run_values):
         
