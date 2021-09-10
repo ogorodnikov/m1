@@ -21,6 +21,7 @@ from core.algorithms.dj import dj
 from core.algorithms.simon import simon, simon_post_processing
 from core.algorithms.qft import qft
 from core.algorithms.qpe import qpe, qpe_post_processing
+from core.algorithms.shor import shor
 
 
 class Runner():
@@ -32,7 +33,8 @@ class Runner():
                         'dj': dj,
                         'simon': simon,
                         'qft': qft,
-                        'qpe': qpe
+                        'qpe': qpe,
+                        'shor': shor
                        }
                    
     post_processing = {'simon': simon_post_processing,

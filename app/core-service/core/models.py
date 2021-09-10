@@ -24,7 +24,8 @@ def add_test_data():
               'description': 'Calculates GCD (Greatest common divisor) and Bézout coefficents.',
               'link': 'https://en.wikipedia.org/wiki/Extended_Euclidean_algorithm',
               'image': b'1010',
-              'parameters': [{'name': 'a', 'default_value': '345'}, {'name': 'b', 'default_value': '455244237'}],
+              'parameters': [{'name': 'a', 'default_value': '345'}, 
+                             {'name': 'b', 'default_value': '455244237'}],
               'likes': 768,
               'enabled': True},
               
@@ -35,7 +36,8 @@ def add_test_data():
                              'Classical algorith complexity is O(N) while quantum is O(square root of N).',
               'link': 'https://en.wikipedia.org/wiki/Grover%27s_algorithm',
               'image': b'1010',
-              'parameters': [{'name': 'secret_1', 'default_value': '10111'}, {'name': 'secret_2', 'default_value': '10101'}],
+              'parameters': [{'name': 'secret_1', 'default_value': '10111'}, 
+                             {'name': 'secret_2', 'default_value': '10101'}],
               'likes': 457,
               'enabled': True},
               
@@ -54,8 +56,7 @@ def add_test_data():
                   {'name': 'height', 'default_value': 'autodetect'},
                   {'name': 'maximum_digit', 'default_value': 'autodetect'},
                   {'name': 'repetitions_limit', 'default_value': '3'},
-                  {'name': 'solutions_count', 'default_value': '2'},
-                  ],
+                  {'name': 'solutions_count', 'default_value': '2'}],
               'likes': 315,
               'enabled': True},
               
@@ -80,7 +81,7 @@ def add_test_data():
               'link': 'https://en.wikipedia.org/wiki/Simon%27s_problem',
               'image': b'1010',
               'parameters': [{'name': 'period', 'default_value': '1010'},
-                             {'name': 'masquerade', 'default_value': 'True'},],
+                             {'name': 'masquerade', 'default_value': 'True'}],
               'likes': 781,
               'enabled': True},
 
@@ -102,10 +103,21 @@ def add_test_data():
               'link': 'https://en.wikipedia.org/wiki/Quantum_phase_estimation_algorithm',
               'image': b'1010',
               'parameters': [{'name': 'angle', 'default_value': '0.25'},
-                             {'name': 'precision', 'default_value': '3'},],              
+                             {'name': 'precision', 'default_value': '3'}],              
               'likes': 395,
               'enabled': True},
-              
+
+              {'id': 'shor',
+              'name': 'Shor',
+              'type': 'quantum',
+              'description': 'Factors integers using quantum spectographer and modular exponentiation.\n' +
+                             'Classical algorithm complexity is O(2 ^ square root of N) while quantum is O(N^3).',
+              'link': 'https://en.wikipedia.org/wiki/Shor%27s_algorithm',
+              'image': b'1010',
+              'parameters': [{'name': 'integer', 'default_value': '330023'}],              
+              'likes': 2045,
+              'enabled': True},
+                            
               ]
     
     with table.batch_writer(overwrite_by_pkeys=['id']) as batch:
