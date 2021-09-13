@@ -17,7 +17,7 @@ dictConfig(config.LOGGING_CONFIG)
 app.logger.info(f'INIT Werkzeug run main: {environ.get("WERKZEUG_RUN_MAIN")}')
 
 
-if environ.get('WERKZEUG_RUN_MAIN'):
+if environ.get('WERKZEUG_RUN_MAIN') or True:
 
     CORS(app)
 

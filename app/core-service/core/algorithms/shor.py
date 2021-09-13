@@ -65,3 +65,5 @@ def shor_classical():
 def shor(run_values, task_log):
     
     shor_classical()
+    
+    print('Test')
