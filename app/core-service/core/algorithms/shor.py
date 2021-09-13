@@ -19,7 +19,7 @@ def get_period_classical(modulo, x):
     return period
 
 
-def shor_classical():
+def shor_classical(run_values, task_log):
     
     number_input = run_values.get('number')
     number = int(number_input)
@@ -64,6 +64,11 @@ def shor_classical():
     
 def shor(run_values, task_log):
     
-    shor_classical()
+    shor_classical(run_values, task_log)
     
-    print('Test')
+    task_log(f'SHOR Test 2')
+    
+    circuit = QuantumCircuit(1, 1)
+    circuit.name = 'Shor Circuit'
+    
+    return circuit

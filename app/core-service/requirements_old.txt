@@ -23,7 +23,6 @@ fastdtw==0.3.4
 fastjsonschema==2.15.1
 Flask==2.0.1
 Flask-Cors==3.0.10
-gunicorn==20.1.0
 h5py==3.2.1
 idna==3.2
 importlib-metadata==3.10.1
@@ -107,7 +106,6 @@ traitlets==5.0.5
 tweedledum==1.1.0
 typing-extensions==3.10.0.0
 urllib3==1.26.6
-watchdog==2.1.5
 wcwidth==0.2.5
 webencodings==0.5.1
 websocket-client==1.1.0
