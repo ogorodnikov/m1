@@ -53,7 +53,7 @@ user_pool_client = os.getenv('USER_POOL_CLIENT')
 user_pool_client_id = get_user_pool_client_id(user_pool_id, user_pool_client)
 
     
-class Config(object):
+class Config():
     
     REGION = os.getenv('REGION')
     DOMAIN = os.getenv('DOMAIN')
