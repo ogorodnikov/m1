@@ -78,7 +78,8 @@ class GunicornApp(BaseApplication):
 
 gunicorn_options = {'bind': '0.0.0.0:8080',
                     'accesslog': '-',
-                    'access_log_format': "%(h)s %(l)s %(u)s %(t)s '%(r)s' %(s)s %(b)s '%(f)s' '%(a)s' in %(D)sµs",
+                    # 'access_log_format': "%(h)s %(l)s %(u)s %(t)s '%(r)s' %(s)s %(b)s '%(f)s' '%(a)s' in %(D)sµs",
+                    'access_log_format': "%(h)s | %(r)s %(s)s",
                     'workers': 1,
                     'threads': 1,
                     'reload': 'true',
