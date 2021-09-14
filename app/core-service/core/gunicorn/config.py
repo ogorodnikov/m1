@@ -3,7 +3,7 @@ bind = '0.0.0.0:8080'
 access_log_format = "%(h)s | %(r)s %(s)s"
 accesslog = '-'
 
-workers = 1
+workers = 2
 reload = True
 
 
@@ -12,8 +12,6 @@ reload = True
 # access_log_format': "%(h)s %(l)s %(u)s %(t)s '%(r)s' %(s)s %(b)s '%(f)s' '%(a)s' in %(D)sµs"
 # threads = 1
 # daemon = 'true'
-
-
 
 
 

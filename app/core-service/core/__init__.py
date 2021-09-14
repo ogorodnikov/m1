@@ -26,10 +26,10 @@ runner = engine.Runner()
 
 # runner = None
 
-# from core import telegram
+from core import telegram
 
-# bot = telegram.Bot()
-# bot.start()
+bot = telegram.Bot()
+bot.start()
 
 config.clear_figures_folder(app)
 
