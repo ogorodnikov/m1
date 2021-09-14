@@ -76,13 +76,23 @@ class GunicornApp(BaseApplication):
     def load(self):
         return self.application
 
+
+def when_ready(server):
+    app.logger.info(f'INIT Server is ready {server}')
+    
+def on_reload(server):
+    app.logger.info(f'INIT Server reloading {server}')
+
+    
 gunicorn_options = {'bind': '0.0.0.0:8080',
-                    'accesslog': '-',
-                    # 'access_log_format': "%(h)s %(l)s %(u)s %(t)s '%(r)s' %(s)s %(b)s '%(f)s' '%(a)s' in %(D)sµs",
                     'access_log_format': "%(h)s | %(r)s %(s)s",
-                    'workers': 1,
-                    'threads': 1,
+                    'accesslog': '-',
+                    'workers': 2,
                     'reload': 'true',
+                    'when_ready': when_ready,
+                    'on_reload': on_reload,
+                    # 'access_log_format': "%(h)s %(l)s %(u)s %(t)s '%(r)s' %(s)s %(b)s '%(f)s' '%(a)s' in %(D)sµs",
+                    # 'threads': 1,
                     # 'daemon': 'true',
                    }
 
