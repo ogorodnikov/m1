@@ -1,4 +1,4 @@
-from core import app
+# from core import app
 
 # from core import gunicorn_app
 
@@ -16,3 +16,14 @@ from core import app
 
 # run(["source", "/home/ec2-user/environment/flask-env/bin/activate"])
 # run(["bash", "/home/ec2-user/environment/m1/app/core-service/run.sh"])
+
+
+# from gunicorn.app.wsgiapp import WSGIApplication
+ 
+# wsgi_app = WSGIApplication()
+# wsgi_app.app_uri = 'run:app'
+ 
+# wsgi_app.run()
+
+
+from core import app
