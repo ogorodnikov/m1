@@ -7,10 +7,9 @@ from telebot.types import ReplyKeyboardMarkup, CallbackQuery, Message
 from core import app, models, runner
 
 
-BUBO_CELEBRATE_STICKER_FILE_ID = "CAACAgIAAxkBAAIF6GES9nEyKUKbGVt4XFzpjOeYv09dAAIUAAPp2BMo6LwZ1x6IhdYgBA"
-
-
 class Bot(TeleBot):
+    
+    BUBO_CELEBRATE_STICKER_FILE_ID = "CAACAgIAAxkBAAIF6GES9nEyKUKbGVt4XFzpjOeYv09dAAIUAAPp2BMo6LwZ1x6IhdYgBA"
     
     def __init__(self, *args, **kwargs):
         

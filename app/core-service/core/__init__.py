@@ -1,13 +1,9 @@
 from flask import Flask
 from flask_cors import CORS
 
-from os import environ
-
 from logging.config import dictConfig
 
 from core import config
-
-import time
 
 
 app = Flask(__name__)
@@ -20,16 +16,24 @@ CORS(app)
 
 app.config.from_object(config.Config)
 
+
+# from core.gunicorn.app import GunicornApp
+
+# gunicorn_app = GunicornApp(app)
+
+
 from core import engine
 
 runner = engine.Runner()
+# runner.start()
 
-# runner = None
 
-from core import telegram
 
-bot = telegram.Bot()
-bot.start()
+# from core import telegram
+
+# bot = telegram.Bot()
+# bot.start()
+
 
 config.clear_figures_folder(app)
 
@@ -41,10 +45,7 @@ from core import routes
 
 
 
-from core.gunicorn.app import GunicornApp
 
-gunicorn_app = GunicornApp(app)
 
-gunicorn_app.load_config_from_module_name_or_filename('python:core.gunicorn.config')
 
 

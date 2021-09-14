@@ -6,12 +6,26 @@ accesslog = '-'
 workers = 2
 reload = True
 
+# reload_engine = 'inotify'
+
+# preload_app = False
+
+# wsgi_app = 'run:app'
+
+# max_requests = 1
 
 # worker_class = 'core.CustomWorker'
 
 # access_log_format': "%(h)s %(l)s %(u)s %(t)s '%(r)s' %(s)s %(b)s '%(f)s' '%(a)s' in %(D)sµs"
-# threads = 1
-# daemon = 'true'
+
+
+# threads = 10
+
+
+# daemon = True
+
+# print_config = True
+
 
 
 
@@ -55,15 +69,13 @@ def worker_abort(worker):
     worker.log.info("worker received SIGABRT signal")
     
 def on_reload(server):
-    server.log.info(f">>>> on_reload {server}")
+    print(f">>>> on_reload {server}")
+    
+def on_starting(server):
+    print(f">>>> on_starting {server}")
     
 
 def post_worker_init(worker):
     unregister(_exit_function)
     worker.log.info(f"Exit function unregistered for Worker {worker.pid}")
-
-    
-    
-    
-    
     

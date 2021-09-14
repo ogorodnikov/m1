@@ -66,7 +66,7 @@ def shor(run_values, task_log):
     
     shor_classical(run_values, task_log)
     
-    task_log(f'SHOR Test 2')
+    task_log(f'SHOR Test 14')
     
     circuit = QuantumCircuit(1, 1)
     circuit.name = 'Shor Circuit'

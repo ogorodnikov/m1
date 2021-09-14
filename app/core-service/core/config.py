@@ -91,8 +91,8 @@ LOGGING_CONFIG = {'version': 1,
                                        
                   'root': {'level': 'INFO',
                            'handlers': ['wsgi']}}
-                           
-                           
+
+
 def clear_figures_folder(app):
     
     figures_folder = os.path.join(app.static_folder, 'figures')
