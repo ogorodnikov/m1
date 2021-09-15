@@ -54,16 +54,38 @@
         </div>
         
         <div class="col-auto mb-3">
-          
           <button type="submit" 
                   class="btn btn-danger" 
                   name="command"
                   value="terminate">
             Terminate
-          </button>          
-  
+          </button>
         </div>
+
+        <div class="col-auto mb-3">
+
+          {% if config['RUNNER_STATE'] == 'Started' %}
+          
+            <button type="submit" 
+                    class="btn btn-warning" 
+                    name="command"
+                    value="stop_runner">
+              Stop Runner
+            </button>
             
+          {% else %}
+          
+            <button type="submit" 
+                    class="btn btn-success" 
+                    name="command"
+                    value="start_runner">
+              Start Runner
+            </button>
+        
+          {% endif %} 
+          
+        </div>
+        
       </div>
     </form>
   </div>

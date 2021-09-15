@@ -62,17 +62,21 @@ class Runner():
         self.tasks = self.manager.dict()
         
         self.worker_active_flag = Event()
-        self.worker_active_flag.set()
         
         app.logger.info(f'RUNNER initiated: {self}')
         
     
     def start(self):
+
+        self.worker_active_flag.set()
         
         queue_pool = ProcessPoolExecutor(max_workers=self.queue_workers_count,
                                          initializer=self.queue_worker)
         
         worker_future = queue_pool.submit(self.queue_worker)
+        
+        app.config['RUNNER'] = self
+        app.config['RUNNER_STATE'] = 'Started'
         
         app.logger.info(f'RUNNER started: {self}')
         
@@ -89,6 +93,15 @@ class Runner():
         
         # app.logger.info(f'RUNNER worker_future.done(): {worker_future.done()}')
         # app.logger.info(f'RUNNER canceled: {canceled}')
+        
+
+    def stop(self):
+        
+        self.worker_active_flag.clear()
+        
+        app.config['RUNNER_STATE'] = 'Stopped'
+        
+        app.logger.info(f'RUNNER stopped: {self}')      
         
         
     def task_log(self, task_id, message):
@@ -126,11 +139,11 @@ class Runner():
         
         app.logger.info(f'RUNNER queue_worker started: {getpid()}')
         
-        while True:
+        while self.worker_active_flag.is_set():
             
             time.sleep(1)
             
-            if self.worker_active_flag.is_set() and not self.task_queue.empty():
+            if not self.task_queue.empty():
                 
                 pop_task = self.task_queue.get()
                 

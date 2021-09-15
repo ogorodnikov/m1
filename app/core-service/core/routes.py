@@ -112,7 +112,7 @@ def run_algorithm(algorithm_id):
                    f"Task {task_id}</a>"
                    f"<hr class='mb-0 mt-1'>"
                    f"<p class='mb-0'>Algorithm: {algorithm_id}</p>"
-                   f"<p class='mb-0'>Test 27</p>"
+                   f"<p class='mb-0'>Test 41</p>"
                    f"<p class='mb-0'>Run values: {dict(run_values)}</p>")
                    
     flash(run_message, category='warning')
@@ -197,6 +197,14 @@ def admin():
     if command == 'terminate':
         flash(f"Terminating", category='danger')
         runner.terminate_application("Terminated by admin")
+        
+    if command == 'start_runner':
+        flash(f"Starting runner", category='success')
+        runner.start()
+
+    if command == 'stop_runner':
+        flash(f"Stopping runner", category='warning')
+        runner.stop()
     
     return render_template("admin.html")
     

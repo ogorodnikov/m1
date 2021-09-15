@@ -65,20 +65,32 @@ def post_worker_init(worker):
 def worker_int(worker):
     worker.log.info("worker_int - worker received INT or QUIT signal")
     print("worker_int - worker received INT or QUIT signal")
+    
+    from core import app
+    
 
-    ## get traceback info
-    import threading, sys, traceback
-    id2name = {th.ident: th.name for th in threading.enumerate()}
-    code = []
-    for threadId, stack in sys._current_frames().items():
-        code.append("\n# Thread: %s(%d)" % (id2name.get(threadId,""),
-            threadId))
-        for filename, lineno, name, line in traceback.extract_stack(stack):
-            code.append('File: "%s", line %d, in %s' % (filename,
-                lineno, name))
-            if line:
-                code.append("  %s" % (line.strip()))
-    worker.log.debug("\n".join(code))
+    
+    runner = app.config['RUNNER']
+    
+    print(f"Stopping runner: {runner}")
+    
+    runner.stop()
+    
+
+    # ## get traceback info
+    # import threading, sys, traceback
+    # id2name = {th.ident: th.name for th in threading.enumerate()}
+    # code = []
+    # for threadId, stack in sys._current_frames().items():
+    #     code.append("\n# Thread: %s(%d)" % (id2name.get(threadId,""),
+    #         threadId))
+    #     for filename, lineno, name, line in traceback.extract_stack(stack):
+    #         code.append('File: "%s", line %d, in %s' % (filename,
+    #             lineno, name))
+    #         if line:
+    #             code.append("  %s" % (line.strip()))
+    # worker.log.debug("\n".join(code))
+    # print("\n".join(code))
 
 def worker_abort(worker):
     worker.log.info("worker_abort - worker received SIGABRT signal")
