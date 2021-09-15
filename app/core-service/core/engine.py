@@ -74,9 +74,13 @@ class Runner():
         
         worker_future = queue_pool.submit(self.queue_worker)
         
+        app.logger.info(f'RUNNER started: {self}')
+        
         # worker_future = queue_pool.submit(pow, 12, 133)
 
         # canceled = worker_future.cancel()
+                
+        # time.sleep(3)
         
         # result = worker_future.result(timeout=3)
         

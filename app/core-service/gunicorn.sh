@@ -2,4 +2,4 @@
 
 # gunicorn run:app --config="python:core.gunicorn.config"
 
-gunicorn run:app
+gunicorn run:app --reload

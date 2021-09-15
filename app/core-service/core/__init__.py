@@ -26,7 +26,7 @@ app.config.from_object(config.Config)
 from core import engine
 
 runner = engine.Runner()
-# runner.start()
+runner.start()
 
 # from core import telegram
 
