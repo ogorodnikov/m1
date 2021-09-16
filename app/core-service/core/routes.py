@@ -112,7 +112,7 @@ def run_algorithm(algorithm_id):
                    f"Task {task_id}</a>"
                    f"<hr class='mb-0 mt-1'>"
                    f"<p class='mb-0'>Algorithm: {algorithm_id}</p>"
-                #   f"<p class='mb-0'>Test 48</p>"
+                #   f"<p class='mb-0'>Test 50</p>"
                    f"<p class='mb-0'>Run values: {dict(run_values)}</p>")
                    
     flash(run_message, category='warning')

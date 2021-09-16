@@ -10,7 +10,7 @@ WORKDIR /m1-core-service
 RUN echo Installing Python packages listed in requirements.txt
 RUN pip3 install -r ./requirements.txt
 RUN echo Starting starting the Flask service
-# ENTRYPOINT ["python3"]
-# CMD ["run.py"]
-ENTRYPOINT ["bash"]
-CMD ["gunicorn.sh"]
+ENTRYPOINT ["python3"]
+CMD ["run.py"]
+# ENTRYPOINT ["bash"]
+# CMD ["gunicorn.sh"]
