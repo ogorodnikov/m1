@@ -18,9 +18,7 @@ CORS(app)
 app.config.from_object(config.Config)
 
 
-# from core.gunicorn.app import GunicornApp
 
-# gunicorn_app = GunicornApp(app)
 
 
 from core import engine
@@ -40,47 +38,49 @@ from core import routes
 
 
 
-def build_app():
+# def build_app():
 
-    app = Flask(__name__)
+#     app = Flask(__name__)
     
-    dictConfig(config.LOGGING_CONFIG)
+#     dictConfig(config.LOGGING_CONFIG)
     
-    app.logger.info(f'INIT')
+#     app.logger.info(f'INIT')
     
-    CORS(app)
+#     CORS(app)
     
-    app.config.from_object(config.Config)
-    
-    
-    # from core.gunicorn.app import GunicornApp
-    
-    # gunicorn_app = GunicornApp(app)
+#     app.config.from_object(config.Config)
     
     
-    from core import engine
+#     # from core.gunicorn.app import GunicornApp
     
-    runner = engine.Runner()
-    runner.start()
-    
+#     # gunicorn_app = GunicornApp(app)
     
     
-    # from core import telegram
+#     from core import engine
     
-    # bot = telegram.Bot()
-    # bot.start()
-    
-    
-    config.clear_figures_folder(app)
+#     runner = engine.Runner()
+#     runner.start()
     
     
-    from core import routes
     
-    return app
-
-
+#     # from core import telegram
+    
+#     # bot = telegram.Bot()
+#     # bot.start()
+    
+    
+#     config.clear_figures_folder(app)
+    
+    
+#     from core import routes
+    
+#     return app
 
 
+
+# from core.gunicorn.app import GunicornApp
+
+# gunicorn_app = GunicornApp(app=build_app())
 
 
 
