@@ -72,7 +72,7 @@ def worker_int(worker):
     
     runner.stop()
     
-    print_threads_traceback()
+    # print_threads_traceback()
 
 
 def worker_abort(worker):

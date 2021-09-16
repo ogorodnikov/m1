@@ -18,12 +18,30 @@
 # run(["bash", "/home/ec2-user/environment/m1/app/core-service/run.sh"])
 
 
-# from gunicorn.app.wsgiapp import WSGIApplication
+import os, sys
+
+from gunicorn.app.wsgiapp import WSGIApplication
  
 # wsgi_app = WSGIApplication()
-# wsgi_app.app_uri = 'run:app'
+# wsgi_app.app_uri = 'core:app'
  
 # wsgi_app.run()
 
+# path = os.path.join(os.path.dirname(__file__), "run.py")
 
-from core import app
+# print(path)
+
+sys.argv = [sys.argv[0]] + ["--bind", "0.0.0.0:8080",
+                            "--workers", "1",
+                            "--threads", "1",
+                            # "--config", "python:core.gunicorn.config",
+                            "core:app",
+                            # path,
+                            ]
+                            
+print(f"sys.argv: {sys.argv}")
+
+# WSGIApplication("%(prog)s [OPTIONS] [APP_MODULE]").run()
+WSGIApplication("%(prog)s [OPTIONS]").run()
+
+# from core import app
