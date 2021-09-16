@@ -149,6 +149,11 @@ Resources:
     Properties:
       AWSServiceName: ecs.amazonaws.com
       
+  # AutoscalingServiceLinkedRole:
+  #   Type: AWS::IAM::ServiceLinkedRole
+  #   Properties:
+  #     AWSServiceName: autoscaling.amazonaws.com
+      
   CoreContainerEC2Role:
     Type: AWS::IAM::Role
     Properties:
@@ -313,6 +318,24 @@ Resources:
   #         # echo role_arn = arn:aws:iam::196332284574:role/m1-ecs-task-role >> /home/ec2-user/.aws/config
   #         # echo credential_source = EcsContainer >> /home/ec2-user/.aws/config  
 
+  FargateScalableTarget:  
+    Type: AWS::ApplicationAutoScaling::ScalableTarget
+    Properties: 
+      MaxCapacity: 2
+      MinCapacity: 1
+      ResourceId:
+          !Sub 
+          - service/${CoreCluster}/${core_fargate_service_name}
+          - core_fargate_service_name: !GetAtt CoreFargateService.Name
+          
+      RoleARN: !Sub arn:aws:iam::${AWS::AccountId}:role/aws-service-role/ecs.application-autoscaling.amazonaws.com/AWSServiceRoleForApplicationAutoScaling_ECSService
+      
+      ScalableDimension: ecs:service:DesiredCount
+      ServiceNamespace: ecs
+      SuspendedState: 
+        DynamicScalingInSuspended: true
+        DynamicScalingOutSuspended: true
+        ScheduledScalingSuspended: true
 
 Outputs:
  
@@ -350,5 +373,12 @@ Outputs:
   #   Description: Test
   #   Value: 
   #     !Sub 
-  #       - !Sub ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${core_image_repository}:latest
+  #       - ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${core_image_repository}:latest
   #       - core_image_repository: !ImportValue m1-cicd-stack:UserPool
+        
+  # Test2:
+  #   Description: Test
+  #   Value: 
+  #     !Sub 
+  #     - service/${CoreCluster}/${core_fargate_service_name}
+  #     - core_fargate_service_name: !GetAtt CoreFargateService.Name
