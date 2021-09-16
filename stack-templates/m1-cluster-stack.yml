@@ -17,7 +17,7 @@ Parameters:
     Type: String
     Default: true
     
-    
+
 Conditions:
 
   CreateAWSServiceRoleForECS: !Not [!Equals [!Ref CreateAWSServiceRoleForECS, true]]
@@ -148,11 +148,6 @@ Resources:
     Condition: CreateAWSServiceRoleForECS
     Properties:
       AWSServiceName: ecs.amazonaws.com
-      
-  # AutoscalingServiceLinkedRole:
-  #   Type: AWS::IAM::ServiceLinkedRole
-  #   Properties:
-  #     AWSServiceName: autoscaling.amazonaws.com
       
   CoreContainerEC2Role:
     Type: AWS::IAM::Role
@@ -316,8 +311,9 @@ Resources:
   #         # mkdir /home/ec2-user/.aws/ && touch /home/ec2-user/.aws/config
   #         # echo [default] > /home/ec2-user/.aws/config
   #         # echo role_arn = arn:aws:iam::196332284574:role/m1-ecs-task-role >> /home/ec2-user/.aws/config
-  #         # echo credential_source = EcsContainer >> /home/ec2-user/.aws/config  
-
+  #         # echo credential_source = EcsContainer >> /home/ec2-user/.aws/config
+  
+  
   FargateScalableTarget:  
     Type: AWS::ApplicationAutoScaling::ScalableTarget
     Properties: 
@@ -327,15 +323,40 @@ Resources:
           !Sub 
           - service/${CoreCluster}/${core_fargate_service_name}
           - core_fargate_service_name: !GetAtt CoreFargateService.Name
-          
       RoleARN: !Sub arn:aws:iam::${AWS::AccountId}:role/aws-service-role/ecs.application-autoscaling.amazonaws.com/AWSServiceRoleForApplicationAutoScaling_ECSService
-      
       ScalableDimension: ecs:service:DesiredCount
       ServiceNamespace: ecs
       SuspendedState: 
-        DynamicScalingInSuspended: true
-        DynamicScalingOutSuspended: true
-        ScheduledScalingSuspended: true
+        DynamicScalingInSuspended: false
+        DynamicScalingOutSuspended: false
+        ScheduledScalingSuspended: false
+        
+  FargateScalingPolicyCPU:
+    Type: AWS::ApplicationAutoScaling::ScalingPolicy
+    Properties: 
+      PolicyName: m1-fargate-scaling-policy-cpu
+      PolicyType: TargetTrackingScaling
+      ScalingTargetId: !Ref FargateScalableTarget
+      TargetTrackingScalingPolicyConfiguration: 
+        TargetValue: 80.0
+        ScaleInCooldown: 180
+        ScaleOutCooldown: 60
+        PredefinedMetricSpecification:
+          PredefinedMetricType: ECSServiceAverageCPUUtilization
+          
+  FargateScalingPolicyMemory:
+    Type: AWS::ApplicationAutoScaling::ScalingPolicy
+    Properties: 
+      PolicyName: m1-fargate-scaling-policy-memory
+      PolicyType: TargetTrackingScaling
+      ScalingTargetId: !Ref FargateScalableTarget
+      TargetTrackingScalingPolicyConfiguration: 
+        TargetValue: 90.0
+        ScaleInCooldown: 180
+        ScaleOutCooldown: 60
+        PredefinedMetricSpecification:
+          PredefinedMetricType: ECSServiceAverageMemoryUtilization
+          
 
 Outputs:
  
@@ -382,3 +403,11 @@ Outputs:
   #     !Sub 
   #     - service/${CoreCluster}/${core_fargate_service_name}
   #     - core_fargate_service_name: !GetAtt CoreFargateService.Name
+  
+  # Test3:
+  #   Description: Test
+  #   Value: !Join 
+  #     - /
+  #     - - service
+  #       - !Ref CoreCluster
+  #       - !GetAtt CoreFargateService.Name
