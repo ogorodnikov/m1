@@ -34,8 +34,11 @@ from gunicorn.app.wsgiapp import WSGIApplication
 sys.argv = [sys.argv[0]] + ["--bind", "0.0.0.0:8080",
                             "--workers", "1",
                             "--threads", "1",
+                            "--config", '/home/ec2-user/environment/m1/app/core-service/gunicorn.conf.py',
+                            "--reload",
                             # "--config", "python:core.gunicorn.config",
                             "core:app",
+
                             # path,
                             ]
                             
