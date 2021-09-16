@@ -16,5 +16,5 @@ run_options = ["--config", config_path, "core:app"]
 
 sys.argv.extend(run_options)
 
-WSGIApplication("%(prog)s [OPTIONS]").run()
+WSGIApplication("%(prog)s [OPTIONS] [APP_MODULE]").run()
 
