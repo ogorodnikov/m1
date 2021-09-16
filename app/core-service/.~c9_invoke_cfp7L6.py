@@ -8,8 +8,9 @@ reload = True
 
 reload_engine = 'inotify'
 
+# preload_app = False
 
-# threads = 10
+# wsgi_app = 'run:app'
 
 # max_requests = 1
 
@@ -17,13 +18,14 @@ reload_engine = 'inotify'
 
 # access_log_format': "%(h)s %(l)s %(u)s %(t)s '%(r)s' %(s)s %(b)s '%(f)s' '%(a)s' in %(D)sµs"
 
-# daemon = True
 
-# preload_app = False
+# threads = 10
+
+
+# daemon = True
 
 # print_config = True
 
-# wsgi_app = 'run:app'
 
 
 from atexit import unregister
@@ -66,13 +68,16 @@ def worker_int(worker):
     
     from core import app
     
+
+    
     runner = app.config['RUNNER']
     
     print(f"Stopping runner: {runner}")
     
     runner.stop()
     
-    print_threads_traceback()
+    print_worker_traceback()
+
 
 
 def worker_abort(worker):
@@ -110,27 +115,20 @@ def on_exit(server):
     print("on_exit")
     
     
-def print_threads_traceback():
-    
-    print("Threads traceback:")
+def print_worker_traceback()   :
 
     import threading, sys, traceback
     
-    threads_dict = {thread.ident: thread.name for thread in threading.enumerate()}
+    id2name = {th.ident: th.name for th in threading.enumerate()}
     code = []
-    
-    for thread_id, stack in sys._current_frames().items():
-        
-        thread_name = threads_dict.get(thread_id,"")
-        
-        thread_line = f"\nThread: {thread_name}({thread_id})\n"
-        
-        code.append(thread_line)
-        
-        for filename, line_number, module, line in traceback.extract_stack(stack):
-            code.append(f'File: "{filename}", line {line_number}, in {module}')
+    for threadId, stack in sys._current_frames().items():
+        code.append("\n# Thread: %s(%d)" % (id2name.get(threadId,""),
+            threadId))
+        for filename, lineno, name, line in traceback.extract_stack(stack):
+            code.append('File: "%s", line %d, in %s' % (filename,
+                lineno, name))
             if line:
-                code.append(f"  {line.strip()}")
-
+                code.append("  %s" % (line.strip()))
+    worker.log.debug("\n".join(code))
     print("\n".join(code))
     
