@@ -18,6 +18,6 @@ run_options = ["--config", config_path, "core:app"]
 
 sys.argv.extend(run_options)
 
-print(f"GUNICORN sys.argv: {sys.argv}")
+# print(f"GUNICORN sys.argv: {sys.argv}")
 
 WSGIApplication("%(prog)s [OPTIONS]").run()

@@ -4,7 +4,7 @@ access_log_format = "%(h)s | %(r)s %(s)s"
 accesslog = '-'
 
 workers = 1
-threads = 2
+threads = 1
 reload = True
 
 # reload_engine = 'inotify'
@@ -51,7 +51,7 @@ def worker_int(worker):
     
     print(f"GUNICORN Runner stopped: {runner}")
     
-    # print_threads_traceback()
+    print_threads_traceback()
 
 
 def worker_abort(worker):
