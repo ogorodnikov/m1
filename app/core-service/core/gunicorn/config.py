@@ -8,7 +8,6 @@ reload = True
 
 # reload_engine = 'inotify'
 
-
 # threads = 10
 
 # max_requests = 1
@@ -30,84 +29,32 @@ from atexit import unregister
 from multiprocessing.util import _exit_function
 
 
-def on_starting(server):
-    server.log.info("on_starting")
-    print("on_starting")
-
-def on_reload(server):
-    server.log.info("on_reload")
-    print("on_reload")
-
-def when_ready(server):
-    server.log.info("when_ready")
-    print("when_ready")
-
-def pre_fork(server, worker):
-    server.log.info("child_exit")
-    worker.log.info("child_exit")
-    print("child_exit")
-
-def post_fork(server, worker):
-    server.log.info("post_fork")
-    worker.log.info("post_fork")
-    print("post_fork")
-
 def post_worker_init(worker):
-    worker.log.info("post_worker_init")
-    print("post_worker_init")
+    
+    # print("GUNICORN post_worker_init")
     
     unregister(_exit_function)
-    worker.log.info(f"Exit function unregistered for Worker {worker.pid}")
-    print(f"Exit function unregistered for Worker {worker.pid}")
+    print(f"GUNICORN Worker  {worker.pid} _exit_function unregitered")
+    
 
 def worker_int(worker):
-    worker.log.info("worker_int - worker received INT or QUIT signal")
-    print("worker_int - worker received INT or QUIT signal")
     
+    # print("GUNICORN worker_int")
+    
+    print(f"GUNICORN Worker received INT or QUIT signal {worker.pid}")
+
     from core import app
     
     runner = app.config['RUNNER']
-    
-    print(f"Stopping runner: {runner}")
-    
     runner.stop()
+    
+    print(f"GUNICORN Runner stopped: {runner}")
     
     # print_threads_traceback()
 
 
 def worker_abort(worker):
-    worker.log.info("worker_abort - worker received SIGABRT signal")
-    print("worker_abort - worker received SIGABRT signal")
-
-def pre_exec(server):
-    server.log.info("pre_exec")
-    print("pre_exec")
-
-def pre_request(worker, req):
-    worker.log.info(f"pre_request {req.method} {req.path}")
-    print(f"pre_request {req.method} {req.path}")
-    
-def post_request(worker, req, environ, resp):
-    worker.log.info(f"post_request {req.method} {req.path}")
-    print(f"post_request {req.method} {req.path}")
-    
-def child_exit(server, worker):
-    server.log.info("child_exit")
-    worker.log.info("child_exit")
-    print("child_exit")
-
-def worker_exit(server, worker):
-    server.log.info("worker_exit")
-    worker.log.info("worker_exit")
-    print("worker_exit")
-
-def nworkers_changed(server, new_value, old_value):
-    server.log.info("nworkers_changed")
-    print("nworkers_changed")
-    
-def on_exit(server):
-    server.log.info("on_exit")
-    print("on_exit")
+    print(f"GUNICORN worker_abort - worker received SIGABRT signal {worker.pid}")
     
     
 def print_threads_traceback():
@@ -133,4 +80,46 @@ def print_threads_traceback():
                 code.append(f"  {line.strip()}")
 
     print("\n".join(code))
+    
+    
+# def on_starting(server):
+#     server.log.info("GUNICORN on_starting")
+
+# def on_reload(server):
+#     server.log.info("GUNICORN on_reload")
+#     print("GUNICORN on_reload")
+
+# def when_ready(server):
+#     server.log.info("GUNICORN when_ready")
+
+# def pre_fork(server, worker):
+#     server.log.info("GUNICORN child_exit")
+#     worker.log.info("GUNICORN child_exit")
+
+# def post_fork(server, worker):
+#     server.log.info("GUNICORN post_fork")
+#     worker.log.info("GUNICORN post_fork")
+
+# def pre_exec(server):
+#     server.log.info("GUNICORN pre_exec")
+#     print("GUNICORN pre_exec")
+
+# def pre_request(worker, req):
+#     print(f"GUNICORN pre_request {req.method} {req.path}")
+    
+# def post_request(worker, req, environ, resp):
+#     print(f"GUNICORN post_request {req.method} {req.path}")
+    
+# def child_exit(server, worker):
+#     server.log.info("GUNICORN child_exit")
+#     worker.log.info("GUNICORN child_exit")
+
+# def worker_exit(server, worker):
+#     print("GUNICORN worker_exit")
+
+# def nworkers_changed(server, new_value, old_value):
+#     server.log.info("GUNICORN nworkers_changed")
+    
+# def on_exit(server):
+#     server.log.info("GUNICORN on_exit")
     

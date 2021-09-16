@@ -12,10 +12,9 @@ root_path = os.path.dirname(__file__)
 
 config_path = os.path.join(root_path, "core", "gunicorn", "config.py")
 
-print(config_path)
-
 run_options = ["--config", config_path, "core:app"]
 
 sys.argv.extend(run_options)
 
 WSGIApplication("%(prog)s [OPTIONS]").run()
+
