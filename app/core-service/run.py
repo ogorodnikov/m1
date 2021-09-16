@@ -10,11 +10,14 @@ from gunicorn.app.wsgiapp import WSGIApplication
 
 root_path = os.path.dirname(__file__)
 
-config_path = os.path.join(root_path, "core", "gunicorn", "config.py")
+# sys.path.insert(0, root_path)
 
-run_options = ["--config", config_path, "core:app"]
+config_path = os.path.join(root_path, "core", "gunicorn", "config.py")
+module_path = os.path.join(root_path, "application:app")
+
+run_options = ["--config", config_path, "core.run.py"]
 
 sys.argv.extend(run_options)
 
-WSGIApplication("%(prog)s [OPTIONS] [APP_MODULE]").run()
+WSGIApplication("%(prog)s [APP_MODULE]").run()
 
