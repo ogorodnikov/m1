@@ -12,6 +12,7 @@ from qiskit.visualization import plot_bloch_multivector
 from qiskit.tools.monitor import backend_overview, job_monitor
 
 from core import app
+from core import sqs
 
 from core.algorithms.egcd import egcd
 from core.algorithms.bernvaz import bernvaz
@@ -48,6 +49,9 @@ class Runner():
         
         self.queue_workers_count = app.config.get('CPU_COUNT', 1)
         self.task_rollover_size = app.config.get('TASK_ROLLOVER_SIZE', 100)
+        
+        sqs_task_queue_name = app.config.get('SQS_TASK_QUEUE')
+        sqs_result_queue_name = app.config.get('SQS_RESULT_QUEUE')
 
         # self.queue_workers_count = 2
 
@@ -55,6 +59,12 @@ class Runner():
         
         self.task_queue = Queue()
         self.task_results_queue = Queue()
+        
+        app.logger.info(f'RUNNER sqs_task_queue_name {sqs_task_queue_name}')
+        app.logger.info(f'RUNNER sqs_result_queue_name {sqs_result_queue_name}')
+        
+        self.sqs_task_queue = sqs.SQS(sqs_task_queue_name)
+        self.sqs_result_queue = sqs.SQS(sqs_result_queue_name)
         
         self.manager = Manager()
         

@@ -15,13 +15,13 @@ class SQS():
             self.queue_url = queue_urls[0]
             
         else:
-            create_response = self.sqs.create_queue(QueueName='m1-task-queue')
+            create_response = self.sqs.create_queue(QueueName=queue_name)
             self.queue_url = create_response['QueueUrl']
             
         print(f"QUEUE list_response {list_response}")
         print(f"QUEUE self.queue_url {self.queue_url}")
         
-    
+
     def send_message(self, message_body):
 
         send_response = self.sqs.send_message(QueueUrl=self.queue_url,
@@ -63,13 +63,21 @@ class SQS():
     
         print(f"QUEUE purge_response {purge_response}")
     
+    
 
-queue = SQS('m1-task-queue')
+def test():
 
-queue.send_message('Hello quokka!')
+    queue = SQS('m1-task-queue')
+    
+    queue.send_message('Hello quokka!')
+    
+    message = queue.receive_message()
+    
+    print(f"QUEUE test message {message}")
+    
+    queue.purge()
+    
+    # queue = SQS('m1-result-queue')
+    
 
-message = queue.receive_message()
-
-print(f"QUEUE test message {message}")
-
-queue.purge()
+# test()

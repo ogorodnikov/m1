@@ -14,6 +14,9 @@ NLB_NAME = m1-core-nlb
 USER_POOL = m1-user-pool
 USER_POOL_CLIENT = m1-user-pool-client
 
+SQS_TASK_QUEUE = m1-task-queue
+SQS_RESULT_QUEUE = m1-result-queue
+
 
 ###   Qiskit
 
