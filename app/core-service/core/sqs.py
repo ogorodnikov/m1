@@ -32,7 +32,7 @@ class SQS():
 
     def receive_message(self):
 
-        receive_response = self.sqs.receive_message(QueueUrl=queue_url,
+        receive_response = self.sqs.receive_message(QueueUrl=self.queue_url,
                                                     MaxNumberOfMessages=1,
                                                     VisibilityTimeout=1)
         
@@ -46,7 +46,7 @@ class SQS():
             message = messages[0]
             message_body = message.get('Body')
             receipt_handle = message['ReceiptHandle']
-            delete_response = self.sqs.delete_message(QueueUrl=queue_url,
+            delete_response = self.sqs.delete_message(QueueUrl=self.queue_url,
                                                       ReceiptHandle=receipt_handle)
                                              
             print(f"QUEUE message {message}")
@@ -54,7 +54,7 @@ class SQS():
             print(f"QUEUE receipt_handle {receipt_handle}")                                    
             print(f"QUEUE delete_response {delete_response}")
             
-            return message
+            return message_body
 
 
     def purge(self):
@@ -68,3 +68,8 @@ queue = SQS('m1-task-queue')
 
 queue.send_message('Hello quokka!')
 
+message = queue.receive_message()
+
+print(f"QUEUE test message {message}")
+
+queue.purge()
