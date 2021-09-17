@@ -53,15 +53,15 @@ class Runner():
         sqs_task_queue_name = app.config.get('SQS_TASK_QUEUE')
         sqs_result_queue_name = app.config.get('SQS_RESULT_QUEUE')
 
+        # app.logger.info(f'RUNNER sqs_task_queue_name {sqs_task_queue_name}')
+        # app.logger.info(f'RUNNER sqs_result_queue_name {sqs_result_queue_name}')
+
         # self.queue_workers_count = 2
 
         self.task_count = 0
         
         self.task_queue = Queue()
         self.task_results_queue = Queue()
-        
-        app.logger.info(f'RUNNER sqs_task_queue_name {sqs_task_queue_name}')
-        app.logger.info(f'RUNNER sqs_result_queue_name {sqs_result_queue_name}')
         
         self.sqs_task_queue = sqs.SQS(sqs_task_queue_name)
         self.sqs_result_queue = sqs.SQS(sqs_result_queue_name)

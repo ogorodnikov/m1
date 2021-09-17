@@ -1,3 +1,5 @@
+import json
+
 import boto3
 
 
@@ -23,9 +25,11 @@ class SQS():
         
 
     def send_message(self, message_body):
+        
+        message_body_json = json.dumps(message_body)
 
         send_response = self.sqs.send_message(QueueUrl=self.queue_url,
-                                              MessageBody=message_body)
+                                              MessageBody=message_body_json)
         
         print(f"QUEUE send_response {send_response}")
 
@@ -44,7 +48,9 @@ class SQS():
         if messages:
             
             message = messages[0]
-            message_body = message.get('Body')
+            message_body_json = message.get('Body')
+            message_body = json.loads(message_body_json)
+            
             receipt_handle = message['ReceiptHandle']
             delete_response = self.sqs.delete_message(QueueUrl=self.queue_url,
                                                       ReceiptHandle=receipt_handle)
@@ -69,15 +75,20 @@ def test():
 
     queue = SQS('m1-task-queue')
     
-    queue.send_message('Hello quokka!')
+    message = {'task_id': 1, 'message': 'Hello quokka!'}
     
-    message = queue.receive_message()
+    print(f"QUEUE message {message}")
+
+    queue.send_message(message)
     
-    print(f"QUEUE test message {message}")
+    received_message = queue.receive_message()
     
-    queue.purge()
+    print(f"QUEUE received_message {received_message}")    
+    print(f"QUEUE type(received_message) {type(received_message)}")    
+    
+    # queue.purge()
     
     # queue = SQS('m1-result-queue')
     
 
-# test()
+test()
