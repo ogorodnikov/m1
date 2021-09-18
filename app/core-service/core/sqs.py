@@ -7,6 +7,8 @@ class SQS():
 
     def __init__(self, queue_name, *args, **kwargs):
         
+        print(f"QUEUE __init__ {queue_name}")
+        
         self.sqs = boto3.client('sqs')
 
         list_response = self.sqs.list_queues(QueueNamePrefix=queue_name)
@@ -20,18 +22,22 @@ class SQS():
             create_response = self.sqs.create_queue(QueueName=queue_name)
             self.queue_url = create_response['QueueUrl']
             
-        print(f"QUEUE list_response {list_response}")
-        print(f"QUEUE self.queue_url {self.queue_url}")
+        # print(f"QUEUE list_response {list_response}")
+        # print(f"QUEUE self.queue_url {self.queue_url}")
         
 
     def send_message(self, message_body):
+        
+        print(f"QUEUE send_message {message_body}")
         
         message_body_json = json.dumps(message_body)
 
         send_response = self.sqs.send_message(QueueUrl=self.queue_url,
                                               MessageBody=message_body_json)
         
-        print(f"QUEUE send_response {send_response}")
+        # print(f"QUEUE send_response {send_response}")
+        
+
 
 
     def receive_message(self):
@@ -42,8 +48,10 @@ class SQS():
         
         messages = receive_response.get('Messages')
         
-        print(f"QUEUE receive_response {receive_response}")
-        print(f"QUEUE messages {messages}")
+        # print(f"QUEUE receive_response {receive_response}")
+        # print(f"QUEUE messages {messages}")
+        
+        message_body = None
         
         if messages:
             
@@ -55,12 +63,14 @@ class SQS():
             delete_response = self.sqs.delete_message(QueueUrl=self.queue_url,
                                                       ReceiptHandle=receipt_handle)
                                              
-            print(f"QUEUE message {message}")
-            print(f"QUEUE message_body {message_body}")
-            print(f"QUEUE receipt_handle {receipt_handle}")                                    
-            print(f"QUEUE delete_response {delete_response}")
+            # print(f"QUEUE message {message}")
+            # print(f"QUEUE message_body {message_body}")
+            # print(f"QUEUE receipt_handle {receipt_handle}")                                    
+            # print(f"QUEUE delete_response {delete_response}")
             
-            return message_body
+        print(f"QUEUE receive_message {message_body}")
+        
+        return message_body
 
 
     def purge(self):
@@ -74,6 +84,11 @@ class SQS():
 def test():
 
     queue = SQS('m1-task-queue')
+    
+    print(queue.queue_url)
+    
+    quit()
+    
     
     message = {'task_id': 1, 'message': 'Hello quokka!'}
     
@@ -91,4 +106,4 @@ def test():
     # queue = SQS('m1-result-queue')
     
 
-test()
+# test()
