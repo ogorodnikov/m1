@@ -32,7 +32,7 @@ app.config['RUNNER'] = runner
 
 from core import telegram
 
-bot = telegram.Bot()
+bot = telegram.Bot(app)
 bot.start()
 
 

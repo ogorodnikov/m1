@@ -4,29 +4,34 @@ from telebot import TeleBot
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
 from telebot.types import ReplyKeyboardMarkup, CallbackQuery, Message
 
-from core import app
-
 
 class Bot(TeleBot):
     
     BUBO_CELEBRATE_STICKER_FILE_ID = "CAACAgIAAxkBAAIF6GES9nEyKUKbGVt4XFzpjOeYv09dAAIUAAPp2BMo6LwZ1x6IhdYgBA"
     
-    def __init__(self, *args, **kwargs):
+    def __init__(self, app, *args, **kwargs):
 
-        self.db = app.config.get('DB')
-        self.runner = app.config.get('RUNNER')
+        self.app = app
         
-        telegram_token = app.config.get('TELEGRAM_TOKEN')
+        self.db = self.app.config.get('DB')
+        self.runner = self.app.config.get('RUNNER')
+        self.domain = self.app.config.get('DOMAIN')
+
+        telegram_token = self.app.config.get('TELEGRAM_TOKEN')
         
         super().__init__(telegram_token, *args, 
                          parse_mode='HTML', threaded=False, **kwargs)
         
         self.register_handlers()
 
-        app.config['TELEGRAM_BOT'] = self
-        app.config['TELEGRAM_BOT_STATE'] = 'Stopped'
+        self.app.config['TELEGRAM_BOT'] = self
+        self.app.config['TELEGRAM_BOT_STATE'] = 'Stopped'
 
-        app.logger.info(f'BOT initiated: {self}')
+        self.log(f'BOT initiated: {self}')
+        
+    
+    def log(self, message):
+        self.app.logger.info(message)
         
         
     def start(self):
@@ -36,20 +41,20 @@ class Bot(TeleBot):
         polling_worker_thread.name = "Telegram bot polling"
         polling_worker_thread.start()
         
-        app.config['TELEGRAM_BOT_STATE'] = 'Started'
+        self.app.config['TELEGRAM_BOT_STATE'] = 'Started'
 
-        app.logger.info(f'BOT polling: {self}')
-        app.logger.info(f'BOT enumerate_threads: {enumerate_threads()}')
+        self.log(f'BOT polling: {self}')
+        self.log(f'BOT enumerate_threads: {enumerate_threads()}')
 
 
     def stop(self):
         
         self.stop_polling()
         
-        app.config['TELEGRAM_BOT_STATE'] = 'Stopped'
+        self.app.config['TELEGRAM_BOT_STATE'] = 'Stopped'
 
-        app.logger.info(f'BOT stop_polling: {self}')
-        app.logger.info(f'BOT enumerate_threads: {enumerate_threads()}')
+        self.log(f'BOT stop_polling: {self}')
+        self.log(f'BOT enumerate_threads: {enumerate_threads()}')
         
 
     def register_handlers(self):
@@ -69,10 +74,10 @@ class Bot(TeleBot):
         bot_name = bot_data.first_name
         user_name = message.from_user.first_name
         
-        app.logger.info(f'BOT /start')
-        app.logger.info(f'BOT bot_data {bot_data}')
-        app.logger.info(f'BOT bot_name {bot_name}')
-        app.logger.info(f'BOT user_name {user_name}')
+        self.log(f'BOT /start')
+        self.log(f'BOT bot_data {bot_data}')
+        self.log(f'BOT bot_name {bot_name}')
+        self.log(f'BOT user_name {user_name}')
     
         self.send_message(message.chat.id, f"{bot_name} welcomes you, {user_name}!")
         self.send_sticker(message.chat.id, Bot.BUBO_CELEBRATE_STICKER_FILE_ID)
@@ -80,7 +85,7 @@ class Bot(TeleBot):
 
     def algorithms_handler(self, message_or_callback):
         
-        app.logger.info(f'BOT /algorithms')
+        self.log(f'BOT /algorithms')
         
         algorithms = self.db.get_all_algorithms()
 
@@ -120,7 +125,7 @@ class Bot(TeleBot):
         callback_query_id = callback.id                
         callback_parts = callback_data.rsplit('_', maxsplit=1)
         
-        app.logger.info(f'BOT callback_data: {callback_data}')
+        self.log(f'BOT callback_data: {callback_data}')
         
         algorithm_id = callback_parts[-1]
         algorithm = self.db.get_algorithm(algorithm_id)
@@ -173,13 +178,13 @@ class Bot(TeleBot):
                                        
         except Exception as exception:
             
-            app.logger.info(f'BOT exception: {exception}')
+            self.log(f'BOT exception: {exception}')
             
 
         
     def open_algorithm(self, chat_id, algorithm):
         
-        app.logger.info(f'BOT open algorithm: {algorithm}')
+        self.log(f'BOT open algorithm: {algorithm}')
         
         algorithm_id = algorithm.get('id')
         algorithm_name = algorithm.get('name')
@@ -245,13 +250,13 @@ class Bot(TeleBot):
 
         next_parameter = next(iter(not_collected_parameters), None)
         
-        app.logger.info(f'BOT chat_id: {chat_id}')
-        app.logger.info(f'BOT run_mode: {run_mode}')
-        app.logger.info(f'BOT parameters: {parameters}')
-        app.logger.info(f'BOT algorithm_id: {algorithm_id}')
-        app.logger.info(f'BOT message.text: {message.text}')
-        app.logger.info(f'BOT collected_name: {collected_name}')
-        app.logger.info(f'BOT next_parameter: {next_parameter}')
+        self.log(f'BOT chat_id: {chat_id}')
+        self.log(f'BOT run_mode: {run_mode}')
+        self.log(f'BOT parameters: {parameters}')
+        self.log(f'BOT algorithm_id: {algorithm_id}')
+        self.log(f'BOT message.text: {message.text}')
+        self.log(f'BOT collected_name: {collected_name}')
+        self.log(f'BOT next_parameter: {next_parameter}')
         
         if next_parameter:
             self.query_next_parameter(next_parameter, chat_id, algorithm_id, run_mode, parameters)
@@ -294,13 +299,13 @@ class Bot(TeleBot):
         
         task_id = self.runner.run_algorithm(algorithm_id, run_values)
         
-        app.logger.info(f'BOT algorithm_id: {algorithm_id}')
-        app.logger.info(f'BOT run_values: {run_values}')
-        app.logger.info(f'BOT task_id: {task_id}')
+        self.log(f'BOT algorithm_id: {algorithm_id}')
+        self.log(f'BOT run_values: {run_values}')
+        self.log(f'BOT task_id: {task_id}')
         
-        domain = app.config.get('DOMAIN')
+
         
-        task_url = f"https://{domain}/tasks?task_id={task_id}"
+        task_url = f"https://{self.domain}/tasks?task_id={task_id}"
         
         run_message = (f"<b>Task {task_id} started:</b>\n\n"
                        f"Algorithm: {algorithm_id}\n"
@@ -324,13 +329,13 @@ class Bot(TeleBot):
         
         file_id = message.sticker.file_id
         
-        app.logger.info(f'BOT file_id: {file_id}')
+        self.log(f'BOT file_id: {file_id}')
         
         self.send_sticker(message.chat.id, file_id)
     	
 
     def echo_handler(self, message):
         
-        app.logger.info(f'BOT echo_handler message')
+        self.log(f'BOT echo_handler message')
 
         self.reply_to(message, message.text)
