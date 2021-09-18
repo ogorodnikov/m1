@@ -50,3 +50,52 @@ Resources:
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
+          
+          
+  # task_id, algorithm_id, run_values, status, result, logs
+          
+  TasksTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: m1-tasks-table
+      ProvisionedThroughput:
+        ReadCapacityUnits: 1
+        WriteCapacityUnits: 1
+
+      AttributeDefinitions:
+      - AttributeName: task_id
+        AttributeType: N
+      - AttributeName: algorithm_id
+        AttributeType: S
+      - AttributeName: status
+        AttributeType: S
+        
+      KeySchema:
+      - AttributeName: task_id
+        KeyType: HASH
+     
+      GlobalSecondaryIndexes:
+      
+      - IndexName: algorithm-id-index
+        KeySchema:
+        - AttributeName: algorithm_id
+          KeyType: HASH
+        - AttributeName: task_id
+          KeyType: RANGE
+        Projection:
+          ProjectionType: ALL
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+          
+      - IndexName: status-index
+        KeySchema:
+        - AttributeName: status
+          KeyType: HASH
+        - AttributeName: task_id
+          KeyType: RANGE
+        Projection:
+          ProjectionType: ALL
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
