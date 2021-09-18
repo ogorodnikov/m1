@@ -64,8 +64,8 @@ class Config():
     COGNITO_USER_POOL_ID = user_pool_id
     COGNITO_USER_POOL_CLIENT_ID = user_pool_client_id
     
-    SQS_TASK_QUEUE = os.getenv('SQS_TASK_QUEUE')
-    SQS_RESULT_QUEUE = os.getenv('SQS_RESULT_QUEUE')
+    TASKS_TABLE_NAME = os.getenv('TASKS_TABLE_NAME')
+    ALGORITHMS_TABLE_NAME = os.getenv('ALGORITHMS_TABLE_NAME')
 
     FACEBOOK_CLIENT_ID = os.getenv('FACEBOOK_CLIENT_ID')    
     FACEBOOK_CLIENT_SECRET = os.getenv('FACEBOOK_CLIENT_SECRET')

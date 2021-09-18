@@ -4,6 +4,9 @@ from flask_cors import CORS
 from logging.config import dictConfig
 
 from core import config
+from core import dynamo
+from core import engine
+from core import telegram
 
 
 app = Flask(__name__)
@@ -17,20 +20,11 @@ CORS(app)
 app.config.from_object(config.Config)
 
 
-from core import dynamo
 
-db = dynamo.DynamoDB('m1-algorithms-table', 'm1-tasks-table')
-app.config['DB'] = db
+db = dynamo.DB(app)
 
-
-from core import engine
-
-runner = engine.Runner()
+runner = engine.Runner(app)
 runner.start()
-app.config['RUNNER'] = runner
-
-
-from core import telegram
 
 bot = telegram.Bot(app)
 bot.start()

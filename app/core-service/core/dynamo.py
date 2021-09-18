@@ -1,16 +1,20 @@
 import boto3
 
 
-class DynamoDB():
+class DB():
 
-    def __init__(self, algorithms_table_name, tasks_table_name):
+    def __init__(self, app):
+        
+        tasks_table_name = app.config.get('TASKS_TABLE_NAME')
+        algorithms_table_name = app.config.get('ALGORITHMS_TABLE_NAME')
 
-        self.dynamodb = boto3.resource('dynamodb')
+        self.db_resource = boto3.resource('dynamodb')
+
+        self.tasks = self.db_resource.Table(tasks_table_name)        
+        self.algorithms = self.db_resource.Table(algorithms_table_name)
         
-        self.algorithms = self.dynamodb.Table(algorithms_table_name)
-        self.tasks = self.dynamodb.Table(tasks_table_name)
-        
-        print('DYNAMO connected')
+        app.config['DB'] = self
+        app.logger.info('DYNAMO initiated')
         
     
     def get_all_algorithms(self):

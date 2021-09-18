@@ -11,8 +11,6 @@ from qiskit.providers.ibmq import least_busy
 from qiskit.visualization import plot_bloch_multivector
 from qiskit.tools.monitor import backend_overview, job_monitor
 
-from core import app
-
 from core.algorithms.egcd import egcd
 from core.algorithms.bernvaz import bernvaz
 from core.algorithms.grover import grover
@@ -44,13 +42,16 @@ class Runner():
     TASK_TIMEOUT = 300
     
     
-    def __init__(self, *args, **kwargs):
+    def __init__(self, app, *args, **kwargs):
         
-        self.queue_workers_count = app.config.get('CPU_COUNT', 1)
-        self.task_rollover_size = app.config.get('TASK_ROLLOVER_SIZE', 100)
+        self.app = app
         
-        sqs_task_queue_name = app.config.get('SQS_TASK_QUEUE')
-        sqs_result_queue_name = app.config.get('SQS_RESULT_QUEUE')
+        self.qiskit_token = self.app.config.get('QISKIT_TOKEN')
+        
+        self.queue_workers_count = self.app.config.get('CPU_COUNT', 1)
+        self.task_rollover_size = self.app.config.get('TASK_ROLLOVER_SIZE', 100)
+        
+        self.static_folder = self.app.static_folder
 
         # self.queue_workers_count = 2
 
@@ -66,7 +67,14 @@ class Runner():
         
         self.worker_active_flag = Event()
         
-        app.logger.info(f'RUNNER initiated: {self}')
+        self.app.config['RUNNER'] = self
+        self.app.config['RUNNER_STATE'] = 'Stopped'
+        
+        self.log(f'RUNNER initiated: {self}')
+        
+        
+    def log(self,message):
+        self.app.logger.info(message)        
         
     
     def start(self):
@@ -78,10 +86,9 @@ class Runner():
         
         worker_future = queue_pool.submit(self.queue_worker)
         
-        app.config['RUNNER'] = self
-        app.config['RUNNER_STATE'] = 'Started'
+        self.app.config['RUNNER_STATE'] = 'Started'
         
-        app.logger.info(f'RUNNER started: {self}')
+        self.log(f'RUNNER started: {self}')
         
         # worker_future = queue_pool.submit(pow, 12, 133)
 
@@ -91,25 +98,25 @@ class Runner():
         
         # result = worker_future.result(timeout=3)
         
-        # app.logger.info(f'RUNNER worker_future: {worker_future}')
-        # app.logger.info(f'RUNNER result: {result}')
+        # self.log(f'RUNNER worker_future: {worker_future}')
+        # self.log(f'RUNNER result: {result}')
         
-        # app.logger.info(f'RUNNER worker_future.done(): {worker_future.done()}')
-        # app.logger.info(f'RUNNER canceled: {canceled}')
+        # self.log(f'RUNNER worker_future.done(): {worker_future.done()}')
+        # self.log(f'RUNNER canceled: {canceled}')
         
 
     def stop(self):
         
         self.worker_active_flag.clear()
         
-        app.config['RUNNER_STATE'] = 'Stopped'
+        self.app.config['RUNNER_STATE'] = 'Stopped'
         
-        app.logger.info(f'RUNNER stopped: {self}')      
+        self.log(f'RUNNER stopped: {self}')      
         
         
     def task_log(self, task_id, message):
 
-        app.logger.info(f'{message}')
+        self.log(message)
         
         self.logs[task_id] += [message]
         
@@ -131,16 +138,16 @@ class Runner():
         self.tasks[task_id] = self.manager.dict(new_task_record)
         self.logs[task_id] = self.manager.list()
         
-        app.logger.info(f'RUNNER task_id: {task_id}')
-        app.logger.info(f'RUNNER new_task: {new_task}')
-        app.logger.info(f'RUNNER task_queue.qsize: {self.task_queue.qsize()}')
+        self.log(f'RUNNER task_id: {task_id}')
+        self.log(f'RUNNER new_task: {new_task}')
+        self.log(f'RUNNER task_queue.qsize: {self.task_queue.qsize()}')
         
         return task_id
         
 
     def queue_worker(self):
         
-        app.logger.info(f'RUNNER queue_worker started: {getpid()}')
+        self.log(f'RUNNER queue_worker started: {getpid()}')
         
         while self.worker_active_flag.is_set():
             
@@ -154,8 +161,8 @@ class Runner():
                 
                 self.task_results_queue.put((task_id, '', 'Running'))
 
-                app.logger.info(f'RUNNER pop_task: {pop_task}')
-                app.logger.info(f'RUNNER task_queue.qsize: {self.task_queue.qsize()}')
+                self.log(f'RUNNER pop_task: {pop_task}')
+                self.log(f'RUNNER task_queue.qsize: {self.task_queue.qsize()}')
                 
 
                 run_result = self.manager.dict()
@@ -186,9 +193,9 @@ class Runner():
                 self.task_log(task_id, f'RUNNER Result: {result}')
                 self.task_log(task_id, f'RUNNER Status: {status}')
 
-                app.logger.info(f'RUNNER run_result: {run_result}')
-                app.logger.info(f'RUNNER len(self.tasks): {len(self.tasks)}')
-                app.logger.info(f'RUNNER self.task_results_queue.qsize(): {self.task_results_queue.qsize()}')
+                self.log(f'RUNNER run_result: {run_result}')
+                self.log(f'RUNNER len(self.tasks): {len(self.tasks)}')
+                self.log(f'RUNNER self.task_results_queue.qsize(): {self.task_results_queue.qsize()}')
 
                 
 
@@ -226,9 +233,9 @@ class Runner():
         
         task_log_callback = partial(self.task_log, task_id)
         
-        app.logger.info(f'RUNNER run_mode: {run_mode}')
-        app.logger.info(f'RUNNER run_values: {run_values}')
-        app.logger.info(f'RUNNER runner_function: {runner_function}') 
+        self.log(f'RUNNER run_mode: {run_mode}')
+        self.log(f'RUNNER run_values: {run_values}')
+        self.log(f'RUNNER runner_function: {runner_function}') 
         
         
         if run_mode == 'classical':
@@ -272,8 +279,7 @@ class Runner():
             
         elif run_mode == 'quantum_device':
         
-            qiskit_token = app.config.get('QISKIT_TOKEN')
-            IBMQ.save_account(qiskit_token)
+            IBMQ.save_account(self.qiskit_token)
             
             if not IBMQ.active_account():
                 IBMQ.load_account()
@@ -357,7 +363,7 @@ class Runner():
             
         figure = plot_bloch_multivector(statevector)
     
-        figure_path = app.static_folder + f'/figures/bloch_multivector_task_{task_id}.png'
+        figure_path = self.static_folder + f'/figures/bloch_multivector_task_{task_id}.png'
                     
         figure.savefig(figure_path, transparent=True, bbox_inches='tight')
         
@@ -366,6 +372,6 @@ class Runner():
         
     def terminate_application(self, message):
         
-        app.logger.info(f'RUNNER terminate_application: {message}')
+        self.log(f'RUNNER terminate_application: {message}')
         
         _exit(0)
