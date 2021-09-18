@@ -75,7 +75,7 @@ class Bot(TeleBot):
         app.logger.info(f'BOT user_name {user_name}')
     
         self.send_message(message.chat.id, f"{bot_name} welcomes you, {user_name}!")
-        self.send_sticker(message.chat.id, BUBO_CELEBRATE_STICKER_FILE_ID)
+        self.send_sticker(message.chat.id, Bot.BUBO_CELEBRATE_STICKER_FILE_ID)
             
 
     def algorithms_handler(self, message_or_callback):
