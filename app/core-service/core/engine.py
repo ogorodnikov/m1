@@ -48,12 +48,10 @@ class Runner():
         
         self.qiskit_token = self.app.config.get('QISKIT_TOKEN')
         
-        self.queue_workers_count = self.app.config.get('CPU_COUNT', 1)
+        self.queue_workers_count = self.app.config.get('QUEUE_WORKERS_PER_RUNNER')
         self.task_rollover_size = self.app.config.get('TASK_ROLLOVER_SIZE', 100)
         
         self.static_folder = self.app.static_folder
-
-        # self.queue_workers_count = 2
 
         self.task_count = 0
         

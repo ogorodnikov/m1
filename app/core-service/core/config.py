@@ -76,6 +76,8 @@ class Config():
     PERMANENT_SESSION_LIFETIME = timedelta(minutes=30)
     CPU_COUNT = os.cpu_count()
     
+    QUEUE_WORKERS_PER_RUNNER = 2
+    
     QISKIT_TOKEN = os.getenv('QISKIT_TOKEN')
     TELEGRAM_TOKEN = os.getenv('TELEGRAM_TOKEN')
     
