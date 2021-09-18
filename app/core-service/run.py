@@ -1,10 +1,12 @@
-# from core import app
-# app.run(host="0.0.0.0", port=8080, debug=True, use_reloader=True, reloader_type='stat')
+from core import app
+
+app.run(host="0.0.0.0", port=8080, debug=True, use_reloader=True, reloader_type='stat')
 
 # from core import gunicorn_app
 # gunicorn_app.run()
 
-from core import app
+# from core import app
+
 
 import os, sys
 from gunicorn.app.wsgiapp import WSGIApplication

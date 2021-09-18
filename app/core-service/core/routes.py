@@ -71,18 +71,16 @@ def home():
 @app.route('/algorithms')
 def get_algorithms():
     
-    if not request.args:
-        
-        items = db.get_all_algorithms()
-    
-    else:
-        
+    if request.args:
         try:
             items = db.query_algorithms(request.args)
-            
-        except botocore.exceptions.ClientError:
-            items = db.get_all_algorithms()
+        except:
+            flash(f"Filter error)", category='warning')
+            items = db.get_all_algorithms()            
         
+    else:
+        items = db.get_all_algorithms()
+
     return render_template("algorithms.html", items=items)
     
     

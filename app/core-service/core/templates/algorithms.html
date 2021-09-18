@@ -16,7 +16,36 @@
       <tr>
         <!--<th scope="col">ID</th>-->
         <th scope="col">Name</th>
-        <th scope="col">Type</th>
+        
+        <th scope="col">
+          
+          <div class="dropdown">
+            
+            <a class="btn btn-outline-secondary-noborder dropdown-toggle text-light p-0"
+               data-toggle="dropdown">
+              <b>Type<b>
+            </a>
+          
+            <div class="dropdown-menu bg-secondary">
+              <a class="dropdown-item text-light" 
+                 href={{ url_for('get_algorithms') }}>
+                all
+              </a>
+              <a class="dropdown-item text-light" 
+                 href={{ url_for('get_algorithms', type='classical') }}>
+                classical
+              </a>
+              <a class="dropdown-item text-light" 
+                 href={{ url_for('get_algorithms', type='quantum') }}>
+                quantum
+              </a>
+            </div>
+            
+          </div>
+          
+        
+        </th>
+        
         <th scope="col">Description</th>
         <th scope="col">Image</th>
       </tr>
