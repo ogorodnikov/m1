@@ -4,7 +4,7 @@ access_log_format = "%(h)s | %(r)s %(s)s"
 accesslog = '-'
 
 workers = 1
-threads = 2
+threads = 1
 reload = True
 
 # reload_engine = 'inotify'

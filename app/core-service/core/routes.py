@@ -106,7 +106,7 @@ def run_algorithm(algorithm_id):
     run_values = request.form
     
     task_id = runner.run_algorithm(algorithm_id, run_values)
-    
+
     task_url = f"/tasks?task_id={task_id}"
     
     run_message = (f"<a href='{task_url}' class='mb-0'"
@@ -207,6 +207,14 @@ def admin():
     if command == 'stop_runner':
         flash(f"Stopping runner", category='warning')
         runner.stop()
+        
+    if command == 'test':
+        
+        new_task = (1, 'egcd', '15')
+        
+        db.put_task(new_task)
+        
+    
     
     return render_template("admin.html")
     

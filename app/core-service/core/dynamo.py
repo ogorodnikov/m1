@@ -17,6 +17,8 @@ class DB():
         app.logger.info('DYNAMO initiated')
         
     
+    # Algorithms
+    
     def get_all_algorithms(self):
     
         scan_response = self.algorithms.scan()
@@ -71,6 +73,41 @@ class DB():
         status_code = update_response['ResponseMetadata']['HTTPStatusCode']
             
         return {'status_code': status_code}
+    
+        
+    # Tasks
+    
+    def get_all_tasks(self):
+    
+        scan_response = self.tasks.scan()
+    
+        return scan_response['Items']
+
+    def put_task(self, task):
+        
+        print(f"DYNAMO set 2")
+        
+        increment_response = self.tasks.update_item(
+
+            Key={'task_id': 0},
+            UpdateExpression="SET task_count = if_not_exists(task_count, :zero) + :n",
+            ExpressionAttributeValues={':n': 1, ':zero': 0},
+            ReturnValues = 'ALL_NEW'
+            
+            )
+            
+        # update_response = self.algorithms.update_item(
+            
+        #     Key={'id': algorithm_id},
+        #     UpdateExpression="SET enabled = :b",
+        #     ConditionExpression=f"attribute_exists(id)",
+        #     ExpressionAttributeValues={':b': is_enabled})
+        
+        print(f"increment_response: {increment_response}")
+    
+        # status_code = update_response['ResponseMetadata']['HTTPStatusCode']
+            
+        # return {'status_code': status_code}
         
 
     def add_test_data(self):
