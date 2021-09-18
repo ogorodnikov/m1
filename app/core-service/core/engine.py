@@ -12,7 +12,6 @@ from qiskit.visualization import plot_bloch_multivector
 from qiskit.tools.monitor import backend_overview, job_monitor
 
 from core import app
-from core import sqs
 
 from core.algorithms.egcd import egcd
 from core.algorithms.bernvaz import bernvaz
@@ -53,18 +52,12 @@ class Runner():
         sqs_task_queue_name = app.config.get('SQS_TASK_QUEUE')
         sqs_result_queue_name = app.config.get('SQS_RESULT_QUEUE')
 
-        # app.logger.info(f'RUNNER sqs_task_queue_name {sqs_task_queue_name}')
-        # app.logger.info(f'RUNNER sqs_result_queue_name {sqs_result_queue_name}')
-
         # self.queue_workers_count = 2
 
         self.task_count = 0
         
         self.task_queue = Queue()
         self.task_results_queue = Queue()
-        
-        self.sqs_task_queue = sqs.SQS(sqs_task_queue_name)
-        self.sqs_result_queue = sqs.SQS(sqs_result_queue_name)
         
         self.manager = Manager()
         
@@ -160,11 +153,7 @@ class Runner():
                 task_id, algorithm_id, run_values = pop_task
                 
                 self.task_results_queue.put((task_id, '', 'Running'))
-                
-                
-                self.sqs_result_queue.send_message((task_id, '', 'Running'))
-                
-                
+
                 app.logger.info(f'RUNNER pop_task: {pop_task}')
                 app.logger.info(f'RUNNER task_queue.qsize: {self.task_queue.qsize()}')
                 
@@ -194,10 +183,6 @@ class Runner():
                 
                 self.task_results_queue.put((task_id, result, status))
                 
-                
-                self.sqs_result_queue.send_message((task_id, result, status))
-                
-    
                 self.task_log(task_id, f'RUNNER Result: {result}')
                 self.task_log(task_id, f'RUNNER Status: {status}')
 
@@ -340,30 +325,6 @@ class Runner():
         return result
         
     
-    def get_task_results_from_sqs(self):
-        
-        while True:
-        
-            task_result = self.sqs_result_queue.receive_message()
-            
-            # app.logger.info(f'RUNNER task_result: {task_result}')
-            
-            if task_result == None:
-                break
-                
-            task_id, result, status = task_result
-
-            if task_id in self.tasks:
-
-                self.tasks[task_id]['result'] = result            
-                self.tasks[task_id]['status'] = status
-            
-            if status == 'Running':
-                continue
-            
-            yield task_result
-            
-
     def get_task_results(self):            
         
         while not self.task_results_queue.empty():
