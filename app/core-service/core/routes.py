@@ -1,4 +1,4 @@
-from core import app, models, users, fb, runner
+from core import app, users, fb
 
 from flask import render_template, redirect, url_for, flash, request, session
 from flask import send_from_directory
@@ -7,6 +7,10 @@ import boto3
 import botocore.exceptions
 
 import requests
+
+
+db = app.config.get('DB')
+runner = app.config.get('RUNNER')
 
 
 ###   Login   ###
@@ -69,15 +73,15 @@ def get_algorithms():
     
     if not request.args:
         
-        items = models.get_all_algorithms()
+        items = db.get_all_algorithms()
     
     else:
         
         try:
-            items = models.query_algorithms(request.args)
+            items = db.query_algorithms(request.args)
             
         except botocore.exceptions.ClientError:
-            items = models.get_all_algorithms()
+            items = db.get_all_algorithms()
         
     return render_template("algorithms.html", items=items)
     
@@ -85,7 +89,7 @@ def get_algorithms():
 @app.route('/algorithms/<algorithm_id>')
 def get_algorithm(algorithm_id):
     
-    algorithm = models.get_algorithm(algorithm_id)
+    algorithm = db.get_algorithm(algorithm_id)
     
     return render_template("algorithm.html", algorithm=algorithm)
     
@@ -93,7 +97,7 @@ def get_algorithm(algorithm_id):
 @app.route("/algorithms/<algorithm_id>/like", methods = ['GET'])
 def like_algorithm(algorithm_id):
     
-    response = models.like_algorithm(algorithm_id)
+    response = db.like_algorithm(algorithm_id)
 
     return redirect(request.referrer)
     
@@ -126,7 +130,7 @@ def set_algorithm_state(algorithm_id):
     is_enabled = request.args.get('enabled')
     is_enabled_bool = is_enabled.lower() != 'false'
     
-    response = models.set_algorithm_state(algorithm_id, is_enabled_bool)
+    response = db.set_algorithm_state(algorithm_id, is_enabled_bool)
     
     flash(f"Algorithm {algorithm_id} - "
           f"Set enabled: {is_enabled} - "
@@ -191,7 +195,7 @@ def admin():
         flash("Telegram bot stopped", category='warning')
     
     if command == 'add_test_data':
-        models.add_test_data()
+        db.add_test_data()
         flash(f"Test data added to m1-algorithms-table", category='warning')
         
     if command == 'terminate':

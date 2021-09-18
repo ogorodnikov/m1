@@ -4,7 +4,7 @@ from telebot import TeleBot
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
 from telebot.types import ReplyKeyboardMarkup, CallbackQuery, Message
 
-from core import app, models, runner
+from core import app
 
 
 class Bot(TeleBot):
@@ -12,6 +12,9 @@ class Bot(TeleBot):
     BUBO_CELEBRATE_STICKER_FILE_ID = "CAACAgIAAxkBAAIF6GES9nEyKUKbGVt4XFzpjOeYv09dAAIUAAPp2BMo6LwZ1x6IhdYgBA"
     
     def __init__(self, *args, **kwargs):
+
+        self.db = app.config.get('DB')
+        self.runner = app.config.get('RUNNER')
         
         telegram_token = app.config.get('TELEGRAM_TOKEN')
         
@@ -79,7 +82,7 @@ class Bot(TeleBot):
         
         app.logger.info(f'BOT /algorithms')
         
-        algorithms = models.get_all_algorithms()
+        algorithms = self.db.get_all_algorithms()
 
         if isinstance(message_or_callback, Message):
             message = message_or_callback
@@ -120,14 +123,14 @@ class Bot(TeleBot):
         app.logger.info(f'BOT callback_data: {callback_data}')
         
         algorithm_id = callback_parts[-1]
-        algorithm = models.get_algorithm(algorithm_id)
+        algorithm = self.db.get_algorithm(algorithm_id)
         
         flash_text = None
         
         
         if callback_data.startswith("like_"):
             
-            models.like_algorithm(algorithm_id)
+            self.db.like_algorithm(algorithm_id)
             flash_text = "Thank you!)"
             
         
@@ -289,7 +292,7 @@ class Bot(TeleBot):
         
         run_values['run_mode'] = run_mode
         
-        task_id = runner.run_algorithm(algorithm_id, run_values)
+        task_id = self.runner.run_algorithm(algorithm_id, run_values)
         
         app.logger.info(f'BOT algorithm_id: {algorithm_id}')
         app.logger.info(f'BOT run_values: {run_values}')

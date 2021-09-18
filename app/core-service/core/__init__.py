@@ -17,10 +17,17 @@ CORS(app)
 app.config.from_object(config.Config)
 
 
+from core import dynamo
+
+db = dynamo.DynamoDB('m1-algorithms-table', 'm1-tasks-table')
+app.config['DB'] = db
+
+
 from core import engine
 
 runner = engine.Runner()
 runner.start()
+app.config['RUNNER'] = runner
 
 
 from core import telegram

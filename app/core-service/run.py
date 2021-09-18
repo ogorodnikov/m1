@@ -4,6 +4,7 @@
 # from core import gunicorn_app
 # gunicorn_app.run()
 
+from core import app
 
 import os, sys
 from gunicorn.app.wsgiapp import WSGIApplication
