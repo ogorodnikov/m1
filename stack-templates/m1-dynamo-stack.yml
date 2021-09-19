@@ -52,8 +52,6 @@ Resources:
           WriteCapacityUnits: 1
           
           
-  # task_id, algorithm_id, run_values, status, result, logs
-          
   TasksTable:
     Type: AWS::DynamoDB::Table
     Properties:

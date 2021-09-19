@@ -83,31 +83,50 @@ class DB():
     
         return scan_response['Items']
 
-    def put_task(self, task):
+    def add_task(self, algorithm_id, run_values):
         
-        print(f"DYNAMO set 2")
+        service_task_record_id = 0
         
-        increment_response = self.tasks.update_item(
+        increment_task_count_response = self.tasks.update_item(
 
-            Key={'task_id': 0},
+            Key={'task_id': service_task_record_id},
             UpdateExpression="SET task_count = if_not_exists(task_count, :zero) + :n",
             ExpressionAttributeValues={':n': 1, ':zero': 0},
             ReturnValues = 'ALL_NEW'
             
             )
-            
-        # update_response = self.algorithms.update_item(
-            
-        #     Key={'id': algorithm_id},
-        #     UpdateExpression="SET enabled = :b",
-        #     ConditionExpression=f"attribute_exists(id)",
-        #     ExpressionAttributeValues={':b': is_enabled})
+
+        new_task_id = increment_task_count_response['Attributes']['task_count']
         
-        print(f"increment_response: {increment_response}")
-    
-        # status_code = update_response['ResponseMetadata']['HTTPStatusCode']
+        print(f"DYNAMO increment_task_count_response {increment_task_count_response}")
+        print(f"DYNAMO new_task_id {new_task_id}")
+        
+        
+        new_task_response = self.tasks.update_item(
+
+            Key={'task_id': new_task_id},
+            UpdateExpression="SET algorithm_id = :algorithm_id",
+            ExpressionAttributeValues={':algorithm_id': algorithm_id},
+            ReturnValues = 'ALL_NEW'
             
-        # return {'status_code': status_code}
+            )
+            
+        print(f"DYNAMO new_task_response {new_task_response}")
+
+
+            # UpdateExpression="SET algorithm_id = :algorithm_id, "
+            #                  "run_values = :run_values, "
+            #                  "task_status = :task_status",
+            # ExpressionAttributeValues={':algorithm_id': algorithm_id,
+            #                           ':run_values': run_values,
+            #                           ':task_status': 'Queued'}
+            # )
+
+        # print(f"DYNAMO new_task_response {new_task_response}")
+        
+        # task_id, algorithm_id, run_values, status, result, logs
+
+        # return task_id
         
 
     def add_test_data(self):

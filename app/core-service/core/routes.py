@@ -210,9 +210,7 @@ def admin():
         
     if command == 'test':
         
-        new_task = (1, 'egcd', '15')
-        
-        db.put_task(new_task)
+        db.add_task('egcd', '15')
         
     
     
