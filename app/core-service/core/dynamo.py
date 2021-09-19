@@ -105,28 +105,21 @@ class DB():
         new_task_response = self.tasks.update_item(
 
             Key={'task_id': new_task_id},
-            UpdateExpression="SET algorithm_id = :algorithm_id",
-            ExpressionAttributeValues={':algorithm_id': algorithm_id},
+            UpdateExpression="SET algorithm_id = :algorithm_id, "
+                             "run_values = :run_values, "
+                             "task_status = :task_status",
+            ExpressionAttributeValues={':algorithm_id': algorithm_id,
+                                       ':run_values': run_values,
+                                       ':task_status': 'Queued'},
             ReturnValues = 'ALL_NEW'
             
             )
             
         print(f"DYNAMO new_task_response {new_task_response}")
 
-
-            # UpdateExpression="SET algorithm_id = :algorithm_id, "
-            #                  "run_values = :run_values, "
-            #                  "task_status = :task_status",
-            # ExpressionAttributeValues={':algorithm_id': algorithm_id,
-            #                           ':run_values': run_values,
-            #                           ':task_status': 'Queued'}
-            # )
-
-        # print(f"DYNAMO new_task_response {new_task_response}")
-        
         # task_id, algorithm_id, run_values, status, result, logs
 
-        # return task_id
+        return new_task_id
         
 
     def add_test_data(self):
