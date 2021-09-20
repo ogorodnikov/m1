@@ -65,7 +65,7 @@ Resources:
         AttributeType: N
       - AttributeName: algorithm_id
         AttributeType: S
-      - AttributeName: status
+      - AttributeName: task_status
         AttributeType: S
         
       KeySchema:
@@ -86,9 +86,9 @@ Resources:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
           
-      - IndexName: status-index
+      - IndexName: task-status-index
         KeySchema:
-        - AttributeName: status
+        - AttributeName: task_status
           KeyType: HASH
         - AttributeName: task_id
           KeyType: RANGE

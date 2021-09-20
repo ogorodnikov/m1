@@ -210,8 +210,12 @@ def admin():
         
     if command == 'test':
         
-        db.add_task('egcd', '15')
-        db.update_task(3, 'task_status', 'Running')
+        # db.add_task('egcd', '15')
+        # db.update_task(3, 'task_status', 'Running')
+        
+        task_id = db.get_queued_task()
+        flash(f"Got queued task: {task_id}", category='info')        
+        
     
     
     return render_template("admin.html")
