@@ -197,7 +197,23 @@ class DB():
         print(f"DYNAMO get_queued_task retry limit reached: {self.GET_QUEUED_TASK_ATTEMPTS}")
         
         
+    def purge_tasks(self):
+
+        scan_response = self.tasks.scan(ProjectionExpression='task_id')
         
+        scan_response_items = scan_response['Items']
+
+        while scan_response.get('LastEvaluatedKey'):
+            
+            scan_response = self.tasks.scan(ExclusiveStartKey=scan_response['LastEvaluatedKey'])
+            
+            scan_response_items.extend(scan_response['Items'])
+        
+        # print(f"DYNAMO scan_response_items {scan_response_items}")        
+
+        with self.tasks.batch_writer() as batch:
+            for item in scan_response_items:
+                batch.delete_item(Key=item)
 
 
     def add_test_data(self):
