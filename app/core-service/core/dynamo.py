@@ -249,24 +249,26 @@ class DB():
 
     def get_status_updates(self):
         
-        status_updates_response = self.tasks.get_item(
+        status_updates_response = self.tasks.update_item(
             Key={'task_id': self.SERVICE_TASK_RECORD_ID},
-            ProjectionExpression='status_updates'
+            UpdateExpression="SET status_updates = :empty_list",
+            ExpressionAttributeValues={':empty_list': []},
+            ReturnValues = 'ALL_OLD'
             )
             
-        status_updates_item = status_updates_response.get('Item')
-        
-        if not status_updates_item:
+        # print(f"DYNAMO status_updates_response {status_updates_response}")
+                
+        status_updates_attributes = status_updates_response.get('Attributes')
+            
+        if not status_updates_attributes:
             return []
         
-        status_updates = status_updates_item['status_updates']
-
-        print(f"DYNAMO status_updates_response {status_updates_response}")
-        print(f"DYNAMO status_updates {status_updates}")
+        status_updates = status_updates_attributes['status_updates']
+                
+        # print(f"DYNAMO status_updates {status_updates}")
         
         return status_updates
-        
-        
+
 
 
     def add_test_data(self):
