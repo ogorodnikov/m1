@@ -96,8 +96,6 @@ class DB():
 
     def add_task(self, algorithm_id, run_values):
         
-
-        
         increment_task_count_response = self.tasks.update_item(
 
             Key={'task_id': self.SERVICE_TASK_RECORD_ID},
@@ -127,15 +125,14 @@ class DB():
             
             )
         
-        # print(f"DYNAMO increment_task_count_response {increment_task_count_response}")
-        # print(f"DYNAMO new_task_response {new_task_response}")
-        
-        print(f"DYNAMO new_task_id {new_task_id}")
+        print(f"DYNAMO add_task {(new_task_id, algorithm_id, run_values)}")
 
         return new_task_id
         
 
     def update_task_attribute(self, task_id, attribute, value, append=False, if_exists=False):
+
+        print(f"DYNAMO update_task_attribute: {task_id, attribute, value, append, if_exists}")
         
         if append:
             update_expression = f"SET {attribute} = list_append({attribute}, :{attribute})"
@@ -175,8 +172,8 @@ class DB():
     
             queued_task_items = queued_task_response['Items']
             
-            print(f"DYNAMO queued_task_response {queued_task_response}")
-            print(f"DYNAMO queued_task_items {queued_task_items}")
+            # print(f"DYNAMO queued_task_response {queued_task_response}")
+            # print(f"DYNAMO queued_task_items {queued_task_items}")
             
             if not queued_task_items:
                 return None
@@ -187,7 +184,7 @@ class DB():
 
             try:
             
-                set_status_response = self.tasks.update_item(
+                set_running_status_response = self.tasks.update_item(
                     
                     Key={'task_id': queued_task['task_id']},
                     UpdateExpression=f"SET task_status = :new_task_status",
@@ -205,8 +202,8 @@ class DB():
                 print(f"DYNAMO Status update Exception: {exception}")
                 
                 continue
-                
-            print(f"DYNAMO set_status_response {set_status_response}")
+
+            print(f"DYNAMO get_queued_task: {queued_task}")
             
             return queued_task
         
@@ -238,8 +235,8 @@ class DB():
         
         print(f'DYNAMO add_status_update {task_id, status, result}')
         
-        # self.update_task_attribute(task_id, 'task_status', status)
-        # self.update_task_attribute(task_id, 'result', result)
+        self.update_task_attribute(task_id, 'task_status', status)
+        self.update_task_attribute(task_id, 'task_result', result)
         
         status_update = [task_id, status, result]
         

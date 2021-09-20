@@ -236,7 +236,9 @@ def admin():
         
         # db.add_status_update(7, 'Running', '')
         
-        db.get_status_updates()
+        # db.get_status_updates()
+        
+        db.update_task_attribute(1, 'result', 'test_result')
         
         
     return render_template("admin.html")
