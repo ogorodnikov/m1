@@ -214,20 +214,27 @@ def admin():
         
     if command == 'add_test_tasks':
         
-        flash(f"Adding test tasks", category='success')
-        
-        db.add_task(('egcd', dict(('a', '345'), ('b', '455244237'), ('run_mode', 'classical'))))
-        db.add_task(('egcd', dict(('a', '345'), ('b', '455244237'), ('run_mode', 'classical'))))
-        db.add_task(('egcd', dict(('a', '345'), ('b', '455244237'), ('run_mode', 'classical'))))
-        
-        db.add_task(('bernvaz', dict(('secret', '1010'), ('run_mode', 'simulator'))))
-        db.add_task(('bernvaz', dict(('secret', '1010'), ('run_mode', 'simulator'))))
-        db.add_task(('bernvaz', dict(('secret', '1010'), ('run_mode', 'simulator'))))
-        
-        task_id = db.get_queued_task()
-        flash(f"Got queued task: {task_id}", category='info')        
-        
+        flash(f"Adding test tasks", category='primary')
 
+        db.add_task('egcd', dict((('a', '345'), ('b', '455244237'), ('run_mode', 'classical'))))
+        db.add_task('egcd', dict((('a', '345'), ('b', '455244237'), ('run_mode', 'classical'))))
+        db.add_task('egcd', dict((('a', '345'), ('b', '455244237'), ('run_mode', 'classical'))))
+        
+        db.add_task('bernvaz', dict((('secret', '1010'), ('run_mode', 'simulator'))))
+        db.add_task('bernvaz', dict((('secret', '1010'), ('run_mode', 'simulator'))))
+        db.add_task('bernvaz', dict((('secret', '1010'), ('run_mode', 'simulator'))))
+
+        task = db.get_queued_task()
+        flash(f"Got queued task: {task}", category='info')        
+        
+    if command == 'test':
+        flash(f"Test command", category='success')
+        
+        # db.update_task_attribute(1, 'task_log', [1, 2], if_exists=False)
+        db.update_task_attribute(1, 'task_log', [1, 5], append=True)
+        # db.update_task_attribute(1, 'task_log', 'test_log')
+        
+        
     return render_template("admin.html")
     
 

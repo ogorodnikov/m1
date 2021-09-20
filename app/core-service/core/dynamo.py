@@ -130,18 +130,30 @@ class DB():
         return new_task_id
 
 
-    def update_task(self, task_id, attribute, value):
+    def update_task_attribute(self, task_id, attribute, value, append=False, if_exists=False):
         
-        update_task_response = self.tasks.update_item(
-            Key={'task_id': task_id},
-            UpdateExpression=f"SET {attribute} = :{attribute}",
-            ExpressionAttributeValues={f":{attribute}": value},
-            ReturnValues = 'ALL_NEW'
-            )
+        if append:
+            update_expression = f"SET {attribute} = list_append({attribute}, :{attribute})"
+        else:
+            update_expression = f"SET {attribute} = :{attribute}"
             
-        # print(f"DYNAMO update_task_response {update_task_response}")
+        update_parameters = {
+            'Key': {'task_id': task_id},
+            'UpdateExpression': update_expression,
+            'ExpressionAttributeValues': {f":{attribute}": value},
+            'ReturnValues': 'ALL_NEW'
+        }
+        
+        if if_exists:
+            update_parameters['ConditionExpression'] = f"attribute_exists({attribute})"
+        
+        print(f"DYNAMO update_parameters {update_parameters}")
+        
+        update_task_response = self.tasks.update_item(**update_parameters)
+       
+        print(f"DYNAMO update_task_response {update_task_response}")
+        
 
-    
     def get_queued_task(self):
         
         for attempt in range(self.GET_QUEUED_TASK_ATTEMPTS):
@@ -208,7 +220,7 @@ class DB():
             
             scan_response_items.extend(scan_response['Items'])
         
-        # print(f"DYNAMO scan_response_items {scan_response_items}")        
+        print(f"DYNAMO purging all tasks")        
 
         with self.tasks.batch_writer() as batch:
             for item in scan_response_items:
