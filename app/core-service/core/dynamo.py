@@ -29,7 +29,7 @@ class DB():
     
         scan_response = self.algorithms.scan()
     
-        return scan_response['Items']
+        return scan_response.get('Items', {})
     
 
     def query_algorithms(self, query_parameters):
@@ -90,8 +90,24 @@ class DB():
     def get_all_tasks(self):
     
         scan_response = self.tasks.scan()
+        
+        all_tasks = scan_response.get('Items', [])
+        
+        tasks_dict = {}
+        
+        for task in all_tasks:
+            
+            task_id = int(task['task_id'])
+            
+            tasks_dict[task_id] = task 
+        
+        print(f"DYNAMO all_tasks {all_tasks}")
+        print(f"DYNAMO tasks_dict:")
+        
+        for task_id, values in tasks_dict.items():
+            print(f"DYNAMO {task_id}: {values}\n")            
     
-        return scan_response['Items']
+        return tasks_dict
         
 
     def add_task(self, algorithm_id, run_values):

@@ -73,7 +73,14 @@ class Runner():
         
         
     def log(self,message):
-        self.app.logger.info(message)        
+        self.app.logger.info(message)
+        
+
+    def task_log(self, task_id, message):
+        self.log(message)
+        self.logs[task_id] += [message]
+        
+        self.db.update_task_attribute(task_id, 'logs', [message], append=True)
         
     
     def start(self):
@@ -113,13 +120,6 @@ class Runner():
         self.log(f'RUNNER stopped: {self}')      
         
         
-    def task_log(self, task_id, message):
-
-        self.log(message)
-        
-        self.logs[task_id] += [message]
-        
-
     def run_algorithm(self, algorithm_id, run_values):
         
         self.task_count = self.task_count % self.task_rollover_size + 1
