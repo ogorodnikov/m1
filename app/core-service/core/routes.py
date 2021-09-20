@@ -231,8 +231,10 @@ def admin():
         flash(f"Test command", category='success')
         
         # db.update_task_attribute(1, 'task_log', [1, 2], if_exists=False)
-        db.update_task_attribute(1, 'task_log', [1, 5], append=True)
+        # db.update_task_attribute(5, 'logs', [7], append=True)
         # db.update_task_attribute(1, 'task_log', 'test_log')
+        
+        db.add_status_update(7, 'Running', '')
         
         
     return render_template("admin.html")

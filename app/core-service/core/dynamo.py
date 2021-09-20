@@ -6,6 +6,7 @@ import boto3
 
 class DB():
     
+    SERVICE_TASK_RECORD_ID = 0
     GET_QUEUED_TASK_ATTEMPTS = 5
 
     def __init__(self, app):
@@ -81,8 +82,10 @@ class DB():
             
         return {'status_code': status_code}
     
+    
+    
         
-    # Tasks
+    ### Tasks
     
     def get_all_tasks(self):
     
@@ -93,11 +96,11 @@ class DB():
 
     def add_task(self, algorithm_id, run_values):
         
-        service_task_record_id = 0
+
         
         increment_task_count_response = self.tasks.update_item(
 
-            Key={'task_id': service_task_record_id},
+            Key={'task_id': self.SERVICE_TASK_RECORD_ID},
             UpdateExpression="SET task_count = if_not_exists(task_count, :zero) + :n",
             ExpressionAttributeValues={':n': 1, ':zero': 0},
             ReturnValues = 'ALL_NEW'
@@ -112,11 +115,13 @@ class DB():
             
             UpdateExpression="SET algorithm_id = :algorithm_id, "
                              "run_values = :run_values, "
-                             "task_status = :task_status",
+                             "task_status = :task_status, "
+                             "logs = :logs",
                              
             ExpressionAttributeValues={':algorithm_id': algorithm_id,
                                        ':run_values': run_values,
-                                       ':task_status': 'Queued'},
+                                       ':task_status': 'Queued',
+                                       ':logs': []},
                                        
             ReturnValues = 'ALL_NEW'
             
@@ -128,6 +133,26 @@ class DB():
         print(f"DYNAMO new_task_id {new_task_id}")
 
         return new_task_id
+        
+
+    def add_status_update(self, task_id, status, result):
+        
+        status_update = [task_id, status, result]
+        
+        add_status_update_response = self.tasks.update_item(
+
+            Key={'task_id': self.SERVICE_TASK_RECORD_ID},
+            UpdateExpression="SET status_updates = list_append(if_not_exists(status_updates, :empty_list), :status_update)",
+            # UpdateExpression="SET status_updates = :status_update",
+            ExpressionAttributeValues={
+                ':empty_list': [],
+                ':status_update': [status_update]
+                },
+            ReturnValues = 'ALL_NEW'
+            
+            )
+
+        print(f"DYNAMO add_status_update_response {add_status_update_response}")
 
 
     def update_task_attribute(self, task_id, attribute, value, append=False, if_exists=False):

@@ -131,6 +131,10 @@ class Runner():
         
         self.task_queue.put(new_task)
         
+        
+        self.db.add_task(algorithm_id, run_values)
+        
+        
         new_task_record = {'algorithm_id': algorithm_id,
                            'run_values': run_values,
                            'status': 'Queued'}
@@ -159,6 +163,19 @@ class Runner():
                 
                 task_id, algorithm_id, run_values = pop_task
                 
+                
+                
+                pop_task_alt = self.db.get_queued_task()
+                
+                self.log(f'RUNNER pop_task_alt: {pop_task_alt}')
+                
+                task_id_alt = pop_task_alt['task_id']
+                run_values_alt = pop_task_alt['run_values']
+                algorithm_id_alt = pop_task_alt['algorithm_id']
+                
+                self.db.add_status_update(task_id_alt, 'Running')
+
+
                 self.task_results_queue.put((task_id, '', 'Running'))
 
                 self.log(f'RUNNER pop_task: {pop_task}')
