@@ -245,32 +245,14 @@ def admin():
 @app.before_request
 def show_task_results():
     
-    for task_result in runner.get_task_results():
-    
-        task_id, result, status = task_result
-        
-        task_url = f"/tasks?task_id={task_id}"
-        
-        result_message = (f"<a href='{task_url}' class='mb-0'"
-                          f"target='_blank' rel='noopener noreferrer'>"
-                          f"Task {task_id}</a>"
-                          f"<hr class='mb-0 mt-1'>"
-                          f"<p class='mb-0'>Status: {status}</p>"
-                          f"<p class='mb-0'>Result: {result}</p>")
-        
-        flash(result_message, category='info')
-        
-        
-        
-        
     status_updates = db.get_status_updates()
     
     for status_update in status_updates:
         
-        # if status == 'Running':
-        #     continue        
+        task_id, status, result = status_update
         
-        task_id, result, status = status_update
+        if status == 'Running':
+            continue     
     
         task_url = f"/tasks?task_id={task_id}"
         
@@ -281,7 +263,7 @@ def show_task_results():
                           f"<p class='mb-0'>Status: {status}</p>"
                           f"<p class='mb-0'>Result: {result}</p>")
         
-        flash(status_message, category='success')            
+        flash(status_message, category='info')            
      
     
         

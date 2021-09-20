@@ -236,6 +236,11 @@ class DB():
     
     def add_status_update(self, task_id, status, result):
         
+        print(f'DYNAMO add_status_update {task_id, status, result}')
+        
+        # self.update_task_attribute(task_id, 'task_status', status)
+        # self.update_task_attribute(task_id, 'result', result)
+        
         status_update = [task_id, status, result]
         
         add_status_update_response = self.tasks.update_item(

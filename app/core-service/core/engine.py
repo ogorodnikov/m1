@@ -58,8 +58,7 @@ class Runner():
         self.task_count = 0
         
         self.task_queue = Queue()
-        self.task_results_queue = Queue()
-        
+
         self.manager = Manager()
         
         self.logs = self.manager.dict()
@@ -176,7 +175,6 @@ class Runner():
                 self.db.add_status_update(task_id_alt, 'Running', '')
 
 
-                self.task_results_queue.put((task_id, '', 'Running'))
 
                 self.log(f'RUNNER pop_task: {pop_task}')
                 self.log(f'RUNNER task_queue.qsize: {self.task_queue.qsize()}')
@@ -205,16 +203,21 @@ class Runner():
                 result = run_result.get('Result')
                 status = run_result.get('Status')
                 
-                self.task_results_queue.put((task_id, result, status))
+                self.tasks[task_id]['result'] = result            
+                self.tasks[task_id]['status'] = status
+                
+                
+                print(f'>>>> RUNNER self.db.add_status_update(task_id_alt, status, result) {task_id_alt, status, result}')
+                
+                self.db.add_status_update(task_id_alt, status, result)
+                
                 
                 self.task_log(task_id, f'RUNNER Result: {result}')
                 self.task_log(task_id, f'RUNNER Status: {status}')
 
                 self.log(f'RUNNER run_result: {run_result}')
                 self.log(f'RUNNER len(self.tasks): {len(self.tasks)}')
-                self.log(f'RUNNER self.task_results_queue.qsize(): {self.task_results_queue.qsize()}')
 
-                
 
     def task_exception_decorator(run_task):
         
@@ -348,23 +351,6 @@ class Runner():
         return result
         
     
-    def get_task_results(self):            
-        
-        while not self.task_results_queue.empty():
-            
-            task_result = self.task_results_queue.get()
-            
-            task_id, result, status = task_result
-            
-            self.tasks[task_id]['result'] = result            
-            self.tasks[task_id]['status'] = status
-            
-            if status == 'Running':
-                continue
-            
-            yield task_result
-    
-        
     def get_least_busy_backend(self, provider, qubit_count):
     
         backend_filter = lambda backend: (not backend.configuration().simulator 
