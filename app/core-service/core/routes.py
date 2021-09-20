@@ -234,7 +234,9 @@ def admin():
         # db.update_task_attribute(5, 'logs', [7], append=True)
         # db.update_task_attribute(1, 'task_log', 'test_log')
         
-        db.add_status_update(7, 'Running', '')
+        # db.add_status_update(7, 'Running', '')
+        
+        db.get_status_updates()
         
         
     return render_template("admin.html")
@@ -257,4 +259,31 @@ def show_task_results():
                           f"<p class='mb-0'>Result: {result}</p>")
         
         flash(result_message, category='info')
+        
+        
+        
+        
+    status_updates = db.get_status_updates()
+    
+    for status_update in status_updates:
+        
+        # if status == 'Running':
+        #     continue        
+        
+        task_id, result, status = status_update
+    
+        task_url = f"/tasks?task_id={task_id}"
+        
+        status_message = (f"<a href='{task_url}' class='mb-0'"
+                          f"target='_blank' rel='noopener noreferrer'>"
+                          f"Task {task_id}</a>"
+                          f"<hr class='mb-0 mt-1'>"
+                          f"<p class='mb-0'>Status: {status}</p>"
+                          f"<p class='mb-0'>Result: {result}</p>")
+        
+        flash(status_message, category='success')            
+     
+    
+        
+        
 

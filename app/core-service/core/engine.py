@@ -173,7 +173,7 @@ class Runner():
                 run_values_alt = pop_task_alt['run_values']
                 algorithm_id_alt = pop_task_alt['algorithm_id']
                 
-                self.db.add_status_update(task_id_alt, 'Running')
+                self.db.add_status_update(task_id_alt, 'Running', '')
 
 
                 self.task_results_queue.put((task_id, '', 'Running'))

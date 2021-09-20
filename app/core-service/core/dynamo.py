@@ -135,26 +135,6 @@ class DB():
         return new_task_id
         
 
-    def add_status_update(self, task_id, status, result):
-        
-        status_update = [task_id, status, result]
-        
-        add_status_update_response = self.tasks.update_item(
-
-            Key={'task_id': self.SERVICE_TASK_RECORD_ID},
-            UpdateExpression="SET status_updates = list_append(if_not_exists(status_updates, :empty_list), :status_update)",
-            # UpdateExpression="SET status_updates = :status_update",
-            ExpressionAttributeValues={
-                ':empty_list': [],
-                ':status_update': [status_update]
-                },
-            ReturnValues = 'ALL_NEW'
-            
-            )
-
-        print(f"DYNAMO add_status_update_response {add_status_update_response}")
-
-
     def update_task_attribute(self, task_id, attribute, value, append=False, if_exists=False):
         
         if append:
@@ -251,6 +231,43 @@ class DB():
             for item in scan_response_items:
                 batch.delete_item(Key=item)
                 
+                
+    ###   Statuses
+    
+    def add_status_update(self, task_id, status, result):
+        
+        status_update = [task_id, status, result]
+        
+        add_status_update_response = self.tasks.update_item(
+            Key={'task_id': self.SERVICE_TASK_RECORD_ID},
+            UpdateExpression="SET status_updates = list_append(if_not_exists(status_updates, :empty_list), :status_update)",
+            ExpressionAttributeValues={':empty_list': [],
+                                       ':status_update': [status_update]},
+            ReturnValues = 'ALL_NEW'
+            )
+
+
+    def get_status_updates(self):
+        
+        status_updates_response = self.tasks.get_item(
+            Key={'task_id': self.SERVICE_TASK_RECORD_ID},
+            ProjectionExpression='status_updates'
+            )
+            
+        status_updates_item = status_updates_response.get('Item')
+        
+        if not status_updates_item:
+            return []
+        
+        status_updates = status_updates_item['status_updates']
+
+        print(f"DYNAMO status_updates_response {status_updates_response}")
+        print(f"DYNAMO status_updates {status_updates}")
+        
+        return status_updates
+        
+        
+
 
     def add_test_data(self):
     
