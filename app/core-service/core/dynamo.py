@@ -106,10 +106,6 @@ class DB():
 
         new_task_id = increment_task_count_response['Attributes']['task_count']
         
-        # print(f"DYNAMO increment_task_count_response {increment_task_count_response}")
-        print(f"DYNAMO new_task_id {new_task_id}")
-        
-        
         new_task_response = self.tasks.update_item(
 
             Key={'task_id': new_task_id},
@@ -125,8 +121,11 @@ class DB():
             ReturnValues = 'ALL_NEW'
             
             )
-            
+        
+        # print(f"DYNAMO increment_task_count_response {increment_task_count_response}")
         # print(f"DYNAMO new_task_response {new_task_response}")
+        
+        print(f"DYNAMO new_task_id {new_task_id}")
 
         return new_task_id
 
@@ -214,7 +213,7 @@ class DB():
         with self.tasks.batch_writer() as batch:
             for item in scan_response_items:
                 batch.delete_item(Key=item)
-
+                
 
     def add_test_data(self):
     

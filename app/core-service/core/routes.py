@@ -208,17 +208,26 @@ def admin():
         flash(f"Stopping runner", category='warning')
         runner.stop()
         
-    if command == 'test':
-        
-        # db.add_task('egcd', '15')
-        # db.update_task(3, 'task_status', 'Running')
-        
-        # task_id = db.get_queued_task()
-        # flash(f"Got queued task: {task_id}", category='info')        
-        
+    if command == 'purge_tasks':
+        flash(f"Purging tasks", category='danger')        
         db.purge_tasks()
-    
-    
+        
+    if command == 'add_test_tasks':
+        
+        flash(f"Adding test tasks", category='success')
+        
+        db.add_task(('egcd', dict(('a', '345'), ('b', '455244237'), ('run_mode', 'classical'))))
+        db.add_task(('egcd', dict(('a', '345'), ('b', '455244237'), ('run_mode', 'classical'))))
+        db.add_task(('egcd', dict(('a', '345'), ('b', '455244237'), ('run_mode', 'classical'))))
+        
+        db.add_task(('bernvaz', dict(('secret', '1010'), ('run_mode', 'simulator'))))
+        db.add_task(('bernvaz', dict(('secret', '1010'), ('run_mode', 'simulator'))))
+        db.add_task(('bernvaz', dict(('secret', '1010'), ('run_mode', 'simulator'))))
+        
+        task_id = db.get_queued_task()
+        flash(f"Got queued task: {task_id}", category='info')        
+        
+
     return render_template("admin.html")
     
 

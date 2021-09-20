@@ -6,99 +6,101 @@
 
 {% block content %}
 
-  <div class="container-fluid align-items-center">
+<div class="col-12 text-center m-3">
+  <h5>Admin:</h5>
+</div>
 
-    <div class="row">
-      <div class="col text-center m-3">
-        <h5>Admin:</h5>
-      </div>
-    </div>
+<form action={{ url_for('admin') }} method="POST">
+  
+  <div class="col-12 m-2">      
+    Core:   
+  </div>
 
-    <form action={{ url_for('admin') }} method="POST">
+  <div class="col-12">
     
-      <div class="row justify-content-start m-0">
-        
-        <div class="col-auto mb-3">
-  
-          {% if config['TELEGRAM_BOT_STATE'] == 'Started' %}
-          
-            <button type="submit" 
-                    class="btn btn-warning" 
-                    name="command"
-                    value="stop_bot">
-              Stop Bot
-            </button>
-            
-          {% else %}
-          
-            <button type="submit" 
-                    class="btn btn-success" 
-                    name="command"
-                    value="start_bot">
-              Start Bot
-            </button>
-        
-          {% endif %}
-  
-        </div>
+    <button class="btn btn-primary m-2"
+            type="submit"
+            name="command"
+            value="add_test_data">
+      Add Test Data
+    </button>    
+
+    {% if config['TELEGRAM_BOT_STATE'] == 'Started' %}
+    
+      <button class="btn btn-warning m-2"
+              type="submit"
+              name="command"
+              value="stop_bot">
+        Stop Bot
+      </button>
       
-        <div class="col-auto mb-3">
-          
-          <button type="submit" 
-                  class="btn btn-info" 
-                  name="command"
-                  value="add_test_data">
-            Add Test Data
-          </button>          
+    {% else %}
+    
+      <button class="btn btn-success m-2"
+              type="submit"
+              name="command"
+              value="start_bot">
+        Start Bot
+      </button>
   
-        </div>
-        
-        <div class="col-auto mb-3">
-          <button type="submit" 
-                  class="btn btn-danger" 
-                  name="command"
-                  value="terminate">
-            Terminate
-          </button>
-        </div>
+    {% endif %}
 
-        <div class="col-auto mb-3">
+    {% if config['RUNNER_STATE'] == 'Started' %}
+    
+      <button class="btn btn-warning m-2"
+              type="submit"
+              name="command"
+              value="stop_runner">
+        Stop Runner
+      </button>
+      
+    {% else %}
+    
+      <button class="btn btn-success m-2"
+              type="submit"
+              name="command"
+              value="start_runner">
+        Start Runner
+      </button>
+  
+    {% endif %}
+    
+    <button class="btn btn-danger m-2"
+            type="submit"
+            name="command"
+            value="terminate">
+      Terminate
+    </button>
+    
+  </div>
 
-          {% if config['RUNNER_STATE'] == 'Started' %}
-          
-            <button type="submit" 
-                    class="btn btn-warning" 
-                    name="command"
-                    value="stop_runner">
-              Stop Runner
-            </button>
-            
-          {% else %}
-          
-            <button type="submit" 
-                    class="btn btn-success" 
-                    name="command"
-                    value="start_runner">
-              Start Runner
-            </button>
-        
-          {% endif %} 
-          
-        </div>
-        
-        <button type="submit" 
-                class="btn btn-primary" 
-                name="command"
-                value="test">
-          Test
-        </button>        
-        
-      </div>
-    </form>
+  <div class="col-12 m-2">      
+    Tasks:   
+  </div>
+      
+  <div class="col-12">
+              
+    <button class="btn btn-primary m-2"
+            type="submit"
+            name="command"
+            value="add_test_tasks">
+      Add Test Tasks
+    </button> 
+    
+    <button class="btn btn-warning m-2"
+            type="submit"
+            name="command"
+            value="purge_tasks">
+      Purge Tasks
+    </button>
+    
   </div>
     
+</form>
+
     
-    <!-- Button trigger modal -->
+    
+<!-- Button trigger modal -->
 <!--<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">-->
 <!--  Launch demo modal-->
 <!--</button>-->
@@ -128,13 +130,8 @@
 
 
 
-
-
-
-
-    
-  </div>
-
 {% endblock %}
+
+
 
 
