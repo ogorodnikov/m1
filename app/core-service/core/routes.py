@@ -153,9 +153,8 @@ def get_tasks():
         
     else:
         
-        tasks_alt = db.get_all_tasks()
-    
-        return render_template("tasks.html", tasks=runner.tasks, logs=runner.logs, tasks_alt=tasks_alt)
+        tasks = db.get_all_tasks()
+        return render_template("tasks.html", tasks=tasks)
         
 
 @app.route('/download')

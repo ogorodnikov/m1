@@ -6,9 +6,36 @@
 
 {% block content %}
 
+
 {% set LOGS_COUNT = 10 %}
 
-{{ tasks_alt }}
+
+<!-- Task Category  -->
+
+{% if values.task_status == 'Done' %}
+  {% set task_category = 'success' %}
+  
+{% elif values.task_status == 'Running' %}
+  {% set task_category = 'warning' %}
+  
+{% elif values.task_status == 'Queued' %}
+  {% set task_category = 'info' %}
+  
+{% else%}
+  {% set task_category = 'danger' %}
+  
+{% endif %}
+
+<!--DYNAMO 1: {-->
+<!--'logs': ['EGCD A, B: 345, 455244237', 'EGCD GCD (Old remainder): 3'], -->
+<!--'run_values': {'a': '345', 'run_mode': 'classical', 'b': '455244237'}, -->
+<!--'task_status': 'Done', -->
+<!--'task_id': Decimal('1'), -->
+<!--'algorithm_id': 'egcd', -->
+<!--'task_result': {'GCD': Decimal('3'), 'Bézout coefficients': [Decimal('-51462392'), Decimal('39')]}, -->
+<!--'record_type': 'task_record'}-->
+
+
 
 <div class="row align-items-center text-nowrap">
   
@@ -43,17 +70,16 @@
       
       <tbody>
          
-        {% for task_id, task in tasks.items() %}
+        {% for task_id, values in tasks.items() %}
         
           <tr>
             
             <td width="10">
               {{ task_id }}
             </td>
-            
   
             <td class="col-1">
-              {% if task.status in ('Running', 'Done', 'Failed') %}
+              {% if values.task_status in ('Running', 'Done', 'Failed') %}
                 <button class="btn btn-info text-nowrap" 
                         data-toggle="collapse"
                         data-target="#collapse-{{ task_id }}">
@@ -63,29 +89,19 @@
             </td>
             
             <td class="col-1">
-              <a href={{ url_for('get_algorithm', algorithm_id=task.algorithm_id) }}
-              
-                {% if task.status == 'Done' %}
-                  class="btn btn-success"
-                {% elif task.status == 'Running' %}
-                  class="btn btn-warning"
-                {% elif task.status == 'Queued' %}
-                  class="btn btn-info"
-                {% else%}
-                  class="btn btn-danger"            
-                {% endif %}
-                
-                role="button">
-                {{ task.algorithm_id }}
+              <a href={{ url_for('get_algorithm', algorithm_id=values.algorithm_id) }}
+                 class="btn btn-{{ task_category }}"
+                 role="button">
+                {{ values.algorithm_id }}
               </a>
             </td>
             
             <td class="col-1">
-              {{ task.run_values.run_mode }}
+              {{ values.run_values.run_mode }}
             </td>
             
             <td class="col-1">
-              {% for name, value in task.run_values.items() %}
+              {% for name, value in values.run_values.items() %}
                 {% if name != 'run_mode' %}
                   {{ name }}: {{ value }}<br>
                 {% endif %}
@@ -93,34 +109,24 @@
             </td>
             
             <td class="col-sm-auto">
-              {% if task.result %}
-                {% for name, value in task.result.items() %}
+              {% if values.task_result %}
+                {% for name, value in values.task_result.items() %}
                   {{ name }}: {{ value }}
                 {% endfor %}
               {% endif %}
             </td>
             
             <td class="col-1">
-              <button
-                {% if task.status == 'Done' %}
-                  class="btn btn-success"
-                {% elif task.status == 'Running' %}
-                  class="btn btn-warning"
-                {% elif task.status == 'Queued' %}
-                  class="btn btn-info"
-                {% else %}
-                  class="btn btn-danger"            
-                {% endif %}>
-                
-                {{ task.status }}
-                
+              <button class="btn btn-{{ task_category }}">
+                {{ values.task_status }}
               </button>
             </td>
+            
           </tr>
           
-          {% set logs_length = logs[task_id]|length %}
+          {% set logs_length = values.logs|length %}
           
-          {% set logs_tail = logs[task_id][-LOGS_COUNT:] %}
+          {% set logs_tail = values.logs[-LOGS_COUNT:] %}
           
           {% if logs_length > LOGS_COUNT %}
             {% set preambula = "=== Last " + LOGS_COUNT|string + " logs: ===\n\n" %}
@@ -165,7 +171,6 @@
   
 </div>
 
-  
 
 {% endblock %}
 
