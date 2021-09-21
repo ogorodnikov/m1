@@ -10,22 +10,6 @@
 {% set LOGS_COUNT = 10 %}
 
 
-<!-- Task Category  -->
-
-{% if values.task_status == 'Done' %}
-  {% set task_category = 'success' %}
-  
-{% elif values.task_status == 'Running' %}
-  {% set task_category = 'warning' %}
-  
-{% elif values.task_status == 'Queued' %}
-  {% set task_category = 'info' %}
-  
-{% else%}
-  {% set task_category = 'danger' %}
-  
-{% endif %}
-
 <!--DYNAMO 1: {-->
 <!--'logs': ['EGCD A, B: 345, 455244237', 'EGCD GCD (Old remainder): 3'], -->
 <!--'run_values': {'a': '345', 'run_mode': 'classical', 'b': '455244237'}, -->
@@ -71,6 +55,22 @@
       <tbody>
          
         {% for task_id, values in tasks.items() %}
+        
+          <!-- Task Category  -->
+  
+          {% if values.task_status == 'Done' %}
+            {% set task_category = 'success' %}
+            
+          {% elif values.task_status == 'Running' %}
+            {% set task_category = 'warning' %}
+            
+          {% elif values.task_status == 'Queued' %}
+            {% set task_category = 'info' %}
+            
+          {% else%}
+            {% set task_category = 'danger' %}
+            
+          {% endif %}
         
           <tr>
             
