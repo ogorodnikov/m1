@@ -140,20 +140,18 @@ def set_algorithm_state(algorithm_id):
 @app.route('/tasks')
 def get_tasks():
     
-    task_id_str = request.args.get('task_id')
+    tasks = db.get_all_tasks()
+
+    task_id = request.args.get('task_id')
     
-    if task_id_str:
+    if task_id:
         
-        task_id = int(task_id_str)
+        task = tasks[int(task_id)]
         
-        task = runner.tasks[task_id]
-        logs = runner.logs[task_id]
-        
-        return render_template("task.html", task_id=task_id, task=task, logs=logs)
+        return render_template("task.html", task=task)
         
     else:
         
-        tasks = db.get_all_tasks()
         return render_template("tasks.html", tasks=tasks)
         
 

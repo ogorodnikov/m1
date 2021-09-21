@@ -75,7 +75,11 @@
           <tr>
             
             <td width="10">
-              {{ task_id }}
+              <a href={{ url_for('get_tasks', task_id=task_id) }}
+                 class="btn btn-{{ task_category }}"
+                 role="button">
+                {{ task_id }}
+              </a>
             </td>
   
             <td class="col-1">

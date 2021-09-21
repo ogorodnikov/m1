@@ -6,6 +6,34 @@
 
 {% block content %}
 
+
+<!--DYNAMO 1: {-->
+<!--'logs': ['EGCD A, B: 345, 455244237', 'EGCD GCD (Old remainder): 3'], -->
+<!--'run_values': {'a': '345', 'run_mode': 'classical', 'b': '455244237'}, -->
+<!--'task_status': 'Done', -->
+<!--'task_id': Decimal('1'), -->
+<!--'algorithm_id': 'egcd', -->
+<!--'task_result': {'GCD': Decimal('3'), 'Bézout coefficients': [Decimal('-51462392'), Decimal('39')]}, -->
+<!--'record_type': 'task_record'}-->
+
+
+<!-- Task Category  -->
+
+{% if task.task_status == 'Done' %}
+  {% set task_category = 'success' %}
+  
+{% elif task.task_status == 'Running' %}
+  {% set task_category = 'warning' %}
+  
+{% elif task.task_status == 'Queued' %}
+  {% set task_category = 'info' %}
+  
+{% else%}
+  {% set task_category = 'danger' %}
+  
+{% endif %}
+
+
 <div class="row justify-content-center m-3">
 
   <div class="table-responsive">
@@ -28,31 +56,21 @@
         
           <tr>
             <!--<td column-width="10" class="d-none d-sm-none d-md-block">-->
-            <!--  {{ task_id }}-->
+            <!--  {{ task.task_id }}-->
             <!--</td>-->
             
             <td class="col-1">
               <button class="btn btn-info text-nowrap" 
                       data-toggle="collapse"
-                      data-target="#collapse-{{ task_id }}">
+                      data-target="#collapse-{{ task.task_id }}">
                 <i class="fa fa-angle-up"></i> Logs
               </button>
             </td>
             
             <td class="col-1">
               <a href={{ url_for('get_algorithm', algorithm_id=task.algorithm_id) }}
-              
-                {% if task.status == 'Done' %}
-                  class="btn btn-success"
-                {% elif task.status == 'Running' %}
-                  class="btn btn-warning"
-                {% elif task.status == 'Queued' %}
-                  class="btn btn-info"
-                {% else%}
-                  class="btn btn-danger"            
-                {% endif %}
-                
-                role="button">
+                 class="btn btn-{{ task_category }}"              
+                 role="button">
                 {{ task.algorithm_id }}
               </a>
             </td>
@@ -70,46 +88,32 @@
             </td>
             
             <td class="col-auto">
-              {% if task.result %}
-                {% for name, value in task.result.items() %}
+              {% if task.task_result %}
+                {% for name, value in task.task_result.items() %}
                   {{ name }}: {{ value }}
                 {% endfor %}
               {% endif %}
             </td>
             
             <td class="col-1">
-              <button
-                {% if task.status == 'Done' %}
-                  class="btn btn-success"
-                {% elif task.status == 'Running' %}
-                  class="btn btn-warning"
-                {% elif task.status == 'Queued' %}
-                  class="btn btn-info"
-                {% else%}
-                  class="btn btn-danger"            
-                {% endif %}
-                >
-                
-                {{ task.status }}
-                
+              <button class="btn btn-{{ task_category }}">
+                {{ task.task_status }}
               </button>
             </td>
           </tr>
-          
   
           
-          <tr class="collapse show" id="collapse-{{ task_id }}">
-            <!--<td></td>-->
-            <td colspan=6 style="white-space: pre-wrap; font-family: monospace; line-height:19px">{% for log in logs %}{{ log }}
+          <tr class="collapse show" id="collapse-{{ task.task_id }}">
+            <td colspan=6 style="white-space: pre-wrap; font-family: monospace; line-height:19px">{% for log in task.logs %}{{ log }}
 {% endfor %}
             </td>
           </tr>
           
           
-          {% if task.status == 'Done' and task.run_values.run_mode == 'simulator' %}
+          {% if task.task_status == 'Done' and task.run_values.run_mode == 'simulator' %}
           
-            <!--<tr class="collapse show" id="collapse-{{ task_id }}" style="background-color:#212121">-->
-            <tr class="collapse show" id="collapse-{{ task_id }}">
+            <!--<tr class="collapse show" id="collapse-{{ task.task_id }}" style="background-color:#212121">-->
+            <tr class="collapse show" id="collapse-{{ task.task_id }}">
               <td colspan=6>
                 
                 <h6>Statevector:</h6>
@@ -119,7 +123,7 @@
                 
                 <br>
                 
-                <a href={{ url_for('download', task_id=task_id, content='statevector', as_attachment=True) }}
+                <a href={{ url_for('download', task_id=task.task_id, content='statevector', as_attachment=True) }}
                   class="btn btn-info"
                   role="button">
                   Download Figure
