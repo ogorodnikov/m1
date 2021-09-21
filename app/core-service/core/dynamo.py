@@ -1,9 +1,6 @@
 import boto3
 
 
-# task_id, algorithm_id, run_values, status, result, logs
-        
-
 class DB():
     
     SERVICE_TASK_RECORD_ID = 0
@@ -88,10 +85,22 @@ class DB():
     ### Tasks
     
     def get_all_tasks(self):
-    
-        scan_response = self.tasks.scan()
         
-        all_tasks = scan_response.get('Items', [])
+        queued_response = self.tasks.query(
+            
+            IndexName='record-type-index',
+            KeyConditionExpression="record_type = :record_type",
+            ExpressionAttributeValues={":record_type": 'task_record'},
+            # ProjectionExpression='task_id, algorithm_id, run_values',
+            # Limit=1
+            
+        )
+        
+        print(f"DYNAMO queued_response {queued_response}")        
+    
+        # scan_response = self.tasks.scan()
+        
+        all_tasks = queued_response.get('Items', [])
         
         tasks_dict = {}
         
@@ -130,11 +139,13 @@ class DB():
             UpdateExpression="SET algorithm_id = :algorithm_id, "
                              "run_values = :run_values, "
                              "task_status = :task_status, "
+                             "record_type = :record_type, "
                              "logs = :logs",
                              
             ExpressionAttributeValues={':algorithm_id': algorithm_id,
                                        ':run_values': run_values,
                                        ':task_status': 'Queued',
+                                       ':record_type': 'task_record',
                                        ':logs': []},
                                        
             ReturnValues = 'ALL_NEW'

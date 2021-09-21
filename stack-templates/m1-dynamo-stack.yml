@@ -67,6 +67,8 @@ Resources:
         AttributeType: S
       - AttributeName: task_status
         AttributeType: S
+      - AttributeName: record_type
+        AttributeType: S
         
       KeySchema:
       - AttributeName: task_id
@@ -89,6 +91,18 @@ Resources:
       - IndexName: task-status-index
         KeySchema:
         - AttributeName: task_status
+          KeyType: HASH
+        - AttributeName: task_id
+          KeyType: RANGE
+        Projection:
+          ProjectionType: ALL
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+          
+      - IndexName: record-type-index
+        KeySchema:
+        - AttributeName: record_type
           KeyType: HASH
         - AttributeName: task_id
           KeyType: RANGE
