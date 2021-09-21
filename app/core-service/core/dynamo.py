@@ -86,7 +86,7 @@ class DB():
     
     def get_all_tasks(self):
         
-        queued_response = self.tasks.query(
+        all_tasks_response = self.tasks.query(
             
             IndexName='record-type-index',
             KeyConditionExpression="record_type = :record_type",
@@ -96,11 +96,11 @@ class DB():
             
         )
         
-        print(f"DYNAMO queued_response {queued_response}")        
+        # print(f"DYNAMO all_tasks_response {all_tasks_response}")        
     
         # scan_response = self.tasks.scan()
         
-        all_tasks = queued_response.get('Items', [])
+        all_tasks = all_tasks_response.get('Items', [])
         
         tasks_dict = {}
         
@@ -110,11 +110,12 @@ class DB():
             
             tasks_dict[task_id] = task 
         
-        print(f"DYNAMO all_tasks {all_tasks}")
-        print(f"DYNAMO tasks_dict:")
+        # print(f"DYNAMO all_tasks {all_tasks}")
         
-        for task_id, values in tasks_dict.items():
-            print(f"DYNAMO {task_id}: {values}\n")            
+        # print(f"DYNAMO tasks_dict:")
+        
+        # for task_id, values in tasks_dict.items():
+        #     print(f"DYNAMO {task_id}: {values}\n")            
     
         return tasks_dict
         
@@ -156,10 +157,77 @@ class DB():
 
         return new_task_id
         
+        
+    def get_queued_task(self):
+        
+        print(f"DYNAMO get_queued_task")
+        
+        for attempt in range(self.GET_QUEUED_TASK_ATTEMPTS):
+            
+            print(f"DYNAMO attempt {attempt}")            
+
+            queued_task_response = self.tasks.query(
+            
+                IndexName='task-status-index',
+                KeyConditionExpression="task_status = :task_status",
+                ExpressionAttributeValues={":task_status": 'Queued'},
+                ProjectionExpression='task_id, algorithm_id, run_values',
+                Limit=1
+                
+                )
+    
+            queued_task_items = queued_task_response['Items']
+            
+            print(f"DYNAMO queued_task_items {queued_task_items}")
+            
+            if not queued_task_items:
+                print(f"DYNAMO return None")
+                return None
+            
+            queued_task = queued_task_items[0]
+            queued_task_id = queued_task['task_id']
+            
+            print(f"DYNAMO trying to set Runnnig status for queued_task {queued_task}")
+
+            try:
+                
+                queued_item_response = self.tasks.get_item(
+                    Key={'task_id': queued_task_id},
+                    )
+                    
+                print(f"DYNAMO queued_item_response {queued_item_response}")
+            
+                set_running_status_response = self.tasks.update_item(
+                    
+                    Key={'task_id': queued_task_id},
+                    UpdateExpression=f"SET task_status = :new_task_status",
+                    ConditionExpression="task_status = :old_task_status",
+                    ExpressionAttributeValues={
+                        ":old_task_status": 'Queued',
+                        ":new_task_status": 'Running'
+                    },
+                    ReturnValues = 'ALL_NEW'
+                    
+                    )
+
+                print(f"DYNAMO set_running_status_response {set_running_status_response}")
+                    
+            except Exception as exception:
+                
+                print(f"DYNAMO Status update Exception: {exception}")
+                
+                continue
+
+            print(f"DYNAMO get_queued_task - returning queued_task: {queued_task}")
+            
+            return queued_task
+        
+        print(f"DYNAMO get_queued_task retry limit reached: {self.GET_QUEUED_TASK_ATTEMPTS}")
+        
 
     def update_task_attribute(self, task_id, attribute, value, append=False, if_exists=False):
 
-        print(f"DYNAMO update_task_attribute: {task_id, attribute, value, append, if_exists}")
+        # print(f"DYNAMO update_task_attribute: {task_id, attribute, value, append, if_exists}")
         
         if append:
             update_expression = f"SET {attribute} = list_append({attribute}, :{attribute})"
@@ -176,67 +244,13 @@ class DB():
         if if_exists:
             update_parameters['ConditionExpression'] = f"attribute_exists({attribute})"
         
-        print(f"DYNAMO update_parameters {update_parameters}")
+        # print(f"DYNAMO update_parameters {update_parameters}")
         
         update_task_response = self.tasks.update_item(**update_parameters)
        
-        print(f"DYNAMO update_task_response {update_task_response}")
+        # print(f"DYNAMO update_task_response {update_task_response}")
         
 
-    def get_queued_task(self):
-        
-        for attempt in range(self.GET_QUEUED_TASK_ATTEMPTS):
-
-            queued_task_response = self.tasks.query(
-            
-                IndexName='task-status-index',
-                KeyConditionExpression="task_status = :task_status",
-                ExpressionAttributeValues={":task_status": 'Queued'},
-                ProjectionExpression='task_id, algorithm_id, run_values',
-                Limit=1
-                
-                )
-    
-            queued_task_items = queued_task_response['Items']
-            
-            # print(f"DYNAMO queued_task_response {queued_task_response}")
-            # print(f"DYNAMO queued_task_items {queued_task_items}")
-            
-            if not queued_task_items:
-                return None
-            
-            queued_task = queued_task_items[0]
-            
-            print(f"DYNAMO queued_task {queued_task}")
-
-            try:
-            
-                set_running_status_response = self.tasks.update_item(
-                    
-                    Key={'task_id': queued_task['task_id']},
-                    UpdateExpression=f"SET task_status = :new_task_status",
-                    ConditionExpression="task_status = :old_task_status",
-                    ExpressionAttributeValues={
-                        ":old_task_status": 'Queued',
-                        ":new_task_status": 'Running'
-                    },
-                    ReturnValues = 'ALL_NEW'
-                    
-                    )
-                    
-            except Exception as exception:
-                
-                print(f"DYNAMO Status update Exception: {exception}")
-                
-                continue
-
-            print(f"DYNAMO get_queued_task: {queued_task}")
-            
-            return queued_task
-        
-        print(f"DYNAMO get_queued_task retry limit reached: {self.GET_QUEUED_TASK_ATTEMPTS}")
-        
-        
     def purge_tasks(self):
 
         scan_response = self.tasks.scan(ProjectionExpression='task_id')

@@ -141,17 +141,13 @@ def set_algorithm_state(algorithm_id):
 def get_tasks():
     
     tasks = db.get_all_tasks()
-
     task_id = request.args.get('task_id')
     
     if task_id:
-        
         task = tasks[int(task_id)]
-        
         return render_template("task.html", task=task)
         
     else:
-        
         return render_template("tasks.html", tasks=tasks)
         
 

@@ -4,7 +4,7 @@ import traceback
 from os import getpid, _exit
 from functools import partial
 from concurrent.futures import ProcessPoolExecutor
-from multiprocessing import Process, Event, Queue, Manager
+from multiprocessing import Process, Event, Manager
 
 from qiskit import IBMQ, Aer, execute
 from qiskit.providers.ibmq import least_busy
@@ -47,23 +47,12 @@ class Runner():
         self.app = app
         
         self.db = self.app.config.get('DB')
-        
         self.qiskit_token = self.app.config.get('QISKIT_TOKEN')
-        
         self.queue_workers_count = self.app.config.get('QUEUE_WORKERS_PER_RUNNER')
-        self.task_rollover_size = self.app.config.get('TASK_ROLLOVER_SIZE', 100)
-        
+
         self.static_folder = self.app.static_folder
 
-        self.task_count = 0
-        
-        self.task_queue = Queue()
-
         self.manager = Manager()
-        
-        self.logs = self.manager.dict()
-        self.tasks = self.manager.dict()
-        
         self.worker_active_flag = Event()
         
         self.app.config['RUNNER'] = self
@@ -78,8 +67,6 @@ class Runner():
 
     def task_log(self, task_id, message):
         self.log(message)
-        self.logs[task_id] += [message]
-        
         self.db.update_task_attribute(task_id, 'logs', [message], append=True)
         
     
@@ -93,7 +80,6 @@ class Runner():
         worker_future = queue_pool.submit(self.queue_worker)
         
         self.app.config['RUNNER_STATE'] = 'Started'
-        
         self.log(f'RUNNER started: {self}')
         
         # worker_future = queue_pool.submit(pow, 12, 133)
@@ -116,34 +102,14 @@ class Runner():
         self.worker_active_flag.clear()
         
         self.app.config['RUNNER_STATE'] = 'Stopped'
-        
         self.log(f'RUNNER stopped: {self}')      
         
         
     def run_algorithm(self, algorithm_id, run_values):
         
-        self.task_count = self.task_count % self.task_rollover_size + 1
+        task_id = self.db.add_task(algorithm_id, run_values)
         
-        task_id = self.task_count
-        
-        new_task = (task_id, algorithm_id, run_values)
-        
-        self.task_queue.put(new_task)
-        
-        
-        self.db.add_task(algorithm_id, run_values)
-        
-        
-        new_task_record = {'algorithm_id': algorithm_id,
-                           'run_values': run_values,
-                           'status': 'Queued'}
-                           
-        self.tasks[task_id] = self.manager.dict(new_task_record)
-        self.logs[task_id] = self.manager.list()
-        
-        self.log(f'RUNNER task_id: {task_id}')
-        self.log(f'RUNNER new_task: {new_task}')
-        self.log(f'RUNNER task_queue.qsize: {self.task_queue.qsize()}')
+        self.log(f'RUNNER new_task: {task_id, algorithm_id, run_values}')
         
         return task_id
         
@@ -156,67 +122,53 @@ class Runner():
             
             time.sleep(1)
             
-            if not self.task_queue.empty():
-                
-                pop_task = self.task_queue.get()
-                
-                task_id, algorithm_id, run_values = pop_task
-                
-                
-                
-                pop_task_alt = self.db.get_queued_task()
-                
-                self.log(f'RUNNER pop_task_alt: {pop_task_alt}')
-                
-                task_id_alt = pop_task_alt['task_id']
-                run_values_alt = pop_task_alt['run_values']
-                algorithm_id_alt = pop_task_alt['algorithm_id']
-                
-                self.db.add_status_update(task_id_alt, 'Running', '')
+            self.log(f'RUNNER queue_worker loop: {getpid()}')
+            
+            pop_task = self.db.get_queued_task()
+            
+            if not pop_task:
+                continue
+            
+            self.log(f'RUNNER pop_task: {pop_task}')
+            
+            task_id = pop_task['task_id']
+            run_values = pop_task['run_values']
+            algorithm_id = pop_task['algorithm_id']
+            
+            self.db.add_status_update(task_id, 'Running', '')
 
 
+            run_result = self.manager.dict()
+            
+            task_process = Process(target=self.run_task,
+                                   args=(task_id, algorithm_id, run_values, run_result),
+                                   name=f"Task-process-{getpid()}",
+                                   daemon=False)
+                                     
+            task_process.start()
+            task_process.join(Runner.TASK_TIMEOUT)
+            
+            if task_process.is_alive():
 
-                self.log(f'RUNNER pop_task: {pop_task}')
-                self.log(f'RUNNER task_queue.qsize: {self.task_queue.qsize()}')
+                task_process.terminate()
+                task_process.join()
                 
+                run_result.update({'Status': 'Failed',
+                                   'Result': {'Timeout': f'{Runner.TASK_TIMEOUT} seconds'}})
+                
+                self.task_log(task_id, f'RUNNER timeout: {Runner.TASK_TIMEOUT}')
+            
+            result = run_result.get('Result')
+            status = run_result.get('Status')
 
-                run_result = self.manager.dict()
-                
-                task_process = Process(target=self.run_task,
-                                       args=(task_id, algorithm_id, run_values, run_result),
-                                       name=f"Task-process-{getpid()}",
-                                       daemon=False)
-                                         
-                task_process.start()
-                task_process.join(Runner.TASK_TIMEOUT)
-                
-                if task_process.is_alive():
+            self.log(f'RUNNER run_result: {run_result}')            
+            self.task_log(task_id, f'RUNNER Result: {result}')
+            self.task_log(task_id, f'RUNNER Status: {status}')
 
-                    task_process.terminate()
-                    task_process.join()
-                    
-                    run_result.update({'Status': 'Failed',
-                                       'Result': {'Timeout': f'{Runner.TASK_TIMEOUT} seconds'}})
-                    
-                    self.task_log(task_id, f'RUNNER timeout: {Runner.TASK_TIMEOUT}')
-                
-                result = run_result.get('Result')
-                status = run_result.get('Status')
-                
-                self.tasks[task_id]['result'] = result            
-                self.tasks[task_id]['status'] = status
-                
-                
-                print(f'>>>> RUNNER self.db.add_status_update(task_id_alt, status, result) {task_id_alt, status, result}')
-                
-                self.db.add_status_update(task_id_alt, status, result)
-                
-                
-                self.task_log(task_id, f'RUNNER Result: {result}')
-                self.task_log(task_id, f'RUNNER Status: {status}')
+            print(f'RUNNER queue_worker status update: {task_id, status, result}')
+            
+            self.db.add_status_update(task_id, status, result)
 
-                self.log(f'RUNNER run_result: {run_result}')
-                self.log(f'RUNNER len(self.tasks): {len(self.tasks)}')
 
 
     def task_exception_decorator(run_task):
