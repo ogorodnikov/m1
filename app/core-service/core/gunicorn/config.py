@@ -124,4 +124,4 @@ def print_threads_traceback():
     
 # def on_exit(server):
 #     server.log.info("GUNICORN on_exit")
-    
+#     print("GUNICORN on_exit")

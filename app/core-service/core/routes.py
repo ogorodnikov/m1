@@ -260,9 +260,7 @@ def show_task_results():
                           f"<p class='mb-0'>Status: {status}</p>"
                           f"<p class='mb-0'>Result: {result}</p>")
         
-        flash(status_message, category='info')            
-     
-    
-        
-        
+        flash(status_message, category='info')
+
+
 
