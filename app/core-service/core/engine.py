@@ -40,7 +40,7 @@ class Runner():
                       }
 
     TASK_TIMEOUT = 300
-    
+    BACKEND_AVOID_LIST = ['ibmq_bogota']
     
     def __init__(self, app, *args, **kwargs):
         
@@ -129,9 +129,9 @@ class Runner():
                 
                 self.log(f'RUNNER exception args: {args}')
                 self.log(f'RUNNER exception kwargs: {kwargs}')
-                
+
+                result = kwargs.get('result')                
                 task_id = kwargs.get('task_id')
-                result = kwargs.get('result')
                 
                 if task_id:
                 
@@ -188,7 +188,7 @@ class Runner():
                                    daemon=False)
                                      
             task_process.start()
-            task_process.join(Runner.TASK_TIMEOUT)
+            task_process.join(self.TASK_TIMEOUT)
             
             if task_process.is_alive():
 
@@ -196,14 +196,13 @@ class Runner():
                 task_process.join()
                 
                 result.update({'Status': 'Failed',
-                               'Result': {'Timeout': f'{Runner.TASK_TIMEOUT} seconds'}})
+                               'Result': {'Timeout': f'{self.TASK_TIMEOUT} seconds'}})
                 
-                self.task_log(task_id, f'RUNNER timeout: {Runner.TASK_TIMEOUT}')
+                self.task_log(task_id, f'RUNNER timeout: {self.TASK_TIMEOUT}')
             
             task_result = result.get('Result')
             task_status = result.get('Status')
-
-            self.log(f'RUNNER result: {result}')            
+   
             self.task_log(task_id, f'RUNNER Result: {task_result}')
             self.task_log(task_id, f'RUNNER Status: {task_status}')
 
@@ -334,12 +333,17 @@ class Runner():
     
         backend_filter = lambda backend: (not backend.configuration().simulator 
                                           and backend.configuration().n_qubits >= qubit_count
-                                          and backend.status().operational==True)
+                                          and backend.status().operational==True
+                                          and backend.name() not in self.BACKEND_AVOID_LIST)
             
         least_busy_backend = least_busy(provider.backends(filters=backend_filter))
         
         self.log(f'RUNNER type(least_busy_backend): {type(least_busy_backend)}')         
+        self.log(f'RUNNER self.BACKEND_AVOID_LIST: {self.BACKEND_AVOID_LIST}')         
         self.log(f'RUNNER least_busy_backend: {least_busy_backend}')         
+        self.log(f'RUNNER least_busy_backend.name: {least_busy_backend.name()}')         
+        self.log(f'RUNNER least_busy_backend.properties: {least_busy_backend.properties()}')         
+        self.log(f'RUNNER least_busy_backend.status: {least_busy_backend.status()}')         
         
         return least_busy_backend
         
