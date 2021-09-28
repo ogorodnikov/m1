@@ -94,8 +94,6 @@ class DB():
         
         # print(f"DYNAMO all_tasks_response {all_tasks_response}")        
     
-        # scan_response = self.tasks.scan()
-        
         all_tasks = all_tasks_response.get('Items', [])
         
         tasks_dict = {}
@@ -107,9 +105,7 @@ class DB():
             tasks_dict[task_id] = task 
         
         # print(f"DYNAMO all_tasks {all_tasks}")
-        
         # print(f"DYNAMO tasks_dict:")
-        
         # for task_id, values in tasks_dict.items():
         #     print(f"DYNAMO {task_id}: {values}\n")            
     
@@ -166,7 +162,7 @@ class DB():
         
     def get_queued_task(self):
         
-        print(f"DYNAMO get_queued_task")
+        # print(f"DYNAMO get_queued_task")
         
         queued_task_response = self.tasks.update_item(
         
@@ -177,25 +173,25 @@ class DB():
             
             )
             
-        print(f"DYNAMO queued_task_response {queued_task_response}")
+        # print(f"DYNAMO queued_task_response {queued_task_response}")
             
         service_task_record = queued_task_response.get('Attributes')
         
-        print(f"DYNAMO service_task_record {service_task_record}")
+        # print(f"DYNAMO service_task_record {service_task_record}")
         
         if not service_task_record:
             return None
         
         queued_tasks = service_task_record.get('queued_tasks')
         
-        print(f"DYNAMO queued_tasks {queued_tasks}")
+        # print(f"DYNAMO queued_tasks {queued_tasks}")
         
         if not queued_tasks:
             return None
             
         next_task_id = queued_tasks[0]
             
-        print(f"DYNAMO next_task_id {next_task_id}")
+        # print(f"DYNAMO next_task_id {next_task_id}")
 
         set_running_status_response = self.tasks.update_item(
             
@@ -208,7 +204,7 @@ class DB():
             
             )
 
-        print(f"DYNAMO set_running_status_response {set_running_status_response}")
+        # print(f"DYNAMO set_running_status_response {set_running_status_response}")
         
         next_task = set_running_status_response.get('Attributes')
 

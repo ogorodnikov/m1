@@ -115,16 +115,52 @@ class Runner():
         
         return task_id
         
+    
+    def exception_decorator(function):
+        
+        def wrapper(self, *args, **kwargs):
+            
+            try:
+                function(self, *args, **kwargs)
+                
+            except Exception as exception:
+                
+                stack_trace = traceback.format_exc()
+                
+                self.log(f'RUNNER exception args: {args}')
+                self.log(f'RUNNER exception kwargs: {kwargs}')
+                
+                task_id = args.get('task_id')
+                
+                if task_id:
+                
+                    self.task_log(task_id, stack_trace)
+                    
+                    result.update({'Status': 'Failed',
+                                   'Result': {'Exception': repr(exception)},
+                                   'Stack trace': stack_trace})
 
+                    raise exception
+                    
+                else:
+                    
+                    self.log(f'RUNNER queue_worker exception: {stack_trace}')
+        
+        return wrapper
+        
+        
+    @exception_decorator
     def queue_worker(self):
         
         self.log(f'RUNNER queue_worker started: {getpid()}')
+        
+        # try:
         
         while self.worker_active_flag.is_set():
             
             time.sleep(1)
             
-            self.log(f'RUNNER queue_worker loop: {getpid()}')
+            # self.log(f'RUNNER queue_worker loop: {getpid()}')
             
             pop_task = self.db.get_queued_task()
             
@@ -170,32 +206,9 @@ class Runner():
             print(f'RUNNER queue_worker status update: {task_id, status, result}')
             
             self.db.add_status_update(task_id, status, result)
-
-
-
-    def task_exception_decorator(run_task):
-        
-        def run_task_wrapper(self, task_id, algorithm_id, run_values_multidict, result):
-            
-            try:
-                run_task(self, task_id, algorithm_id, run_values_multidict, result)
                 
-            except Exception as exception:
-                
-                stack_trace = traceback.format_exc()
-                
-                self.task_log(task_id, stack_trace)
-                
-                result.update({'Status': 'Failed',
-                               'Result': {'Exception': repr(exception)},
-                               'Stack trace': stack_trace})
 
-                raise exception
-        
-        return run_task_wrapper
-        
-        
-    @task_exception_decorator
+    @exception_decorator
     def run_task(self, task_id, algorithm_id, run_values_multidict, result):
         
         run_values = dict(run_values_multidict)
