@@ -49,6 +49,8 @@ class Runner():
         self.db = self.app.config.get('DB')
         self.qiskit_token = self.app.config.get('QISKIT_TOKEN')
         self.queue_workers_count = self.app.config.get('QUEUE_WORKERS_PER_RUNNER')
+        
+        # self.queue_workers_count = 2
 
         self.static_folder = self.app.static_folder
 

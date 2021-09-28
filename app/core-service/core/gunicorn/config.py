@@ -3,8 +3,8 @@ bind = '0.0.0.0:8080'
 access_log_format = "%(h)s | %(r)s %(s)s"
 accesslog = '-'
 
-workers = 2
-threads = 2
+# workers = 2
+# threads = 2
 reload = False
 
 # reload_engine = 'inotify'
