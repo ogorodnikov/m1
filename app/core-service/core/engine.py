@@ -130,7 +130,7 @@ class Runner():
                 self.log(f'RUNNER exception args: {args}')
                 self.log(f'RUNNER exception kwargs: {kwargs}')
                 
-                task_id = args.get('task_id')
+                task_id = kwargs.get('task_id')
                 
                 if task_id:
                 
@@ -154,8 +154,6 @@ class Runner():
         
         self.log(f'RUNNER queue_worker started: {getpid()}')
         
-        # try:
-        
         while self.worker_active_flag.is_set():
             
             time.sleep(1)
@@ -174,12 +172,17 @@ class Runner():
             algorithm_id = pop_task['algorithm_id']
             
             self.db.add_status_update(task_id, 'Running', '')
+            
+            result = self.manager.dict()
 
-
-            run_result = self.manager.dict()
+            kwargs = {'task_id': int(task_id), 
+                      'algorithm_id': algorithm_id, 
+                      'run_values': run_values, 
+                      'result': result}
             
             task_process = Process(target=self.run_task,
-                                   args=(task_id, algorithm_id, run_values, run_result),
+                                #   args=(task_id, algorithm_id, run_values, result),
+                                   kwargs=kwargs,
                                    name=f"Task-process-{getpid()}",
                                    daemon=False)
                                      
@@ -191,25 +194,33 @@ class Runner():
                 task_process.terminate()
                 task_process.join()
                 
-                run_result.update({'Status': 'Failed',
+                result.update({'Status': 'Failed',
                                    'Result': {'Timeout': f'{Runner.TASK_TIMEOUT} seconds'}})
                 
                 self.task_log(task_id, f'RUNNER timeout: {Runner.TASK_TIMEOUT}')
             
-            result = run_result.get('Result')
-            status = run_result.get('Status')
+            task_result = result.get('Result')
+            task_status = result.get('Status')
 
-            self.log(f'RUNNER run_result: {run_result}')            
-            self.task_log(task_id, f'RUNNER Result: {result}')
-            self.task_log(task_id, f'RUNNER Status: {status}')
+            self.log(f'RUNNER result: {result}')            
+            self.task_log(task_id, f'RUNNER Result: {task_result}')
+            self.task_log(task_id, f'RUNNER Status: {task_status}')
 
-            print(f'RUNNER queue_worker status update: {task_id, status, result}')
+            print(f'RUNNER queue_worker status update: {task_id, task_status, task_result}')
             
-            self.db.add_status_update(task_id, status, result)
+            self.db.add_status_update(task_id, task_status, task_result)
                 
 
     @exception_decorator
-    def run_task(self, task_id, algorithm_id, run_values_multidict, result):
+    def run_task(self, **kwargs):
+        
+        task_id = kwargs.get('task_id')
+        algorithm_id = kwargs.get('algorithm_id')
+        run_values_multidict = kwargs.get('run_values')
+        
+        print(f'RUNNER run_values_multidict type: {type(run_values_multidict)}')
+            
+        result = kwargs.get('result')
         
         run_values = dict(run_values_multidict)
         run_mode = run_values.get('run_mode')
@@ -325,6 +336,9 @@ class Runner():
                                           and backend.status().operational==True)
             
         least_busy_backend = least_busy(provider.backends(filters=backend_filter))
+        
+        self.log(f'RUNNER type(least_busy_backend): {type(least_busy_backend)}')         
+        self.log(f'RUNNER least_busy_backend: {least_busy_backend}')         
         
         return least_busy_backend
         

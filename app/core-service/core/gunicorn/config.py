@@ -35,7 +35,8 @@ def post_worker_init(worker):
     # print("GUNICORN post_worker_init")
     
     unregister(_exit_function)
-    print(f"GUNICORN Worker  {worker.pid} _exit_function unregitered")
+    
+    # print(f"GUNICORN Worker  {worker.pid} _exit_function unregistered")
     
 
 def worker_int(worker):

@@ -86,15 +86,21 @@ class DB():
     
     def get_all_tasks(self):
         
-        all_tasks_response = self.tasks.query(
-            IndexName='record-type-index',
-            KeyConditionExpression="record_type = :record_type",
-            ExpressionAttributeValues={":record_type": 'task_record'}
-        )
+        # all_tasks_response = self.tasks.query(
+        #     IndexName='record-type-index',
+        #     KeyConditionExpression="record_type = :record_type",
+        #     ExpressionAttributeValues={":record_type": 'task_record'}
+        # )
+
+        # print(f"DYNAMO all_tasks_response {all_tasks_response}")    
+
+        # all_tasks = all_tasks_response.get('Items', [])
         
-        # print(f"DYNAMO all_tasks_response {all_tasks_response}")        
-    
-        all_tasks = all_tasks_response.get('Items', [])
+        scan_tasks_response = self.tasks.scan()
+
+        print(f"DYNAMO scan_tasks_response {scan_tasks_response}")
+
+        all_tasks = scan_tasks_response.get('Items', [])
         
         tasks_dict = {}
         
@@ -102,14 +108,19 @@ class DB():
             
             task_id = int(task['task_id'])
             
-            tasks_dict[task_id] = task 
+            if task_id == self.SERVICE_TASK_RECORD_ID:
+                continue
+            
+            tasks_dict[task_id] = task
+            
+        sorted_tasks_dict = dict(sorted(tasks_dict.items()))
         
-        # print(f"DYNAMO all_tasks {all_tasks}")
-        # print(f"DYNAMO tasks_dict:")
-        # for task_id, values in tasks_dict.items():
-        #     print(f"DYNAMO {task_id}: {values}\n")            
+        print(f"DYNAMO all_tasks {all_tasks}")
+        print(f"DYNAMO sorted_tasks_dict:")
+        for task_id, values in sorted_tasks_dict.items():
+            print(f"DYNAMO {task_id}: {values}\n")       
     
-        return tasks_dict
+        return sorted_tasks_dict
         
 
     def add_task(self, algorithm_id, run_values):
