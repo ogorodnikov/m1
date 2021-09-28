@@ -131,6 +131,7 @@ class Runner():
                 self.log(f'RUNNER exception kwargs: {kwargs}')
                 
                 task_id = kwargs.get('task_id')
+                result = kwargs.get('result')
                 
                 if task_id:
                 
@@ -195,7 +196,7 @@ class Runner():
                 task_process.join()
                 
                 result.update({'Status': 'Failed',
-                                   'Result': {'Timeout': f'{Runner.TASK_TIMEOUT} seconds'}})
+                               'Result': {'Timeout': f'{Runner.TASK_TIMEOUT} seconds'}})
                 
                 self.task_log(task_id, f'RUNNER timeout: {Runner.TASK_TIMEOUT}')
             
