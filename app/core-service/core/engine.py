@@ -196,11 +196,6 @@ class Runner():
                     task_process.terminate()
                     task_process.join()
                     
-                    # result.update({'Status': 'Failed',
-                    #               'Result': {'Timeout': f'{self.TASK_TIMEOUT} seconds'}})
-                    
-                    # self.task_log(task_id, f'RUNNER timeout: {self.TASK_TIMEOUT}')
-                    
                     raise TimeoutError(f"Task timeout: {self.task_timeout} seconds")
                 
                 task_result = result.get('Result')

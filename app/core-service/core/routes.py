@@ -235,6 +235,8 @@ def admin():
         
         # db.update_task_attribute(1, 'result', 'test_result')
         
+        db.test()
+        
         
     return render_template("admin.html")
     
