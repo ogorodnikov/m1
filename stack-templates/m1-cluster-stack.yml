@@ -135,14 +135,15 @@ Resources:
               Resource: '*'
             - Effect: Allow
               Action:
-              # Allows ECS tasks to interact with particular DynamoDB table
+              # Allows ECS tasks to interact with particular DynamoDB tables
               - dynamodb:Scan
               - dynamodb:Query
               - dynamodb:UpdateItem
               - dynamodb:GetItem
               - dynamodb:BatchWriteItem
-              Resource: arn:aws:dynamodb:*:*:table/m1-algorithms-table*
-              
+              Resource: arn:aws:dynamodb:*:*:table/m1-*
+
+
   ECSServiceLinkedRole:
     Type: AWS::IAM::ServiceLinkedRole
     Condition: CreateAWSServiceRoleForECS

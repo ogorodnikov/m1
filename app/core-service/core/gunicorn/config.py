@@ -4,12 +4,12 @@ access_log_format = "%(h)s | %(r)s %(s)s"
 accesslog = '-'
 
 # workers = 2
-# threads = 2
-# reload = True
+
+threads = 2
+
+# reload = False
 
 # reload_engine = 'inotify'
-
-# threads = 10
 
 # max_requests = 1
 
