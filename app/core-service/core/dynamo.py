@@ -246,7 +246,7 @@ class DB():
         
         update_task_response = self.tasks.update_item(**update_parameters)
        
-        # pprint(f"DYNAMO update_task_response:")
+        # print(f"DYNAMO update_task_response:")
         # pprint(update_task_response)
         
         
