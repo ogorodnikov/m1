@@ -69,7 +69,7 @@ class Runner():
 
     def task_log(self, task_id, message):
         self.log(message)
-        # self.db.update_task_attribute(task_id, 'logs', [message], append=True)
+        self.db.update_task_attribute(task_id, 'logs', [message], append=True)
         
     
     def start(self):
@@ -358,8 +358,8 @@ class Runner():
         self.task_log(task_id, f'RUNNER statevector figure: {figure}')    
 
         
-    def terminate_application(self, message):
+    def reset_application(self):
         
-        self.log(f'RUNNER terminate_application: {message}')
+        self.log(f'RUNNER reset_application')
         
         _exit(0)

@@ -191,9 +191,9 @@ def admin():
         db.add_test_data()
         flash(f"Test data added to m1-algorithms-table", category='warning')
         
-    if command == 'terminate':
-        flash(f"Terminating", category='danger')
-        runner.terminate_application("Terminated by admin")
+    if command == 'reset_application':
+        flash(f"Resetting Flask application", category='danger')
+        runner.reset_application()
         
     if command == 'start_runner':
         flash(f"Starting runner", category='success')
