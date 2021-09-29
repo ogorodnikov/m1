@@ -159,18 +159,18 @@ class Runner():
             
             time.sleep(1)
             
-            # self.log(f'RUNNER queue_worker loop: {getpid()}')
+            self.log(f'RUNNER queue_worker loop: {getpid()}')
             
-            pop_task = self.db.get_queued_task()
+            next_task = self.db.get_next_task()
             
-            if not pop_task:
+            if not next_task:
                 continue
             
-            self.log(f'RUNNER pop_task: {pop_task}')
+            self.log(f'RUNNER next_task: {next_task}')
             
-            task_id = pop_task['task_id']
-            run_values = pop_task['run_values']
-            algorithm_id = pop_task['algorithm_id']
+            task_id = next_task['task_id']
+            run_values = next_task['run_values']
+            algorithm_id = next_task['algorithm_id']
             
             self.db.add_status_update(task_id, 'Running', '')
             
@@ -206,7 +206,7 @@ class Runner():
             self.task_log(task_id, f'RUNNER Result: {task_result}')
             self.task_log(task_id, f'RUNNER Status: {task_status}')
 
-            print(f'RUNNER queue_worker status update: {task_id, task_status, task_result}')
+            # print(f'RUNNER queue_worker status update: {task_id, task_status, task_result}')
             
             self.db.add_status_update(task_id, task_status, task_result)
                 
@@ -338,12 +338,12 @@ class Runner():
             
         least_busy_backend = least_busy(provider.backends(filters=backend_filter))
         
-        self.log(f'RUNNER type(least_busy_backend): {type(least_busy_backend)}')         
-        self.log(f'RUNNER self.BACKEND_AVOID_LIST: {self.BACKEND_AVOID_LIST}')         
-        self.log(f'RUNNER least_busy_backend: {least_busy_backend}')         
-        self.log(f'RUNNER least_busy_backend.name: {least_busy_backend.name()}')         
-        self.log(f'RUNNER least_busy_backend.properties: {least_busy_backend.properties()}')         
-        self.log(f'RUNNER least_busy_backend.status: {least_busy_backend.status()}')         
+        # self.log(f'RUNNER type(least_busy_backend): {type(least_busy_backend)}')         
+        # self.log(f'RUNNER self.BACKEND_AVOID_LIST: {self.BACKEND_AVOID_LIST}')         
+        # self.log(f'RUNNER least_busy_backend: {least_busy_backend}')         
+        # self.log(f'RUNNER least_busy_backend.name: {least_busy_backend.name()}')         
+        # self.log(f'RUNNER least_busy_backend.properties: {least_busy_backend.properties()}')         
+        # self.log(f'RUNNER least_busy_backend.status: {least_busy_backend.status()}')         
         
         return least_busy_backend
         

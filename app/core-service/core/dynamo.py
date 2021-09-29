@@ -16,6 +16,14 @@ class DB():
         self.tasks = self.db_resource.Table(tasks_table_name)        
         self.algorithms = self.db_resource.Table(algorithms_table_name)
         
+        self.tasks.update_item(
+            Key={'task_id': self.SERVICE_TASK_RECORD_ID},
+            UpdateExpression="SET queued_tasks = if_not_exists(queued_tasks, :empty_list), "
+                             "status_updates = if_not_exists(status_updates, :empty_list), "
+                             "task_count = if_not_exists(task_count, :zero)",
+            ExpressionAttributeValues={':empty_list': [], ':zero': 0}
+            )
+        
         app.config['DB'] = self
         app.logger.info('DYNAMO initiated')
         
@@ -160,19 +168,17 @@ class DB():
         return new_task_id
         
         
-    def get_queued_task(self):
+    def get_next_task(self):
         
-        # print(f"DYNAMO get_queued_task")
+        # print(f"DYNAMO get_next_task")
         
         queued_task_response = self.tasks.update_item(
-        
                 Key={'task_id': self.SERVICE_TASK_RECORD_ID},
                 UpdateExpression="REMOVE queued_tasks[0]",
-                # ExpressionAttributeValues={':n': 1, ':zero': 0},
+                # ConditionExpression=f"attribute_exists(queued_tasks)",
                 ReturnValues = 'ALL_OLD'
-            
             )
-            
+                
         # print(f"DYNAMO queued_task_response {queued_task_response}")
             
         service_task_record = queued_task_response.get('Attributes')
@@ -208,7 +214,7 @@ class DB():
         
         next_task = set_running_status_response.get('Attributes')
 
-        print(f"DYNAMO next_task {next_task}")
+        # print(f"DYNAMO next_task {next_task}")
         
         return next_task
 
@@ -262,7 +268,7 @@ class DB():
     
     def add_status_update(self, task_id, status, result):
         
-        print(f'DYNAMO add_status_update {task_id, status, result}')
+        # print(f'DYNAMO add_status_update {task_id, status, result}')
         
         self.update_task_attribute(task_id, 'task_status', status)
         self.update_task_attribute(task_id, 'task_result', result)

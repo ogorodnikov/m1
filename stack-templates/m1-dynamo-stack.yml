@@ -85,8 +85,8 @@ Resources:
         Projection:
           ProjectionType: ALL
         ProvisionedThroughput:
-          ReadCapacityUnits: 1
-          WriteCapacityUnits: 1
+          ReadCapacityUnits: 3
+          WriteCapacityUnits: 3
           
       - IndexName: task-status-index
         KeySchema:
@@ -97,8 +97,8 @@ Resources:
         Projection:
           ProjectionType: ALL
         ProvisionedThroughput:
-          ReadCapacityUnits: 1
-          WriteCapacityUnits: 1
+          ReadCapacityUnits: 3
+          WriteCapacityUnits: 3
           
       - IndexName: record-type-index
         KeySchema:
