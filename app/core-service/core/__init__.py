@@ -46,8 +46,8 @@ bot.start()
 from core import routes
 
 
-# from core.gunicorn.app import GunicornApp
-# gunicorn_app = GunicornApp(app)
+from core.gunicorn.app import GunicornApp
+gunicorn_app = GunicornApp(app)
 
 
 

@@ -11,7 +11,7 @@ class GunicornApp(Application):
         
         super().__init__()
         
-        # self.load_config_from_module_name_or_filename('python:core.gunicorn.config')
+        self.load_config_from_module_name_or_filename('python:core.gunicorn.config')
         # self.load_config_from_module_name_or_filename('/home/ec2-user/environment/m1/app/core-service/core/gunicorn/config.py')
         
 
@@ -47,9 +47,9 @@ class CustomWorker(SyncWorker):
         
         
         
-from gunicorn.app.wsgiapp import WSGIApplication
+# from gunicorn.app.wsgiapp import WSGIApplication
  
-wsgi_app = WSGIApplication()
-wsgi_app.app_uri = 'core:app'
+# wsgi_app = WSGIApplication()
+# wsgi_app.app_uri = 'core:app'
  
-wsgi_app.run()
+# wsgi_app.run()
