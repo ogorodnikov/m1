@@ -1,5 +1,7 @@
 import boto3
 
+from pprint import pprint
+
 
 class DB():
     
@@ -232,7 +234,9 @@ class DB():
             'Key': {'task_id': task_id},
             'UpdateExpression': update_expression,
             'ExpressionAttributeValues': {f":{attribute}": value},
-            'ReturnValues': 'ALL_NEW'
+            'ReturnValues': 'ALL_NEW',
+            'ReturnItemCollectionMetrics': 'SIZE',
+            'ReturnConsumedCapacity': 'INDEXES'
         }
         
         if if_exists:
@@ -242,7 +246,10 @@ class DB():
         
         update_task_response = self.tasks.update_item(**update_parameters)
        
-        # print(f"DYNAMO update_task_response {update_task_response}")
+        # pprint(f"DYNAMO update_task_response:")
+        # pprint(update_task_response)
+        
+        
         
 
     def purge_tasks(self):

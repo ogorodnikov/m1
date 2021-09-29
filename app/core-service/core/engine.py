@@ -69,17 +69,17 @@ class Runner():
 
     def task_log(self, task_id, message):
         self.log(message)
-        self.db.update_task_attribute(task_id, 'logs', [message], append=True)
+        # self.db.update_task_attribute(task_id, 'logs', [message], append=True)
         
     
     def start(self):
 
         self.worker_active_flag.set()
         
-        queue_pool = ProcessPoolExecutor(max_workers=self.queue_workers_count,
+        self.queue_pool = ProcessPoolExecutor(max_workers=self.queue_workers_count,
                                          initializer=self.queue_worker)
         
-        worker_future = queue_pool.submit(self.queue_worker)
+        worker_future = self.queue_pool.submit(self.queue_worker)
         
         self.app.config['RUNNER_STATE'] = 'Started'
         self.log(f'RUNNER started: {self}')
@@ -102,6 +102,8 @@ class Runner():
     def stop(self):
         
         self.worker_active_flag.clear()
+        
+        self.queue_pool.shutdown()
         
         self.app.config['RUNNER_STATE'] = 'Stopped'
         self.log(f'RUNNER stopped: {self}')      
@@ -209,6 +211,8 @@ class Runner():
             # print(f'RUNNER queue_worker status update: {task_id, task_status, task_result}')
             
             self.db.add_status_update(task_id, task_status, task_result)
+            
+        self.log(f'RUNNER queue_worker exiting: {getpid()}')        
                 
 
     @exception_decorator
