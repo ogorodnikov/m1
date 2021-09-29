@@ -233,7 +233,7 @@ def admin():
         
         # db.get_status_updates()
         
-        db.update_task_attribute(1, 'result', 'test_result')
+        # db.update_task_attribute(1, 'result', 'test_result')
         
         
     return render_template("admin.html")

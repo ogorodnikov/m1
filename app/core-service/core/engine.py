@@ -159,7 +159,7 @@ class Runner():
             
             time.sleep(1)
             
-            self.log(f'RUNNER queue_worker loop: {getpid()}')
+            # self.log(f'RUNNER queue_worker loop: {getpid()}')
             
             next_task = self.db.get_next_task()
             
@@ -214,17 +214,12 @@ class Runner():
     @exception_decorator
     def run_task(self, **kwargs):
         
+        result = kwargs.get('result')        
         task_id = kwargs.get('task_id')
+        run_values = kwargs.get('run_values')
         algorithm_id = kwargs.get('algorithm_id')
-        run_values_multidict = kwargs.get('run_values')
         
-        print(f'RUNNER run_values_multidict type: {type(run_values_multidict)}')
-            
-        result = kwargs.get('result')
-        
-        run_values = dict(run_values_multidict)
         run_mode = run_values.get('run_mode')
-        
         run_values['task_id'] = task_id
         
         runner_function = Runner.runner_functions[algorithm_id]
@@ -276,7 +271,10 @@ class Runner():
             
             
         elif run_mode == 'quantum_device':
-        
+
+            circuit = runner_function(run_values, task_log_callback)
+            qubit_count = circuit.num_qubits       
+            
             IBMQ.save_account(self.qiskit_token)
             
             if not IBMQ.active_account():
@@ -284,14 +282,11 @@ class Runner():
                 
             ibmq_provider = IBMQ.get_provider()
             
-            self.task_log(task_id, f'RUNNER ibmq_provider: {ibmq_provider}')
-            self.task_log(task_id, f'RUNNER ibmq_provider.backends(): {ibmq_provider.backends()}')
-            
-            circuit = runner_function(run_values, task_log_callback)
-            qubit_count = circuit.num_qubits        
-    
             backend = self.get_least_busy_backend(ibmq_provider, qubit_count)
             
+            # self.task_log(task_id, f'RUNNER ibmq_provider: {ibmq_provider}')
+            # self.task_log(task_id, f'RUNNER ibmq_provider.backends(): {ibmq_provider.backends()}')
+
             run_result = self.execute_task(task_id, circuit, backend)
             counts = run_result.get_counts()
             
