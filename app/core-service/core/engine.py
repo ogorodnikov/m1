@@ -39,19 +39,16 @@ class Runner():
                        'qpe': qpe_post_processing
                       }
 
-    TASK_TIMEOUT = 300
-    BACKEND_AVOID_LIST = ['ibmq_bogota']
-    
     def __init__(self, app, *args, **kwargs):
         
         self.app = app
         
         self.db = self.app.config.get('DB')
         self.qiskit_token = self.app.config.get('QISKIT_TOKEN')
+        self.task_timeout = self.app.config.get('TASK_TIMEOUT')
+        self.backend_avoid_list = self.app.config.get('BACKEND_AVOID_LIST')
         self.queue_workers_count = self.app.config.get('QUEUE_WORKERS_PER_RUNNER')
         
-        # self.queue_workers_count = 2
-
         self.static_folder = self.app.static_folder
 
         self.manager = Manager()
@@ -192,17 +189,19 @@ class Runner():
                                        daemon=False)
                                          
                 task_process.start()
-                task_process.join(self.TASK_TIMEOUT)
+                task_process.join(self.task_timeout)
                 
                 if task_process.is_alive():
     
                     task_process.terminate()
                     task_process.join()
                     
-                    result.update({'Status': 'Failed',
-                                   'Result': {'Timeout': f'{self.TASK_TIMEOUT} seconds'}})
+                    # result.update({'Status': 'Failed',
+                    #               'Result': {'Timeout': f'{self.TASK_TIMEOUT} seconds'}})
                     
-                    self.task_log(task_id, f'RUNNER timeout: {self.TASK_TIMEOUT}')
+                    # self.task_log(task_id, f'RUNNER timeout: {self.TASK_TIMEOUT}')
+                    
+                    raise TimeoutError(f"Task timeout: {self.task_timeout} seconds")
                 
                 task_result = result.get('Result')
                 task_status = result.get('Status')
@@ -298,9 +297,6 @@ class Runner():
             
             backend = self.get_least_busy_backend(ibmq_provider, qubit_count)
             
-            # self.task_log(task_id, f'RUNNER ibmq_provider: {ibmq_provider}')
-            # self.task_log(task_id, f'RUNNER ibmq_provider.backends(): {ibmq_provider.backends()}')
-
             run_result = self.execute_task(task_id, circuit, backend)
             counts = run_result.get_counts()
             
@@ -343,16 +339,9 @@ class Runner():
         backend_filter = lambda backend: (not backend.configuration().simulator 
                                           and backend.configuration().n_qubits >= qubit_count
                                           and backend.status().operational==True
-                                          and backend.name() not in self.BACKEND_AVOID_LIST)
+                                          and backend.name() not in self.backend_avoid_list)
             
         least_busy_backend = least_busy(provider.backends(filters=backend_filter))
-        
-        # self.log(f'RUNNER type(least_busy_backend): {type(least_busy_backend)}')         
-        # self.log(f'RUNNER self.BACKEND_AVOID_LIST: {self.BACKEND_AVOID_LIST}')         
-        # self.log(f'RUNNER least_busy_backend: {least_busy_backend}')         
-        # self.log(f'RUNNER least_busy_backend.name: {least_busy_backend.name()}')         
-        # self.log(f'RUNNER least_busy_backend.properties: {least_busy_backend.properties()}')         
-        # self.log(f'RUNNER least_busy_backend.status: {least_busy_backend.status()}')         
         
         return least_busy_backend
         

@@ -72,11 +72,13 @@ class Config():
     
     AWS_NLB = nlb_dns
     
+    TASK_TIMEOUT = 300
+    QUEUE_WORKERS_PER_RUNNER = 1
+    BACKEND_AVOID_LIST = ['ibmq_bogota']
+    
     JSONIFY_PRETTYPRINT_REGULAR = False
     PERMANENT_SESSION_LIFETIME = timedelta(minutes=30)
     CPU_COUNT = os.cpu_count()
-    
-    QUEUE_WORKERS_PER_RUNNER = 1
     
     QISKIT_TOKEN = os.getenv('QISKIT_TOKEN')
     TELEGRAM_TOKEN = os.getenv('TELEGRAM_TOKEN')
