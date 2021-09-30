@@ -115,41 +115,41 @@ class Runner():
         return task_id
         
     
-    def exception_decorator(function):
+    # def exception_decorator(function):
         
-        def wrapper(self, *args, **kwargs):
+    #     def wrapper(self, *args, **kwargs):
             
-            try:
-                function(self, *args, **kwargs)
+    #         try:
+    #             function(self, *args, **kwargs)
                 
-            except Exception as exception:
+    #         except Exception as exception:
                 
-                stack_trace = traceback.format_exc()
+    #             stack_trace = traceback.format_exc()
                 
-                self.log(f'RUNNER exception args: {args}')
-                self.log(f'RUNNER exception kwargs: {kwargs}')
+    #             self.log(f'RUNNER exception args: {args}')
+    #             self.log(f'RUNNER exception kwargs: {kwargs}')
 
-                result = kwargs.get('result')                
-                task_id = kwargs.get('task_id')
+    #             result = kwargs.get('result')                
+    #             task_id = kwargs.get('task_id')
                 
-                if task_id:
+    #             if task_id:
                 
-                    self.task_log(task_id, stack_trace)
+    #                 self.task_log(task_id, stack_trace)
                     
-                    result.update({'Status': 'Failed',
-                                   'Result': {'Exception': repr(exception)},
-                                   'Stack trace': stack_trace})
+    #                 result.update({'Status': 'Failed',
+    #                               'Result': {'Exception': repr(exception)},
+    #                               'Stack trace': stack_trace})
 
-                    raise exception
+    #                 raise exception
                     
-                else:
+    #             else:
                     
-                    self.log(f'RUNNER queue_worker exception: {stack_trace}')
+    #                 self.log(f'RUNNER queue_worker exception: {stack_trace}')
         
-        return wrapper
+    #     return wrapper
         
         
-    @exception_decorator
+    # @exception_decorator
     def queue_worker(self):
         
         self.log(f'RUNNER queue_worker started: {getpid()}')
@@ -198,15 +198,15 @@ class Runner():
                     
                     raise TimeoutError(f"Task timeout: {self.task_timeout} seconds")
                 
-                task_result = result.get('Result')
-                task_status = result.get('Status')
+                # task_result = result.get('Result')
+                # task_status = result.get('Status')
        
-                self.task_log(task_id, f'RUNNER Result: {task_result}')
-                self.task_log(task_id, f'RUNNER Status: {task_status}')
+                # self.task_log(task_id, f'RUNNER Result: {task_result}')
+                # self.task_log(task_id, f'RUNNER Status: {task_status}')
     
                 # print(f'RUNNER queue_worker status update: {task_id, task_status, task_result}')
                 
-                self.db.add_status_update(task_id, task_status, task_result)
+                # self.db.add_status_update(task_id, task_status, task_result)
                 
             except Exception as exception:
                     
@@ -219,7 +219,7 @@ class Runner():
         self.log(f'RUNNER queue_worker exiting: {getpid()}')
         
 
-    @exception_decorator
+    # @exception_decorator
     def run_task(self, **kwargs):
         
         result = kwargs.get('result')        
@@ -307,9 +307,11 @@ class Runner():
             task_result = {'Result': post_processing_result}
             
 
-        result.update({'Status': 'Done'})
+        # result.update({'Status': 'Done'})
         
-        result.update(task_result)
+        # result.update(task_result)
+        
+        self.db.add_status_update(task_id, 'Done', task_result)
 
 
     def execute_task(self, task_id, circuit, backend):

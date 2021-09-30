@@ -73,7 +73,7 @@ class Config():
     AWS_NLB = nlb_dns
     
     TASK_TIMEOUT = 300
-    QUEUE_WORKERS_PER_RUNNER = 2
+    QUEUE_WORKERS_PER_RUNNER = 1
     BACKEND_AVOID_LIST = ['ibmq_bogota']
     
     JSONIFY_PRETTYPRINT_REGULAR = False
