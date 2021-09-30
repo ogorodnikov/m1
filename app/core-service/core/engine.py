@@ -66,7 +66,7 @@ class Runner():
 
     def task_log(self, task_id, message):
         self.log(message)
-        self.db.update_task_attribute(task_id, 'logs', [message], append=True)
+        self.db.update_task_attribute(task_id, 'logs', message, append=True)
         
     
     def start(self):

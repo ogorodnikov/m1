@@ -237,7 +237,7 @@ class DB():
             update_expression = (f"SET {attribute} = "
                                  f"list_append(if_not_exists({attribute}, "
                                  f":empty_list), :{attribute})")
-            expression_attribute_values = {f':{attribute}': cleaned_value,
+            expression_attribute_values = {f':{attribute}': [cleaned_value],
                                           ':empty_list': []}
 
         else:
@@ -257,8 +257,8 @@ class DB():
         
         update_task_response = self.tasks.update_item(**update_parameters)
        
-        print(f"DYNAMO update_task_response:")
-        pprint(update_task_response)
+        # print(f"DYNAMO update_task_response:")
+        # pprint(update_task_response)
         
 
     def purge_tasks(self):
@@ -284,9 +284,9 @@ class DB():
     
     def add_status_update(self, task_id, status, result):
         
-        status_update = [[int(task_id), status, result]]
+        status_update = [int(task_id), status, result]
         
-        print(f'DYNAMO add_status_update {status_update}')
+        # print(f'DYNAMO add_status_update {status_update}')
         
         self.update_task_attribute(task_id, 'task_status', status)
         self.update_task_attribute(task_id, 'task_result', result)
@@ -297,7 +297,7 @@ class DB():
 
     def get_status_updates(self):
         
-        print(f">>> DYNAMO get_status_updates")
+        # print(f">>> DYNAMO get_status_updates")
 
         status_updates_response = self.tasks.update_item(
             Key={'task_id': self.SERVICE_TASK_RECORD_ID},
@@ -306,7 +306,7 @@ class DB():
             ReturnValues = 'ALL_OLD'
             )
             
-        print(f"DYNAMO status_updates_response {status_updates_response}")
+        # print(f"DYNAMO status_updates_response {status_updates_response}")
                 
         status_updates_attributes = status_updates_response.get('Attributes')
             
@@ -315,7 +315,7 @@ class DB():
         
         status_updates = status_updates_attributes['status_updates']
                 
-        print(f"DYNAMO status_updates {status_updates}")
+        # print(f"DYNAMO status_updates {status_updates}")
         
         return status_updates
 
