@@ -4,7 +4,7 @@ import traceback
 from os import getpid, _exit
 from functools import partial
 from concurrent.futures import ProcessPoolExecutor
-from multiprocessing import Process, Event, Manager
+from multiprocessing import Process, Event
 
 from qiskit import IBMQ, Aer, execute
 from qiskit.providers.ibmq import least_busy
@@ -51,7 +51,6 @@ class Runner():
         
         self.static_folder = self.app.static_folder
 
-        self.manager = Manager()
         self.worker_active_flag = Event()
         
         self.app.config['RUNNER'] = self
@@ -115,41 +114,6 @@ class Runner():
         return task_id
         
     
-    # def exception_decorator(function):
-        
-    #     def wrapper(self, *args, **kwargs):
-            
-    #         try:
-    #             function(self, *args, **kwargs)
-                
-    #         except Exception as exception:
-                
-    #             stack_trace = traceback.format_exc()
-                
-    #             self.log(f'RUNNER exception args: {args}')
-    #             self.log(f'RUNNER exception kwargs: {kwargs}')
-
-    #             result = kwargs.get('result')                
-    #             task_id = kwargs.get('task_id')
-                
-    #             if task_id:
-                
-    #                 self.task_log(task_id, stack_trace)
-                    
-    #                 result.update({'Status': 'Failed',
-    #                               'Result': {'Exception': repr(exception)},
-    #                               'Stack trace': stack_trace})
-
-    #                 raise exception
-                    
-    #             else:
-                    
-    #                 self.log(f'RUNNER queue_worker exception: {stack_trace}')
-        
-    #     return wrapper
-        
-        
-    # @exception_decorator
     def queue_worker(self):
         
         self.log(f'RUNNER queue_worker started: {getpid()}')
@@ -175,15 +139,11 @@ class Runner():
                 
                 self.db.add_status_update(task_id, 'Running', '')
                 
-                result = self.manager.dict()
-    
                 kwargs = {'task_id': int(task_id), 
                           'algorithm_id': algorithm_id, 
-                          'run_values': run_values, 
-                          'result': result}
+                          'run_values': run_values}
                 
                 task_process = Process(target=self.run_task,
-                                    #   args=(task_id, algorithm_id, run_values, result),
                                        kwargs=kwargs,
                                        name=f"Task-process-{getpid()}",
                                        daemon=False)
@@ -198,16 +158,6 @@ class Runner():
                     
                     raise TimeoutError(f"Task timeout: {self.task_timeout} seconds")
                 
-                # task_result = result.get('Result')
-                # task_status = result.get('Status')
-       
-                # self.task_log(task_id, f'RUNNER Result: {task_result}')
-                # self.task_log(task_id, f'RUNNER Status: {task_status}')
-    
-                # print(f'RUNNER queue_worker status update: {task_id, task_status, task_result}')
-                
-                # self.db.add_status_update(task_id, task_status, task_result)
-                
             except Exception as exception:
                     
                 stack_trace = traceback.format_exc()
@@ -219,10 +169,8 @@ class Runner():
         self.log(f'RUNNER queue_worker exiting: {getpid()}')
         
 
-    # @exception_decorator
     def run_task(self, **kwargs):
         
-        result = kwargs.get('result')        
         task_id = kwargs.get('task_id')
         run_values = kwargs.get('run_values')
         algorithm_id = kwargs.get('algorithm_id')
@@ -307,10 +255,6 @@ class Runner():
             task_result = {'Result': post_processing_result}
             
 
-        # result.update({'Status': 'Done'})
-        
-        # result.update(task_result)
-        
         self.db.add_status_update(task_id, 'Done', task_result)
 
 
