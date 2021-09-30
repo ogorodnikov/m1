@@ -235,7 +235,7 @@ def admin():
         
         # db.update_task_attribute(1, 'result', 'test_result')
         
-        db.test()
+        # db.test()
         
         
     return render_template("admin.html")
@@ -245,6 +245,8 @@ def admin():
 def show_task_results():
     
     status_updates = db.get_status_updates()
+    
+    print(f"ROUTES status_updates {status_updates}")
     
     for status_update in status_updates:
         

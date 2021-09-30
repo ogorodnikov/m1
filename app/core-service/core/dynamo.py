@@ -227,55 +227,19 @@ class DB():
         return next_task
 
 
-    # def test(self):
+    def update_task_attribute(self, task_id, attribute, value, append=False):
         
-    #     task_id = 1
-    #     attribute = 'task_result'
-    #     value = {'Theta': 0.125}
-    #     append = if_exists = False
-        
-    #     cleaned_value = json.loads(json.dumps(value), parse_float=Decimal)
-        
-    #     print(f"DYNAMO test: {task_id, attribute, value, cleaned_value, append, if_exists}")
-        
-    #     if append:
-    #         update_expression = f"SET {attribute} = list_append({attribute}, :{attribute})"
-    #     else:
-    #         update_expression = f"SET {attribute} = :{attribute}"
-            
-    #     update_parameters = {
-    #         'Key': {'task_id': task_id},
-    #         'UpdateExpression': update_expression,
-    #         'ExpressionAttributeValues': {f":{attribute}": cleaned_value},
-    #         'ReturnValues': 'ALL_NEW',
-    #         'ReturnItemCollectionMetrics': 'SIZE',
-    #         'ReturnConsumedCapacity': 'INDEXES'
-    #     }
-        
-    #     if if_exists:
-    #         update_parameters['ConditionExpression'] = f"attribute_exists({attribute})"
-        
-    #     print(f"DYNAMO update_parameters {update_parameters}")
-        
-    #     update_task_response = self.tasks.update_item(**update_parameters)
-        
-
-    def update_task_attribute(self, task_id, attribute, value, append=False, if_exists=False):
-        
-        # task_id = 2
-        # attribute = 'task_result'
-        # value = {'Theta': 0.125}
-        # append = if_exists = False
-
         cleaned_value = json.loads(json.dumps(value), parse_float=Decimal)
         
-        print(f"DYNAMO update_task_attribute: {task_id, attribute, value, cleaned_value, append, if_exists}")
+        print(f"DYNAMO update_task_attribute: {task_id, attribute, value, cleaned_value, append}")
         
         if append:
-            update_expression = f"SET {attribute} = list_append(if_not_exists({attribute}, :empty_list), :{attribute})"
+            update_expression = (f"SET {attribute} = "
+                                 f"list_append(if_not_exists({attribute}, "
+                                 f":empty_list), :{attribute})")
             expression_attribute_values = {f':{attribute}': cleaned_value,
                                           ':empty_list': []}
-            # update_expression = f"SET {attribute} = list_append({attribute}, :{attribute})"
+
         else:
             update_expression = f"SET {attribute} = :{attribute}"
             expression_attribute_values = {f':{attribute}': cleaned_value}            
@@ -289,17 +253,12 @@ class DB():
             'ReturnConsumedCapacity': 'INDEXES'
         }
         
-        # if if_exists:
-        #     update_parameters['ConditionExpression'] = f"attribute_exists({attribute})"
-        
         print(f"DYNAMO update_parameters {update_parameters}")
         
         update_task_response = self.tasks.update_item(**update_parameters)
        
-        # print(f"DYNAMO update_task_response:")
-        # pprint(update_task_response)
-        
-        
+        print(f"DYNAMO update_task_response:")
+        pprint(update_task_response)
         
 
     def purge_tasks(self):
@@ -325,47 +284,40 @@ class DB():
     
     def add_status_update(self, task_id, status, result):
         
-        print(f'DYNAMO add_status_update {task_id, status, result}')
+        status_update = [[int(task_id), status, result]]
+        
+        print(f'DYNAMO add_status_update {status_update}')
         
         self.update_task_attribute(task_id, 'task_status', status)
         self.update_task_attribute(task_id, 'task_result', result)
         
-        status_update = [int(task_id), status, result]
+        self.update_task_attribute(self.SERVICE_TASK_RECORD_ID, 'status_updates2', 
+                                   status_update, append=True)
         
-        print(f"DYNAMO status_update {status_update}")
-        
-        # add_status_update_response = self.tasks.update_item(
-        #     Key={'task_id': self.SERVICE_TASK_RECORD_ID},
-        #     UpdateExpression="SET status_updates = list_append(if_not_exists(status_updates, :empty_list), :status_update)",
-        #     ExpressionAttributeValues={':empty_list': [],
-        #                               ':status_update': [status_update]},
-        #     ReturnValues = 'ALL_NEW'
-        #     )
-        
-        self.update_task_attribute(self.SERVICE_TASK_RECORD_ID, 'status_updates', status_update, append=True)
-            
 
     def get_status_updates(self):
         
+        print(f">>> DYNAMO get_status_updates")
+
         status_updates_response = self.tasks.update_item(
             Key={'task_id': self.SERVICE_TASK_RECORD_ID},
-            UpdateExpression="SET status_updates = :empty_list",
+            UpdateExpression="SET status_updates2 = :empty_list",
             ExpressionAttributeValues={':empty_list': []},
             ReturnValues = 'ALL_OLD'
             )
             
-        # print(f"DYNAMO status_updates_response {status_updates_response}")
+        print(f"DYNAMO status_updates_response {status_updates_response}")
                 
         status_updates_attributes = status_updates_response.get('Attributes')
             
         if not status_updates_attributes:
             return []
         
-        status_updates = status_updates_attributes['status_updates']
+        status_updates2 = status_updates_attributes['status_updates2']
                 
-        # print(f"DYNAMO status_updates {status_updates}")
+        print(f"DYNAMO status_updates2 {status_updates2}")
         
-        return status_updates
+        return status_updates2
 
 
 
