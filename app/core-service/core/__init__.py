@@ -21,18 +21,18 @@ signal.signal(signal.SIGTERM, termination_handler)
 signal.signal(signal.SIGHUP, termination_handler)
 
 
-
 app = Flask(__name__)
-    
+
 dictConfig(config.LOGGING_CONFIG)
 
 app.logger.info(f'INIT')
 
-CORS(app)
-
 app.config.from_object(config.Config)
 
+config.start_log_files(app)
 
+
+CORS(app)
 
 db = dynamo.DB(app)
 
@@ -48,9 +48,3 @@ from core import routes
 
 from core.gunicorn.app import GunicornApp
 gunicorn_app = GunicornApp(app)
-
-
-
-
-
-

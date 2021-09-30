@@ -244,6 +244,11 @@ def admin():
 @app.before_request
 def show_task_results():
     
+    # print(f"ROUTES request.path {request.path}")
+    
+    if request.path == '/':
+        return
+    
     status_updates = db.get_status_updates()
 
     for status_update in status_updates:

@@ -135,6 +135,12 @@ class Runner():
                     self.db.add_status_update(task_id, 'Failed', task_result)
 
         return wrapper
+
+
+    @exception_decorator    
+    def get_next_task(self):
+        
+        return self.db.get_next_task()
         
         
     @exception_decorator
@@ -155,12 +161,6 @@ class Runner():
         self.log(f'RUNNER queue_worker exiting: {getpid()}')
         
         
-    @exception_decorator    
-    def get_next_task(self):
-        
-        return self.db.get_next_task()
-        
-            
     @exception_decorator      
     def queue_worker_loop(self, next_task):
         
@@ -215,7 +215,7 @@ class Runner():
             
             function_result = runner_function(run_values, task_log_callback)
             
-            task_result = {'Result': function_result}
+            result = {'Result': function_result}
 
         
         elif run_mode == 'simulator':
@@ -247,7 +247,7 @@ class Runner():
                 
             self.plot_statevector_figure(task_id, statevector)
                 
-            task_result = {'Result': {'Counts': counts}}
+            result = {'Counts': counts}
             
             
         elif run_mode == 'quantum_device':
@@ -267,7 +267,7 @@ class Runner():
             run_result = self.execute_task(task_id, circuit, backend)
             counts = run_result.get_counts()
             
-            task_result = {'Result': {'Counts': counts}}
+            result = {'Counts': counts}
             
             
         if algorithm_id in Runner.post_processing:
@@ -276,10 +276,12 @@ class Runner():
             
             post_processing_result = post_processing_function(counts, task_log_callback)
             
-            task_result = {'Result': post_processing_result}
+            result = {'Result': post_processing_result}
             
+        
+        self.log(f'RUNNER result: {result}', task_id)
 
-        self.db.add_status_update(task_id, 'Done', task_result)
+        self.db.add_status_update(task_id, 'Done', result)
         
 
     def execute_task(self, task_id, circuit, backend):
@@ -288,7 +290,9 @@ class Runner():
         
         job = execute(circuit, backend=backend, shots=1024)
         
-        job_monitor(job, interval=0.5)
+        # status = job.status()
+        
+        job_monitor(job, interval=0.5, line_discipline='\t')
         
         result = job.result()
         counts = result.get_counts()

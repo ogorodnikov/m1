@@ -3,9 +3,6 @@ import boto3
 from dotenv import load_dotenv
 from datetime import timedelta
 
-import logging
-from logging.handlers import RotatingFileHandler
-
 
 load_dotenv()
 
@@ -90,27 +87,25 @@ class Config():
 
 LOGGING_CONFIG = {'version': 1,
 
-                  'formatters': {
-                      'default': {
-                          'format': '%(levelname).1s %(module)6.6s | %(message)s'
-                        #   'format': '[%(asctime)s] %(module)6.6s | %(levelname).4s | %(message)s',
-                        #   'datefmt': "%Y-%m-%d %H:%M:%S"
-                      }
-                  },
+                  'formatters': 
+                      {
+                          'default': {
+                                              'format': '%(levelname).1s %(module)6.6s | %(message)s'}},
+                                            #   'format': '[%(asctime)s] %(module)6.6s | %(levelname).4s | %(message)s', 
+                                            #   'datefmt': "%Y-%m-%d %H:%M:%S"}},
                                             
-                  'handlers': {
+                  'handlers': 
+                      {
                       'wsgi': {
                           'class': 'logging.StreamHandler',
-                        #   'stream': 'ext://flask.logging.wsgi_errors_stream',
+                          'stream': 'ext://flask.logging.wsgi_errors_stream',
                           'formatter': 'default'
                       }
                   },
                                        
-                  'root': {
-                      'level': 'INFO',
-                      'handlers': ['wsgi']
-                  }
-                 }
+                  'root': {'level': 'INFO',
+                          'handlers': ['wsgi']},
+                        }
 
 
 def clear_figures_folder(app):
@@ -121,24 +116,3 @@ def clear_figures_folder(app):
         if figure == 'README.md':
             continue
         os.remove(os.path.join(figures_folder, figure))
-        
-
-def start_log_files(app):
-
-    log_folder = app.static_folder + '/logs/'
-    
-    formatter = logging.Formatter(fmt="[%(asctime)s] %(levelname).1s %(module)6.6s | %(message)s", 
-                                  datefmt="%Y-%m-%d %H:%M:%S")
-    
-    core_handler = RotatingFileHandler(log_folder + 'core.log', maxBytes=100000, backupCount=5)
-    core_handler.setLevel(logging.DEBUG)
-    core_handler.setFormatter(formatter)
-    
-    app.logger.addHandler(core_handler)
-    
-    gunicorn_handler = RotatingFileHandler(log_folder + 'gunicorn.log', maxBytes=10000, backupCount=1)
-    gunicorn_handler.setLevel(logging.DEBUG)
-    gunicorn_handler.setFormatter(formatter)
-    
-    gunicorn_log = logging.getLogger('gunicorn.error')
-    gunicorn_log.addHandler(gunicorn_handler)
