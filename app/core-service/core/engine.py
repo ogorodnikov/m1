@@ -116,8 +116,6 @@ class Runner():
     def exception_decorator(function):
         
         def wrapper(self, *args, **kwargs):
-            
-            # self.log(f"RUNNER exception_decorator: {function}, {args}, {kwargs}")
 
             try:
                 return function(self, *args, **kwargs)
@@ -138,7 +136,8 @@ class Runner():
 
         return wrapper
         
-    
+        
+    @exception_decorator
     def queue_worker(self):
         
         self.log(f'RUNNER queue_worker started: {getpid()}')
@@ -146,9 +145,9 @@ class Runner():
         while self.worker_active_flag.is_set():
             
             time.sleep(1)
-            
+
             next_task = self.get_next_task()
-            
+
             if next_task:
   
                 self.queue_worker_loop(next_task=next_task)
@@ -164,13 +163,6 @@ class Runner():
             
     @exception_decorator      
     def queue_worker_loop(self, next_task):
-        
-        # self.log(f'RUNNER queue_worker loop: {getpid()}')
-        
-        # next_task = self.db.get_next_task()
-        
-        # if not next_task:
-        #     continue
         
         self.log(f'RUNNER next_task: {next_task}')
         
@@ -199,16 +191,6 @@ class Runner():
             
             raise TimeoutError(f"Task timeout: {self.task_timeout} seconds")
                 
-        # except Exception as exception:
-                
-        #     stack_trace = traceback.format_exc()
-            
-        #     self.log(stack_trace, task_id)
-            
-        #     self.db.add_status_update(task_id, 'Failed', {'Exception': repr(exception)})
-
-
-        
 
     @exception_decorator
     def run_task(self, **kwargs):
@@ -331,8 +313,6 @@ class Runner():
     
     def plot_statevector_figure(self, task_id, statevector):
         
-        raise UserWarning
-            
         figure = plot_bloch_multivector(statevector)
     
         figure_path = self.static_folder + f'/figures/bloch_multivector_task_{task_id}.png'
