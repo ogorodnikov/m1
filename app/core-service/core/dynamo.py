@@ -291,7 +291,7 @@ class DB():
         self.update_task_attribute(task_id, 'task_status', status)
         self.update_task_attribute(task_id, 'task_result', result)
         
-        self.update_task_attribute(self.SERVICE_TASK_RECORD_ID, 'status_updates2', 
+        self.update_task_attribute(self.SERVICE_TASK_RECORD_ID, 'status_updates', 
                                    status_update, append=True)
         
 
@@ -301,7 +301,7 @@ class DB():
 
         status_updates_response = self.tasks.update_item(
             Key={'task_id': self.SERVICE_TASK_RECORD_ID},
-            UpdateExpression="SET status_updates2 = :empty_list",
+            UpdateExpression="SET status_updates = :empty_list",
             ExpressionAttributeValues={':empty_list': []},
             ReturnValues = 'ALL_OLD'
             )
@@ -313,11 +313,11 @@ class DB():
         if not status_updates_attributes:
             return []
         
-        status_updates2 = status_updates_attributes['status_updates2']
+        status_updates = status_updates_attributes['status_updates']
                 
-        print(f"DYNAMO status_updates2 {status_updates2}")
+        print(f"DYNAMO status_updates {status_updates}")
         
-        return status_updates2
+        return status_updates
 
 
 
