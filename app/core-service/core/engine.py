@@ -58,14 +58,13 @@ class Runner():
         
         self.log(f'RUNNER initiated: {self}')
         
+
+    def log(self, message, task_id=None):
         
-    def log(self,message):
         self.app.logger.info(message)
         
-
-    def task_log(self, task_id, message):
-        self.log(message)
-        self.db.update_task_attribute(task_id, 'logs', message, append=True)
+        if task_id:
+            self.db.update_task_attribute(task_id, 'logs', message, append=True)
         
     
     def start(self):
@@ -114,61 +113,104 @@ class Runner():
         return task_id
         
     
+    def exception_decorator(function):
+        
+        def wrapper(self, *args, **kwargs):
+            
+            # self.log(f"RUNNER exception_decorator: {function}, {args}, {kwargs}")
+
+            try:
+                return function(self, *args, **kwargs)
+                
+            except Exception as exception:
+
+                task_id = kwargs.get('task_id', None)
+                
+                stack_trace = traceback.format_exc()
+                
+                self.log(stack_trace, task_id)
+                
+                task_result = {'Exception': repr(exception)}
+                
+                if task_id:
+                    
+                    self.db.add_status_update(task_id, 'Failed', task_result)
+
+        return wrapper
+        
+    
     def queue_worker(self):
         
         self.log(f'RUNNER queue_worker started: {getpid()}')
-        
-        while self.worker_active_flag.is_set():
-                
-            try:
-                
-                time.sleep(1)
-                
-                # self.log(f'RUNNER queue_worker loop: {getpid()}')
-                
-                next_task = self.db.get_next_task()
-                
-                if not next_task:
-                    continue
-                
-                self.log(f'RUNNER next_task: {next_task}')
-                
-                task_id = next_task['task_id']
-                run_values = next_task['run_values']
-                algorithm_id = next_task['algorithm_id']
-                
-                self.db.add_status_update(task_id, 'Running', '')
-                
-                kwargs = {'task_id': int(task_id), 
-                          'algorithm_id': algorithm_id, 
-                          'run_values': run_values}
-                
-                task_process = Process(target=self.run_task,
-                                       kwargs=kwargs,
-                                       name=f"Task-process-{getpid()}",
-                                       daemon=False)
-                                         
-                task_process.start()
-                task_process.join(self.task_timeout)
-                
-                if task_process.is_alive():
-    
-                    task_process.terminate()
-                    task_process.join()
-                    
-                    raise TimeoutError(f"Task timeout: {self.task_timeout} seconds")
-                
-            except Exception as exception:
-                    
-                stack_trace = traceback.format_exc()
-                
-                self.task_log(task_id, stack_trace)
-                
-                self.db.add_status_update(task_id, 'Failed', {'Exception': repr(exception)})
 
+        while self.worker_active_flag.is_set():
+            
+            time.sleep(1)
+            
+            next_task = self.get_next_task()
+            
+            if next_task:
+  
+                self.queue_worker_loop(next_task=next_task)
+            
         self.log(f'RUNNER queue_worker exiting: {getpid()}')
         
+        
+    @exception_decorator    
+    def get_next_task(self):
+        
+        return self.db.get_next_task()
+        
+            
+    @exception_decorator      
+    def queue_worker_loop(self, next_task):
+        
+        # self.log(f'RUNNER queue_worker loop: {getpid()}')
+        
+        # next_task = self.db.get_next_task()
+        
+        # if not next_task:
+        #     continue
+        
+        self.log(f'RUNNER next_task: {next_task}')
+        
+        task_id = next_task['task_id']
+        run_values = next_task['run_values']
+        algorithm_id = next_task['algorithm_id']
+        
+        self.db.add_status_update(task_id, 'Running', '')
+        
+        kwargs = {'task_id': int(task_id), 
+                  'algorithm_id': algorithm_id, 
+                  'run_values': run_values}
+        
+        task_process = Process(target=self.run_task,
+                               kwargs=kwargs,
+                               name=f"Task-process-{getpid()}",
+                               daemon=False)
+                                 
+        task_process.start()
+        task_process.join(self.task_timeout)
+        
+        if task_process.is_alive():
 
+            task_process.terminate()
+            task_process.join()
+            
+            raise TimeoutError(f"Task timeout: {self.task_timeout} seconds")
+                
+        # except Exception as exception:
+                
+        #     stack_trace = traceback.format_exc()
+            
+        #     self.log(stack_trace, task_id)
+            
+        #     self.db.add_status_update(task_id, 'Failed', {'Exception': repr(exception)})
+
+
+        
+
+    @exception_decorator
     def run_task(self, **kwargs):
         
         task_id = kwargs.get('task_id')
@@ -180,7 +222,7 @@ class Runner():
         
         runner_function = Runner.runner_functions[algorithm_id]
         
-        task_log_callback = partial(self.task_log, task_id)
+        task_log_callback = partial(self.log, task_id=task_id)
         
         self.log(f'RUNNER run_mode: {run_mode}')
         self.log(f'RUNNER run_values: {run_values}')
@@ -209,8 +251,8 @@ class Runner():
             
             statevector = run_result.get_statevector(decimals=3)
             
-            self.task_log(task_id, f'RUNNER counts: {counts}')
-            self.task_log(task_id, f'RUNNER statevector:')
+            self.log(f'RUNNER counts: {counts}', task_id)
+            self.log(f'RUNNER statevector:', task_id)
             
             for state_index, probability_amplitude in enumerate(statevector):
                 
@@ -219,7 +261,7 @@ class Runner():
                 
                 state = f'{state_index:0{qubit_count}b}'
                 
-                self.task_log(task_id, f'{state}: {probability_amplitude}')
+                self.log(f'{state}: {probability_amplitude}', task_id)
                 
             self.plot_statevector_figure(task_id, statevector)
                 
@@ -256,11 +298,11 @@ class Runner():
             
 
         self.db.add_status_update(task_id, 'Done', task_result)
-
+        
 
     def execute_task(self, task_id, circuit, backend):
         
-        self.task_log(task_id, f'RUNNER backend: {backend}')
+        self.log(f'RUNNER backend: {backend}', task_id)
         
         job = execute(circuit, backend=backend, shots=1024)
         
@@ -269,8 +311,8 @@ class Runner():
         result = job.result()
         counts = result.get_counts()
         
-        self.task_log(task_id, f'RUNNER counts:')
-        [self.task_log(task_id, f'{state}: {count}') for state, count in sorted(counts.items())]
+        self.log(f'RUNNER counts:', task_id)
+        [self.log(f'{state}: {count}', task_id) for state, count in sorted(counts.items())]
         
         return result
         
@@ -288,6 +330,8 @@ class Runner():
         
     
     def plot_statevector_figure(self, task_id, statevector):
+        
+        raise UserWarning
             
         figure = plot_bloch_multivector(statevector)
     
@@ -295,7 +339,7 @@ class Runner():
                     
         figure.savefig(figure_path, transparent=True, bbox_inches='tight')
         
-        self.task_log(task_id, f'RUNNER statevector figure: {figure}')    
+        self.log(f'RUNNER statevector figure: {figure}', task_id)    
 
         
     def reset_application(self):
