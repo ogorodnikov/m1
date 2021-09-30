@@ -171,7 +171,7 @@ class DB():
             
             )
         
-        print(f"DYNAMO add_task {(new_task_id, algorithm_id, run_values)}")
+        # print(f"DYNAMO add_task {(new_task_id, algorithm_id, run_values)}")
 
         return new_task_id
         
@@ -231,7 +231,7 @@ class DB():
         
         cleaned_value = json.loads(json.dumps(value), parse_float=Decimal)
         
-        print(f"DYNAMO update_task_attribute: {task_id, attribute, value, cleaned_value, append}")
+        # print(f"DYNAMO update_task_attribute: {task_id, attribute, value, cleaned_value, append}")
         
         if append:
             update_expression = (f"SET {attribute} = "
@@ -253,7 +253,7 @@ class DB():
             'ReturnConsumedCapacity': 'INDEXES'
         }
         
-        print(f"DYNAMO update_parameters {update_parameters}")
+        # print(f"DYNAMO update_parameters {update_parameters}")
         
         update_task_response = self.tasks.update_item(**update_parameters)
        
