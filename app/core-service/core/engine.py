@@ -292,7 +292,13 @@ class Runner():
         
         # status = job.status()
         
-        job_monitor(job, interval=0.5, line_discipline='\t')
+        # from io import StringIO
+        
+        # output = StringIO()
+        
+        # job_monitor(job, interval=0.5, line_discipline='\n', output=output)
+        
+        job_monitor(job, interval=0.5)
         
         result = job.result()
         counts = result.get_counts()
