@@ -49,6 +49,12 @@ class Runner():
         self.backend_avoid_list = self.app.config.get('BACKEND_AVOID_LIST')
         self.queue_workers_count = self.app.config.get('QUEUE_WORKERS_PER_RUNNER')
         
+        IBMQ.save_account(self.qiskit_token)
+        IBMQ.load_account()
+        
+        # if not IBMQ.active_account():
+        #     IBMQ.load_account()
+        
         self.static_folder = self.app.static_folder
 
         self.worker_active_flag = Event()
@@ -225,28 +231,19 @@ class Runner():
             
             backend = Aer.get_backend('qasm_simulator')
             
+            self.log(f'RUNNER backend: {backend}', task_id)
+            
             circuit.save_statevector()
             
             run_result = self.execute_task(task_id, circuit, backend)
-
             counts = run_result.get_counts()
             
-            statevector = run_result.get_statevector(decimals=3)
+            self.handle_statevector(run_result, qubit_count, task_id)
+
+            self.log(f'RUNNER run_result: {run_result}', task_id)
+            self.log(f'RUNNER counts:', task_id)
+            [self.log(f'{state}: {count}', task_id) for state, count in sorted(counts.items())]
             
-            self.log(f'RUNNER counts: {counts}', task_id)
-            self.log(f'RUNNER statevector:', task_id)
-            
-            for state_index, probability_amplitude in enumerate(statevector):
-                
-                if not probability_amplitude:
-                    continue
-                
-                state = f'{state_index:0{qubit_count}b}'
-                
-                self.log(f'{state}: {probability_amplitude}', task_id)
-                
-            self.plot_statevector_figure(task_id, statevector)
-                
             result = {'Counts': counts}
             
             
@@ -254,18 +251,21 @@ class Runner():
 
             circuit = runner_function(run_values, task_log_callback)
             qubit_count = circuit.num_qubits       
-            
-            IBMQ.save_account(self.qiskit_token)
-            
-            if not IBMQ.active_account():
-                IBMQ.load_account()
                 
             ibmq_provider = IBMQ.get_provider()
             
+            self.log(f'RUNNER ibmq_provider: {ibmq_provider}', task_id)
+            
             backend = self.get_least_busy_backend(ibmq_provider, qubit_count)
+            
+            self.log(f'RUNNER backend: {backend}', task_id)
             
             run_result = self.execute_task(task_id, circuit, backend)
             counts = run_result.get_counts()
+
+            self.log(f'RUNNER run_result: {run_result}', task_id)
+            self.log(f'RUNNER counts:', task_id)
+            [self.log(f'{state}: {count}', task_id) for state, count in sorted(counts.items())]
             
             result = {'Counts': counts}
             
@@ -286,21 +286,11 @@ class Runner():
 
     def execute_task(self, task_id, circuit, backend):
         
-        self.log(f'RUNNER backend: {backend}', task_id)
-        
         job = execute(circuit, backend=backend, shots=1024)
         
         self.monitor_job(job, task_id)
 
-        # job_monitor(job, interval=0.5)
-        
-        result = job.result()
-        counts = result.get_counts()
-        
-        self.log(f'RUNNER counts:', task_id)
-        [self.log(f'{state}: {count}', task_id) for state, count in sorted(counts.items())]
-        
-        return result
+        return job.result()
         
         
     def monitor_job(self, job, task_id, interval=1):
@@ -325,6 +315,24 @@ class Runner():
                 break
             
             time.sleep(interval)
+            
+            
+    def handle_statevector(self, run_result, qubit_count, task_id):
+        
+        statevector = run_result.get_statevector(decimals=3)
+            
+        self.log(f'RUNNER statevector:', task_id)
+            
+        for state_index, probability_amplitude in enumerate(statevector):
+                
+            if not probability_amplitude:
+                continue
+                
+            state = f'{state_index:0{qubit_count}b}'
+                
+            self.log(f'{state}: {probability_amplitude}', task_id)
+                
+        self.plot_statevector_figure(task_id, statevector)
         
     
     def get_least_busy_backend(self, provider, qubit_count):
@@ -333,10 +341,14 @@ class Runner():
                                           and backend.configuration().n_qubits >= qubit_count
                                           and backend.status().operational==True
                                           and backend.name() not in self.backend_avoid_list)
-            
-        least_busy_backend = least_busy(provider.backends(filters=backend_filter))
+                                          
+        filtered_backends = provider.backends(filters=backend_filter)
         
-        return least_busy_backend
+        if filtered_backends:
+            return least_busy(filtered_backends)
+        
+        else:
+            raise ValueError("No IBMQ backends match to run specified Quantum Circuit")
         
     
     def plot_statevector_figure(self, task_id, statevector):
