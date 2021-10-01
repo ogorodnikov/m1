@@ -5,105 +5,86 @@
 {% endblock %}
 
 {% block content %}
+  
+  <div class="container-fluid float-left" style="max-width: 680px;">
 
-  <div class="container-fluid">
-     
-    <div class="row">
-      <div class="col-sm-12 mt-4 mb-3">
-        <h5>{{ algorithm.name }}:</h5>
-      </div>
-    </div>
-    
-    <div class="row">
-      <div class="col-sm-5 mb-3">
-        {{ algorithm.description }}
-      </div>
-    </div>
+    <h5 class="my-3">{{ algorithm.name }}:</h5>
 
-    <div class="row">        
-      <div class="col-sm-5 mb-3">
-        <img class="img-thumbnail" src="https://indulgeyourpet.com/wp-content/uploads/Bombay.png" alt="image">
-      </div>
-    </div>
+    <div class="mb-3">{{ algorithm.description }}</div>
+
+    <img class="img-thumbnail mb-3" src="https://indulgeyourpet.com/wp-content/uploads/Bombay.png" alt="image">
     
     
     <!-- Parameters -->
     
     <form action={{ url_for('run_algorithm', algorithm_id=algorithm.id) }} method="POST">
           
-      <div class="row">        
-        <div class="col-sm-5 mb-3">
+      <label class="form-label mb-3" for="parameters">Parameters:</label>
+      
+      {% for parameter in algorithm.parameters %}
+      
+        <div class="input-group mb-2">
           
-          <label for="parameters" class="form-label mb-3">Parameters:</label>
+          <span class="input-group-text bg-secondary text-white col-3" id="parameter">{{ parameter.name }}</span>
           
-          {% for parameter in algorithm.parameters %}
-          
-            <div class="input-group mb-1">
+          <input class="form-control text-light bg-dark"
+                 name={{ parameter.name }}
+                 type="tel"
+                 pattern="[A-Za-z0-9\.]{1,10}"
+                 value="{{ parameter.default_value }}"
+                 aria-label="Parameter"
+                 aria-describedby="parameters"
+                 title="Integers 1 to 10 digit length">
+              <!--required-->
               
-              <span class="input-group-text bg-secondary text-white col-sm-3" id="parameter">{{ parameter.name }}</span>
-              
-              <input class="form-control text-light bg-dark"
-                     name={{ parameter.name }}
-                     type="tel"
-                     pattern="[A-Za-z0-9\.]{1,10}"
-                     value="{{ parameter.default_value }}"
-                     aria-label="Parameter"
-                     aria-describedby="parameters"
-                     title="Integers 1 to 10 digit length">
-                  <!--required-->
-                  <!--placeholder="please input value"-->
-            </div>
-          
-          {% endfor %}
-          
         </div>
-      </div>
-          
-      <div class="row">
-        <div class="col-sm-5 mb-3">
-          
-          {% if algorithm.type == 'quantum' %}
-          
-            <button type="submit" 
-                    class="btn btn-warning col-sm-3 mb-1" 
-                    name="run_mode"
-                    {% if not algorithm.enabled %} disabled {% endif %}
-                    value="simulator">
-               Run on Simulator
-            </button>
-            
-            <button type="submit" 
-                    class="btn btn-danger col-sm-4 mb-1"
-                    name="run_mode"
-                    {% if not algorithm.enabled %} disabled {% endif %}
-                    value="quantum_device">
-               Run on Quantum Device
-            </button>
-          
-          {% else %}
-          
-            <button type="submit"
-                    class="btn btn-warning col-sm-3 mb-1"
-                    name="run_mode"
-                    {% if algorithm.enabled == 'false' %} disabled {% endif %}
-                    value="classical">
-               Run
-            </button>            
-          
-          {% endif %}
-          
-          <button type="submit" form="like_form" class="btn btn-info col-sm-3 mb-1 text-nowrap">
-            Like
-            <span class="badge bg-light text-dark rounded-pill align-text-bottom">
-              {{ algorithm.likes }}
-            </span>
+      
+      {% endfor %}
+      
+      
+      <!-- Buttons -->
+      
+        {% if algorithm.type == 'quantum' %}
+        
+          <button class="btn btn-warning col-sm-3 mt-3" 
+                  value="simulator"
+                  name="run_mode"
+                  {% if not algorithm.enabled %} disabled {% endif %}
+                  type="submit">
+            Run on Simulator
           </button>
           
-        </div>
-      </div>
-      
+          <button class="btn btn-danger col-sm-4 mt-3" 
+                  value="quantum_device"
+                  name="run_mode"
+                  {% if not algorithm.enabled %} disabled {% endif %}
+                  type="submit">
+            Run on Quantum Device
+          </button>
+        
+        {% else %}
+        
+          <button class="btn btn-warning col-sm-3 mt-3" 
+                  value="classical"
+                  name="run_mode"
+                  {% if not algorithm.enabled %} disabled {% endif %}
+                  type="submit">
+            Run
+          </button>
+        
+        {% endif %}
+        
+        <button class="btn btn-info col-sm-3 mt-3 text-nowrap"
+                form="like_form"
+                type="submit">
+          Like
+          <span class="badge bg-light text-dark rounded-pill align-text-bottom">
+            {{ algorithm.likes }}
+          </span>
+        </button>
+          
     </form>
-
+  
     <form id="like_form" action={{ url_for('like_algorithm', algorithm_id=algorithm.id) }} method="GET">
     </form>
     
