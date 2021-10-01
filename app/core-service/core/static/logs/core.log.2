@@ -1,2 +1,143 @@
-[2021-09-30 22:28:56] I engine | RUNNER statevector figure: Figure(1440x480)
-[2021-09-30 22:28:56] I engine | RUNNER result: {'Counts': {'01': 1024}}
+[2021-09-30 22:28:57] I engine | RUNNER next_task: {'logs': [], 'run_values': {'run_mode': 'simulator', 'secret': '1010'}, 'task_id': Decimal('17'), 'task_status': 'Running', 'algorithm_id': 'dj', 'record_type': 'task_record'}
+[2021-09-30 22:28:57] I engine | RUNNER run_mode: simulator
+[2021-09-30 22:28:57] I engine | RUNNER run_values: {'run_mode': 'simulator', 'secret': '1010', 'task_id': 17}
+[2021-09-30 22:28:57] I engine | RUNNER runner_function: <function dj at 0x7f8920bea4d0>
+[2021-09-30 22:28:57] I engine | DJ input_secret: 1010
+[2021-09-30 22:28:57] I engine | DJ full_secret: 1010
+[2021-09-30 22:28:57] I engine | DJ secret: 1010
+[2021-09-30 22:28:57] I engine | DJ secret_bit_len: 2
+[2021-09-30 22:28:57] I engine | DJ secret_len: 4
+[2021-09-30 22:28:57] I engine | DJ input_qubits_count: 2
+[2021-09-30 22:28:57] I engine | DJ all_qubits_count: 3
+[2021-09-30 22:28:57] I engine | DJ output_qubit: 2
+[2021-09-30 22:28:57] I engine | DJ qubits_measurement_list: [1, 0]
+[2021-09-30 22:28:57] I engine | DJ truth_table: {'00': '1', '01': '0', '10': '1', '11': '0'}
+[2021-09-30 22:28:57] I engine | DJ truth_table_oracle: 
+     ┌───┐     ┌───┐ ░                 ░ 
+q_0: ┤ X ├──■──┤ X ├─░────────■────────░─
+     ├───┤  │  ├───┤ ░ ┌───┐  │  ┌───┐ ░ 
+q_1: ┤ X ├──■──┤ X ├─░─┤ X ├──■──┤ X ├─░─
+     └───┘┌─┴─┐└───┘ ░ └───┘┌─┴─┐└───┘ ░ 
+q_2: ─────┤ X ├──────░──────┤ X ├──────░─
+          └───┘      ░      └───┘      ░ 
+[2021-09-30 22:28:57] I engine | DJ circuit: 
+     ┌───┐     ┌─────────────────────┐┌───┐ ░    ┌─┐
+q_0: ┤ H ├─────┤0                    ├┤ H ├─░────┤M├
+     ├───┤     │                     │├───┤ ░ ┌─┐└╥┘
+q_1: ┤ H ├─────┤1 Truth Table Oracle ├┤ H ├─░─┤M├─╫─
+     ├───┤┌───┐│                     │└───┘ ░ └╥┘ ║ 
+q_2: ┤ X ├┤ H ├┤2                    ├──────░──╫──╫─
+     └───┘└───┘└─────────────────────┘      ░  ║  ║ 
+c: 2/══════════════════════════════════════════╩══╩═
+                                               0  1 
+[2021-09-30 22:28:57] I engine | DJ if majority of counts is all 0 - secret is constant
+[2021-09-30 22:28:57] I engine | DJ if majority of counts is any other state - secret is balanced
+[2021-09-30 22:28:57] I engine | DJ if counts are distributed via multiple states - probably secret is unbalanced
+[2021-09-30 22:28:57] I engine | RUNNER backend: qasm_simulator
+[2021-09-30 22:28:58] I engine | RUNNER counts:
+[2021-09-30 22:28:58] I engine | 01: 1024
+[2021-09-30 22:28:58] I engine | RUNNER counts: {'01': 1024}
+[2021-09-30 22:28:58] I engine | RUNNER statevector:
+[2021-09-30 22:28:58] I engine | 010: (-0.707+0j)
+[2021-09-30 22:28:58] I engine | 110: (0.707-0j)
+[2021-09-30 22:28:59] I engine | RUNNER statevector figure: Figure(1440x480)
+[2021-09-30 22:28:59] I engine | RUNNER result: {'Counts': {'01': 1024}}
+[2021-09-30 22:29:00] I engine | RUNNER next_task: {'logs': [], 'run_values': {'run_mode': 'simulator', 'secret': '1010'}, 'task_id': Decimal('18'), 'task_status': 'Running', 'algorithm_id': 'dj', 'record_type': 'task_record'}
+[2021-09-30 22:29:00] I engine | RUNNER run_mode: simulator
+[2021-09-30 22:29:00] I engine | RUNNER run_values: {'run_mode': 'simulator', 'secret': '1010', 'task_id': 18}
+[2021-09-30 22:29:00] I engine | RUNNER runner_function: <function dj at 0x7f8920bea4d0>
+[2021-09-30 22:29:00] I engine | DJ input_secret: 1010
+[2021-09-30 22:29:00] I engine | DJ full_secret: 1010
+[2021-09-30 22:29:00] I engine | DJ secret: 1010
+[2021-09-30 22:29:00] I engine | DJ secret_bit_len: 2
+[2021-09-30 22:29:01] I engine | DJ secret_len: 4
+[2021-09-30 22:29:01] I engine | DJ input_qubits_count: 2
+[2021-09-30 22:29:01] I engine | DJ all_qubits_count: 3
+[2021-09-30 22:29:01] I engine | DJ output_qubit: 2
+[2021-09-30 22:29:01] I engine | DJ qubits_measurement_list: [1, 0]
+[2021-09-30 22:29:01] I engine | DJ truth_table: {'00': '1', '01': '0', '10': '1', '11': '0'}
+[2021-09-30 22:29:01] I engine | DJ truth_table_oracle: 
+     ┌───┐     ┌───┐ ░                 ░ 
+q_0: ┤ X ├──■──┤ X ├─░────────■────────░─
+     ├───┤  │  ├───┤ ░ ┌───┐  │  ┌───┐ ░ 
+q_1: ┤ X ├──■──┤ X ├─░─┤ X ├──■──┤ X ├─░─
+     └───┘┌─┴─┐└───┘ ░ └───┘┌─┴─┐└───┘ ░ 
+q_2: ─────┤ X ├──────░──────┤ X ├──────░─
+          └───┘      ░      └───┘      ░ 
+[2021-09-30 22:29:01] I engine | DJ circuit: 
+     ┌───┐     ┌─────────────────────┐┌───┐ ░    ┌─┐
+q_0: ┤ H ├─────┤0                    ├┤ H ├─░────┤M├
+     ├───┤     │                     │├───┤ ░ ┌─┐└╥┘
+q_1: ┤ H ├─────┤1 Truth Table Oracle ├┤ H ├─░─┤M├─╫─
+     ├───┤┌───┐│                     │└───┘ ░ └╥┘ ║ 
+q_2: ┤ X ├┤ H ├┤2                    ├──────░──╫──╫─
+     └───┘└───┘└─────────────────────┘      ░  ║  ║ 
+c: 2/══════════════════════════════════════════╩══╩═
+                                               0  1 
+[2021-09-30 22:29:01] I engine | DJ if majority of counts is all 0 - secret is constant
+[2021-09-30 22:29:01] I engine | DJ if majority of counts is any other state - secret is balanced
+[2021-09-30 22:29:01] I engine | DJ if counts are distributed via multiple states - probably secret is unbalanced
+[2021-09-30 22:29:01] I engine | RUNNER backend: qasm_simulator
+[2021-09-30 22:29:01] I engine | RUNNER counts:
+[2021-09-30 22:29:01] I engine | 01: 1024
+[2021-09-30 22:29:01] I engine | RUNNER counts: {'01': 1024}
+[2021-09-30 22:29:01] I engine | RUNNER statevector:
+[2021-09-30 22:29:01] I engine | 010: (-0.707+0j)
+[2021-09-30 22:29:01] I engine | 110: (0.707-0j)
+[2021-09-30 22:29:03] I engine | RUNNER statevector figure: Figure(1440x480)
+[2021-09-30 22:29:03] I engine | RUNNER result: {'Counts': {'01': 1024}}
+[2021-09-30 22:29:17] I engine | RUNNER next_task: {'logs': [], 'run_values': {'run_mode': 'quantum_device', 'secret': '1010'}, 'task_id': Decimal('19'), 'task_status': 'Running', 'algorithm_id': 'dj', 'record_type': 'task_record'}
+[2021-09-30 22:29:17] I engine | RUNNER run_mode: quantum_device
+[2021-09-30 22:29:17] I engine | RUNNER run_values: {'run_mode': 'quantum_device', 'secret': '1010', 'task_id': 19}
+[2021-09-30 22:29:17] I engine | RUNNER runner_function: <function dj at 0x7f8920bea4d0>
+[2021-09-30 22:29:17] I engine | DJ input_secret: 1010
+[2021-09-30 22:29:17] I engine | DJ full_secret: 1010
+[2021-09-30 22:29:17] I engine | DJ secret: 1010
+[2021-09-30 22:29:17] I engine | DJ secret_bit_len: 2
+[2021-09-30 22:29:17] I engine | DJ secret_len: 4
+[2021-09-30 22:29:17] I engine | DJ input_qubits_count: 2
+[2021-09-30 22:29:17] I engine | DJ all_qubits_count: 3
+[2021-09-30 22:29:18] I engine | DJ output_qubit: 2
+[2021-09-30 22:29:18] I engine | DJ qubits_measurement_list: [1, 0]
+[2021-09-30 22:29:18] I engine | DJ truth_table: {'00': '1', '01': '0', '10': '1', '11': '0'}
+[2021-09-30 22:29:18] I engine | DJ truth_table_oracle: 
+     ┌───┐     ┌───┐ ░                 ░ 
+q_0: ┤ X ├──■──┤ X ├─░────────■────────░─
+     ├───┤  │  ├───┤ ░ ┌───┐  │  ┌───┐ ░ 
+q_1: ┤ X ├──■──┤ X ├─░─┤ X ├──■──┤ X ├─░─
+     └───┘┌─┴─┐└───┘ ░ └───┘┌─┴─┐└───┘ ░ 
+q_2: ─────┤ X ├──────░──────┤ X ├──────░─
+          └───┘      ░      └───┘      ░ 
+[2021-09-30 22:29:18] I engine | DJ circuit: 
+     ┌───┐     ┌─────────────────────┐┌───┐ ░    ┌─┐
+q_0: ┤ H ├─────┤0                    ├┤ H ├─░────┤M├
+     ├───┤     │                     │├───┤ ░ ┌─┐└╥┘
+q_1: ┤ H ├─────┤1 Truth Table Oracle ├┤ H ├─░─┤M├─╫─
+     ├───┤┌───┐│                     │└───┘ ░ └╥┘ ║ 
+q_2: ┤ X ├┤ H ├┤2                    ├──────░──╫──╫─
+     └───┘└───┘└─────────────────────┘      ░  ║  ║ 
+c: 2/══════════════════════════════════════════╩══╩═
+                                               0  1 
+[2021-09-30 22:29:18] I engine | DJ if majority of counts is all 0 - secret is constant
+[2021-09-30 22:29:18] I engine | DJ if majority of counts is any other state - secret is balanced
+[2021-09-30 22:29:18] I engine | DJ if counts are distributed via multiple states - probably secret is unbalanced
+[2021-09-30 22:29:25] I engine | RUNNER backend: ibmq_quito
+[2021-09-30 22:31:11] I engine | RUNNER counts:
+[2021-09-30 22:31:11] I engine | 00: 169
+[2021-09-30 22:31:11] I engine | 01: 627
+[2021-09-30 22:31:11] I engine | 10: 98
+[2021-09-30 22:31:11] I engine | 11: 130
+[2021-09-30 22:31:11] I engine | RUNNER result: {'Counts': {'00': 169, '01': 627, '10': 98, '11': 130}}
+[2021-09-30 22:32:22] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 121, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 153, in queue_worker
+    time.sleep(1)
+  File "/home/ec2-user/environment/m1/app/core-service/core/__init__.py", line 16, in termination_handler
+    config.clear_figures_folder(app)
+  File "/home/ec2-user/environment/m1/app/core-service/core/config.py", line 123, in clear_figures_folder
+    os.remove(os.path.join(figures_folder, figure))
+  File "/home/ec2-user/environment/m1/app/core-service/core/__init__.py", line 18, in termination_handler
+    print(f'INIT termination_handler signal {signal}, {frame}')
+OSError: [Errno 5] Input/output error
+

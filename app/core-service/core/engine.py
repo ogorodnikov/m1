@@ -290,15 +290,9 @@ class Runner():
         
         job = execute(circuit, backend=backend, shots=1024)
         
-        # status = job.status()
-        
-        # from io import StringIO
-        
-        # output = StringIO()
-        
-        # job_monitor(job, interval=0.5, line_discipline='\n', output=output)
-        
-        job_monitor(job, interval=0.5)
+        self.monitor_job(job, task_id)
+
+        # job_monitor(job, interval=0.5)
         
         result = job.result()
         counts = result.get_counts()
@@ -307,6 +301,30 @@ class Runner():
         [self.log(f'{state}: {count}', task_id) for state, count in sorted(counts.items())]
         
         return result
+        
+        
+    def monitor_job(self, job, task_id, interval=1):
+        
+        max_interval = 4
+        
+        while True:
+            
+            status = job.status().name
+            status_update = f"Job status: {status}"
+            
+            if status == 'QUEUED':
+                position = job.queue_position()
+                status_update += f" at position {position}"
+                
+            self.log(f'RUNNER {status_update}', task_id)
+            
+            if status in ('QUEUED', 'RUNNING'):
+                interval = min(interval*2, max_interval)
+            
+            if status in ('DONE', 'CANCELLED', 'ERROR'):
+                break
+            
+            time.sleep(interval)
         
     
     def get_least_busy_backend(self, provider, qubit_count):
