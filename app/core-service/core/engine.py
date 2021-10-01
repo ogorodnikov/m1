@@ -300,7 +300,7 @@ class Runner():
         while True:
             
             status = job.status().name
-            status_update = f"Job status: {status}"
+            status_update = f"job status: {status}"
             
             if status == 'QUEUED':
                 position = job.queue_position()

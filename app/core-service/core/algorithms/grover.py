@@ -89,11 +89,11 @@ def grover(run_values, task_log):
     
     task_log(f'GROVER phase_oracle: \n{phase_oracle}')
     task_log(f'GROVER phase_oracle 1 decomposition:')
-    task_log(phase_oracle.decompose())
+    task_log(f'{phase_oracle.decompose()}')
     task_log(f'GROVER phase_oracle 2 decomposition:')
-    task_log(phase_oracle.decompose().decompose())
+    task_log(f'{phase_oracle.decompose().decompose()}')
     task_log(f'GROVER phase_oracle 3 decomposition:')
-    task_log(phase_oracle.decompose().decompose().decompose())
+    task_log(f'{phase_oracle.decompose().decompose().decompose()}')
 
     task_log(f'GROVER diffuser: \n{diffuser}')
     
