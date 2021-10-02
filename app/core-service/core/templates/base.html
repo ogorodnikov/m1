@@ -8,6 +8,8 @@
     
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
     
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Audiowide&effect=fire">
+    
     <title>
       {% block title %}
       {% endblock %}
@@ -136,10 +138,17 @@
   </body>
    
   <style>
+  
     body {
-    background-color: #212121;
-    color: white
+      background-color: #212121;
+      color: white
     }
+    
+    @font-face {
+      font-family: Consolas;
+      src: url("{{ url_for('static', filename='Consolas.ttf') }}");
+    }
+    
   </style>
    
 </html>
