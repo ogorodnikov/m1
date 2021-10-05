@@ -7,6 +7,7 @@ from core import config
 from core import dynamo
 from core import engine
 from core import telegram
+from core import cognito
 from core import facebook
 
 import signal
@@ -41,6 +42,8 @@ class FlaskApp(Flask):
         
         bot = telegram.Bot(self)
         bot.start()
+        
+        users = cognito.Users(self)
         
         fb = facebook.FB(self)
         

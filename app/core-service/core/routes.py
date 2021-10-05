@@ -1,6 +1,11 @@
-from core import app, users, fb
+from core import FlaskApp
 
-from flask import render_template, redirect, url_for, flash, request, session
+from flask import flash
+from flask import url_for
+from flask import session
+from flask import request
+from flask import redirect
+from flask import render_template
 from flask import send_from_directory
 
 import boto3
@@ -10,7 +15,9 @@ import requests
 
 
 db = app.config.get('DB')
+users = app.config.get('USERS')
 runner = app.config.get('RUNNER')
+facebook = app.config.get('FACEBOOK')
 
 
 ###   Login   ###
@@ -29,12 +36,12 @@ def login():
     
     if flow == 'facebook':
         
-        redirect_url = fb.get_autorization_url()
+        redirect_url = facebook.get_autorization_url()
 
     if code:
         
-        facebook_token = fb.code_to_token(code)
-        redirect_url = fb.login_facebook_user(facebook_token)
+        facebook_token = facebook.code_to_token(code)
+        redirect_url = facebook.login_facebook_user(facebook_token)
 
     if flow == 'register':
         
