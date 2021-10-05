@@ -15,7 +15,7 @@ sys.path.insert(0, core_path)
 # print(f"TESTS core_path {core_path}")
 # print(f"TESTS sys.path {sys.path}")
 
-from core import engine
+# from core import engine
 
 
 

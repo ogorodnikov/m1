@@ -46,6 +46,10 @@ class FlaskApp(Flask):
         users = cognito.Users(self)
         fb = facebook.FB(self)
         
+    
+    def get_app(self):
+        return self
+        
         
     def run_with_gunicorn(self, *args, **kwargs):
         
