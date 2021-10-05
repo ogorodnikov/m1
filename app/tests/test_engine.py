@@ -27,7 +27,7 @@ def test_runner(test_app):
     
     runner.start()    
     
-    assert test_app.config['RUNNER_STATE'] == 'Strted'
+    assert test_app.config['RUNNER_STATE'] == 'Started'
 
     
 

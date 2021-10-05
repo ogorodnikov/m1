@@ -11,25 +11,26 @@ class Users:
     
     def __init__(self, app, *args, **kwargs):
 
-        self.app = app
-
         self.cognito_client = boto3.client('cognito-idp')
+        
+        self.app = app
 
         self.client_id = app.config.get('COGNITO_USER_POOL_CLIENT_ID')        
         self.user_pool_id = app.config.get('COGNITO_USER_POOL_ID')
         
         self.domain = app.config.get('DOMAIN')
         self.aws_nlb = app.config.get('AWS_NLB')
+        
+        app.users = self
 
-        self.log(f"COGNITO self.client_id: {self.client_id}")
-        self.log(f"COGNITO self.user_pool_id: {self.user_pool_id}")
+        # self.log(f"COGNITO self.client_id: {self.client_id}")
+        # self.log(f"COGNITO self.user_pool_id: {self.user_pool_id}")
         
-        self.log(f"COGNITO self.domain: {self.domain}")
-        self.log(f"COGNITO self.aws_nlb: {self.aws_nlb}")
-        
-        self.app.config['USERS'] = self
-        
-        self.log(f"COGNITO initiated: {self}")
+        # self.log(f"COGNITO self.domain: {self.domain}")
+        # self.log(f"COGNITO self.aws_nlb: {self.aws_nlb}")
+
+        self.log(f"COGNITO initiated: {app.users}")
+
         
     
     def log(self, message):
@@ -63,12 +64,12 @@ class Users:
             user_sub = next(attribute['Value'] for attribute in user_attributes
                             if attribute['Name'] == 'sub')    
             
-            self.log(f'LOGIN token_response: {token_response}')
-            self.log(f'LOGIN access_token: {access_token}')
-            self.log(f'LOGIN refresh_token: {refresh_token}')
-            self.log(f'LOGIN user_response: {user_response}')
-            self.log(f'LOGIN user_attributes: {user_attributes}')
-            self.log(f'LOGIN user_sub: {user_sub}')
+            # self.log(f'LOGIN token_response: {token_response}')
+            # self.log(f'LOGIN access_token: {access_token}')
+            # self.log(f'LOGIN refresh_token: {refresh_token}')
+            # self.log(f'LOGIN user_response: {user_response}')
+            # self.log(f'LOGIN user_attributes: {user_attributes}')
+            # self.log(f'LOGIN user_sub: {user_sub}')
     
             session.permanent = login_form.get('remember_me')
                 
@@ -120,13 +121,13 @@ class Users:
         
             redirect_uri_after_proxy = redirect_uri.replace(self.aws_nlb, self.domain)
             
-            self.log(f'REGISTER self.client_id: {self.client_id}')
-            self.log(f'REGISTER self.user_pool_id: {self.user_pool_id}')
-            self.log(f'REGISTER sign_up_response: {sign_up_response}')
-            self.log(f'REGISTER confirmation_response: {confirmation_response}')
-            self.log(f'REGISTER redirect_to_sign_in_args: {redirect_to_sign_in_args}')
-            self.log(f'REGISTER redirect_uri: {redirect_uri}')
-            self.log(f'REGISTER redirect_uri_after_proxy: {redirect_uri_after_proxy}')
+            # self.log(f'REGISTER self.client_id: {self.client_id}')
+            # self.log(f'REGISTER self.user_pool_id: {self.user_pool_id}')
+            # self.log(f'REGISTER sign_up_response: {sign_up_response}')
+            # self.log(f'REGISTER confirmation_response: {confirmation_response}')
+            # self.log(f'REGISTER redirect_to_sign_in_args: {redirect_to_sign_in_args}')
+            # self.log(f'REGISTER redirect_uri: {redirect_uri}')
+            # self.log(f'REGISTER redirect_uri_after_proxy: {redirect_uri_after_proxy}')
             
             flash(f"New user registered", category='info')
             
@@ -151,8 +152,8 @@ class Users:
         
         user_already_in_cognito = bool(user_response['Users'])
         
-        self.log(f'POPULATE user_response: {user_response}')
-        self.log(f'POPULATE user_already_in_cognito: {user_already_in_cognito}')
+        # self.log(f'POPULATE user_response: {user_response}')
+        # self.log(f'POPULATE user_already_in_cognito: {user_already_in_cognito}')
         
         if user_already_in_cognito:
             return
@@ -178,9 +179,9 @@ class Users:
             Username=fb_username
         )
                                              
-        self.log(f'POPULATE session: {session}')
-        self.log(f'POPULATE fb_username: {fb_username}')    
-        self.log(f'POPULATE done')                                                                 
+        # self.log(f'POPULATE session: {session}')
+        # self.log(f'POPULATE fb_username: {fb_username}')    
+        # self.log(f'POPULATE done')                                                                 
     
         
         
