@@ -1,24 +1,17 @@
-from core import app
-
-# app.run(host="0.0.0.0", port=8080, debug=True, use_reloader=True, reloader_type='stat')
-
-from core import gunicorn_app
-gunicorn_app.run()
+from core import FlaskApp
 
 
-# import os, sys
-# from gunicorn.app.wsgiapp import WSGIApplication
+app = FlaskApp()
 
-# root_path = os.path.dirname(__file__)
+app.run_with_gunicorn()
 
-# config_path = os.path.join(root_path, "core", "gunicorn", "config.py")
 
-# # module_path = os.path.join(root_path, "core", "application.py")
+# developement_server_parameters = {
+#     'host': "0.0.0.0", 
+#     'port': 8080, 
+#     'debug': True, 
+#     'use_reloader': True, 
+#     'reloader_type': 'stat'
+# }
 
-# run_options = ["--config", config_path, "core:app"]
-
-# sys.argv.extend(run_options)
-
-# # print(f"GUNICORN sys.argv: {sys.argv}")
-
-# WSGIApplication("%(prog)s [OPTIONS]").run()
+# app.run_with_developement_server(developement_server_parameters)
