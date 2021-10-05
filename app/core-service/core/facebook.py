@@ -16,14 +16,9 @@ class FB:
         self.facebook_client_id = app.config.get('FACEBOOK_CLIENT_ID')
         self.facebook_client_secret = app.config.get('FACEBOOK_CLIENT_SECRET')
         
-        self.users = app.config.get('USERS')
-
         self.domain = app.config.get('DOMAIN')
         self.aws_nlb = app.config.get('AWS_NLB')
 
-        self.log(f"FB self.domain: {self.domain}")
-        self.log(f"FB self.aws_nlb: {self.aws_nlb}")
-        
         self.app.config['FACEBOOK'] = self
         
         self.log(f"FB initiated: {self}")
@@ -79,13 +74,13 @@ class FB:
         token_response_json = token_response.json()
         facebook_token = token_response_json.get('access_token')
         
-        self.log(f"AUTH code: {code}")
-        self.log(f"TOKEN self.redirect_uri_after_proxy: {self.redirect_uri_after_proxy}")
-        self.log(f"TOKEN parameters: {parameters}")
-        self.log(f"TOKEN access_token_url: {access_token_url}")
-        self.log(f"TOKEN token_response: {token_response}")
-        self.log(f"TOKEN token_response_json: {token_response_json}")   
-        self.log(f"TOKEN facebook_token: {facebook_token}")
+        # self.log(f"AUTH code: {code}")
+        # self.log(f"TOKEN self.redirect_uri_after_proxy: {self.redirect_uri_after_proxy}")
+        # self.log(f"TOKEN parameters: {parameters}")
+        # self.log(f"TOKEN access_token_url: {access_token_url}")
+        # self.log(f"TOKEN token_response: {token_response}")
+        # self.log(f"TOKEN token_response_json: {token_response_json}")   
+        # self.log(f"TOKEN facebook_token: {facebook_token}")
         
         session['facebook_token'] = facebook_token    
         
@@ -111,14 +106,14 @@ class FB:
         session['username'] = me_response_json.get('short_name')
         session['picture_url'] = picture_url
         
-        self.log(f"CLAIMS me_endpoint: {me_endpoint}")
-        self.log(f"CLAIMS parameters: {parameters}")
-        self.log(f"CLAIMS me_response_json: {me_response_json}")
+        # self.log(f"CLAIMS me_endpoint: {me_endpoint}")
+        # self.log(f"CLAIMS parameters: {parameters}")
+        # self.log(f"CLAIMS me_response_json: {me_response_json}")
             
         login_referer = session['login_referer']
         session.pop('login_referer', None)
         
-        self.users.populate_facebook_user()
+        self.app.users.populate_facebook_user()
             
         flash(f"Welcome, facebook user {session['username']}!", category='warning')
         

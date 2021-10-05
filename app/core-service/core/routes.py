@@ -15,7 +15,6 @@ import requests
 
 
 db = app.config.get('DB')
-users = app.users
 runner = app.config.get('RUNNER')
 facebook = app.config.get('FACEBOOK')
 
@@ -27,7 +26,10 @@ def login():
     
     session['login_referer'] = session.get('login_referer') or request.referrer
 
-    flow = request.args.get('flow')
+    # flow = request.args.get('flow')
+    # code = request.args.get('code')
+    
+    flow = request.form.get('flow')
     code = request.args.get('code')
     
     if not (flow or code):
@@ -45,11 +47,13 @@ def login():
 
     if flow == 'register':
         
-        redirect_url = app.users.register_user(request.args)
+        # redirect_url = app.users.register_user(request.args)
+        redirect_url = app.users.register_user(request.form)
 
     if flow == 'sign-in':
         
-        redirect_url = app.users.login_user(request.args)
+        # redirect_url = app.users.login_user(request.args)
+        redirect_url = app.users.login_user(request.form)
 
     return redirect(redirect_url)
         
