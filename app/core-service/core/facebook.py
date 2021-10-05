@@ -51,7 +51,7 @@ class FB:
                       
         autorization_url = autorization_endpoint + '?' + urlencode(parameters)
 
-        self.log(f"AUTH autorization_url: {autorization_url}")
+        # self.log(f"AUTH autorization_url: {autorization_url}")
         
         return autorization_url
         
@@ -110,12 +110,15 @@ class FB:
         # self.log(f"CLAIMS parameters: {parameters}")
         # self.log(f"CLAIMS me_response_json: {me_response_json}")
             
-        login_referer = session['login_referer']
-        session.pop('login_referer', None)
-        
         self.app.users.populate_facebook_user()
+        
+        username = session['username']
             
-        flash(f"Welcome, facebook user {session['username']}!", category='warning')
+        flash(f"Welcome, facebook user {username}!", category='warning')
+        
+        self.log(f'FACEBOOK Login successful: {username}')
+        
+        login_referer = session.pop('login_referer', None)
         
         return login_referer
     

@@ -30,7 +30,6 @@ class Users:
         # self.log(f"COGNITO self.aws_nlb: {self.aws_nlb}")
 
         self.log(f"COGNITO initiated: {app.users}")
-
         
     
     def log(self, message):
@@ -44,6 +43,8 @@ class Users:
         email = login_form.get('email')
         
         try:
+            
+            self.log(f'LOGIN Username: {username}')
             
             token_response = self.cognito_client.initiate_auth(
                 ClientId=self.client_id,
@@ -76,25 +77,24 @@ class Users:
             session['username'] = username
             
             flash(f"Welcome, {session['username']}!", category='warning')
+            
+            self.log(f'LOGIN Successful: {username}')
         
         except Exception as exception:
             
-            flash(f"Login did not pass... {exception}", category='danger')
+            exception_message = f"Login did not pass... {exception}"
+            
+            flash(exception_message, category='danger')
         
-        login_referer = session['login_referer']
-        session.pop('login_referer', None)
-                
-        return login_referer
-        
-        
-    def register_user(self, login_form):
+
+    def register_user_and_login(self, login_form):
         
         username = login_form.get('username')
         password = login_form.get('password')
         
         try:
             
-            self.log(f'REGISTER login_form: {login_form}')
+            self.log(f'REGISTER Username: {username}')
         
             sign_up_response = self.cognito_client.sign_up(
                 ClientId=self.client_id,
@@ -112,42 +112,32 @@ class Users:
                 UserPoolId=self.user_pool_id,
                 Username=username
             )
-                
-            redirect_to_sign_in_args = login_form.copy()
-            redirect_to_sign_in_args['flow'] = 'sign-in'
             
-            redirect_uri = url_for('login', _external=True, _scheme='https', 
-                                   **redirect_to_sign_in_args)
-        
-            redirect_uri_after_proxy = redirect_uri.replace(self.aws_nlb, self.domain)
+            self.login_user(login_form)
             
-            # self.log(f'REGISTER self.client_id: {self.client_id}')
-            # self.log(f'REGISTER self.user_pool_id: {self.user_pool_id}')
-            # self.log(f'REGISTER sign_up_response: {sign_up_response}')
-            # self.log(f'REGISTER confirmation_response: {confirmation_response}')
-            # self.log(f'REGISTER redirect_to_sign_in_args: {redirect_to_sign_in_args}')
-            # self.log(f'REGISTER redirect_uri: {redirect_uri}')
-            # self.log(f'REGISTER redirect_uri_after_proxy: {redirect_uri_after_proxy}')
+            registration_successful_message = f"New user registered"
             
-            flash(f"New user registered", category='info')
-            
-            return redirect_uri_after_proxy
+            flash(registration_successful_message, category='info')
+            self.log(f'REGISTER {registration_successful_message}')
             
         except Exception as exception:
             
-            flash(f"Registration did not pass... {exception}", category='danger')
+            exception_message = f"Registration did not pass... {exception}"
+            
+            flash(exception_message, category='danger')
+            self.log(f'REGISTER {exception_message}')
         
-            login_referer = session['login_referer']
-            session.pop('login_referer', None)
-                
-            return login_referer
-    
+
         
     def populate_facebook_user(self):
         
+        user_email = session['email']
+        
+        self.log(f'POPULATE User: {user_email}')
+        
         user_response = self.cognito_client.list_users(
             UserPoolId=self.user_pool_id,
-            Filter=f"email=\"{session['email']}\""
+            Filter=f"email=\"{user_email}\""
         )
         
         user_already_in_cognito = bool(user_response['Users'])
@@ -156,6 +146,9 @@ class Users:
         # self.log(f'POPULATE user_already_in_cognito: {user_already_in_cognito}')
         
         if user_already_in_cognito:
+            
+            self.log(f'POPULATE User is already in Cognito: {user_email}')
+            
             return
         
         fb_username = 'fb_' + session['email'].replace('@', '_')
@@ -179,9 +172,8 @@ class Users:
             Username=fb_username
         )
                                              
-        # self.log(f'POPULATE session: {session}')
-        # self.log(f'POPULATE fb_username: {fb_username}')    
-        # self.log(f'POPULATE done')                                                                 
+        self.log(f'POPULATE Successful: {fb_username}')    
+                                                             
     
         
         

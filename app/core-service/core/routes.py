@@ -26,9 +26,6 @@ def login():
     
     session['login_referer'] = session.get('login_referer') or request.referrer
 
-    # flow = request.args.get('flow')
-    # code = request.args.get('code')
-    
     flow = request.form.get('flow')
     code = request.args.get('code')
     
@@ -47,13 +44,13 @@ def login():
 
     if flow == 'register':
         
-        # redirect_url = app.users.register_user(request.args)
-        redirect_url = app.users.register_user(request.form)
-
+        app.users.register_user_and_login(request.form)
+        redirect_url = session.pop('login_referer', None)
+        
     if flow == 'sign-in':
         
-        # redirect_url = app.users.login_user(request.args)
-        redirect_url = app.users.login_user(request.form)
+        app.users.login_user(request.form)
+        redirect_url = session.pop('login_referer', None)
 
     return redirect(redirect_url)
         

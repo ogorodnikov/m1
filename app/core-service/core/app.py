@@ -47,9 +47,7 @@ class FlaskApp(Flask):
         
         users = cognito.Users(self)
         fb = facebook.FB(self)
-        
-        self.logger.info(f'APP enumerate_threads: {enumerate_threads()}')
-        
+
     
     def run_with_gunicorn(self, *args, **kwargs):
         
@@ -60,6 +58,16 @@ class FlaskApp(Flask):
         
     def run_with_developement_server(self, *args, **kwargs):
         
+        developement_server_parameters = {
+            'host': "0.0.0.0", 
+            'port': 8080, 
+            'debug': True, 
+            'use_reloader': False, 
+            'reloader_type': 'stat'
+        }
+        
+        kwargs.update(**developement_server_parameters)
+
         self.run(*args, **kwargs)
         
     
@@ -72,5 +80,9 @@ class FlaskApp(Flask):
 
 
 app = FlaskApp(__name__)
+
+app.launch = app.run_with_gunicorn
+
+# app.launch = app.run_with_developement_server
 
 from core import routes

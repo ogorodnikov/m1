@@ -6,87 +6,75 @@
 
 {% block content %}
 
-  <div class="container-sm mt-4">
+  <div class="container-md align-self-center text-center" style="max-width: 500px;">
     
-    <body class="text-center">
+    <form action="{{ url_for('login') }}" method="POST">
 
-      <main class="form-signin">
+      <h3 class="my-4">Please sign in or register</h3>
 
-        <form action="{{ url_for('login') }}" method="POST">
-  
-          <h1 class="h3 mb-3 fw-normal">Please sign in or register</h1>
-  
-          <div class="form-floating col-md-6 mx-md-auto mb-3">
-        
-            <label for="username_input">Username</label>
-            <div class="input-group has-validation">
-            
-              <span class="input-group-text" id="username_prepend">
-                <i class="fas fa-cat"></i>
-              </span>
-            
-              <input class="form-control text-light bg-dark"
-                     name="username"
-                     id="username_input"
-                     type="text" 
-                     placeholder="Username"
-                     aria-describedby="username_prepend"
-                     required>
-  
-            </div>
-          </div>
+
+      <label for="username_input">Username</label>
       
-          <div class="form-floating col-md-6 mx-md-auto mb-3">
-            
-            <label for="password_input">Password</label>
-            
-            <div class="input-group has-validation">
-          
-              <span class="input-group-text bg-warning" id="password_prepend">
-                <i class="fas fa-asterisk"></i>
-              </span>
-        
-              <input class="form-control text-light bg-dark"
-                     id="password_input"
-                     name="password"
-                     type="password"
-                     inputmode="numeric"
-                     pattern="[\S]{6,}" 
-                     placeholder="Password"
-                     title="more than 6 symbol length"
-                     required>
+      <div class="input-group has-validation mb-3">
+      
+        <span class="input-group-text" id="username_prepend">
+          <i class="fas fa-cat"></i>
+        </span>
+      
+        <input class="form-control text-light bg-dark"
+               name="username"
+               id="username_input"
+               type="text" 
+               placeholder="Username"
+               aria-describedby="username_prepend"
+               required>
 
-            </div>
-          </div>
+      </div>
+
+        
+      <label for="password_input">Password</label>
+      
+      <div class="input-group has-validation mb-3">
+    
+        <span class="input-group-text bg-warning" id="password_prepend">
+          <i class="fas fa-asterisk"></i>
+        </span>
   
-          <div class="checkbox mb-3">
-            <label>
-              <input type="checkbox"
-                     class="align-middle"
-                     style="width: 1rem; height: 1rem"
-                     value="True"
-                     name="remember_me"> &nbspRemember me
-            </label>
-          </div>
-          
-          <div class="col-md-6 mx-md-auto mb-4">
-            
-            <button class="btn btn-lg btn-block btn-warning mb-3" type="submit" name="flow" value="sign-in">Sign in</button>
-            <button class="btn btn-lg btn-block btn-secondary mb-3" type="submit" name="flow" value="register">Register</button>
-            <button class="btn btn-lg btn-block btn-primary mb-3" type="submit" name="flow" value="facebook" form="facebook_login_form">
-              Login using Facebook
-              <span class="badge bg-light text-dark rounded-pill align-text-bottom">
-                <i class="fab fa-facebook-f"></i>
-              </span>
-            </button>
-          </div>
-          
-        </form>
+        <input class="form-control text-light bg-dark"
+               id="password_input"
+               name="password"
+               type="password"
+               inputmode="numeric"
+               pattern="[\S]{6,}" 
+               placeholder="Password"
+               title="more than 6 symbol length"
+               required>
+
+      </div>
+
+      <div class="checkbox mb-3">
+        <label>
+          <input type="checkbox"
+                 class="align-middle"
+                 style="width: 1em; height: 1em"
+                 value="True"
+                 name="remember_me"> &nbspRemember me
+        </label>
+      </div>
+      
+      <button class="btn btn-lg btn-block btn-warning mb-3" type="submit" name="flow" value="sign-in">Sign in</button>
+      <button class="btn btn-lg btn-block btn-secondary mb-3" type="submit" name="flow" value="register">Register</button>
+      <button class="btn btn-lg btn-block btn-primary mb-3" type="submit" name="flow" value="facebook" form="facebook_login_form">
+        Login using Facebook
+        <span class="badge bg-light text-dark rounded-pill align-text-bottom">
+          <i class="fab fa-facebook-f"></i>
+        </span>
+      </button>
+      
+    </form>
+    
+    <form id="facebook_login_form" action="{{ url_for('login') }}" method="POST"></form>
         
-        <form id="facebook_login_form" action="{{ url_for('login') }}" method="POST"></form>
-        
-      </main>
-    </body>
   </div>
   
 {% endblock %}
