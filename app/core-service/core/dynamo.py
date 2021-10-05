@@ -32,9 +32,8 @@ class DB():
             ExpressionAttributeValues={':empty_list': [], ':zero': 0}
             )
         
-        app.config['DB'] = self
-        app.logger.info('DYNAMO initiated')
-        
+        app.logger.info(f'DYNAMO initiated: {self}')
+
     
     # Algorithms
     

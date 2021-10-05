@@ -42,25 +42,22 @@ class Runner():
     def __init__(self, app, *args, **kwargs):
         
         self.app = app
+        self.db = app.db
         
-        self.db = self.app.config.get('DB')
-        self.qiskit_token = self.app.config.get('QISKIT_TOKEN')
-        self.task_timeout = self.app.config.get('TASK_TIMEOUT')
-        self.backend_avoid_list = self.app.config.get('BACKEND_AVOID_LIST')
-        self.queue_workers_count = self.app.config.get('QUEUE_WORKERS_PER_RUNNER')
+        self.qiskit_token = app.config.get('QISKIT_TOKEN')
+        self.task_timeout = app.config.get('TASK_TIMEOUT')
+        self.backend_avoid_list = app.config.get('BACKEND_AVOID_LIST')
+        self.queue_workers_count = app.config.get('QUEUE_WORKERS_PER_RUNNER')
         
         IBMQ.save_account(self.qiskit_token)
         IBMQ.load_account()
         
-        # if not IBMQ.active_account():
-        #     IBMQ.load_account()
-        
-        self.static_folder = self.app.static_folder
+        self.static_folder = app.static_folder
 
         self.worker_active_flag = Event()
         
-        self.app.config['RUNNER'] = self
-        self.app.config['RUNNER_STATE'] = 'Stopped'
+        app.config['RUNNER'] = self
+        app.config['RUNNER_STATE'] = 'Stopped'
         
         self.log(f'RUNNER initiated: {self}')
         

@@ -1,6 +1,10 @@
 from flask import Flask
 from flask_cors import CORS
 
+import signal
+from os import environ
+from threading import enumerate as enumerate_threads
+
 from logging.config import dictConfig
 
 from core import config
@@ -10,11 +14,9 @@ from core import telegram
 from core import cognito
 from core import facebook
 
-import signal
-
 from core.gunicorn.app import GunicornApp
 
-from os import environ
+
 
 
 class FlaskApp(Flask):
@@ -35,7 +37,7 @@ class FlaskApp(Flask):
         
         CORS(self)
         
-        db = dynamo.DB(self)
+        self.db = dynamo.DB(self)
         
         runner = engine.Runner(self)
         runner.start()
@@ -45,6 +47,8 @@ class FlaskApp(Flask):
         
         users = cognito.Users(self)
         fb = facebook.FB(self)
+        
+        self.logger.info(f'APP enumerate_threads: {enumerate_threads()}')
         
     
     def run_with_gunicorn(self, *args, **kwargs):

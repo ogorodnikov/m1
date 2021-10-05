@@ -1,8 +1,12 @@
-from threading import Thread, enumerate as enumerate_threads
-
 from telebot import TeleBot
-from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
-from telebot.types import ReplyKeyboardMarkup, CallbackQuery, Message
+
+from telebot.types import Message
+from telebot.types import CallbackQuery
+from telebot.types import ReplyKeyboardMarkup
+from telebot.types import InlineKeyboardMarkup
+from telebot.types import InlineKeyboardButton
+
+from threading import Thread
 
 
 class Bot(TeleBot):
@@ -12,8 +16,8 @@ class Bot(TeleBot):
     def __init__(self, app, *args, **kwargs):
 
         self.app = app
-        
-        self.db = self.app.config.get('DB')
+        self.db = app.db
+                
         self.runner = self.app.config.get('RUNNER')
         self.domain = self.app.config.get('DOMAIN')
 
@@ -44,7 +48,6 @@ class Bot(TeleBot):
         self.app.config['TELEGRAM_BOT_STATE'] = 'Started'
 
         self.log(f'BOT polling: {self}')
-        self.log(f'BOT enumerate_threads: {enumerate_threads()}')
 
 
     def stop(self):

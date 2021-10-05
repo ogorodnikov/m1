@@ -14,7 +14,7 @@ import botocore.exceptions
 import requests
 
 
-db = app.config.get('DB')
+db = app.db
 runner = app.config.get('RUNNER')
 facebook = app.config.get('FACEBOOK')
 
