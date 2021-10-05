@@ -1,4 +1,7 @@
-from flask import flash, session, url_for, redirect
+from flask import flash
+from flask import url_for
+from flask import session
+from flask import redirect
 
 import boto3
 import botocore.exceptions

@@ -7,6 +7,7 @@ from core import config
 from core import dynamo
 from core import engine
 from core import telegram
+from core import facebook
 
 import signal
 
@@ -40,6 +41,8 @@ class FlaskApp(Flask):
         
         bot = telegram.Bot(self)
         bot.start()
+        
+        fb = facebook.FB(self)
         
         
         from core import routes
