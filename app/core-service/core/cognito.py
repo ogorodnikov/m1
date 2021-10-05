@@ -38,6 +38,8 @@ class Users:
 
     def login_user(self, login_form):
         
+        print('login_form', login_form)
+        
         username = login_form.get('username')
         password = login_form.get('password')
         email = login_form.get('email')
