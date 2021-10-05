@@ -1,4 +1,12 @@
-[2021-10-05 23:10:20] I engine | QPE circuit: 
+[2021-10-05 23:10:25] I engine | QPE qft_dagger_circuit: 
+      ░                 ░                           ░ ┌───┐
+q_0: ─░─────────────────░───────■─────────■─────────░─┤ H ├
+      ░                 ░ ┌───┐ │         │P(-π/2)  ░ └───┘
+q_1: ─░───────■─────────░─┤ H ├─┼─────────■─────────░──────
+      ░ ┌───┐ │P(-π/2)  ░ └───┘ │P(-π/4)            ░      
+q_2: ─░─┤ H ├─■─────────░───────■───────────────────░──────
+      ░ └───┘           ░                           ░      
+[2021-10-05 23:10:25] I engine | QPE circuit: 
      ┌───┐                                                               ┌───────────────┐ ░       ┌─┐
 q_0: ┤ H ├─■─────────────────────────────────────────────────────────────┤0              ├─░───────┤M├
      ├───┤ │                                                             │               │ ░    ┌─┐└╥┘
@@ -10,28 +18,28 @@ q_3: ┤ X ├─■────────■────────■──
      └───┘                                                                                 ░  ║  ║  ║ 
 c: 3/═════════════════════════════════════════════════════════════════════════════════════════╩══╩══╩═
                                                                                               0  1  2 
-[2021-10-05 23:10:21] I engine | RUNNER backend: qasm_simulator
-[2021-10-05 23:10:21] I engine | RUNNER job status: RUNNING
-[2021-10-05 23:10:23] I engine | RUNNER job status: DONE
-[2021-10-05 23:10:23] I engine | RUNNER statevector:
-[2021-10-05 23:10:23] I engine | 1100: (1-0j)
-[2021-10-05 23:10:24] I engine | RUNNER statevector figure: Figure(1600x400)
-[2021-10-05 23:10:24] I engine | RUNNER run_result: Result(backend_name='qasm_simulator', backend_version='0.8.2', qobj_id='c55d2b0e-f9ab-4e66-b6fc-35d63505bc2e', job_id='e6f8bb21-d4ab-452a-9c9f-506fad7753a7', success=True, results=[ExperimentResult(shots=1024, success=True, meas_level=2, data=ExperimentResultData(counts={'0x1': 1024}, statevector=[ 0.+0.00000000e+00j  0.+0.00000000e+00j  0.+0.00000000e+00j
+[2021-10-05 23:10:25] I engine | RUNNER backend: qasm_simulator
+[2021-10-05 23:10:26] I engine | RUNNER job status: RUNNING
+[2021-10-05 23:10:28] I engine | RUNNER job status: DONE
+[2021-10-05 23:10:28] I engine | RUNNER statevector:
+[2021-10-05 23:10:28] I engine | 1100: (1-0j)
+[2021-10-05 23:10:29] I engine | RUNNER statevector figure: Figure(1600x400)
+[2021-10-05 23:10:29] I engine | RUNNER run_result: Result(backend_name='qasm_simulator', backend_version='0.8.2', qobj_id='e5d2bf92-4afc-4833-b5a6-934797196c87', job_id='f76ae8d9-f5cb-401e-bf61-bb58e78a105f', success=True, results=[ExperimentResult(shots=1024, success=True, meas_level=2, data=ExperimentResultData(counts={'0x1': 1024}, statevector=[ 0.+0.00000000e+00j  0.+0.00000000e+00j  0.+0.00000000e+00j
   0.+0.00000000e+00j  0.+0.00000000e+00j  0.+0.00000000e+00j
   0.+0.00000000e+00j  0.+0.00000000e+00j -0.+0.00000000e+00j
   0.+0.00000000e+00j  0.+0.00000000e+00j  0.+0.00000000e+00j
   1.-4.17998443e-16j  0.+0.00000000e+00j  0.+0.00000000e+00j
- -0.+0.00000000e+00j]), header=QobjExperimentHeader(clbit_labels=[['c', 0], ['c', 1], ['c', 2]], creg_sizes=[['c', 3]], global_phase=0.0, memory_slots=3, metadata=None, n_qubits=4, name='QPE Circuit', qreg_sizes=[['q', 4]], qubit_labels=[['q', 0], ['q', 1], ['q', 2], ['q', 3]]), status=DONE, seed_simulator=3690126753, metadata={'parallel_shots': 1, 'method': 'statevector', 'parallel_state_update': 1, 'measure_sampling': False, 'fusion': {'applied': False, 'max_fused_qubits': 5, 'enabled': True, 'threshold': 14}}, time_taken=0.051752188000000005)], date=2021-10-05T23:10:21.242474, status=COMPLETED, status=QobjHeader(backend_name='qasm_simulator', backend_version='0.8.2'), metadata={'time_taken': 0.052233781, 'parallel_experiments': 1, 'omp_enabled': True, 'max_gpu_memory_mb': 0, 'num_mpi_processes': 1, 'max_memory_mb': 983, 'mpi_rank': 0}, time_taken=0.055845022201538086)
-[2021-10-05 23:10:24] I engine | RUNNER counts:
-[2021-10-05 23:10:24] I engine | 001: 1024
-[2021-10-05 23:10:24] I engine | QPE qpe_post_processing
-[2021-10-05 23:10:24] I engine | QPE counts: {'001': 1024}
-[2021-10-05 23:10:24] I engine | QPE counts_decimals: {1: 1024}
-[2021-10-05 23:10:24] I engine | QPE counts_sum: 1024
-[2021-10-05 23:10:24] I engine | QPE states_weighted_sum: 1024
-[2021-10-05 23:10:24] I engine | QPE states_average: 1.0
-[2021-10-05 23:10:24] I engine | QPE first_state: 001
-[2021-10-05 23:10:24] I engine | QPE precision: 3
-[2021-10-05 23:10:24] I engine | QPE theta: 0.125
-[2021-10-05 23:10:24] I engine | QPE angle: 0.25
-[2021-10-05 23:10:24] I engine | RUNNER result: {'Result': {'Theta': 0.125}}
+ -0.+0.00000000e+00j]), header=QobjExperimentHeader(clbit_labels=[['c', 0], ['c', 1], ['c', 2]], creg_sizes=[['c', 3]], global_phase=0.0, memory_slots=3, metadata=None, n_qubits=4, name='QPE Circuit', qreg_sizes=[['q', 4]], qubit_labels=[['q', 0], ['q', 1], ['q', 2], ['q', 3]]), status=DONE, seed_simulator=2486198471, metadata={'parallel_shots': 1, 'method': 'statevector', 'parallel_state_update': 1, 'measure_sampling': False, 'fusion': {'applied': False, 'max_fused_qubits': 5, 'enabled': True, 'threshold': 14}}, time_taken=0.051803615000000004)], date=2021-10-05T23:10:26.086114, status=COMPLETED, status=QobjHeader(backend_name='qasm_simulator', backend_version='0.8.2'), metadata={'time_taken': 0.052274532000000005, 'parallel_experiments': 1, 'omp_enabled': True, 'max_gpu_memory_mb': 0, 'num_mpi_processes': 1, 'max_memory_mb': 983, 'mpi_rank': 0}, time_taken=0.05582833290100098)
+[2021-10-05 23:10:29] I engine | RUNNER counts:
+[2021-10-05 23:10:29] I engine | 001: 1024
+[2021-10-05 23:10:29] I engine | QPE qpe_post_processing
+[2021-10-05 23:10:29] I engine | QPE counts: {'001': 1024}
+[2021-10-05 23:10:29] I engine | QPE counts_decimals: {1: 1024}
+[2021-10-05 23:10:29] I engine | QPE counts_sum: 1024
+[2021-10-05 23:10:29] I engine | QPE states_weighted_sum: 1024
+[2021-10-05 23:10:29] I engine | QPE states_average: 1.0
+[2021-10-05 23:10:29] I engine | QPE first_state: 001
+[2021-10-05 23:10:29] I engine | QPE precision: 3
+[2021-10-05 23:10:29] I engine | QPE theta: 0.125
+[2021-10-05 23:10:29] I engine | QPE angle: 0.25
+[2021-10-05 23:10:29] I engine | RUNNER result: {'Result': {'Theta': 0.125}}

@@ -1,4 +1,1262 @@
-[2021-10-05 23:10:26] I engine | RUNNER new_task: (Decimal('17'), 'dj', ImmutableMultiDict([('secret', '1010'), ('run_mode', 'quantum_device')]))
-[2021-10-05 23:10:39] I engine | RUNNER new_task: (Decimal('18'), 'simon', ImmutableMultiDict([('period', '1010'), ('masquerade', 'True'), ('run_mode', 'simulator')]))
-[2021-10-05 23:10:40] I engine | RUNNER new_task: (Decimal('19'), 'simon', ImmutableMultiDict([('period', '1010'), ('masquerade', 'True'), ('run_mode', 'simulator')]))
-[2021-10-05 23:10:40] I engine | RUNNER new_task: (Decimal('20'), 'simon', ImmutableMultiDict([('period', '1010'), ('masquerade', 'True'), ('run_mode', 'quantum_device')]))
+[2021-10-05 23:10:30] I engine | RUNNER next_task: {'logs': [], 'run_values': {'angle': '0.25', 'run_mode': 'quantum_device', 'precision': '3'}, 'task_id': Decimal('14'), 'task_status': 'Running', 'algorithm_id': 'qpe', 'record_type': 'task_record'}
+[2021-10-05 23:10:30] I engine | RUNNER run_mode: quantum_device
+[2021-10-05 23:10:30] I engine | RUNNER run_values: {'angle': '0.25', 'run_mode': 'quantum_device', 'precision': '3', 'task_id': 14}
+[2021-10-05 23:10:30] I engine | RUNNER runner_function: <function qpe at 0x7f13c6863950>
+[2021-10-05 23:10:30] I engine | QPE angle: 
+0.25
+[2021-10-05 23:10:30] I engine | QPE precision: 
+3
+[2021-10-05 23:10:30] I engine | QPE qft_dagger_circuit: 
+      ░                 ░                           ░ ┌───┐
+q_0: ─░─────────────────░───────■─────────■─────────░─┤ H ├
+      ░                 ░ ┌───┐ │         │P(-π/2)  ░ └───┘
+q_1: ─░───────■─────────░─┤ H ├─┼─────────■─────────░──────
+      ░ ┌───┐ │P(-π/2)  ░ └───┘ │P(-π/4)            ░      
+q_2: ─░─┤ H ├─■─────────░───────■───────────────────░──────
+      ░ └───┘           ░                           ░      
+[2021-10-05 23:10:30] I engine | QPE circuit: 
+     ┌───┐                                                               ┌───────────────┐ ░       ┌─┐
+q_0: ┤ H ├─■─────────────────────────────────────────────────────────────┤0              ├─░───────┤M├
+     ├───┤ │                                                             │               │ ░    ┌─┐└╥┘
+q_1: ┤ H ├─┼────────■────────■───────────────────────────────────────────┤1 QFT† Circuit ├─░────┤M├─╫─
+     ├───┤ │        │        │                                           │               │ ░ ┌─┐└╥┘ ║ 
+q_2: ┤ H ├─┼────────┼────────┼────────■────────■────────■────────■───────┤2              ├─░─┤M├─╫──╫─
+     ├───┤ │P(π/4)  │P(π/4)  │P(π/4)  │P(π/4)  │P(π/4)  │P(π/4)  │P(π/4) └───────────────┘ ░ └╥┘ ║  ║ 
+q_3: ┤ X ├─■────────■────────■────────■────────■────────■────────■─────────────────────────░──╫──╫──╫─
+     └───┘                                                                                 ░  ║  ║  ║ 
+c: 3/═════════════════════════════════════════════════════════════════════════════════════════╩══╩══╩═
+                                                                                              0  1  2 
+[2021-10-05 23:10:30] I engine | RUNNER ibmq_provider: <AccountProvider for IBMQ(hub='ibm-q', group='open', project='main')>
+[2021-10-05 23:10:35] I engine | RUNNER backend: ibmq_belem
+[2021-10-05 23:10:36] I engine | RUNNER job status: VALIDATING
+[2021-10-05 23:10:37] I engine | RUNNER job status: QUEUED at position 3
+[2021-10-05 23:10:40] I engine | RUNNER job status: QUEUED at position 3
+[2021-10-05 23:10:44] I engine | RUNNER job status: QUEUED at position 2
+[2021-10-05 23:10:48] I engine | RUNNER job status: QUEUED at position 2
+[2021-10-05 23:10:52] I engine | RUNNER job status: QUEUED at position 2
+[2021-10-05 23:10:56] I engine | RUNNER job status: QUEUED at position 1
+[2021-10-05 23:11:01] I engine | RUNNER job status: QUEUED at position 1
+[2021-10-05 23:11:05] I engine | RUNNER job status: QUEUED at position 1
+[2021-10-05 23:11:09] I engine | RUNNER job status: RUNNING
+[2021-10-05 23:11:13] I engine | RUNNER job status: RUNNING
+[2021-10-05 23:11:18] I engine | RUNNER job status: DONE
+[2021-10-05 23:11:18] I engine | RUNNER run_result: Result(backend_name='ibmq_belem', backend_version='1.0.20', qobj_id='d0923494-edac-435b-9158-48e638ed9334', job_id='615cdb6c73064c719b619690', success=True, results=[ExperimentResult(shots=1024, success=True, meas_level=2, data=ExperimentResultData(counts={'0x0': 89, '0x1': 126, '0x2': 130, '0x3': 119, '0x4': 126, '0x5': 159, '0x6': 150, '0x7': 125}), header=QobjExperimentHeader(clbit_labels=[['c', 0], ['c', 1], ['c', 2]], creg_sizes=[['c', 3]], global_phase=5.105088062083413, memory_slots=3, metadata={}, n_qubits=5, name='QPE Circuit', qreg_sizes=[['q', 5]], qubit_labels=[['q', 0], ['q', 1], ['q', 2], ['q', 3], ['q', 4]]), memory=False)], date=2021-10-05 23:11:14+00:00, status=Successful completion, status=QobjHeader(backend_name='ibmq_belem', backend_version='1.0.20'), time_taken=3.8506557941436768, execution_id='870d32f8-2631-11ec-adfd-b02628f7f59e', client_version={'qiskit': '0.28.0'})
+[2021-10-05 23:11:18] I engine | RUNNER counts:
+[2021-10-05 23:11:18] I engine | 000: 89
+[2021-10-05 23:11:18] I engine | 001: 126
+[2021-10-05 23:11:18] I engine | 010: 130
+[2021-10-05 23:11:18] I engine | 011: 119
+[2021-10-05 23:11:18] I engine | 100: 126
+[2021-10-05 23:11:18] I engine | 101: 159
+[2021-10-05 23:11:18] I engine | 110: 150
+[2021-10-05 23:11:18] I engine | 111: 125
+[2021-10-05 23:11:18] I engine | QPE qpe_post_processing
+[2021-10-05 23:11:18] I engine | QPE counts: {'000': 89, '001': 126, '010': 130, '011': 119, '100': 126, '101': 159, '110': 150, '111': 125}
+[2021-10-05 23:11:18] I engine | QPE counts_decimals: {0: 89, 1: 126, 2: 130, 3: 119, 4: 126, 5: 159, 6: 150, 7: 125}
+[2021-10-05 23:11:18] I engine | QPE counts_sum: 1024
+[2021-10-05 23:11:18] I engine | QPE states_weighted_sum: 3817
+[2021-10-05 23:11:18] I engine | QPE states_average: 3.7275390625
+[2021-10-05 23:11:18] I engine | QPE first_state: 000
+[2021-10-05 23:11:18] I engine | QPE precision: 3
+[2021-10-05 23:11:18] I engine | QPE theta: 0.4659423828125
+[2021-10-05 23:11:18] I engine | QPE angle: 0.931884765625
+[2021-10-05 23:11:18] I engine | RUNNER result: {'Result': {'Theta': 0.4659423828125}}
+[2021-10-05 23:11:20] I engine | RUNNER next_task: {'logs': [], 'run_values': {'run_mode': 'simulator', 'secret': '1010'}, 'task_id': Decimal('15'), 'task_status': 'Running', 'algorithm_id': 'dj', 'record_type': 'task_record'}
+[2021-10-05 23:11:20] I engine | RUNNER run_mode: simulator
+[2021-10-05 23:11:20] I engine | RUNNER run_values: {'run_mode': 'simulator', 'secret': '1010', 'task_id': 15}
+[2021-10-05 23:11:20] I engine | RUNNER runner_function: <function dj at 0x7f13c7e859e0>
+[2021-10-05 23:11:20] I engine | DJ input_secret: 1010
+[2021-10-05 23:11:20] I engine | DJ full_secret: 1010
+[2021-10-05 23:11:20] I engine | DJ secret: 1010
+[2021-10-05 23:11:20] I engine | DJ secret_bit_len: 2
+[2021-10-05 23:11:20] I engine | DJ secret_len: 4
+[2021-10-05 23:11:20] I engine | DJ input_qubits_count: 2
+[2021-10-05 23:11:20] I engine | DJ all_qubits_count: 3
+[2021-10-05 23:11:20] I engine | DJ output_qubit: 2
+[2021-10-05 23:11:20] I engine | DJ qubits_measurement_list: [1, 0]
+[2021-10-05 23:11:20] I engine | DJ truth_table: {'00': '1', '01': '0', '10': '1', '11': '0'}
+[2021-10-05 23:11:20] I engine | DJ truth_table_oracle: 
+     ┌───┐     ┌───┐ ░                 ░ 
+q_0: ┤ X ├──■──┤ X ├─░────────■────────░─
+     ├───┤  │  ├───┤ ░ ┌───┐  │  ┌───┐ ░ 
+q_1: ┤ X ├──■──┤ X ├─░─┤ X ├──■──┤ X ├─░─
+     └───┘┌─┴─┐└───┘ ░ └───┘┌─┴─┐└───┘ ░ 
+q_2: ─────┤ X ├──────░──────┤ X ├──────░─
+          └───┘      ░      └───┘      ░ 
+[2021-10-05 23:11:20] I engine | DJ circuit: 
+     ┌───┐     ┌─────────────────────┐┌───┐ ░    ┌─┐
+q_0: ┤ H ├─────┤0                    ├┤ H ├─░────┤M├
+     ├───┤     │                     │├───┤ ░ ┌─┐└╥┘
+q_1: ┤ H ├─────┤1 Truth Table Oracle ├┤ H ├─░─┤M├─╫─
+     ├───┤┌───┐│                     │└───┘ ░ └╥┘ ║ 
+q_2: ┤ X ├┤ H ├┤2                    ├──────░──╫──╫─
+     └───┘└───┘└─────────────────────┘      ░  ║  ║ 
+c: 2/══════════════════════════════════════════╩══╩═
+                                               0  1 
+[2021-10-05 23:11:20] I engine | DJ if majority of counts is all 0 - secret is constant
+[2021-10-05 23:11:20] I engine | DJ if majority of counts is any other state - secret is balanced
+[2021-10-05 23:11:20] I engine | DJ if counts are distributed via multiple states - probably secret is unbalanced
+[2021-10-05 23:11:20] I engine | RUNNER backend: qasm_simulator
+[2021-10-05 23:11:20] I engine | RUNNER job status: RUNNING
+[2021-10-05 23:11:22] I engine | RUNNER job status: DONE
+[2021-10-05 23:11:22] I engine | RUNNER statevector:
+[2021-10-05 23:11:22] I engine | 010: (-0.707+0j)
+[2021-10-05 23:11:22] I engine | 110: (0.707-0j)
+[2021-10-05 23:11:23] I engine | RUNNER statevector figure: Figure(1440x480)
+[2021-10-05 23:11:23] I engine | RUNNER run_result: Result(backend_name='qasm_simulator', backend_version='0.8.2', qobj_id='f76960c7-74da-42e3-b81a-713351993716', job_id='8686c67c-255b-4bdb-b786-4cddc7053e1e', success=True, results=[ExperimentResult(shots=1024, success=True, meas_level=2, data=ExperimentResultData(counts={'0x1': 1024}, statevector=[ 0.        +0.00000000e+00j  0.        +0.00000000e+00j
+ -0.70710678+4.32978028e-17j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j -0.        +0.00000000e+00j
+  0.70710678-4.32978028e-17j -0.        +0.00000000e+00j]), header=QobjExperimentHeader(clbit_labels=[['c', 0], ['c', 1]], creg_sizes=[['c', 2]], global_phase=0.0, memory_slots=2, metadata=None, n_qubits=3, name='circuit-1', qreg_sizes=[['q', 3]], qubit_labels=[['q', 0], ['q', 1], ['q', 2]]), status=DONE, seed_simulator=2177082657, metadata={'parallel_shots': 1, 'method': 'statevector', 'parallel_state_update': 1, 'measure_sampling': False, 'fusion': {'applied': False, 'max_fused_qubits': 5, 'enabled': True, 'threshold': 14}}, time_taken=0.031863137)], date=2021-10-05T23:11:20.587989, status=COMPLETED, status=QobjHeader(backend_name='qasm_simulator', backend_version='0.8.2'), metadata={'time_taken': 0.032292288, 'parallel_experiments': 1, 'omp_enabled': True, 'max_gpu_memory_mb': 0, 'num_mpi_processes': 1, 'max_memory_mb': 983, 'mpi_rank': 0}, time_taken=0.03572559356689453)
+[2021-10-05 23:11:23] I engine | RUNNER counts:
+[2021-10-05 23:11:23] I engine | 01: 1024
+[2021-10-05 23:11:23] I engine | RUNNER result: {'Counts': {'01': 1024}}
+[2021-10-05 23:11:24] I engine | RUNNER next_task: {'logs': [], 'run_values': {'run_mode': 'simulator', 'secret': '1010'}, 'task_id': Decimal('16'), 'task_status': 'Running', 'algorithm_id': 'dj', 'record_type': 'task_record'}
+[2021-10-05 23:11:24] I engine | RUNNER run_mode: simulator
+[2021-10-05 23:11:24] I engine | RUNNER run_values: {'run_mode': 'simulator', 'secret': '1010', 'task_id': 16}
+[2021-10-05 23:11:24] I engine | RUNNER runner_function: <function dj at 0x7f13c7e859e0>
+[2021-10-05 23:11:24] I engine | DJ input_secret: 1010
+[2021-10-05 23:11:24] I engine | DJ full_secret: 1010
+[2021-10-05 23:11:24] I engine | DJ secret: 1010
+[2021-10-05 23:11:24] I engine | DJ secret_bit_len: 2
+[2021-10-05 23:11:24] I engine | DJ secret_len: 4
+[2021-10-05 23:11:24] I engine | DJ input_qubits_count: 2
+[2021-10-05 23:11:25] I engine | DJ all_qubits_count: 3
+[2021-10-05 23:11:25] I engine | DJ output_qubit: 2
+[2021-10-05 23:11:25] I engine | DJ qubits_measurement_list: [1, 0]
+[2021-10-05 23:11:25] I engine | DJ truth_table: {'00': '1', '01': '0', '10': '1', '11': '0'}
+[2021-10-05 23:11:25] I engine | DJ truth_table_oracle: 
+     ┌───┐     ┌───┐ ░                 ░ 
+q_0: ┤ X ├──■──┤ X ├─░────────■────────░─
+     ├───┤  │  ├───┤ ░ ┌───┐  │  ┌───┐ ░ 
+q_1: ┤ X ├──■──┤ X ├─░─┤ X ├──■──┤ X ├─░─
+     └───┘┌─┴─┐└───┘ ░ └───┘┌─┴─┐└───┘ ░ 
+q_2: ─────┤ X ├──────░──────┤ X ├──────░─
+          └───┘      ░      └───┘      ░ 
+[2021-10-05 23:11:25] I engine | DJ circuit: 
+     ┌───┐     ┌─────────────────────┐┌───┐ ░    ┌─┐
+q_0: ┤ H ├─────┤0                    ├┤ H ├─░────┤M├
+     ├───┤     │                     │├───┤ ░ ┌─┐└╥┘
+q_1: ┤ H ├─────┤1 Truth Table Oracle ├┤ H ├─░─┤M├─╫─
+     ├───┤┌───┐│                     │└───┘ ░ └╥┘ ║ 
+q_2: ┤ X ├┤ H ├┤2                    ├──────░──╫──╫─
+     └───┘└───┘└─────────────────────┘      ░  ║  ║ 
+c: 2/══════════════════════════════════════════╩══╩═
+                                               0  1 
+[2021-10-05 23:11:25] I engine | DJ if majority of counts is all 0 - secret is constant
+[2021-10-05 23:11:25] I engine | DJ if majority of counts is any other state - secret is balanced
+[2021-10-05 23:11:25] I engine | DJ if counts are distributed via multiple states - probably secret is unbalanced
+[2021-10-05 23:11:25] I engine | RUNNER backend: qasm_simulator
+[2021-10-05 23:11:25] I engine | RUNNER job status: RUNNING
+[2021-10-05 23:11:27] I engine | RUNNER job status: DONE
+[2021-10-05 23:11:27] I engine | RUNNER statevector:
+[2021-10-05 23:11:27] I engine | 010: (-0.707+0j)
+[2021-10-05 23:11:27] I engine | 110: (0.707-0j)
+[2021-10-05 23:11:28] I engine | RUNNER statevector figure: Figure(1440x480)
+[2021-10-05 23:11:28] I engine | RUNNER run_result: Result(backend_name='qasm_simulator', backend_version='0.8.2', qobj_id='83b5d421-8398-4cc6-9975-f426aaf986b6', job_id='9e0c214a-98a5-445b-b9a9-22fc7e20aa47', success=True, results=[ExperimentResult(shots=1024, success=True, meas_level=2, data=ExperimentResultData(counts={'0x1': 1024}, statevector=[ 0.        +0.00000000e+00j  0.        +0.00000000e+00j
+ -0.70710678+4.32978028e-17j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j -0.        +0.00000000e+00j
+  0.70710678-4.32978028e-17j -0.        +0.00000000e+00j]), header=QobjExperimentHeader(clbit_labels=[['c', 0], ['c', 1]], creg_sizes=[['c', 2]], global_phase=0.0, memory_slots=2, metadata=None, n_qubits=3, name='circuit-1', qreg_sizes=[['q', 3]], qubit_labels=[['q', 0], ['q', 1], ['q', 2]]), status=DONE, seed_simulator=2681504116, metadata={'parallel_shots': 1, 'method': 'statevector', 'parallel_state_update': 1, 'measure_sampling': False, 'fusion': {'applied': False, 'max_fused_qubits': 5, 'enabled': True, 'threshold': 14}}, time_taken=0.031877847)], date=2021-10-05T23:11:25.346860, status=COMPLETED, status=QobjHeader(backend_name='qasm_simulator', backend_version='0.8.2'), metadata={'time_taken': 0.032306026, 'parallel_experiments': 1, 'omp_enabled': True, 'max_gpu_memory_mb': 0, 'num_mpi_processes': 1, 'max_memory_mb': 983, 'mpi_rank': 0}, time_taken=0.03569149971008301)
+[2021-10-05 23:11:28] I engine | RUNNER counts:
+[2021-10-05 23:11:28] I engine | 01: 1024
+[2021-10-05 23:11:28] I engine | RUNNER result: {'Counts': {'01': 1024}}
+[2021-10-05 23:11:29] I engine | RUNNER next_task: {'logs': [], 'run_values': {'masquerade': 'True', 'run_mode': 'simulator', 'period': '1010'}, 'task_id': Decimal('18'), 'task_status': 'Running', 'algorithm_id': 'simon', 'record_type': 'task_record'}
+[2021-10-05 23:11:29] I engine | RUNNER run_mode: simulator
+[2021-10-05 23:11:29] I engine | RUNNER run_values: {'masquerade': 'True', 'run_mode': 'simulator', 'period': '1010', 'task_id': 18}
+[2021-10-05 23:11:29] I engine | RUNNER runner_function: <function simon at 0x7f13c7e879e0>
+[2021-10-05 23:11:29] I engine | SIMON input_period: 1010
+[2021-10-05 23:11:29] I engine | SIMON period: 1010
+[2021-10-05 23:11:29] I engine | SIMON masquerade: True
+[2021-10-05 23:11:29] I engine | SIMON masquerade_bool: True
+[2021-10-05 23:11:29] I engine | SIMON input_qubits_count: 4
+[2021-10-05 23:11:29] I engine | SIMON all_qubits_count: 8
+[2021-10-05 23:11:29] I engine | SIMON qubits_measurement_list: [3, 2, 1, 0]
+[2021-10-05 23:11:29] I engine | SIMON simon_oracle: 
+                                    ░        ░      
+q_0: ──■───────────────────■────■───░────────░──────
+       │                   │    │   ░        ░      
+q_1: ──┼────■──────────────┼────┼───░────────░──────
+       │    │              │    │   ░        ░      
+q_2: ──┼────┼────■─────────┼────┼───░────────░──────
+       │    │    │         │    │   ░        ░      
+q_3: ──┼────┼────┼────■────┼────┼───░────────░──────
+     ┌─┴─┐  │    │    │  ┌─┴─┐  │   ░        ░      
+q_4: ┤ X ├──┼────┼────┼──┤ X ├──┼───░──X─────░──────
+     └───┘┌─┴─┐  │    │  └───┘  │   ░  │     ░      
+q_5: ─────┤ X ├──┼────┼─────────┼───░──X──X──░──────
+          └───┘┌─┴─┐  │       ┌─┴─┐ ░     │  ░ ┌───┐
+q_6: ──────────┤ X ├──┼───────┤ X ├─░─────X──░─┤ X ├
+               └───┘┌─┴─┐     └───┘ ░        ░ ├───┤
+q_7: ───────────────┤ X ├───────────░────────░─┤ X ├
+                    └───┘           ░        ░ └───┘
+[2021-10-05 23:11:29] I engine | SIMON circuit: 
+     ┌───┐┌───────────────┐┌───┐         ┌─┐
+q_0: ┤ H ├┤0              ├┤ H ├─────────┤M├
+     ├───┤│               │├───┤      ┌─┐└╥┘
+q_1: ┤ H ├┤1              ├┤ H ├──────┤M├─╫─
+     ├───┤│               │├───┤   ┌─┐└╥┘ ║ 
+q_2: ┤ H ├┤2              ├┤ H ├───┤M├─╫──╫─
+     ├───┤│               │├───┤┌─┐└╥┘ ║  ║ 
+q_3: ┤ H ├┤3              ├┤ H ├┤M├─╫──╫──╫─
+     └───┘│  Simon Oracle │└───┘└╥┘ ║  ║  ║ 
+q_4: ─────┤4              ├──────╫──╫──╫──╫─
+          │               │      ║  ║  ║  ║ 
+q_5: ─────┤5              ├──────╫──╫──╫──╫─
+          │               │      ║  ║  ║  ║ 
+q_6: ─────┤6              ├──────╫──╫──╫──╫─
+          │               │      ║  ║  ║  ║ 
+q_7: ─────┤7              ├──────╫──╫──╫──╫─
+          └───────────────┘      ║  ║  ║  ║ 
+c: 4/════════════════════════════╩══╩══╩══╩═
+                                 0  1  2  3 
+[2021-10-05 23:11:29] I engine | RUNNER backend: qasm_simulator
+[2021-10-05 23:11:30] I engine | RUNNER job status: RUNNING
+[2021-10-05 23:11:32] I engine | RUNNER job status: DONE
+[2021-10-05 23:11:32] I engine | RUNNER statevector:
+[2021-10-05 23:11:32] I engine | 01001111: (-0.354+0j)
+[2021-10-05 23:11:32] I engine | 01011111: (0.354-0j)
+[2021-10-05 23:11:32] I engine | 01101111: (0.354-0j)
+[2021-10-05 23:11:32] I engine | 01111111: (-0.354+0j)
+[2021-10-05 23:11:32] I engine | 11001111: (0.354-0j)
+[2021-10-05 23:11:32] I engine | 11011111: (-0.354+0j)
+[2021-10-05 23:11:32] I engine | 11101111: (-0.354+0j)
+[2021-10-05 23:11:32] I engine | 11111111: (0.354-0j)
+[2021-10-05 23:11:33] I engine | RUNNER statevector figure: Figure(1600x200)
+[2021-10-05 23:11:33] I engine | RUNNER run_result: Result(backend_name='qasm_simulator', backend_version='0.8.2', qobj_id='9b038e73-1065-479b-86e2-b6e01864a787', job_id='a608a509-327a-43e6-87ac-94c982c29912', success=True, results=[ExperimentResult(shots=1024, success=True, meas_level=2, data=ExperimentResultData(counts={'0x5': 126, '0xb': 138, '0xe': 128, '0x4': 130, '0x1': 100, '0x0': 128, '0xa': 126, '0xf': 148}, statevector=[ 0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+ -0.        +0.00000000e+00j  0.        +0.00000000e+00j
+ -0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j -0.        +0.00000000e+00j
+  0.        -0.00000000e+00j -0.35355339+8.65956056e-17j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+ -0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j -0.        +0.00000000e+00j
+ -0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j -0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.35355339-1.29893408e-16j
+  0.        +0.00000000e+00j -0.        +0.00000000e+00j
+  0.        +0.00000000e+00j -0.        +0.00000000e+00j
+ -0.        +0.00000000e+00j -0.        +0.00000000e+00j
+ -0.        +0.00000000e+00j -0.        +0.00000000e+00j
+ -0.        +0.00000000e+00j  0.        +0.00000000e+00j
+ -0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.35355339-8.65956056e-17j
+  0.        +0.00000000e+00j -0.        +0.00000000e+00j
+ -0.        +0.00000000e+00j  0.        +0.00000000e+00j
+ -0.        +0.00000000e+00j -0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+ -0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j -0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+ -0.        +0.00000000e+00j -0.35355339+1.29893408e-16j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.35355339-4.32978028e-17j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+ -0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j -0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+ -0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        -0.00000000e+00j -0.35355339+8.65956056e-17j
+  0.        +0.00000000e+00j -0.        +0.00000000e+00j
+  0.        +0.00000000e+00j -0.        +0.00000000e+00j
+ -0.        +0.00000000e+00j -0.        +0.00000000e+00j
+ -0.        +0.00000000e+00j -0.        +0.00000000e+00j
+  0.        +0.00000000e+00j -0.        +0.00000000e+00j
+  0.        +0.00000000e+00j -0.        +0.00000000e+00j
+ -0.        +0.00000000e+00j -0.        +0.00000000e+00j
+ -0.        +0.00000000e+00j -0.35355339+4.32978028e-17j
+  0.        +0.00000000e+00j -0.        +0.00000000e+00j
+ -0.        +0.00000000e+00j  0.        +0.00000000e+00j
+ -0.        +0.00000000e+00j -0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j -0.        +0.00000000e+00j
+ -0.        +0.00000000e+00j  0.        +0.00000000e+00j
+ -0.        +0.00000000e+00j -0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.35355339-8.65956056e-17j]), header=QobjExperimentHeader(clbit_labels=[['c', 0], ['c', 1], ['c', 2], ['c', 3]], creg_sizes=[['c', 4]], global_phase=0.0, memory_slots=4, metadata=None, n_qubits=8, name='circuit-1', qreg_sizes=[['q', 8]], qubit_labels=[['q', 0], ['q', 1], ['q', 2], ['q', 3], ['q', 4], ['q', 5], ['q', 6], ['q', 7]]), status=DONE, seed_simulator=3188469533, metadata={'parallel_shots': 1, 'method': 'statevector', 'parallel_state_update': 1, 'measure_sampling': False, 'fusion': {'applied': False, 'max_fused_qubits': 5, 'enabled': True, 'threshold': 14}}, time_taken=0.090759397)], date=2021-10-05T23:11:30.138768, status=COMPLETED, status=QobjHeader(backend_name='qasm_simulator', backend_version='0.8.2'), metadata={'time_taken': 0.09125524600000001, 'parallel_experiments': 1, 'omp_enabled': True, 'max_gpu_memory_mb': 0, 'num_mpi_processes': 1, 'max_memory_mb': 983, 'mpi_rank': 0}, time_taken=0.09477686882019043)
+[2021-10-05 23:11:33] I engine | RUNNER counts:
+[2021-10-05 23:11:33] I engine | 0000: 128
+[2021-10-05 23:11:33] I engine | 0001: 100
+[2021-10-05 23:11:33] I engine | 0100: 130
+[2021-10-05 23:11:33] I engine | 0101: 126
+[2021-10-05 23:11:33] I engine | 1010: 126
+[2021-10-05 23:11:33] I engine | 1011: 138
+[2021-10-05 23:11:33] I engine | 1110: 128
+[2021-10-05 23:11:33] I engine | 1111: 148
+[2021-10-05 23:11:34] I engine | SIMON simon_post_processing
+[2021-10-05 23:11:34] I engine | SIMON counts: {'0101': 126, '1011': 138, '1110': 128, '0100': 130, '0001': 100, '0000': 128, '1010': 126, '1111': 148}
+[2021-10-05 23:11:40] I engine | SIMON counts_median: 74.0
+[2021-10-05 23:11:40] I engine | SIMON filtered_solutions: ['0101', '1011', '1110', '0100', '0001', '1010', '1111']
+[2021-10-05 23:11:40] I engine | SIMON matrix: Matrix([
+[0, 1, 0, 1],
+[1, 0, 1, 1],
+[1, 1, 1, 0],
+[0, 1, 0, 0],
+[0, 0, 0, 1],
+[1, 0, 1, 0],
+[1, 1, 1, 1]])
+[2021-10-05 23:11:46] I engine | SIMON rref_matrix: Matrix([
+[1, 0, 1,  0],
+[0, 1, 0,  0],
+[0, 0, 0,  1],
+[0, 0, 0, -2],
+[0, 0, 0,  0],
+[0, 0, 0,  0],
+[0, 0, 0,  0]])
+[2021-10-05 23:11:46] I engine | SIMON rref_mod_matrix: Matrix([
+[1, 0, 1, 0],
+[0, 1, 0, 0],
+[0, 0, 0, 1],
+[0, 0, 0, 0],
+[0, 0, 0, 0],
+[0, 0, 0, 0],
+[0, 0, 0, 0]])
+[2021-10-05 23:11:46] I engine | SIMON qubits_count: 4
+[2021-10-05 23:11:46] I engine | SIMON variables: (z0, z1, z2, z3)
+[2021-10-05 23:11:47] I engine | SIMON solutions: FiniteSet((-z2, 0, z2, 0))
+[2021-10-05 23:11:47] I engine | SIMON period: 1010
+[2021-10-05 23:11:47] I engine | RUNNER result: {'Result': {'Period': '1010'}}
+[2021-10-05 23:11:48] I engine | RUNNER next_task: {'logs': [], 'run_values': {'masquerade': 'True', 'run_mode': 'simulator', 'period': '1010'}, 'task_id': Decimal('19'), 'task_status': 'Running', 'algorithm_id': 'simon', 'record_type': 'task_record'}
+[2021-10-05 23:11:48] I engine | RUNNER run_mode: simulator
+[2021-10-05 23:11:48] I engine | RUNNER run_values: {'masquerade': 'True', 'run_mode': 'simulator', 'period': '1010', 'task_id': 19}
+[2021-10-05 23:11:48] I engine | RUNNER runner_function: <function simon at 0x7f13c7e879e0>
+[2021-10-05 23:11:48] I engine | SIMON input_period: 1010
+[2021-10-05 23:11:48] I engine | SIMON period: 1010
+[2021-10-05 23:11:48] I engine | SIMON masquerade: True
+[2021-10-05 23:11:48] I engine | SIMON masquerade_bool: True
+[2021-10-05 23:11:48] I engine | SIMON input_qubits_count: 4
+[2021-10-05 23:11:48] I engine | SIMON all_qubits_count: 8
+[2021-10-05 23:11:48] I engine | SIMON qubits_measurement_list: [3, 2, 1, 0]
+[2021-10-05 23:11:48] I engine | SIMON simon_oracle: 
+                                    ░           ░      
+q_0: ──■───────────────────■────■───░───────────░──────
+       │                   │    │   ░           ░      
+q_1: ──┼────■──────────────┼────┼───░───────────░──────
+       │    │              │    │   ░           ░      
+q_2: ──┼────┼────■─────────┼────┼───░───────────░──────
+       │    │    │         │    │   ░           ░      
+q_3: ──┼────┼────┼────■────┼────┼───░───────────░──────
+     ┌─┴─┐  │    │    │  ┌─┴─┐  │   ░           ░      
+q_4: ┤ X ├──┼────┼────┼──┤ X ├──┼───░──X──X─────░──────
+     └───┘┌─┴─┐  │    │  └───┘  │   ░  │  │     ░ ┌───┐
+q_5: ─────┤ X ├──┼────┼─────────┼───░──X──┼──X──░─┤ X ├
+          └───┘┌─┴─┐  │       ┌─┴─┐ ░     │  │  ░ ├───┤
+q_6: ──────────┤ X ├──┼───────┤ X ├─░─────┼──X──░─┤ X ├
+               └───┘┌─┴─┐     └───┘ ░     │     ░ ├───┤
+q_7: ───────────────┤ X ├───────────░─────X─────░─┤ X ├
+                    └───┘           ░           ░ └───┘
+[2021-10-05 23:11:48] I engine | SIMON circuit: 
+     ┌───┐┌───────────────┐┌───┐         ┌─┐
+q_0: ┤ H ├┤0              ├┤ H ├─────────┤M├
+     ├───┤│               │├───┤      ┌─┐└╥┘
+q_1: ┤ H ├┤1              ├┤ H ├──────┤M├─╫─
+     ├───┤│               │├───┤   ┌─┐└╥┘ ║ 
+q_2: ┤ H ├┤2              ├┤ H ├───┤M├─╫──╫─
+     ├───┤│               │├───┤┌─┐└╥┘ ║  ║ 
+q_3: ┤ H ├┤3              ├┤ H ├┤M├─╫──╫──╫─
+     └───┘│  Simon Oracle │└───┘└╥┘ ║  ║  ║ 
+q_4: ─────┤4              ├──────╫──╫──╫──╫─
+          │               │      ║  ║  ║  ║ 
+q_5: ─────┤5              ├──────╫──╫──╫──╫─
+          │               │      ║  ║  ║  ║ 
+q_6: ─────┤6              ├──────╫──╫──╫──╫─
+          │               │      ║  ║  ║  ║ 
+q_7: ─────┤7              ├──────╫──╫──╫──╫─
+          └───────────────┘      ║  ║  ║  ║ 
+c: 4/════════════════════════════╩══╩══╩══╩═
+                                 0  1  2  3 
+[2021-10-05 23:11:48] I engine | RUNNER backend: qasm_simulator
+[2021-10-05 23:11:48] I engine | RUNNER job status: RUNNING
+[2021-10-05 23:11:50] I engine | RUNNER job status: DONE
+[2021-10-05 23:11:50] I engine | RUNNER statevector:
+[2021-10-05 23:11:50] I engine | 01000000: (0.354-0j)
+[2021-10-05 23:11:50] I engine | 01010000: (0.354-0j)
+[2021-10-05 23:11:50] I engine | 01100000: (0.354-0j)
+[2021-10-05 23:11:50] I engine | 01110000: (0.354-0j)
+[2021-10-05 23:11:50] I engine | 11000000: (0.354-0j)
+[2021-10-05 23:11:50] I engine | 11010000: (0.354-0j)
+[2021-10-05 23:11:50] I engine | 11100000: (0.354-0j)
+[2021-10-05 23:11:50] I engine | 11110000: (0.354-0j)
+[2021-10-05 23:11:52] I engine | RUNNER statevector figure: Figure(1600x200)
+[2021-10-05 23:11:52] I engine | RUNNER run_result: Result(backend_name='qasm_simulator', backend_version='0.8.2', qobj_id='f29822cc-39da-4c72-a31b-bc0151f63d80', job_id='cd6c0d46-88e0-44a2-9df3-223c325dbbfe', success=True, results=[ExperimentResult(shots=1024, success=True, meas_level=2, data=ExperimentResultData(counts={'0x4': 129, '0x0': 146, '0xb': 124, '0x1': 125, '0x5': 130, '0xe': 130, '0xa': 124, '0xf': 116}, statevector=[ 0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.35355339-8.65956056e-17j -0.        +0.00000000e+00j
+ -0.        +0.00000000e+00j  0.        +0.00000000e+00j
+ -0.        +0.00000000e+00j -0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j -0.        +0.00000000e+00j
+ -0.        +0.00000000e+00j  0.        +0.00000000e+00j
+ -0.        +0.00000000e+00j -0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.35355339-1.29893408e-16j -0.        +0.00000000e+00j
+ -0.        +0.00000000e+00j  0.        +0.00000000e+00j
+ -0.        +0.00000000e+00j -0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+ -0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j -0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+ -0.        +0.00000000e+00j -0.        +0.00000000e+00j
+  0.35355339-8.65956056e-17j  0.        +0.00000000e+00j
+ -0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j -0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+ -0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j -0.        +0.00000000e+00j
+  0.35355339-1.29893408e-16j  0.        +0.00000000e+00j
+ -0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j -0.        +0.00000000e+00j
+ -0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j -0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.35355339-4.32978028e-17j -0.        +0.00000000e+00j
+  0.        +0.00000000e+00j -0.        +0.00000000e+00j
+ -0.        +0.00000000e+00j -0.        +0.00000000e+00j
+ -0.        +0.00000000e+00j -0.        +0.00000000e+00j
+  0.        +0.00000000e+00j -0.        +0.00000000e+00j
+  0.        +0.00000000e+00j -0.        +0.00000000e+00j
+ -0.        +0.00000000e+00j -0.        +0.00000000e+00j
+ -0.        +0.00000000e+00j -0.        +0.00000000e+00j
+  0.35355339-8.65956056e-17j -0.        +0.00000000e+00j
+  0.        +0.00000000e+00j -0.        +0.00000000e+00j
+ -0.        +0.00000000e+00j -0.        +0.00000000e+00j
+ -0.        +0.00000000e+00j -0.        +0.00000000e+00j
+ -0.        +0.00000000e+00j  0.        +0.00000000e+00j
+ -0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.35355339-4.32978028e-17j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.35355339-8.65956056e-17j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j  0.        +0.00000000e+00j
+ -0.        +0.00000000e+00j  0.        +0.00000000e+00j
+ -0.        +0.00000000e+00j  0.        +0.00000000e+00j
+  0.        +0.00000000e+00j -0.        +0.00000000e+00j
+  0.        +0.00000000e+00j -0.        +0.00000000e+00j]), header=QobjExperimentHeader(clbit_labels=[['c', 0], ['c', 1], ['c', 2], ['c', 3]], creg_sizes=[['c', 4]], global_phase=0.0, memory_slots=4, metadata=None, n_qubits=8, name='circuit-1', qreg_sizes=[['q', 8]], qubit_labels=[['q', 0], ['q', 1], ['q', 2], ['q', 3], ['q', 4], ['q', 5], ['q', 6], ['q', 7]]), status=DONE, seed_simulator=3216828744, metadata={'parallel_shots': 1, 'method': 'statevector', 'parallel_state_update': 1, 'measure_sampling': False, 'fusion': {'applied': False, 'max_fused_qubits': 5, 'enabled': True, 'threshold': 14}}, time_taken=0.096473185)], date=2021-10-05T23:11:48.652354, status=COMPLETED, status=QobjHeader(backend_name='qasm_simulator', backend_version='0.8.2'), metadata={'time_taken': 0.096962138, 'parallel_experiments': 1, 'omp_enabled': True, 'max_gpu_memory_mb': 0, 'num_mpi_processes': 1, 'max_memory_mb': 983, 'mpi_rank': 0}, time_taken=0.10053253173828125)
+[2021-10-05 23:11:52] I engine | RUNNER counts:
+[2021-10-05 23:11:52] I engine | 0000: 146
+[2021-10-05 23:11:52] I engine | 0001: 125
+[2021-10-05 23:11:52] I engine | 0100: 129
+[2021-10-05 23:11:52] I engine | 0101: 130
+[2021-10-05 23:11:52] I engine | 1010: 124
+[2021-10-05 23:11:52] I engine | 1011: 124
+[2021-10-05 23:11:52] I engine | 1110: 130
+[2021-10-05 23:11:52] I engine | 1111: 116
+[2021-10-05 23:11:52] I engine | SIMON simon_post_processing
+[2021-10-05 23:11:52] I engine | SIMON counts: {'0100': 129, '0000': 146, '1011': 124, '0001': 125, '0101': 130, '1110': 130, '1010': 124, '1111': 116}
+[2021-10-05 23:12:05] I engine | SIMON counts_median: 73.0
+[2021-10-05 23:12:05] I engine | SIMON filtered_solutions: ['0100', '1011', '0001', '0101', '1110', '1010', '1111']
+[2021-10-05 23:12:05] I engine | SIMON matrix: Matrix([
+[0, 1, 0, 0],
+[1, 0, 1, 1],
+[0, 0, 0, 1],
+[0, 1, 0, 1],
+[1, 1, 1, 0],
+[1, 0, 1, 0],
+[1, 1, 1, 1]])
+[2021-10-05 23:12:18] I engine | SIMON rref_matrix: Matrix([
+[1, 0, 1, 0],
+[0, 1, 0, 0],
+[0, 0, 0, 1],
+[0, 0, 0, 0],
+[0, 0, 0, 0],
+[0, 0, 0, 0],
+[0, 0, 0, 0]])
+[2021-10-05 23:12:18] I engine | SIMON rref_mod_matrix: Matrix([
+[1, 0, 1, 0],
+[0, 1, 0, 0],
+[0, 0, 0, 1],
+[0, 0, 0, 0],
+[0, 0, 0, 0],
+[0, 0, 0, 0],
+[0, 0, 0, 0]])
+[2021-10-05 23:12:18] I engine | SIMON qubits_count: 4
+[2021-10-05 23:12:18] I engine | SIMON variables: (z0, z1, z2, z3)
+[2021-10-05 23:12:31] I engine | SIMON solutions: FiniteSet((-z2, 0, z2, 0))
+[2021-10-05 23:12:31] I engine | SIMON period: 1010
+[2021-10-05 23:12:31] I engine | RUNNER result: {'Result': {'Period': '1010'}}
+[2021-10-05 23:12:51] I engine | RUNNER next_task: {'logs': [], 'run_values': {'masquerade': 'True', 'run_mode': 'quantum_device', 'period': '1010'}, 'task_id': Decimal('20'), 'task_status': 'Running', 'algorithm_id': 'simon', 'record_type': 'task_record'}
+[2021-10-05 23:12:51] I engine | RUNNER run_mode: quantum_device
+[2021-10-05 23:12:51] I engine | RUNNER run_values: {'masquerade': 'True', 'run_mode': 'quantum_device', 'period': '1010', 'task_id': 20}
+[2021-10-05 23:12:51] I engine | RUNNER runner_function: <function simon at 0x7f13c7e879e0>
+[2021-10-05 23:12:51] I engine | SIMON input_period: 1010
+[2021-10-05 23:12:51] I engine | SIMON period: 1010
+[2021-10-05 23:12:51] I engine | SIMON masquerade: True
+[2021-10-05 23:12:51] I engine | SIMON masquerade_bool: True
+[2021-10-05 23:12:51] I engine | SIMON input_qubits_count: 4
+[2021-10-05 23:12:51] I engine | SIMON all_qubits_count: 8
+[2021-10-05 23:12:51] I engine | SIMON qubits_measurement_list: [3, 2, 1, 0]
+[2021-10-05 23:12:51] I engine | SIMON simon_oracle: 
+                                    ░           ░      
+q_0: ──■───────────────────■────■───░───────────░──────
+       │                   │    │   ░           ░      
+q_1: ──┼────■──────────────┼────┼───░───────────░──────
+       │    │              │    │   ░           ░      
+q_2: ──┼────┼────■─────────┼────┼───░───────────░──────
+       │    │    │         │    │   ░           ░      
+q_3: ──┼────┼────┼────■────┼────┼───░───────────░──────
+     ┌─┴─┐  │    │    │  ┌─┴─┐  │   ░           ░      
+q_4: ┤ X ├──┼────┼────┼──┤ X ├──┼───░──X────────░──────
+     └───┘┌─┴─┐  │    │  └───┘  │   ░  │        ░ ┌───┐
+q_5: ─────┤ X ├──┼────┼─────────┼───░──┼──X──X──░─┤ X ├
+          └───┘┌─┴─┐  │       ┌─┴─┐ ░  │  │  │  ░ ├───┤
+q_6: ──────────┤ X ├──┼───────┤ X ├─░──X──X──┼──░─┤ X ├
+               └───┘┌─┴─┐     └───┘ ░        │  ░ ├───┤
+q_7: ───────────────┤ X ├───────────░────────X──░─┤ X ├
+                    └───┘           ░           ░ └───┘
+[2021-10-05 23:12:51] I engine | SIMON circuit: 
+     ┌───┐┌───────────────┐┌───┐         ┌─┐
+q_0: ┤ H ├┤0              ├┤ H ├─────────┤M├
+     ├───┤│               │├───┤      ┌─┐└╥┘
+q_1: ┤ H ├┤1              ├┤ H ├──────┤M├─╫─
+     ├───┤│               │├───┤   ┌─┐└╥┘ ║ 
+q_2: ┤ H ├┤2              ├┤ H ├───┤M├─╫──╫─
+     ├───┤│               │├───┤┌─┐└╥┘ ║  ║ 
+q_3: ┤ H ├┤3              ├┤ H ├┤M├─╫──╫──╫─
+     └───┘│  Simon Oracle │└───┘└╥┘ ║  ║  ║ 
+q_4: ─────┤4              ├──────╫──╫──╫──╫─
+          │               │      ║  ║  ║  ║ 
+q_5: ─────┤5              ├──────╫──╫──╫──╫─
+          │               │      ║  ║  ║  ║ 
+q_6: ─────┤6              ├──────╫──╫──╫──╫─
+          │               │      ║  ║  ║  ║ 
+q_7: ─────┤7              ├──────╫──╫──╫──╫─
+          └───────────────┘      ║  ║  ║  ║ 
+c: 4/════════════════════════════╩══╩══╩══╩═
+                                 0  1  2  3 
+[2021-10-05 23:12:53] I engine | RUNNER ibmq_provider: <AccountProvider for IBMQ(hub='ibm-q', group='open', project='main')>
+[2021-10-05 23:12:53] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 124, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 256, in run_task
+    backend = self.get_least_busy_backend(ibmq_provider, qubit_count)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 348, in get_least_busy_backend
+    raise ValueError("No IBMQ backends match to run specified Quantum Circuit")
+ValueError: No IBMQ backends match to run specified Quantum Circuit
+
+[2021-10-05 23:13:23] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 124, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 146, in get_next_task
+    return self.db.get_next_task()
+  File "/home/ec2-user/environment/m1/app/core-service/core/dynamo.py", line 186, in get_next_task
+    ReturnValues = 'ALL_OLD'
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/factory.py", line 520, in do_action
+    response = action(self, *args, **kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/action.py", line 83, in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 386, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 705, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (ExpiredTokenException) when calling the UpdateItem operation: The security token included in the request is expired
+
+[2021-10-05 23:13:24] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 124, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 146, in get_next_task
+    return self.db.get_next_task()
+  File "/home/ec2-user/environment/m1/app/core-service/core/dynamo.py", line 186, in get_next_task
+    ReturnValues = 'ALL_OLD'
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/factory.py", line 520, in do_action
+    response = action(self, *args, **kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/action.py", line 83, in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 386, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 705, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (ExpiredTokenException) when calling the UpdateItem operation: The security token included in the request is expired
+
+[2021-10-05 23:13:25] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 124, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 146, in get_next_task
+    return self.db.get_next_task()
+  File "/home/ec2-user/environment/m1/app/core-service/core/dynamo.py", line 186, in get_next_task
+    ReturnValues = 'ALL_OLD'
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/factory.py", line 520, in do_action
+    response = action(self, *args, **kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/action.py", line 83, in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 386, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 705, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (ExpiredTokenException) when calling the UpdateItem operation: The security token included in the request is expired
+
+[2021-10-05 23:13:26] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 124, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 146, in get_next_task
+    return self.db.get_next_task()
+  File "/home/ec2-user/environment/m1/app/core-service/core/dynamo.py", line 186, in get_next_task
+    ReturnValues = 'ALL_OLD'
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/factory.py", line 520, in do_action
+    response = action(self, *args, **kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/action.py", line 83, in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 386, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 705, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (ExpiredTokenException) when calling the UpdateItem operation: The security token included in the request is expired
+
+[2021-10-05 23:13:27] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 124, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 146, in get_next_task
+    return self.db.get_next_task()
+  File "/home/ec2-user/environment/m1/app/core-service/core/dynamo.py", line 186, in get_next_task
+    ReturnValues = 'ALL_OLD'
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/factory.py", line 520, in do_action
+    response = action(self, *args, **kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/action.py", line 83, in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 386, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 705, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (ExpiredTokenException) when calling the UpdateItem operation: The security token included in the request is expired
+
+[2021-10-05 23:13:28] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 124, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 146, in get_next_task
+    return self.db.get_next_task()
+  File "/home/ec2-user/environment/m1/app/core-service/core/dynamo.py", line 186, in get_next_task
+    ReturnValues = 'ALL_OLD'
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/factory.py", line 520, in do_action
+    response = action(self, *args, **kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/action.py", line 83, in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 386, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 705, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (ExpiredTokenException) when calling the UpdateItem operation: The security token included in the request is expired
+
+[2021-10-05 23:13:29] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 124, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 146, in get_next_task
+    return self.db.get_next_task()
+  File "/home/ec2-user/environment/m1/app/core-service/core/dynamo.py", line 186, in get_next_task
+    ReturnValues = 'ALL_OLD'
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/factory.py", line 520, in do_action
+    response = action(self, *args, **kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/action.py", line 83, in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 386, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 705, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (ExpiredTokenException) when calling the UpdateItem operation: The security token included in the request is expired
+
+[2021-10-05 23:13:30] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 124, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 146, in get_next_task
+    return self.db.get_next_task()
+  File "/home/ec2-user/environment/m1/app/core-service/core/dynamo.py", line 186, in get_next_task
+    ReturnValues = 'ALL_OLD'
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/factory.py", line 520, in do_action
+    response = action(self, *args, **kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/action.py", line 83, in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 386, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 705, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (ExpiredTokenException) when calling the UpdateItem operation: The security token included in the request is expired
+
+[2021-10-05 23:13:31] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 124, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 146, in get_next_task
+    return self.db.get_next_task()
+  File "/home/ec2-user/environment/m1/app/core-service/core/dynamo.py", line 186, in get_next_task
+    ReturnValues = 'ALL_OLD'
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/factory.py", line 520, in do_action
+    response = action(self, *args, **kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/action.py", line 83, in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 386, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 705, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (ExpiredTokenException) when calling the UpdateItem operation: The security token included in the request is expired
+
+[2021-10-05 23:13:32] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 124, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 146, in get_next_task
+    return self.db.get_next_task()
+  File "/home/ec2-user/environment/m1/app/core-service/core/dynamo.py", line 186, in get_next_task
+    ReturnValues = 'ALL_OLD'
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/factory.py", line 520, in do_action
+    response = action(self, *args, **kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/action.py", line 83, in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 386, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 705, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (ExpiredTokenException) when calling the UpdateItem operation: The security token included in the request is expired
+
+[2021-10-05 23:13:33] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 124, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 146, in get_next_task
+    return self.db.get_next_task()
+  File "/home/ec2-user/environment/m1/app/core-service/core/dynamo.py", line 186, in get_next_task
+    ReturnValues = 'ALL_OLD'
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/factory.py", line 520, in do_action
+    response = action(self, *args, **kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/action.py", line 83, in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 386, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 705, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (ExpiredTokenException) when calling the UpdateItem operation: The security token included in the request is expired
+
+[2021-10-05 23:13:34] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 124, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 146, in get_next_task
+    return self.db.get_next_task()
+  File "/home/ec2-user/environment/m1/app/core-service/core/dynamo.py", line 186, in get_next_task
+    ReturnValues = 'ALL_OLD'
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/factory.py", line 520, in do_action
+    response = action(self, *args, **kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/action.py", line 83, in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 386, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 705, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (ExpiredTokenException) when calling the UpdateItem operation: The security token included in the request is expired
+
+[2021-10-05 23:13:35] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 124, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 146, in get_next_task
+    return self.db.get_next_task()
+  File "/home/ec2-user/environment/m1/app/core-service/core/dynamo.py", line 186, in get_next_task
+    ReturnValues = 'ALL_OLD'
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/factory.py", line 520, in do_action
+    response = action(self, *args, **kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/action.py", line 83, in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 386, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 705, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (ExpiredTokenException) when calling the UpdateItem operation: The security token included in the request is expired
+
+[2021-10-05 23:13:36] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 124, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 146, in get_next_task
+    return self.db.get_next_task()
+  File "/home/ec2-user/environment/m1/app/core-service/core/dynamo.py", line 186, in get_next_task
+    ReturnValues = 'ALL_OLD'
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/factory.py", line 520, in do_action
+    response = action(self, *args, **kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/action.py", line 83, in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 386, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 705, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (ExpiredTokenException) when calling the UpdateItem operation: The security token included in the request is expired
+
+[2021-10-05 23:13:37] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 124, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 146, in get_next_task
+    return self.db.get_next_task()
+  File "/home/ec2-user/environment/m1/app/core-service/core/dynamo.py", line 186, in get_next_task
+    ReturnValues = 'ALL_OLD'
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/factory.py", line 520, in do_action
+    response = action(self, *args, **kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/action.py", line 83, in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 386, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 705, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (ExpiredTokenException) when calling the UpdateItem operation: The security token included in the request is expired
+
+[2021-10-05 23:13:38] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 124, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 146, in get_next_task
+    return self.db.get_next_task()
+  File "/home/ec2-user/environment/m1/app/core-service/core/dynamo.py", line 186, in get_next_task
+    ReturnValues = 'ALL_OLD'
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/factory.py", line 520, in do_action
+    response = action(self, *args, **kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/action.py", line 83, in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 386, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 705, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (ExpiredTokenException) when calling the UpdateItem operation: The security token included in the request is expired
+
+[2021-10-05 23:13:39] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 124, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 146, in get_next_task
+    return self.db.get_next_task()
+  File "/home/ec2-user/environment/m1/app/core-service/core/dynamo.py", line 186, in get_next_task
+    ReturnValues = 'ALL_OLD'
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/factory.py", line 520, in do_action
+    response = action(self, *args, **kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/action.py", line 83, in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 386, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 705, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (ExpiredTokenException) when calling the UpdateItem operation: The security token included in the request is expired
+
+[2021-10-05 23:13:40] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 124, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 146, in get_next_task
+    return self.db.get_next_task()
+  File "/home/ec2-user/environment/m1/app/core-service/core/dynamo.py", line 186, in get_next_task
+    ReturnValues = 'ALL_OLD'
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/factory.py", line 520, in do_action
+    response = action(self, *args, **kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/action.py", line 83, in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 386, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 705, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (ExpiredTokenException) when calling the UpdateItem operation: The security token included in the request is expired
+
+[2021-10-05 23:13:41] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 124, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 146, in get_next_task
+    return self.db.get_next_task()
+  File "/home/ec2-user/environment/m1/app/core-service/core/dynamo.py", line 186, in get_next_task
+    ReturnValues = 'ALL_OLD'
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/factory.py", line 520, in do_action
+    response = action(self, *args, **kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/action.py", line 83, in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 386, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 705, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (ExpiredTokenException) when calling the UpdateItem operation: The security token included in the request is expired
+
+[2021-10-05 23:13:42] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 124, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 146, in get_next_task
+    return self.db.get_next_task()
+  File "/home/ec2-user/environment/m1/app/core-service/core/dynamo.py", line 186, in get_next_task
+    ReturnValues = 'ALL_OLD'
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/factory.py", line 520, in do_action
+    response = action(self, *args, **kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/action.py", line 83, in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 386, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 705, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (ExpiredTokenException) when calling the UpdateItem operation: The security token included in the request is expired
+
+[2021-10-05 23:13:43] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 124, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 146, in get_next_task
+    return self.db.get_next_task()
+  File "/home/ec2-user/environment/m1/app/core-service/core/dynamo.py", line 186, in get_next_task
+    ReturnValues = 'ALL_OLD'
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/factory.py", line 520, in do_action
+    response = action(self, *args, **kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/action.py", line 83, in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 386, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 705, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (ExpiredTokenException) when calling the UpdateItem operation: The security token included in the request is expired
+
+[2021-10-05 23:13:44] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 124, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 146, in get_next_task
+    return self.db.get_next_task()
+  File "/home/ec2-user/environment/m1/app/core-service/core/dynamo.py", line 186, in get_next_task
+    ReturnValues = 'ALL_OLD'
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/factory.py", line 520, in do_action
+    response = action(self, *args, **kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/action.py", line 83, in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 386, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 705, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (ExpiredTokenException) when calling the UpdateItem operation: The security token included in the request is expired
+
+[2021-10-05 23:13:45] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 124, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 146, in get_next_task
+    return self.db.get_next_task()
+  File "/home/ec2-user/environment/m1/app/core-service/core/dynamo.py", line 186, in get_next_task
+    ReturnValues = 'ALL_OLD'
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/factory.py", line 520, in do_action
+    response = action(self, *args, **kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/action.py", line 83, in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 386, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 705, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (ExpiredTokenException) when calling the UpdateItem operation: The security token included in the request is expired
+
+[2021-10-05 23:13:46] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 124, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 146, in get_next_task
+    return self.db.get_next_task()
+  File "/home/ec2-user/environment/m1/app/core-service/core/dynamo.py", line 186, in get_next_task
+    ReturnValues = 'ALL_OLD'
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/factory.py", line 520, in do_action
+    response = action(self, *args, **kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/action.py", line 83, in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 386, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 705, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (ExpiredTokenException) when calling the UpdateItem operation: The security token included in the request is expired
+
+[2021-10-05 23:13:47] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 124, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 146, in get_next_task
+    return self.db.get_next_task()
+  File "/home/ec2-user/environment/m1/app/core-service/core/dynamo.py", line 186, in get_next_task
+    ReturnValues = 'ALL_OLD'
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/factory.py", line 520, in do_action
+    response = action(self, *args, **kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/action.py", line 83, in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 386, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 705, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (ExpiredTokenException) when calling the UpdateItem operation: The security token included in the request is expired
+
+[2021-10-05 23:13:48] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 124, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 146, in get_next_task
+    return self.db.get_next_task()
+  File "/home/ec2-user/environment/m1/app/core-service/core/dynamo.py", line 186, in get_next_task
+    ReturnValues = 'ALL_OLD'
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/factory.py", line 520, in do_action
+    response = action(self, *args, **kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/action.py", line 83, in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 386, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 705, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (ExpiredTokenException) when calling the UpdateItem operation: The security token included in the request is expired
+
+[2021-10-05 23:13:49] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 124, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 146, in get_next_task
+    return self.db.get_next_task()
+  File "/home/ec2-user/environment/m1/app/core-service/core/dynamo.py", line 186, in get_next_task
+    ReturnValues = 'ALL_OLD'
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/factory.py", line 520, in do_action
+    response = action(self, *args, **kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/action.py", line 83, in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 386, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 705, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (ExpiredTokenException) when calling the UpdateItem operation: The security token included in the request is expired
+
+[2021-10-05 23:13:50] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 124, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 146, in get_next_task
+    return self.db.get_next_task()
+  File "/home/ec2-user/environment/m1/app/core-service/core/dynamo.py", line 186, in get_next_task
+    ReturnValues = 'ALL_OLD'
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/factory.py", line 520, in do_action
+    response = action(self, *args, **kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/action.py", line 83, in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 386, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 705, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (ExpiredTokenException) when calling the UpdateItem operation: The security token included in the request is expired
+
+[2021-10-05 23:13:51] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 124, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 146, in get_next_task
+    return self.db.get_next_task()
+  File "/home/ec2-user/environment/m1/app/core-service/core/dynamo.py", line 186, in get_next_task
+    ReturnValues = 'ALL_OLD'
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/factory.py", line 520, in do_action
+    response = action(self, *args, **kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/action.py", line 83, in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 386, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 705, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (ExpiredTokenException) when calling the UpdateItem operation: The security token included in the request is expired
+
+[2021-10-05 23:13:52] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 124, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 146, in get_next_task
+    return self.db.get_next_task()
+  File "/home/ec2-user/environment/m1/app/core-service/core/dynamo.py", line 186, in get_next_task
+    ReturnValues = 'ALL_OLD'
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/factory.py", line 520, in do_action
+    response = action(self, *args, **kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/action.py", line 83, in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 386, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 705, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (ExpiredTokenException) when calling the UpdateItem operation: The security token included in the request is expired
+
+[2021-10-05 23:13:53] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 124, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 146, in get_next_task
+    return self.db.get_next_task()
+  File "/home/ec2-user/environment/m1/app/core-service/core/dynamo.py", line 186, in get_next_task
+    ReturnValues = 'ALL_OLD'
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/factory.py", line 520, in do_action
+    response = action(self, *args, **kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/action.py", line 83, in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 386, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 705, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (ExpiredTokenException) when calling the UpdateItem operation: The security token included in the request is expired
+
+[2021-10-05 23:13:54] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 124, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 146, in get_next_task
+    return self.db.get_next_task()
+  File "/home/ec2-user/environment/m1/app/core-service/core/dynamo.py", line 186, in get_next_task
+    ReturnValues = 'ALL_OLD'
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/factory.py", line 520, in do_action
+    response = action(self, *args, **kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/action.py", line 83, in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 386, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 705, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (ExpiredTokenException) when calling the UpdateItem operation: The security token included in the request is expired
+
+[2021-10-05 23:13:55] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 124, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 146, in get_next_task
+    return self.db.get_next_task()
+  File "/home/ec2-user/environment/m1/app/core-service/core/dynamo.py", line 186, in get_next_task
+    ReturnValues = 'ALL_OLD'
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/factory.py", line 520, in do_action
+    response = action(self, *args, **kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/action.py", line 83, in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 386, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 705, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (ExpiredTokenException) when calling the UpdateItem operation: The security token included in the request is expired
+
+[2021-10-05 23:13:56] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 124, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 146, in get_next_task
+    return self.db.get_next_task()
+  File "/home/ec2-user/environment/m1/app/core-service/core/dynamo.py", line 186, in get_next_task
+    ReturnValues = 'ALL_OLD'
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/factory.py", line 520, in do_action
+    response = action(self, *args, **kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/action.py", line 83, in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 386, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 705, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (ExpiredTokenException) when calling the UpdateItem operation: The security token included in the request is expired
+
