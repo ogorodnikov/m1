@@ -45,7 +45,7 @@ class Users:
         try:
             
             token_response = self.cognito_client.initiate_auth(
-                ClientId=client_id,
+                ClientId=self.client_id,
                 AuthFlow='USER_PASSWORD_AUTH',
                 AuthParameters={'USERNAME': username,
                                 'PASSWORD': password}
@@ -96,19 +96,19 @@ class Users:
             self.log(f'REGISTER login_form: {login_form}')
         
             sign_up_response = self.cognito_client.sign_up(
-                ClientId=client_id,
+                ClientId=self.client_id,
                 Username=username,
                 Password=password
             )
             
             # confirmation_response = self.cognito_client.confirm_sign_up(
-            #     ClientId=client_id,
+            #     ClientId=self.client_id,
             #     Username=username,
             #     ConfirmationCode=''
             # )
             
             confirmation_response = self.cognito_client.admin_confirm_sign_up(
-                UserPoolId=user_pool_id,
+                UserPoolId=self.user_pool_id,
                 Username=username
             )
                 
@@ -160,7 +160,7 @@ class Users:
         fb_username = 'fb_' + session['email'].replace('@', '_')
         
         self.cognito_client.sign_up(
-            ClientId=client_id,
+            ClientId=self.client_id,
             Username=fb_username,
             Password='11111111',
             UserAttributes=[

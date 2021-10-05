@@ -15,6 +15,8 @@ class FB:
         
         self.facebook_client_id = app.config.get('FACEBOOK_CLIENT_ID')
         self.facebook_client_secret = app.config.get('FACEBOOK_CLIENT_SECRET')
+        
+        self.users = app.config.get('USERS')
 
         self.domain = app.config.get('DOMAIN')
         self.aws_nlb = app.config.get('AWS_NLB')
@@ -116,7 +118,7 @@ class FB:
         login_referer = session['login_referer']
         session.pop('login_referer', None)
         
-        users.populate_facebook_user()
+        self.users.populate_facebook_user()
             
         flash(f"Welcome, facebook user {session['username']}!", category='warning')
         

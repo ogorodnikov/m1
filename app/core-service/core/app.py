@@ -14,11 +14,13 @@ import signal
 
 from core.gunicorn.app import GunicornApp
 
+from os import environ
+
 
 class FlaskApp(Flask):
     
     def __init__(self, *args, **kwargs):
-
+        
         signal.signal(signal.SIGHUP, self.termination_handler)        
         signal.signal(signal.SIGTERM, self.termination_handler)
         
@@ -54,7 +56,7 @@ class FlaskApp(Flask):
         
     def run_with_developement_server(self, *args, **kwargs):
         
-        self.run(*args, **kwargs)        
+        self.run(*args, **kwargs)
         
     
     def termination_handler(self, signal, frame):
@@ -68,5 +70,3 @@ class FlaskApp(Flask):
 app = FlaskApp(__name__)
 
 from core import routes
-
-

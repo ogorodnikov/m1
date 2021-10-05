@@ -1,8 +1,6 @@
 from core.app import app
 
 
-# app = FlaskApp()
-
 app.run_with_gunicorn()
 
 
@@ -10,8 +8,8 @@ app.run_with_gunicorn()
 #     'host': "0.0.0.0", 
 #     'port': 8080, 
 #     'debug': True, 
-#     'use_reloader': True, 
+#     'use_reloader': False, 
 #     'reloader_type': 'stat'
 # }
 
-# app.run_with_developement_server(developement_server_parameters)
+# app.run_with_developement_server(**developement_server_parameters)
