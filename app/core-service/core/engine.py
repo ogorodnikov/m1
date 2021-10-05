@@ -345,7 +345,7 @@ class Runner():
             return least_busy(filtered_backends)
         
         else:
-            raise ValueError("No IBMQ backends match to run specified Quantum Circuit")
+            raise ValueError(f"No IBMQ backends match specified qubit_count: {qubit_count}")
         
     
     def plot_statevector_figure(self, task_id, statevector):
