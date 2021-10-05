@@ -16,26 +16,33 @@ class FB:
         self.facebook_client_id = app.config.get('FACEBOOK_CLIENT_ID')
         self.facebook_client_secret = app.config.get('FACEBOOK_CLIENT_SECRET')
 
-        domain = app.config.get('DOMAIN')
-        aws_nlb = app.config.get('AWS_NLB')
-        
-        redirect_uri = url_for('login', _external=True, _scheme='https')
-    
-        self.redirect_uri_after_proxy = redirect_uri.replace(aws_nlb, domain)
+        self.domain = app.config.get('DOMAIN')
+        self.aws_nlb = app.config.get('AWS_NLB')
+
+        self.log(f"FB self.domain: {self.domain}")
+        self.log(f"FB self.aws_nlb: {self.aws_nlb}")
         
         self.app.config['FACEBOOK'] = self
-        
-        self.log(f"FB redirect_uri: {redirect_uri}")
-        self.log(f"FB aws_nlb: {aws_nlb}")
-        self.log(f"FB domain: {domain}")
-        self.log(f"FB self.redirect_uri_after_proxy: {self.redirect_uri_after_proxy}")
         
         self.log(f"FB initiated: {self}")
         
     
     def log(self, message):
         self.app.logger.info(message)
-
+        
+    
+    @property
+    def redirect_uri_after_proxy(self):
+        
+        redirect_uri = url_for('login', _external=True, _scheme='https')
+    
+        redirect_uri_after_proxy = redirect_uri.replace(self.aws_nlb, self.domain)
+        
+        # self.log(f"FB redirect_uri: {redirect_uri}")
+        # self.log(f"FB redirect_uri_after_proxy: {redirect_uri_after_proxy}")
+        
+        return redirect_uri_after_proxy
+        
 
     def get_autorization_url(self):
         
