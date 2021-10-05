@@ -22,11 +22,9 @@ class FlaskApp(Flask):
         signal.signal(signal.SIGHUP, self.termination_handler)        
         signal.signal(signal.SIGTERM, self.termination_handler)
         
-        super().__init__(__name__, *args, **kwargs)
+        super().__init__(*args, **kwargs)
         
         dictConfig(config.LOGGING_CONFIG)
-        
-        self.logger.info(f'INIT')
         
         self.config.from_object(config.Config)
         
@@ -44,11 +42,7 @@ class FlaskApp(Flask):
         bot.start()
         
         users = cognito.Users(self)
-        
         fb = facebook.FB(self)
-        
-        
-        from core import routes
         
         
     def run_with_gunicorn(self, *args, **kwargs):
@@ -65,11 +59,14 @@ class FlaskApp(Flask):
     
     def termination_handler(self, signal, frame):
       
-        config.clear_figures_folder(self.app)
+        config.clear_figures_folder(self)
         
-        print(f'INIT termination_handler signal {signal}, {frame}')
+        print(f'APP termination_handler signal {signal}, {frame}')
 
 
 
+app = FlaskApp(__name__)
+
+from core import routes
 
 

@@ -1,7 +1,7 @@
-from core import FlaskApp
+from core.app import app
 
 
-app = FlaskApp()
+# app = FlaskApp()
 
 app.run_with_gunicorn()
 

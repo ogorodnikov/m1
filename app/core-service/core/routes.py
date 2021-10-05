@@ -1,4 +1,4 @@
-from core import FlaskApp
+from core.app import app
 
 from flask import flash
 from flask import url_for
