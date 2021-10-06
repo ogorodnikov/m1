@@ -1,37 +1,1249 @@
-[2021-10-05 23:10:20] I engine | QPE circuit: 
-     ┌───┐                                                               ┌───────────────┐ ░       ┌─┐
-q_0: ┤ H ├─■─────────────────────────────────────────────────────────────┤0              ├─░───────┤M├
-     ├───┤ │                                                             │               │ ░    ┌─┐└╥┘
-q_1: ┤ H ├─┼────────■────────■───────────────────────────────────────────┤1 QFT† Circuit ├─░────┤M├─╫─
-     ├───┤ │        │        │                                           │               │ ░ ┌─┐└╥┘ ║ 
-q_2: ┤ H ├─┼────────┼────────┼────────■────────■────────■────────■───────┤2              ├─░─┤M├─╫──╫─
-     ├───┤ │P(π/4)  │P(π/4)  │P(π/4)  │P(π/4)  │P(π/4)  │P(π/4)  │P(π/4) └───────────────┘ ░ └╥┘ ║  ║ 
-q_3: ┤ X ├─■────────■────────■────────■────────■────────■────────■─────────────────────────░──╫──╫──╫─
-     └───┘                                                                                 ░  ║  ║  ║ 
-c: 3/═════════════════════════════════════════════════════════════════════════════════════════╩══╩══╩═
-                                                                                              0  1  2 
-[2021-10-05 23:10:21] I engine | RUNNER backend: qasm_simulator
-[2021-10-05 23:10:21] I engine | RUNNER job status: RUNNING
-[2021-10-05 23:10:23] I engine | RUNNER job status: DONE
-[2021-10-05 23:10:23] I engine | RUNNER statevector:
-[2021-10-05 23:10:23] I engine | 1100: (1-0j)
-[2021-10-05 23:10:24] I engine | RUNNER statevector figure: Figure(1600x400)
-[2021-10-05 23:10:24] I engine | RUNNER run_result: Result(backend_name='qasm_simulator', backend_version='0.8.2', qobj_id='c55d2b0e-f9ab-4e66-b6fc-35d63505bc2e', job_id='e6f8bb21-d4ab-452a-9c9f-506fad7753a7', success=True, results=[ExperimentResult(shots=1024, success=True, meas_level=2, data=ExperimentResultData(counts={'0x1': 1024}, statevector=[ 0.+0.00000000e+00j  0.+0.00000000e+00j  0.+0.00000000e+00j
-  0.+0.00000000e+00j  0.+0.00000000e+00j  0.+0.00000000e+00j
-  0.+0.00000000e+00j  0.+0.00000000e+00j -0.+0.00000000e+00j
-  0.+0.00000000e+00j  0.+0.00000000e+00j  0.+0.00000000e+00j
-  1.-4.17998443e-16j  0.+0.00000000e+00j  0.+0.00000000e+00j
- -0.+0.00000000e+00j]), header=QobjExperimentHeader(clbit_labels=[['c', 0], ['c', 1], ['c', 2]], creg_sizes=[['c', 3]], global_phase=0.0, memory_slots=3, metadata=None, n_qubits=4, name='QPE Circuit', qreg_sizes=[['q', 4]], qubit_labels=[['q', 0], ['q', 1], ['q', 2], ['q', 3]]), status=DONE, seed_simulator=3690126753, metadata={'parallel_shots': 1, 'method': 'statevector', 'parallel_state_update': 1, 'measure_sampling': False, 'fusion': {'applied': False, 'max_fused_qubits': 5, 'enabled': True, 'threshold': 14}}, time_taken=0.051752188000000005)], date=2021-10-05T23:10:21.242474, status=COMPLETED, status=QobjHeader(backend_name='qasm_simulator', backend_version='0.8.2'), metadata={'time_taken': 0.052233781, 'parallel_experiments': 1, 'omp_enabled': True, 'max_gpu_memory_mb': 0, 'num_mpi_processes': 1, 'max_memory_mb': 983, 'mpi_rank': 0}, time_taken=0.055845022201538086)
-[2021-10-05 23:10:24] I engine | RUNNER counts:
-[2021-10-05 23:10:24] I engine | 001: 1024
-[2021-10-05 23:10:24] I engine | QPE qpe_post_processing
-[2021-10-05 23:10:24] I engine | QPE counts: {'001': 1024}
-[2021-10-05 23:10:24] I engine | QPE counts_decimals: {1: 1024}
-[2021-10-05 23:10:24] I engine | QPE counts_sum: 1024
-[2021-10-05 23:10:24] I engine | QPE states_weighted_sum: 1024
-[2021-10-05 23:10:24] I engine | QPE states_average: 1.0
-[2021-10-05 23:10:24] I engine | QPE first_state: 001
-[2021-10-05 23:10:24] I engine | QPE precision: 3
-[2021-10-05 23:10:24] I engine | QPE theta: 0.125
-[2021-10-05 23:10:24] I engine | QPE angle: 0.25
-[2021-10-05 23:10:24] I engine | RUNNER result: {'Result': {'Theta': 0.125}}
+[2021-10-06 00:57:46] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 124, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 146, in get_next_task
+    return self.db.get_next_task()
+  File "/home/ec2-user/environment/m1/app/core-service/core/dynamo.py", line 186, in get_next_task
+    ReturnValues = 'ALL_OLD'
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/factory.py", line 520, in do_action
+    response = action(self, *args, **kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/action.py", line 83, in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 386, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 705, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (ExpiredTokenException) when calling the UpdateItem operation: The security token included in the request is expired
+
+[2021-10-06 00:57:47] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 124, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 146, in get_next_task
+    return self.db.get_next_task()
+  File "/home/ec2-user/environment/m1/app/core-service/core/dynamo.py", line 186, in get_next_task
+    ReturnValues = 'ALL_OLD'
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/factory.py", line 520, in do_action
+    response = action(self, *args, **kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/action.py", line 83, in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 386, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 705, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (ExpiredTokenException) when calling the UpdateItem operation: The security token included in the request is expired
+
+[2021-10-06 00:57:48] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 124, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 146, in get_next_task
+    return self.db.get_next_task()
+  File "/home/ec2-user/environment/m1/app/core-service/core/dynamo.py", line 186, in get_next_task
+    ReturnValues = 'ALL_OLD'
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/factory.py", line 520, in do_action
+    response = action(self, *args, **kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/action.py", line 83, in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 386, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 705, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (ExpiredTokenException) when calling the UpdateItem operation: The security token included in the request is expired
+
+[2021-10-06 00:57:49] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 124, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 146, in get_next_task
+    return self.db.get_next_task()
+  File "/home/ec2-user/environment/m1/app/core-service/core/dynamo.py", line 186, in get_next_task
+    ReturnValues = 'ALL_OLD'
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/factory.py", line 520, in do_action
+    response = action(self, *args, **kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/action.py", line 83, in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 386, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 705, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (ExpiredTokenException) when calling the UpdateItem operation: The security token included in the request is expired
+
+[2021-10-06 00:57:50] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 124, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 146, in get_next_task
+    return self.db.get_next_task()
+  File "/home/ec2-user/environment/m1/app/core-service/core/dynamo.py", line 186, in get_next_task
+    ReturnValues = 'ALL_OLD'
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/factory.py", line 520, in do_action
+    response = action(self, *args, **kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/action.py", line 83, in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 386, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 705, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (ExpiredTokenException) when calling the UpdateItem operation: The security token included in the request is expired
+
+[2021-10-06 00:57:51] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 124, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 146, in get_next_task
+    return self.db.get_next_task()
+  File "/home/ec2-user/environment/m1/app/core-service/core/dynamo.py", line 186, in get_next_task
+    ReturnValues = 'ALL_OLD'
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/factory.py", line 520, in do_action
+    response = action(self, *args, **kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/action.py", line 83, in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 386, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 705, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (ExpiredTokenException) when calling the UpdateItem operation: The security token included in the request is expired
+
+[2021-10-06 00:57:52] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 124, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 146, in get_next_task
+    return self.db.get_next_task()
+  File "/home/ec2-user/environment/m1/app/core-service/core/dynamo.py", line 186, in get_next_task
+    ReturnValues = 'ALL_OLD'
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/factory.py", line 520, in do_action
+    response = action(self, *args, **kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/action.py", line 83, in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 386, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 705, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (ExpiredTokenException) when calling the UpdateItem operation: The security token included in the request is expired
+
+[2021-10-06 00:57:53] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 124, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 146, in get_next_task
+    return self.db.get_next_task()
+  File "/home/ec2-user/environment/m1/app/core-service/core/dynamo.py", line 186, in get_next_task
+    ReturnValues = 'ALL_OLD'
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/factory.py", line 520, in do_action
+    response = action(self, *args, **kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/action.py", line 83, in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 386, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 705, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (ExpiredTokenException) when calling the UpdateItem operation: The security token included in the request is expired
+
+[2021-10-06 00:57:54] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 124, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 146, in get_next_task
+    return self.db.get_next_task()
+  File "/home/ec2-user/environment/m1/app/core-service/core/dynamo.py", line 186, in get_next_task
+    ReturnValues = 'ALL_OLD'
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/factory.py", line 520, in do_action
+    response = action(self, *args, **kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/action.py", line 83, in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 386, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 705, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (ExpiredTokenException) when calling the UpdateItem operation: The security token included in the request is expired
+
+[2021-10-06 00:57:55] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 124, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 146, in get_next_task
+    return self.db.get_next_task()
+  File "/home/ec2-user/environment/m1/app/core-service/core/dynamo.py", line 186, in get_next_task
+    ReturnValues = 'ALL_OLD'
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/factory.py", line 520, in do_action
+    response = action(self, *args, **kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/action.py", line 83, in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 386, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 705, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (ExpiredTokenException) when calling the UpdateItem operation: The security token included in the request is expired
+
+[2021-10-06 00:57:56] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 124, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 146, in get_next_task
+    return self.db.get_next_task()
+  File "/home/ec2-user/environment/m1/app/core-service/core/dynamo.py", line 186, in get_next_task
+    ReturnValues = 'ALL_OLD'
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/factory.py", line 520, in do_action
+    response = action(self, *args, **kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/action.py", line 83, in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 386, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 705, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (ExpiredTokenException) when calling the UpdateItem operation: The security token included in the request is expired
+
+[2021-10-06 00:57:57] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 124, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 146, in get_next_task
+    return self.db.get_next_task()
+  File "/home/ec2-user/environment/m1/app/core-service/core/dynamo.py", line 186, in get_next_task
+    ReturnValues = 'ALL_OLD'
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/factory.py", line 520, in do_action
+    response = action(self, *args, **kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/action.py", line 83, in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 386, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 705, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (ExpiredTokenException) when calling the UpdateItem operation: The security token included in the request is expired
+
+[2021-10-06 00:57:58] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 124, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 146, in get_next_task
+    return self.db.get_next_task()
+  File "/home/ec2-user/environment/m1/app/core-service/core/dynamo.py", line 186, in get_next_task
+    ReturnValues = 'ALL_OLD'
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/factory.py", line 520, in do_action
+    response = action(self, *args, **kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/action.py", line 83, in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 386, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 705, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (ExpiredTokenException) when calling the UpdateItem operation: The security token included in the request is expired
+
+[2021-10-06 00:57:59] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 124, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 146, in get_next_task
+    return self.db.get_next_task()
+  File "/home/ec2-user/environment/m1/app/core-service/core/dynamo.py", line 186, in get_next_task
+    ReturnValues = 'ALL_OLD'
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/factory.py", line 520, in do_action
+    response = action(self, *args, **kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/action.py", line 83, in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 386, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 705, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (ExpiredTokenException) when calling the UpdateItem operation: The security token included in the request is expired
+
+[2021-10-06 00:58:00] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 124, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 146, in get_next_task
+    return self.db.get_next_task()
+  File "/home/ec2-user/environment/m1/app/core-service/core/dynamo.py", line 186, in get_next_task
+    ReturnValues = 'ALL_OLD'
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/factory.py", line 520, in do_action
+    response = action(self, *args, **kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/action.py", line 83, in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 386, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 705, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (ExpiredTokenException) when calling the UpdateItem operation: The security token included in the request is expired
+
+[2021-10-06 00:58:01] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 124, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 156, in queue_worker
+    time.sleep(1)
+  File "/home/ec2-user/environment/m1/app/core-service/core/app.py", line 78, in termination_handler
+    print(f'APP termination_handler signal {signal}, {frame}')
+OSError: [Errno 5] Input/output error
+
+[2021-10-06 08:41:37] I dynamo | DYNAMO initiated: <core.dynamo.DB object at 0x7fc01556fa90>
+[2021-10-06 08:41:39] I engine | RUNNER initiated: <core.engine.Runner object at 0x7fc015897fd0>
+[2021-10-06 08:41:39] I engine | RUNNER queue_worker started: 8151
+[2021-10-06 08:41:39] I engine | RUNNER started: <core.engine.Runner object at 0x7fc015897fd0>
+[2021-10-06 08:41:39] I telegr | BOT initiated: <core.telegram.Bot object at 0x7fc0152a8a90>
+[2021-10-06 08:41:39] I telegr | BOT polling: <core.telegram.Bot object at 0x7fc0152a8a90>
+[2021-10-06 08:41:39] I cognit | COGNITO initiated: <core.cognito.Users object at 0x7fc01523f450>
+[2021-10-06 08:41:39] I facebo | FB initiated: <core.facebook.FB object at 0x7fc01523f4d0>
+[2021-10-06 08:51:42] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 124, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 146, in get_next_task
+    return self.db.get_next_task()
+  File "/home/ec2-user/environment/m1/app/core-service/core/dynamo.py", line 186, in get_next_task
+    ReturnValues = 'ALL_OLD'
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/factory.py", line 520, in do_action
+    response = action(self, *args, **kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/action.py", line 83, in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 386, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 705, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (ExpiredTokenException) when calling the UpdateItem operation: The security token included in the request is expired
+
+[2021-10-06 08:51:43] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 124, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 146, in get_next_task
+    return self.db.get_next_task()
+  File "/home/ec2-user/environment/m1/app/core-service/core/dynamo.py", line 186, in get_next_task
+    ReturnValues = 'ALL_OLD'
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/factory.py", line 520, in do_action
+    response = action(self, *args, **kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/action.py", line 83, in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 386, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 705, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (ExpiredTokenException) when calling the UpdateItem operation: The security token included in the request is expired
+
+[2021-10-06 08:51:44] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 124, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 146, in get_next_task
+    return self.db.get_next_task()
+  File "/home/ec2-user/environment/m1/app/core-service/core/dynamo.py", line 186, in get_next_task
+    ReturnValues = 'ALL_OLD'
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/factory.py", line 520, in do_action
+    response = action(self, *args, **kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/action.py", line 83, in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 386, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 705, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (ExpiredTokenException) when calling the UpdateItem operation: The security token included in the request is expired
+
+[2021-10-06 08:51:45] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 124, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 146, in get_next_task
+    return self.db.get_next_task()
+  File "/home/ec2-user/environment/m1/app/core-service/core/dynamo.py", line 186, in get_next_task
+    ReturnValues = 'ALL_OLD'
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/factory.py", line 520, in do_action
+    response = action(self, *args, **kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/action.py", line 83, in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 386, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 705, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (ExpiredTokenException) when calling the UpdateItem operation: The security token included in the request is expired
+
+[2021-10-06 08:51:46] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 124, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 146, in get_next_task
+    return self.db.get_next_task()
+  File "/home/ec2-user/environment/m1/app/core-service/core/dynamo.py", line 186, in get_next_task
+    ReturnValues = 'ALL_OLD'
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/factory.py", line 520, in do_action
+    response = action(self, *args, **kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/action.py", line 83, in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 386, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 705, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (ExpiredTokenException) when calling the UpdateItem operation: The security token included in the request is expired
+
+[2021-10-06 08:51:47] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 124, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 146, in get_next_task
+    return self.db.get_next_task()
+  File "/home/ec2-user/environment/m1/app/core-service/core/dynamo.py", line 186, in get_next_task
+    ReturnValues = 'ALL_OLD'
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/factory.py", line 520, in do_action
+    response = action(self, *args, **kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/action.py", line 83, in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 386, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 705, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (ExpiredTokenException) when calling the UpdateItem operation: The security token included in the request is expired
+
+[2021-10-06 08:51:48] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 124, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 146, in get_next_task
+    return self.db.get_next_task()
+  File "/home/ec2-user/environment/m1/app/core-service/core/dynamo.py", line 186, in get_next_task
+    ReturnValues = 'ALL_OLD'
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/factory.py", line 520, in do_action
+    response = action(self, *args, **kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/action.py", line 83, in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 386, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 705, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (ExpiredTokenException) when calling the UpdateItem operation: The security token included in the request is expired
+
+[2021-10-06 08:51:49] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 124, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 146, in get_next_task
+    return self.db.get_next_task()
+  File "/home/ec2-user/environment/m1/app/core-service/core/dynamo.py", line 186, in get_next_task
+    ReturnValues = 'ALL_OLD'
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/factory.py", line 520, in do_action
+    response = action(self, *args, **kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/action.py", line 83, in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 386, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 705, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (ExpiredTokenException) when calling the UpdateItem operation: The security token included in the request is expired
+
+[2021-10-06 08:51:50] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 124, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 146, in get_next_task
+    return self.db.get_next_task()
+  File "/home/ec2-user/environment/m1/app/core-service/core/dynamo.py", line 186, in get_next_task
+    ReturnValues = 'ALL_OLD'
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/factory.py", line 520, in do_action
+    response = action(self, *args, **kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/action.py", line 83, in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 386, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 705, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (ExpiredTokenException) when calling the UpdateItem operation: The security token included in the request is expired
+
+[2021-10-06 08:51:52] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 124, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 146, in get_next_task
+    return self.db.get_next_task()
+  File "/home/ec2-user/environment/m1/app/core-service/core/dynamo.py", line 186, in get_next_task
+    ReturnValues = 'ALL_OLD'
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/factory.py", line 520, in do_action
+    response = action(self, *args, **kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/action.py", line 83, in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 386, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 705, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (ExpiredTokenException) when calling the UpdateItem operation: The security token included in the request is expired
+
+[2021-10-06 08:51:53] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 124, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 146, in get_next_task
+    return self.db.get_next_task()
+  File "/home/ec2-user/environment/m1/app/core-service/core/dynamo.py", line 186, in get_next_task
+    ReturnValues = 'ALL_OLD'
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/factory.py", line 520, in do_action
+    response = action(self, *args, **kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/action.py", line 83, in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 386, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 705, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (ExpiredTokenException) when calling the UpdateItem operation: The security token included in the request is expired
+
+[2021-10-06 08:51:54] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 124, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 146, in get_next_task
+    return self.db.get_next_task()
+  File "/home/ec2-user/environment/m1/app/core-service/core/dynamo.py", line 186, in get_next_task
+    ReturnValues = 'ALL_OLD'
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/factory.py", line 520, in do_action
+    response = action(self, *args, **kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/action.py", line 83, in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 386, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 705, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (ExpiredTokenException) when calling the UpdateItem operation: The security token included in the request is expired
+
+[2021-10-06 08:51:55] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 124, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 146, in get_next_task
+    return self.db.get_next_task()
+  File "/home/ec2-user/environment/m1/app/core-service/core/dynamo.py", line 186, in get_next_task
+    ReturnValues = 'ALL_OLD'
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/factory.py", line 520, in do_action
+    response = action(self, *args, **kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/action.py", line 83, in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 386, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 705, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (ExpiredTokenException) when calling the UpdateItem operation: The security token included in the request is expired
+
+[2021-10-06 08:51:56] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 124, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 146, in get_next_task
+    return self.db.get_next_task()
+  File "/home/ec2-user/environment/m1/app/core-service/core/dynamo.py", line 186, in get_next_task
+    ReturnValues = 'ALL_OLD'
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/factory.py", line 520, in do_action
+    response = action(self, *args, **kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/action.py", line 83, in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 386, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 705, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (ExpiredTokenException) when calling the UpdateItem operation: The security token included in the request is expired
+
+[2021-10-06 08:51:57] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 124, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 146, in get_next_task
+    return self.db.get_next_task()
+  File "/home/ec2-user/environment/m1/app/core-service/core/dynamo.py", line 186, in get_next_task
+    ReturnValues = 'ALL_OLD'
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/factory.py", line 520, in do_action
+    response = action(self, *args, **kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/action.py", line 83, in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 386, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 705, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (ExpiredTokenException) when calling the UpdateItem operation: The security token included in the request is expired
+
+[2021-10-06 08:51:58] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 124, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 146, in get_next_task
+    return self.db.get_next_task()
+  File "/home/ec2-user/environment/m1/app/core-service/core/dynamo.py", line 186, in get_next_task
+    ReturnValues = 'ALL_OLD'
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/factory.py", line 520, in do_action
+    response = action(self, *args, **kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/action.py", line 83, in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 386, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 705, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (ExpiredTokenException) when calling the UpdateItem operation: The security token included in the request is expired
+
+[2021-10-06 08:51:59] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 124, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 146, in get_next_task
+    return self.db.get_next_task()
+  File "/home/ec2-user/environment/m1/app/core-service/core/dynamo.py", line 186, in get_next_task
+    ReturnValues = 'ALL_OLD'
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/factory.py", line 520, in do_action
+    response = action(self, *args, **kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/action.py", line 83, in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 386, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 705, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (ExpiredTokenException) when calling the UpdateItem operation: The security token included in the request is expired
+
+[2021-10-06 08:52:00] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 124, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 146, in get_next_task
+    return self.db.get_next_task()
+  File "/home/ec2-user/environment/m1/app/core-service/core/dynamo.py", line 186, in get_next_task
+    ReturnValues = 'ALL_OLD'
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/factory.py", line 520, in do_action
+    response = action(self, *args, **kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/action.py", line 83, in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 386, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 705, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (ExpiredTokenException) when calling the UpdateItem operation: The security token included in the request is expired
+
+[2021-10-06 08:52:01] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 124, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 146, in get_next_task
+    return self.db.get_next_task()
+  File "/home/ec2-user/environment/m1/app/core-service/core/dynamo.py", line 186, in get_next_task
+    ReturnValues = 'ALL_OLD'
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/factory.py", line 520, in do_action
+    response = action(self, *args, **kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/action.py", line 83, in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 386, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 705, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (ExpiredTokenException) when calling the UpdateItem operation: The security token included in the request is expired
+
+[2021-10-06 08:52:02] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 124, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 146, in get_next_task
+    return self.db.get_next_task()
+  File "/home/ec2-user/environment/m1/app/core-service/core/dynamo.py", line 186, in get_next_task
+    ReturnValues = 'ALL_OLD'
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/factory.py", line 520, in do_action
+    response = action(self, *args, **kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/action.py", line 83, in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 386, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 705, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (ExpiredTokenException) when calling the UpdateItem operation: The security token included in the request is expired
+
+[2021-10-06 08:52:03] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 124, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 146, in get_next_task
+    return self.db.get_next_task()
+  File "/home/ec2-user/environment/m1/app/core-service/core/dynamo.py", line 186, in get_next_task
+    ReturnValues = 'ALL_OLD'
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/factory.py", line 520, in do_action
+    response = action(self, *args, **kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/action.py", line 83, in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 386, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 705, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (ExpiredTokenException) when calling the UpdateItem operation: The security token included in the request is expired
+
+[2021-10-06 08:52:04] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 124, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 146, in get_next_task
+    return self.db.get_next_task()
+  File "/home/ec2-user/environment/m1/app/core-service/core/dynamo.py", line 186, in get_next_task
+    ReturnValues = 'ALL_OLD'
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/factory.py", line 520, in do_action
+    response = action(self, *args, **kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/action.py", line 83, in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 386, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 705, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (ExpiredTokenException) when calling the UpdateItem operation: The security token included in the request is expired
+
+[2021-10-06 08:52:05] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 124, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 146, in get_next_task
+    return self.db.get_next_task()
+  File "/home/ec2-user/environment/m1/app/core-service/core/dynamo.py", line 186, in get_next_task
+    ReturnValues = 'ALL_OLD'
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/factory.py", line 520, in do_action
+    response = action(self, *args, **kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/action.py", line 83, in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 386, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 705, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (ExpiredTokenException) when calling the UpdateItem operation: The security token included in the request is expired
+
+[2021-10-06 08:52:06] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 124, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 146, in get_next_task
+    return self.db.get_next_task()
+  File "/home/ec2-user/environment/m1/app/core-service/core/dynamo.py", line 186, in get_next_task
+    ReturnValues = 'ALL_OLD'
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/factory.py", line 520, in do_action
+    response = action(self, *args, **kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/action.py", line 83, in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 386, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 705, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (ExpiredTokenException) when calling the UpdateItem operation: The security token included in the request is expired
+
+[2021-10-06 08:52:07] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 124, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 146, in get_next_task
+    return self.db.get_next_task()
+  File "/home/ec2-user/environment/m1/app/core-service/core/dynamo.py", line 186, in get_next_task
+    ReturnValues = 'ALL_OLD'
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/factory.py", line 520, in do_action
+    response = action(self, *args, **kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/action.py", line 83, in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 386, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 705, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (ExpiredTokenException) when calling the UpdateItem operation: The security token included in the request is expired
+
+[2021-10-06 08:52:08] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 124, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 146, in get_next_task
+    return self.db.get_next_task()
+  File "/home/ec2-user/environment/m1/app/core-service/core/dynamo.py", line 186, in get_next_task
+    ReturnValues = 'ALL_OLD'
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/factory.py", line 520, in do_action
+    response = action(self, *args, **kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/action.py", line 83, in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 386, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 705, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (ExpiredTokenException) when calling the UpdateItem operation: The security token included in the request is expired
+
+[2021-10-06 08:52:09] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 124, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 146, in get_next_task
+    return self.db.get_next_task()
+  File "/home/ec2-user/environment/m1/app/core-service/core/dynamo.py", line 186, in get_next_task
+    ReturnValues = 'ALL_OLD'
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/factory.py", line 520, in do_action
+    response = action(self, *args, **kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/action.py", line 83, in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 386, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 705, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (ExpiredTokenException) when calling the UpdateItem operation: The security token included in the request is expired
+
+[2021-10-06 08:52:10] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 124, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 146, in get_next_task
+    return self.db.get_next_task()
+  File "/home/ec2-user/environment/m1/app/core-service/core/dynamo.py", line 186, in get_next_task
+    ReturnValues = 'ALL_OLD'
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/factory.py", line 520, in do_action
+    response = action(self, *args, **kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/action.py", line 83, in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 386, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 705, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (ExpiredTokenException) when calling the UpdateItem operation: The security token included in the request is expired
+
+[2021-10-06 08:52:11] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 124, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 146, in get_next_task
+    return self.db.get_next_task()
+  File "/home/ec2-user/environment/m1/app/core-service/core/dynamo.py", line 186, in get_next_task
+    ReturnValues = 'ALL_OLD'
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/factory.py", line 520, in do_action
+    response = action(self, *args, **kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/action.py", line 83, in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 386, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 705, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (ExpiredTokenException) when calling the UpdateItem operation: The security token included in the request is expired
+
+[2021-10-06 08:52:12] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 124, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 146, in get_next_task
+    return self.db.get_next_task()
+  File "/home/ec2-user/environment/m1/app/core-service/core/dynamo.py", line 186, in get_next_task
+    ReturnValues = 'ALL_OLD'
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/factory.py", line 520, in do_action
+    response = action(self, *args, **kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/action.py", line 83, in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 386, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 705, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (ExpiredTokenException) when calling the UpdateItem operation: The security token included in the request is expired
+
+[2021-10-06 08:52:13] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 124, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 146, in get_next_task
+    return self.db.get_next_task()
+  File "/home/ec2-user/environment/m1/app/core-service/core/dynamo.py", line 186, in get_next_task
+    ReturnValues = 'ALL_OLD'
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/factory.py", line 520, in do_action
+    response = action(self, *args, **kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/action.py", line 83, in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 386, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 705, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (ExpiredTokenException) when calling the UpdateItem operation: The security token included in the request is expired
+
+[2021-10-06 08:52:14] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 124, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 146, in get_next_task
+    return self.db.get_next_task()
+  File "/home/ec2-user/environment/m1/app/core-service/core/dynamo.py", line 186, in get_next_task
+    ReturnValues = 'ALL_OLD'
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/factory.py", line 520, in do_action
+    response = action(self, *args, **kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/action.py", line 83, in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 386, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 705, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (ExpiredTokenException) when calling the UpdateItem operation: The security token included in the request is expired
+
+[2021-10-06 08:52:15] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 124, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 146, in get_next_task
+    return self.db.get_next_task()
+  File "/home/ec2-user/environment/m1/app/core-service/core/dynamo.py", line 186, in get_next_task
+    ReturnValues = 'ALL_OLD'
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/factory.py", line 520, in do_action
+    response = action(self, *args, **kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/action.py", line 83, in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 386, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 705, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (ExpiredTokenException) when calling the UpdateItem operation: The security token included in the request is expired
+
+[2021-10-06 08:52:16] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 124, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 146, in get_next_task
+    return self.db.get_next_task()
+  File "/home/ec2-user/environment/m1/app/core-service/core/dynamo.py", line 186, in get_next_task
+    ReturnValues = 'ALL_OLD'
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/factory.py", line 520, in do_action
+    response = action(self, *args, **kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/action.py", line 83, in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 386, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 705, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (ExpiredTokenException) when calling the UpdateItem operation: The security token included in the request is expired
+
+[2021-10-06 08:52:17] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 124, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 146, in get_next_task
+    return self.db.get_next_task()
+  File "/home/ec2-user/environment/m1/app/core-service/core/dynamo.py", line 186, in get_next_task
+    ReturnValues = 'ALL_OLD'
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/factory.py", line 520, in do_action
+    response = action(self, *args, **kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/action.py", line 83, in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 386, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 705, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (ExpiredTokenException) when calling the UpdateItem operation: The security token included in the request is expired
+
+[2021-10-06 08:52:18] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 124, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 146, in get_next_task
+    return self.db.get_next_task()
+  File "/home/ec2-user/environment/m1/app/core-service/core/dynamo.py", line 186, in get_next_task
+    ReturnValues = 'ALL_OLD'
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/factory.py", line 520, in do_action
+    response = action(self, *args, **kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/action.py", line 83, in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 386, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 705, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (ExpiredTokenException) when calling the UpdateItem operation: The security token included in the request is expired
+
+[2021-10-06 08:52:19] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 124, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 146, in get_next_task
+    return self.db.get_next_task()
+  File "/home/ec2-user/environment/m1/app/core-service/core/dynamo.py", line 186, in get_next_task
+    ReturnValues = 'ALL_OLD'
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/factory.py", line 520, in do_action
+    response = action(self, *args, **kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/action.py", line 83, in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 386, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 705, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (ExpiredTokenException) when calling the UpdateItem operation: The security token included in the request is expired
+
+[2021-10-06 08:52:20] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 124, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 146, in get_next_task
+    return self.db.get_next_task()
+  File "/home/ec2-user/environment/m1/app/core-service/core/dynamo.py", line 186, in get_next_task
+    ReturnValues = 'ALL_OLD'
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/factory.py", line 520, in do_action
+    response = action(self, *args, **kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/action.py", line 83, in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 386, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 705, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (ExpiredTokenException) when calling the UpdateItem operation: The security token included in the request is expired
+
+[2021-10-06 08:52:21] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 124, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 146, in get_next_task
+    return self.db.get_next_task()
+  File "/home/ec2-user/environment/m1/app/core-service/core/dynamo.py", line 186, in get_next_task
+    ReturnValues = 'ALL_OLD'
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/factory.py", line 520, in do_action
+    response = action(self, *args, **kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/action.py", line 83, in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 386, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 705, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (ExpiredTokenException) when calling the UpdateItem operation: The security token included in the request is expired
+
+[2021-10-06 08:52:26] I dynamo | DYNAMO initiated: <core.dynamo.DB object at 0x7f9b5b56dd50>
+[2021-10-06 08:52:29] I engine | RUNNER initiated: <core.engine.Runner object at 0x7f9b5b8a5150>
+[2021-10-06 08:52:29] I engine | RUNNER queue_worker started: 9204
+[2021-10-06 08:52:29] I engine | RUNNER started: <core.engine.Runner object at 0x7f9b5b8a5150>
+[2021-10-06 08:52:29] I telegr | BOT initiated: <core.telegram.Bot object at 0x7f9b5b2a5910>
+[2021-10-06 08:52:29] I telegr | BOT polling: <core.telegram.Bot object at 0x7f9b5b2a5910>
+[2021-10-06 08:52:29] I cognit | COGNITO initiated: <core.cognito.Users object at 0x7f9b5b23d2d0>
+[2021-10-06 08:52:29] I facebo | FB initiated: <core.facebook.FB object at 0x7f9b5b23d350>
+[2021-10-06 09:06:46] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 124, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 146, in get_next_task
+    return self.db.get_next_task()
+  File "/home/ec2-user/environment/m1/app/core-service/core/dynamo.py", line 186, in get_next_task
+    ReturnValues = 'ALL_OLD'
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/factory.py", line 520, in do_action
+    response = action(self, *args, **kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/action.py", line 83, in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 386, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 705, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (ExpiredTokenException) when calling the UpdateItem operation: The security token included in the request is expired
+
+[2021-10-06 09:06:47] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 124, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 146, in get_next_task
+    return self.db.get_next_task()
+  File "/home/ec2-user/environment/m1/app/core-service/core/dynamo.py", line 186, in get_next_task
+    ReturnValues = 'ALL_OLD'
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/factory.py", line 520, in do_action
+    response = action(self, *args, **kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/action.py", line 83, in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 386, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 705, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (ExpiredTokenException) when calling the UpdateItem operation: The security token included in the request is expired
+
+[2021-10-06 09:06:48] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 124, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 146, in get_next_task
+    return self.db.get_next_task()
+  File "/home/ec2-user/environment/m1/app/core-service/core/dynamo.py", line 186, in get_next_task
+    ReturnValues = 'ALL_OLD'
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/factory.py", line 520, in do_action
+    response = action(self, *args, **kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/action.py", line 83, in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 386, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 705, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (ExpiredTokenException) when calling the UpdateItem operation: The security token included in the request is expired
+
+[2021-10-06 09:06:49] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 124, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 146, in get_next_task
+    return self.db.get_next_task()
+  File "/home/ec2-user/environment/m1/app/core-service/core/dynamo.py", line 186, in get_next_task
+    ReturnValues = 'ALL_OLD'
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/factory.py", line 520, in do_action
+    response = action(self, *args, **kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/action.py", line 83, in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 386, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 705, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (ExpiredTokenException) when calling the UpdateItem operation: The security token included in the request is expired
+
+[2021-10-06 09:06:50] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 124, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 146, in get_next_task
+    return self.db.get_next_task()
+  File "/home/ec2-user/environment/m1/app/core-service/core/dynamo.py", line 186, in get_next_task
+    ReturnValues = 'ALL_OLD'
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/factory.py", line 520, in do_action
+    response = action(self, *args, **kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/action.py", line 83, in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 386, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 705, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (ExpiredTokenException) when calling the UpdateItem operation: The security token included in the request is expired
+
+[2021-10-06 09:06:51] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 124, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 146, in get_next_task
+    return self.db.get_next_task()
+  File "/home/ec2-user/environment/m1/app/core-service/core/dynamo.py", line 186, in get_next_task
+    ReturnValues = 'ALL_OLD'
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/factory.py", line 520, in do_action
+    response = action(self, *args, **kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/action.py", line 83, in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 386, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 705, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (ExpiredTokenException) when calling the UpdateItem operation: The security token included in the request is expired
+
+[2021-10-06 09:06:52] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 124, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 146, in get_next_task
+    return self.db.get_next_task()
+  File "/home/ec2-user/environment/m1/app/core-service/core/dynamo.py", line 186, in get_next_task
+    ReturnValues = 'ALL_OLD'
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/factory.py", line 520, in do_action
+    response = action(self, *args, **kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/action.py", line 83, in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 386, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 705, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (ExpiredTokenException) when calling the UpdateItem operation: The security token included in the request is expired
+
+[2021-10-06 09:06:53] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 124, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 146, in get_next_task
+    return self.db.get_next_task()
+  File "/home/ec2-user/environment/m1/app/core-service/core/dynamo.py", line 186, in get_next_task
+    ReturnValues = 'ALL_OLD'
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/factory.py", line 520, in do_action
+    response = action(self, *args, **kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/action.py", line 83, in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 386, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 705, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (ExpiredTokenException) when calling the UpdateItem operation: The security token included in the request is expired
+
+[2021-10-06 09:06:54] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 124, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 146, in get_next_task
+    return self.db.get_next_task()
+  File "/home/ec2-user/environment/m1/app/core-service/core/dynamo.py", line 186, in get_next_task
+    ReturnValues = 'ALL_OLD'
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/factory.py", line 520, in do_action
+    response = action(self, *args, **kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/action.py", line 83, in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 386, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 705, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (ExpiredTokenException) when calling the UpdateItem operation: The security token included in the request is expired
+
+[2021-10-06 09:06:55] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 124, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 146, in get_next_task
+    return self.db.get_next_task()
+  File "/home/ec2-user/environment/m1/app/core-service/core/dynamo.py", line 186, in get_next_task
+    ReturnValues = 'ALL_OLD'
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/factory.py", line 520, in do_action
+    response = action(self, *args, **kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/action.py", line 83, in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 386, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 705, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (ExpiredTokenException) when calling the UpdateItem operation: The security token included in the request is expired
+
+[2021-10-06 09:06:56] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 124, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 146, in get_next_task
+    return self.db.get_next_task()
+  File "/home/ec2-user/environment/m1/app/core-service/core/dynamo.py", line 186, in get_next_task
+    ReturnValues = 'ALL_OLD'
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/factory.py", line 520, in do_action
+    response = action(self, *args, **kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/action.py", line 83, in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 386, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 705, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (ExpiredTokenException) when calling the UpdateItem operation: The security token included in the request is expired
+
+[2021-10-06 09:06:57] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 124, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 146, in get_next_task
+    return self.db.get_next_task()
+  File "/home/ec2-user/environment/m1/app/core-service/core/dynamo.py", line 186, in get_next_task
+    ReturnValues = 'ALL_OLD'
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/factory.py", line 520, in do_action
+    response = action(self, *args, **kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/action.py", line 83, in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 386, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 705, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (ExpiredTokenException) when calling the UpdateItem operation: The security token included in the request is expired
+
+[2021-10-06 09:06:58] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 124, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 146, in get_next_task
+    return self.db.get_next_task()
+  File "/home/ec2-user/environment/m1/app/core-service/core/dynamo.py", line 186, in get_next_task
+    ReturnValues = 'ALL_OLD'
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/factory.py", line 520, in do_action
+    response = action(self, *args, **kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/action.py", line 83, in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 386, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 705, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (ExpiredTokenException) when calling the UpdateItem operation: The security token included in the request is expired
+
+[2021-10-06 09:06:59] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 124, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 146, in get_next_task
+    return self.db.get_next_task()
+  File "/home/ec2-user/environment/m1/app/core-service/core/dynamo.py", line 186, in get_next_task
+    ReturnValues = 'ALL_OLD'
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/factory.py", line 520, in do_action
+    response = action(self, *args, **kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/action.py", line 83, in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 386, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 705, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (ExpiredTokenException) when calling the UpdateItem operation: The security token included in the request is expired
+
+[2021-10-06 09:07:00] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 124, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 146, in get_next_task
+    return self.db.get_next_task()
+  File "/home/ec2-user/environment/m1/app/core-service/core/dynamo.py", line 186, in get_next_task
+    ReturnValues = 'ALL_OLD'
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/factory.py", line 520, in do_action
+    response = action(self, *args, **kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/action.py", line 83, in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 386, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 705, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (ExpiredTokenException) when calling the UpdateItem operation: The security token included in the request is expired
+
+[2021-10-06 09:07:01] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 124, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 146, in get_next_task
+    return self.db.get_next_task()
+  File "/home/ec2-user/environment/m1/app/core-service/core/dynamo.py", line 186, in get_next_task
+    ReturnValues = 'ALL_OLD'
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/factory.py", line 520, in do_action
+    response = action(self, *args, **kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/action.py", line 83, in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 386, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 705, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (ExpiredTokenException) when calling the UpdateItem operation: The security token included in the request is expired
+
+[2021-10-06 09:07:02] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 124, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 146, in get_next_task
+    return self.db.get_next_task()
+  File "/home/ec2-user/environment/m1/app/core-service/core/dynamo.py", line 186, in get_next_task
+    ReturnValues = 'ALL_OLD'
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/factory.py", line 520, in do_action
+    response = action(self, *args, **kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/action.py", line 83, in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 386, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 705, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (ExpiredTokenException) when calling the UpdateItem operation: The security token included in the request is expired
+
+[2021-10-06 09:07:03] I engine | Traceback (most recent call last):
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 124, in wrapper
+    return function(self, *args, **kwargs)
+  File "/home/ec2-user/environment/m1/app/core-service/core/engine.py", line 146, in get_next_task
+    return self.db.get_next_task()
+  File "/home/ec2-user/environment/m1/app/core-service/core/dynamo.py", line 186, in get_next_task
+    ReturnValues = 'ALL_OLD'
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/factory.py", line 520, in do_action
+    response = action(self, *args, **kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/boto3/resources/action.py", line 83, in __call__
+    response = getattr(parent.meta.client, operation_name)(*args, **params)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 386, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+  File "/home/ec2-user/environment/flask-env/lib64/python3.7/site-packages/botocore/client.py", line 705, in _make_api_call
+    raise error_class(parsed_response, operation_name)
+botocore.exceptions.ClientError: An error occurred (ExpiredTokenException) when calling the UpdateItem operation: The security token included in the request is expired
+

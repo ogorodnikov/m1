@@ -8,7 +8,6 @@
 
 <div class="container-fluid">
   
-  
   <div class="col-12 d-flex justify-content-center h5 m-3">
     Available algorithms:
   </div>
@@ -17,40 +16,60 @@
     
     <thead>
       <tr>
-        <!--<th scope="col">ID</th>-->
-        <th scope="col">Name</th>
-        
-        <th scope="col">
+
+        <th colspan=5 scope="col">
           
-          <div class="dropdown">
-            
-            <a class="btn btn-outline-secondary-noborder dropdown-toggle text-light p-0"
-               data-toggle="dropdown">
-              <b>Type<b>
-            </a>
+          <div class="row justify-content-start">
           
-            <div class="dropdown-menu bg-secondary">
-              <a class="dropdown-item text-light" 
-                 href={{ url_for('get_algorithms') }}>
-                all
-              </a>
-              <a class="dropdown-item text-light" 
-                 href={{ url_for('get_algorithms', type='classical') }}>
-                classical
-              </a>
-              <a class="dropdown-item text-light" 
-                 href={{ url_for('get_algorithms', type='quantum') }}>
-                quantum
-              </a>
+            <div class="col-sm-2 m-1 bg-secondary">
+              Name
             </div>
+          
+
+            
+            <div class="dropdown col-sm-1 m-1 bg-secondary">
+              
+              Type
+              
+              <!--<a class="btn btn-outline-secondary-noborder dropdown-toggle text-light p-0"-->
+              <!--   data-toggle="dropdown">-->
+              <!--  <b>Type<b>-->
+              <!--</a>-->
+            
+              <div class="dropdown-menu bg-secondary">
+                <a class="dropdown-item text-light" 
+                   href={{ url_for('get_algorithms') }}>
+                  all
+                </a>
+                <a class="dropdown-item text-light" 
+                   href={{ url_for('get_algorithms', type='classical') }}>
+                  classical
+                </a>
+                <a class="dropdown-item text-light" 
+                   href={{ url_for('get_algorithms', type='quantum') }}>
+                  quantum
+                </a>
+              </div>
+              
+            </div>
+            
+    
+            <div class="col-sm-auto m-1 bg-secondary d-none d-sm-block">
+              Description
+            </div>            
+            
+            <div class="col-sm-1 m-1 bg-secondary d-none d-sm-block">
+              Image
+            </div> 
+            
+            <div class="col-sm-2 m-1 bg-secondary d-none d-sm-block">
+              Actions
+            </div> 
             
           </div>
           
-        
         </th>
         
-        <th scope="col">Description</th>
-        <th scope="col">Image</th>
       </tr>
     </thead>
     
@@ -59,40 +78,55 @@
       {% for item in items %}
       
       <tr>
-        <!--<td class="col-1">{{ item.id }}</td>-->
-        <td class="col-2">{{ item.name }}</td>
-        <td class="col-1">{{ item.type }}</td>
-        <td class="col-auto">{{ item.description }}</td>
-         
-        <td class="col-1">
-          <img class="img-thumbnail" src="https://indulgeyourpet.com/wp-content/uploads/Bombay.png" style="max-width:60px;width:100%" alt="image">
-        </td>
-      <tr/>
-      
-      <tr>
+
         <td colspan=5>
-          <a href={{ url_for('get_algorithm', algorithm_id=item.id) }}
-            class="btn btn-success" 
-            role="button">
-            Open
-          </a>
-             
-          <a href={{ url_for('like_algorithm', algorithm_id=item.id) }}
-            class="btn btn-info"
-            role="button">
-            Like
-            <span class="badge bg-light text-dark rounded-pill align-text-bottom">
-              {{ item.likes }}
-            </span>
-          </a>
-                
-          <a href={{ item.link }}
-            class="btn btn-secondary"
-            role="button"
-            target="_blank"
-            rel="noopener noreferrer">
-            Wiki
-          </a>
+          
+          <div class="row justify-content-start">
+          
+            <div class="col-9 col-sm-1 m-1 bg-secondary">
+              {{ item.name }}
+            </div>
+            
+            <div class="col-2 col-sm-auto m-1 bg-secondary">
+              {{ item.type }}
+            </div>
+            
+            <div class="col-sm m-1 bg-secondary">
+              {{ item.description }}
+            </div>            
+            
+            <div class="col-sm-auto m-1 bg-secondary">
+              <img class="img-thumbnail" src="https://indulgeyourpet.com/wp-content/uploads/Bombay.png" style="max-width:60px;width:100%" alt="image">
+            </div> 
+            
+            <div class="col-auto m-1 bg-secondary">
+              
+              <a href={{ url_for('get_algorithm', algorithm_id=item.id) }}
+                class="btn btn-success" 
+                role="button">
+                Open
+              </a>
+                 
+              <a href={{ url_for('like_algorithm', algorithm_id=item.id) }}
+                class="btn btn-info"
+                role="button">
+                Like
+                <span class="badge bg-light text-dark rounded-pill align-text-bottom">
+                  {{ item.likes }}
+                </span>
+              </a>
+                    
+              <a href={{ item.link }}
+                class="btn btn-secondary"
+                role="button"
+                target="_blank"
+                rel="noopener noreferrer">
+                Wiki
+              </a>
+              
+            </div> 
+            
+          </div>
         </td>
       </tr>
 
