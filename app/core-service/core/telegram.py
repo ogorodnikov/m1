@@ -57,8 +57,7 @@ class Bot(TeleBot):
         self.app.config['TELEGRAM_BOT_STATE'] = 'Stopped'
 
         self.log(f'BOT stop_polling: {self}')
-        self.log(f'BOT enumerate_threads: {enumerate_threads()}')
-        
+
 
     def register_handlers(self):
 
