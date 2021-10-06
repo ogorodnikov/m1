@@ -79,8 +79,8 @@ class FlaskApp(Flask):
 
 app = FlaskApp(__name__)
 
-# app.launch = app.run_with_gunicorn
+app.launch = app.run_with_gunicorn
 
-app.launch = app.run_with_developement_server
+# app.launch = app.run_with_developement_server
 
 from core import routes
