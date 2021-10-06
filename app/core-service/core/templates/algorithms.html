@@ -21,11 +21,11 @@
           
           <div class="row justify-content-start">
           
-            <div class="col-9 col-lg-auto" style="width: 200px;">
+            <div class="col-9 col-lg-auto m-1" style="width: 200px;">
               Name
             </div>
             
-            <div class="col-2 col-lg-auto" style="width: 90px;">
+            <div class="col-2 col-lg-auto m-1" style="width: 90px;">
               
               <a class="dropdown-toggle text-light font-weight-bold"
                  style="text-decoration: none;"
@@ -33,7 +33,7 @@
                 Type
               </a>
               
-              <div class="dropdown-menu" style="background-color: #212121;">
+              <div class="dropdown-menu m-1" style="background-color: #212121;">
                 <a class="dropdown-item text-light" 
                    href={{ url_for('get_algorithms') }}>
                   all
@@ -51,15 +51,15 @@
             </div>
             
     
-            <div class="col-lg d-none d-lg-block">
+            <div class="col-lg d-none d-lg-block m-1">
               Description
             </div>            
             
-            <div class="col-12 col-lg-auto d-none d-lg-block" style="width: 100px;">
+            <div class="col-12 col-lg-auto d-none d-lg-block m-1" style="width: 100px;">
               Image
             </div> 
             
-            <div class="col-12 col-lg-auto d-none d-lg-block" style="width: 260px;">
+            <div class="col-12 col-lg-auto d-none d-lg-block m-1" style="width: 260px;">
               Actions
             </div> 
             
@@ -78,8 +78,8 @@
           
             <div class="col-9 col-lg-auto">
               
-              <a href={{ url_for('get_algorithm', algorithm_id=item.id) }}
-                class="btn btn-secondary font-dark"
+              <a class="btn btn-secondary font-dark m-1"
+                href={{ url_for('get_algorithm', algorithm_id=item.id) }}
                 style="width: 170px;"
                 role="button">
                 {{ item.name }}
@@ -87,19 +87,19 @@
               
             </div>
             
-            <div class="col-2 col-lg-auto" style="width: 90px;">
+            <div class="col-2 col-lg-auto m-1" style="width: 90px;">
               {{ item.type }}
             </div>
             
-            <div class="col-lg">
+            <div class="col-lg m-1">
               {{ item.description }}
             </div>            
             
-            <div class="col-12 col-lg-auto" style="width: 100px;">
+            <div class="col-12 col-lg-auto m-1" style="width: 100px;">
               <img class="img-thumbnail" src="https://indulgeyourpet.com/wp-content/uploads/Bombay.png" style="height: 38px;" alt="image">
             </div> 
             
-            <div class="col-12 col-lg-auto" style="width: 260px;">
+            <div class="col-12 col-lg-auto m-1" style="width: 260px;">
               
               <a href={{ url_for('get_algorithm', algorithm_id=item.id) }}
                 class="btn btn-success" 

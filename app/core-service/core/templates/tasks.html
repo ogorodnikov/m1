@@ -136,12 +136,20 @@
             {% set preambula = "=== Last " + LOGS_COUNT|string + " logs: ===\n\n" %}
           {% endif%}
           
+<!--          <tr class="collapse" id="collapse-{{ task_id }}">-->
+<!--            <td></td>-->
+<!--            <td colspan=6 style="white-space: pre-wrap; font-family: SourceCodePro, monospace, monospace; line-height:23px">{{ preambula }}{% for log in logs_tail %}{{ log }}-->
+<!--{% endfor %}-->
+<!--            </td>-->
+<!--          </tr>-->
+
           <tr class="collapse" id="collapse-{{ task_id }}">
             <td></td>
-            <td colspan=6 style="white-space: pre-wrap; font-family: SourceCodePro, monospace, monospace; line-height:23px">{{ preambula }}{% for log in logs_tail %}{{ log }}
+            <td colspan=6 class="text-monospace" style="white-space: pre-wrap; line-height:19px">{{ preambula }}{% for log in logs_tail %}{{ log }}
 {% endfor %}
             </td>
           </tr>
+
           
           {% if logs_length > 10 %}
             <tr class="collapse" id="collapse-{{ task_id }}">
