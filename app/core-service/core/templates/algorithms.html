@@ -21,11 +21,11 @@
           
           <div class="row justify-content-start">
           
-            <div class="col-9 col-lg-auto bg-secondary m-1" style="width: 175px;">
+            <div class="col-9 col-lg-auto" style="width: 200px;">
               Name
             </div>
             
-            <div class="col-2 col-lg-auto bg-secondary m-1" style="width: 90px;">
+            <div class="col-2 col-lg-auto" style="width: 90px;">
               
               <a class="dropdown-toggle text-light font-weight-bold"
                  style="text-decoration: none;"
@@ -51,22 +51,20 @@
             </div>
             
     
-            <div class="col-lg bg-secondary d-none d-sm-block m-1">
+            <div class="col-lg d-none d-lg-block">
               Description
             </div>            
             
-            <div class="col-12 col-lg-auto bg-secondary d-none d-sm-block m-1" style="width: 100px;">
+            <div class="col-12 col-lg-auto d-none d-lg-block" style="width: 100px;">
               Image
             </div> 
             
-            <div class="col-12 col-lg-auto bg-secondary d-none d-sm-block m-1" style="width: 260px;">
+            <div class="col-12 col-lg-auto d-none d-lg-block" style="width: 260px;">
               Actions
             </div> 
             
           </div>
-          
         </th>
-        
       </tr>
     </thead>
     
@@ -75,28 +73,33 @@
       {% for item in items %}
       
       <tr>
-
         <td>
-          
           <div class="row justify-content-start">
           
-            <div class="col-9 col-lg-auto m-1 bg-secondary" style="width: 175px;">
-              {{ item.name }}
+            <div class="col-9 col-lg-auto">
+              
+              <a href={{ url_for('get_algorithm', algorithm_id=item.id) }}
+                class="btn btn-secondary font-dark"
+                style="width: 170px;"
+                role="button">
+                {{ item.name }}
+              </a>
+              
             </div>
             
-            <div class="col-2 col-lg-auto m-1 bg-secondary" style="width: 90px;">
+            <div class="col-2 col-lg-auto" style="width: 90px;">
               {{ item.type }}
             </div>
             
-            <div class="col-lg m-1 bg-secondary">
+            <div class="col-lg">
               {{ item.description }}
             </div>            
             
-            <div class="col-12 col-lg-auto bg-secondary m-1" style="width: 100px;">
+            <div class="col-12 col-lg-auto" style="width: 100px;">
               <img class="img-thumbnail" src="https://indulgeyourpet.com/wp-content/uploads/Bombay.png" style="height: 38px;" alt="image">
             </div> 
             
-            <div class="col-12 col-lg-auto m-1 bg-secondary" style="width: 260px;">
+            <div class="col-12 col-lg-auto" style="width: 260px;">
               
               <a href={{ url_for('get_algorithm', algorithm_id=item.id) }}
                 class="btn btn-success" 
@@ -121,7 +124,7 @@
                 Wiki
               </a>
               
-            </div> 
+            </div>
             
           </div>
         </td>
