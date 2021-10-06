@@ -17,7 +17,7 @@
     <thead>
       <tr>
 
-        <th colspan=5 scope="col">
+        <th scope="col">
           
           <div class="row justify-content-start">
           
@@ -79,27 +79,27 @@
       
       <tr>
 
-        <td colspan=5>
+        <td>
           
           <div class="row justify-content-start">
           
-            <div class="col-9 col-sm-1 m-1 bg-secondary">
+            <div class="col-9 col-lg-auto m-1 bg-secondary" style="width: 175px;">
               {{ item.name }}
             </div>
             
-            <div class="col-2 col-sm-auto m-1 bg-secondary">
+            <div class="col-2 col-lg-auto m-1 bg-secondary" style="width: 90px;">
               {{ item.type }}
             </div>
             
-            <div class="col-sm m-1 bg-secondary">
+            <div class="col-lg m-1 bg-secondary">
               {{ item.description }}
             </div>            
             
-            <div class="col-sm-auto m-1 bg-secondary">
-              <img class="img-thumbnail" src="https://indulgeyourpet.com/wp-content/uploads/Bombay.png" style="max-width:60px;width:100%" alt="image">
+            <div class="col-lg-auto m-1 bg-secondary">
+              <img class="img-thumbnail" src="https://indulgeyourpet.com/wp-content/uploads/Bombay.png" style="height: 40px;" alt="image">
             </div> 
             
-            <div class="col-auto m-1 bg-secondary">
+            <div class="col-12 col-lg-auto m-1 bg-secondary" style="width: 260px;">
               
               <a href={{ url_for('get_algorithm', algorithm_id=item.id) }}
                 class="btn btn-success" 
