@@ -17,8 +17,6 @@ from core import facebook
 from core.gunicorn.app import GunicornApp
 
 
-
-
 class FlaskApp(Flask):
     
     def __init__(self, *args, **kwargs):
@@ -32,7 +30,7 @@ class FlaskApp(Flask):
         
         self.config.from_object(config.Config)
         
-        config.start_log_files(self)
+        # config.start_log_files(self)
         
         
         CORS(self)

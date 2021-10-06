@@ -21,17 +21,18 @@
           
           <div class="row justify-content-start">
           
-            <div class="col-9 col-lg-auto m-1 bg-secondary" style="width: 175px;">
+            <div class="col-9 col-lg-auto bg-secondary m-1" style="width: 175px;">
               Name
             </div>
             
-            <div class="col-2 col-lg-auto m-1 bg-secondary" style="width: 90px;">
+            <div class="col-2 col-lg-auto bg-secondary m-1" style="width: 90px;">
               
-              <!--<a class="btn btn-outline-secondary-noborder dropdown-toggle text-light p-0"-->
-              <!--   data-toggle="dropdown">-->
-              <!--  <b>Type<b>-->
-              <!--</a>-->
-            
+              <a class="dropdown-toggle text-light font-weight-bold"
+                 style="text-decoration: none;"
+                 data-toggle="dropdown">
+                Type
+              </a>
+              
               <div class="dropdown-menu" style="background-color: #212121;">
                 <a class="dropdown-item text-light" 
                    href={{ url_for('get_algorithms') }}>
@@ -50,15 +51,15 @@
             </div>
             
     
-            <div class="col-lg m-1 bg-secondary">
+            <div class="col-lg bg-secondary d-none d-sm-block m-1">
               Description
             </div>            
             
-            <div class="col-lg-auto m-1 bg-secondary d-none d-sm-block">
+            <div class="col-12 col-lg-auto bg-secondary d-none d-sm-block m-1" style="width: 100px;">
               Image
             </div> 
             
-            <div class="col-12 col-lg-auto m-1 bg-secondary d-none d-sm-block" style="width: 260px;">
+            <div class="col-12 col-lg-auto bg-secondary d-none d-sm-block m-1" style="width: 260px;">
               Actions
             </div> 
             
@@ -91,8 +92,8 @@
               {{ item.description }}
             </div>            
             
-            <div class="col-lg-auto m-1 bg-secondary">
-              <img class="img-thumbnail" src="https://indulgeyourpet.com/wp-content/uploads/Bombay.png" style="height: 40px;" alt="image">
+            <div class="col-12 col-lg-auto bg-secondary m-1" style="width: 100px;">
+              <img class="img-thumbnail" src="https://indulgeyourpet.com/wp-content/uploads/Bombay.png" style="height: 38px;" alt="image">
             </div> 
             
             <div class="col-12 col-lg-auto m-1 bg-secondary" style="width: 260px;">
