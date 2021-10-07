@@ -1,10 +1,12 @@
+import os
 import time
 import traceback
 
-from os import getpid, _exit
 from functools import partial
+
+from multiprocessing import Event
+from multiprocessing import Process
 from concurrent.futures import ProcessPoolExecutor
-from multiprocessing import Process, Event
 
 from qiskit import IBMQ, Aer, execute
 from qiskit.providers.ibmq import least_busy
@@ -149,7 +151,7 @@ class Runner():
     @exception_decorator
     def queue_worker(self):
         
-        self.log(f'RUNNER queue_worker started: {getpid()}')
+        self.log(f'RUNNER queue_worker started: {os.getpid()}')
 
         while self.worker_active_flag.is_set():
             
@@ -161,7 +163,7 @@ class Runner():
   
                 self.queue_worker_loop(next_task=next_task)
             
-        self.log(f'RUNNER queue_worker exiting: {getpid()}')
+        self.log(f'RUNNER queue_worker exiting: {os.getpid()}')
         
         
     @exception_decorator      
@@ -181,7 +183,7 @@ class Runner():
         
         task_process = Process(target=self.run_task,
                                kwargs=kwargs,
-                               name=f"Task-process-{getpid()}",
+                               name=f"Task-process-{os.getpid()}",
                                daemon=False)
                                  
         task_process.start()
@@ -352,15 +354,36 @@ class Runner():
         
         figure = plot_bloch_multivector(statevector)
     
-        figure_path = self.static_folder + f'/figures/bloch_multivector_task_{task_id}.png'
-                    
-        figure.savefig(figure_path, transparent=True, bbox_inches='tight')
+        figure_path = f'figures/bloch_multivector_task_{task_id}.png'
         
-        self.log(f'RUNNER statevector figure: {figure}', task_id)    
+        full_figure_path = self.static_folder + '/' + figure_path
+                    
+        figure.savefig(full_figure_path, transparent=True, bbox_inches='tight')
+        
+        self.move_figure_to_s3(from_path=full_figure_path, to_path=figure_path)
+        
+        self.log(f'RUNNER statevector figure: {figure}', task_id)
+        
+    
+    def move_figure_to_s3(self, from_path, to_path):
+        
+        import boto3
+        
+        s3_resource = boto3.resource("s3")
 
+        core_bucket = s3_resource.Bucket("m1-core-bucket")
+        
+        core_bucket.upload_file(
+            from_path, 
+            to_path, 
+            ExtraArgs={"ACL": "private", "ContentType": "image/png"}
+        )
+        
+        os.remove(from_path)
+        
         
     def reset_application(self):
         
         self.log(f'RUNNER reset_application')
         
-        _exit(0)
+        os._exit(0)
