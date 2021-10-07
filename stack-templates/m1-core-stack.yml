@@ -359,6 +359,28 @@ Resources:
       Port: 80
       Protocol: TCP
 
+# S3 Bucket
+
+  CoreS3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: m1-core-bucket
+      AccessControl: Private
+      LifecycleConfiguration:
+        Rules:
+        - Id: GlacierRule
+          Prefix: glacier
+          Status: Enabled
+          ExpirationInDays: 365
+          Transitions:
+          - TransitionInDays: 7
+            StorageClass: GLACIER
+                
+                
+Outputs:
+  BucketName:
+    Value: !Ref S3Bucket
+    Description: Name of the sample Amazon S3 bucket with a lifecycle configuration.
 
 Outputs:
 
@@ -426,9 +448,14 @@ Outputs:
     Value: !Ref PrivateRouteTableTwo
     Export:
       Name: !Sub ${AWS::StackName}:PrivateRouteTableTwo   
-  
-  Test:
-    Description: Test
-    Value: !Ref LatestLinuxAMI
+
+  CoreS3Bucket:
+    Value: !Ref CoreS3Bucket
     Export:
-      Name: Test
+      Name: !Sub ${AWS::StackName}:CoreS3Bucket
+      
+  # Test:
+  #   Description: Test
+  #   Value: !Ref LatestLinuxAMI
+  #   Export:
+  #     Name: Test
