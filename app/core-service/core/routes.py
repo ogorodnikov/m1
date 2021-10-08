@@ -168,12 +168,40 @@ def download():
     
     if content == 'statevector':
         
-        path = "static/figures/"
+        path = app.static_folder + "/figures/"
         filename = f"bloch_multivector_task_{task_id}.png"
         
-        return send_from_directory(path, filename, as_attachment=as_attachment)
+        figure_path = path + filename
         
-    return redirect(request.referrer or url_for('home'))
+        print(f"ROUTES path {path}")
+        print(f"ROUTES filename {filename}")
+        
+        runner.download_figure_from_s3(filename)
+        
+        try:
+        
+            return send_from_directory(path, filename, as_attachment=as_attachment)
+            
+        finally:
+            
+            import os
+            
+            print(f"ROUTES remove figure_path {figure_path}")
+            os.remove(figure_path)
+        
+        # presigned_url = runner.get_figure_presigned_url(filename)
+        # return presigned_url
+        # redirect(presigned_url)
+        
+        # stream = runner.stream_figure_from_s3(filename)
+        # print(f"ROUTES stream: {stream}")
+        # return send_from_directory(path, stream, as_attachment=as_attachment)
+        
+        # return send_from_directory(path, filename, as_attachment=as_attachment)
+        
+    return ''
+        
+    # return redirect(request.referrer or url_for('home'))
     
 
 @app.route('/admin', methods=["GET", "POST"])
