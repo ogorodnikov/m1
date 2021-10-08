@@ -464,6 +464,8 @@ class DB():
         figure_stream = io.BytesIO()
         
         self.core_bucket.download_fileobj(s3_from_path, figure_stream)
+        
+        figure_stream.seek(0)
 
         return figure_stream
         

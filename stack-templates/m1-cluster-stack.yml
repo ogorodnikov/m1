@@ -135,15 +135,28 @@ Resources:
               Resource: '*'
             - Effect: Allow
               Action:
-              # Allows ECS tasks to interact with particular DynamoDB tables
               - dynamodb:Scan
               - dynamodb:Query
               - dynamodb:UpdateItem
               - dynamodb:GetItem
               - dynamodb:BatchWriteItem
               Resource: arn:aws:dynamodb:*:*:table/m1-*
-
-
+            - Effect: Allow
+              Action:
+              - s3:PutObject
+              - s3:GetObject
+              - s3:DeleteObject
+              Resource: !Sub 
+                - arn:aws:s3:::${m1_core_bucket}/*
+                - m1_core_bucket: !ImportValue m1-core-stack:CoreS3Bucket
+            - Effect: Allow
+              Action:
+              - s3:ListBucket
+              Resource: !Sub 
+                - arn:aws:s3:::${m1_core_bucket}
+                - m1_core_bucket: !ImportValue m1-core-stack:CoreS3Bucket
+                
+                
   ECSServiceLinkedRole:
     Type: AWS::IAM::ServiceLinkedRole
     Condition: CreateAWSServiceRoleForECS
@@ -392,23 +405,32 @@ Outputs:
   #     Name: !Sub ${AWS::StackName}:CodeRepositoryURL
       
   # Test:
-  #   Description: Test
   #   Value: 
   #     !Sub 
   #       - ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${core_image_repository}:latest
   #       - core_image_repository: !ImportValue m1-cicd-stack:UserPool
         
   # Test2:
-  #   Description: Test
   #   Value: 
   #     !Sub 
   #     - service/${CoreCluster}/${core_fargate_service_name}
   #     - core_fargate_service_name: !GetAtt CoreFargateService.Name
   
   # Test3:
-  #   Description: Test
   #   Value: !Join 
   #     - /
   #     - - service
   #       - !Ref CoreCluster
   #       - !GetAtt CoreFargateService.Name
+  
+  # Test4:
+  #   Value: !Join 
+  #     - ':'
+  #     - - arn:aws:s3::
+  #       - !ImportValue m1-core-stack:CoreS3Bucket
+
+  # Test4:
+  #   Value: !Join
+  #     - ''
+  #     - - "arn:aws:s3:::"
+  #       - !ImportValue m1-core-stack:CoreS3Bucket

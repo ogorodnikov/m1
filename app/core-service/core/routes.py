@@ -182,8 +182,6 @@ def download():
         
         figure_stream = db.stream_figure_from_s3(s3_from_path)
         
-        figure_stream.seek(0)
-
         return send_file(
             figure_stream, 
             mimetype='image/png', 
