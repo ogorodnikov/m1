@@ -335,6 +335,7 @@ class DB():
                   'link': 'https://en.wikipedia.org/wiki/Bernstein%E2%80%93Vazirani_algorithm',
                   'image': b'1010',
                   'parameters': [{'name': 'secret', 'default_value': '1010'}],
+                  'color': 'green',
                   'likes': 1324,
                   'enabled': True},
                   
@@ -346,6 +347,7 @@ class DB():
                   'image': b'1010',
                   'parameters': [{'name': 'a', 'default_value': '345'}, 
                                  {'name': 'b', 'default_value': '455244237'}],
+                  'color': 'red',
                   'likes': 768,
                   'enabled': True},
                   
@@ -377,6 +379,7 @@ class DB():
                       {'name': 'maximum_digit', 'default_value': 'autodetect'},
                       {'name': 'repetitions_limit', 'default_value': '3'},
                       {'name': 'solutions_count', 'default_value': '2'}],
+                  'color': 'yellow',                  
                   'likes': 315,
                   'enabled': True},
                   
@@ -434,7 +437,8 @@ class DB():
                                  'Classical algorithm complexity is O(2 ^ square root of N) while quantum is O(N^3).',
                   'link': 'https://en.wikipedia.org/wiki/Shor%27s_algorithm',
                   'image': b'1010',
-                  'parameters': [{'name': 'number', 'default_value': '330023'}],              
+                  'parameters': [{'name': 'number', 'default_value': '330023'}],
+                  'color': 'orange',
                   'likes': 2045,
                   'enabled': True},
                                 

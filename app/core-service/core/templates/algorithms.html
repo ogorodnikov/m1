@@ -78,12 +78,13 @@
           
             <div class="col-9 col-lg-auto">
               
-              <a class="btn btn-secondary font-dark m-1"
+              <a class="btn btn-secondary m-1"
                 href={{ url_for('get_algorithm', algorithm_id=item.id) }}
-                style="width: 170px;"
+                style="width: 170px; "
                 role="button">
                 {{ item.name }}
               </a>
+              <!-- "background-color: {{ item.color or 'gray' }};" -->
               
             </div>
             
