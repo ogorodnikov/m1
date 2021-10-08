@@ -175,19 +175,46 @@ def download():
         
         print(f"ROUTES path {path}")
         print(f"ROUTES filename {filename}")
+        print(f"ROUTES figure_path {figure_path}")
         
         runner.download_figure_from_s3(filename)
         
-        try:
+        import os
+        import io
+        from flask import send_file
         
-            return send_from_directory(path, filename, as_attachment=as_attachment)
+        stream = io.BytesIO()
+        
+        with open(figure_path, 'rb') as figure_open:
+            stream.write(figure_open.read())
+
+        stream.seek(0)
+
+        os.remove(figure_path)
+
+        return send_file(
+            stream, 
+            mimetype='image/png', 
+            attachment_filename='test_' + filename,
+            as_attachment=as_attachment
+            )
+                     
+      
+                     
+        
+        # try:
+        
+        #     return send_from_directory(path, filename, as_attachment=as_attachment)
             
-        finally:
+        # finally:
             
-            import os
+        #     print(f"ROUTES remove figure_path {figure_path}")
+        #     os.remove(figure_path)
             
-            print(f"ROUTES remove figure_path {figure_path}")
-            os.remove(figure_path)
+            
+            
+            
+            
         
         # presigned_url = runner.get_figure_presigned_url(filename)
         # return presigned_url
