@@ -73,46 +73,29 @@ class Users:
         return username
         
 
-    def register_user_and_login(self, login_form):
+    def register_user(self, login_form):
         
         username = login_form.get('username')
         password = login_form.get('password')
+
+        self.log(f'REGISTER Username: {username}')
+    
+        sign_up_response = self.cognito_client.sign_up(
+            ClientId=self.client_id,
+            Username=username,
+            Password=password
+        )
         
-        try:
-            
-            self.log(f'REGISTER Username: {username}')
+        # confirmation_response = self.cognito_client.confirm_sign_up(
+        #     ClientId=self.client_id,
+        #     Username=username,
+        #     ConfirmationCode=''
+        # )
         
-            sign_up_response = self.cognito_client.sign_up(
-                ClientId=self.client_id,
-                Username=username,
-                Password=password
-            )
-            
-            # confirmation_response = self.cognito_client.confirm_sign_up(
-            #     ClientId=self.client_id,
-            #     Username=username,
-            #     ConfirmationCode=''
-            # )
-            
-            confirmation_response = self.cognito_client.admin_confirm_sign_up(
-                UserPoolId=self.user_pool_id,
-                Username=username
-            )
-            
-            self.login_user(login_form)
-            
-            registration_successful_message = f"New user registered"
-            
-            flash(registration_successful_message, category='info')
-            self.log(f'REGISTER {registration_successful_message}')
-            
-        except Exception as exception:
-            
-            exception_message = f"Registration did not pass... {exception}"
-            
-            flash(exception_message, category='danger')
-            self.log(f'REGISTER {exception_message}')
-        
+        confirmation_response = self.cognito_client.admin_confirm_sign_up(
+            UserPoolId=self.user_pool_id,
+            Username=username
+        )
 
         
     def populate_facebook_user(self):

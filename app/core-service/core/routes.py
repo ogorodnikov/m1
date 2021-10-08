@@ -44,24 +44,14 @@ def login():
 
     if flow == 'register':
         
-        app.users.register_user_and_login(request.form)
+        register_user(request.form)
+        sign_in_user(request.form)
+            
         redirect_url = session.pop('login_referer', None)
         
     if flow == 'sign-in':
         
-        try:
-        
-            logged_in_username = app.users.login_user(request.form)
-            
-            session.permanent = request.form.get('remember_me')
-            session['username'] = logged_in_username
-        
-            flash(f"Welcome, {logged_in_username}!", category='warning')
-            
-        except Exception as exception:
-            
-            exception_message = f"Login did not pass... {exception}"
-            flash(exception_message, category='danger')
+        sign_in_user(request.form)
         
         redirect_url = session.pop('login_referer', None)
 
@@ -306,4 +296,31 @@ def show_task_results():
         flash(status_message, category='info')
 
 
+def register_user(request_form):
 
+    try:
+    
+        app.users.register_user(request_form)
+        flash(f"New user registered", category='info')
+
+    except Exception as exception:
+        
+        exception_message = f"Registration did not pass... {exception}"
+        flash(exception_message, category='danger')
+        
+
+def sign_in_user(request_form):
+
+    try:
+        
+        logged_in_username = app.users.login_user(request_form)
+        
+        session.permanent = request_form.get('remember_me')
+        session['username'] = logged_in_username
+    
+        flash(f"Welcome, {logged_in_username}!", category='warning')
+        
+    except Exception as exception:
+        
+        exception_message = f"Login did not pass... {exception}"
+        flash(exception_message, category='danger')
