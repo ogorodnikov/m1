@@ -360,89 +360,10 @@ class Runner():
                     
         figure.savefig(full_figure_path, transparent=True, bbox_inches='tight')
         
-        self.move_figure_to_s3(from_path=full_figure_path, to_path=figure_path)
+        self.db.move_figure_to_s3(from_path=full_figure_path, to_path=figure_path)
         
         self.log(f'RUNNER statevector figure: {figure}', task_id)
-        
-    
-    def move_figure_to_s3(self, from_path, to_path):
-        
-        import boto3
-        
-        s3_resource = boto3.resource("s3")
-        core_bucket = s3_resource.Bucket("m1-core-bucket")
-        
-        core_bucket.upload_file(
-            from_path, 
-            to_path, 
-            ExtraArgs={"ACL": "private", "ContentType": "image/png"}
-        )
-        
-        os.remove(from_path)
-        
-        
-    def download_figure_from_s3(self, filename):
-        
-        import boto3
-        
-        s3_resource = boto3.resource("s3")
-        core_bucket = s3_resource.Bucket("m1-core-bucket")
-        
-        from_path = "figures/" + filename
-        to_path = self.static_folder + '/figures/' + filename
-        
-        print(f"RUNNER download_figure_from_s3 - from_path {from_path}")
-        print(f"RUNNER download_figure_from_s3 - to_path {to_path}")
-        
-        core_bucket.download_file(
-            from_path, 
-            to_path
-        )
-        
-    
-    def stream_figure_from_s3(self, filename):
-        
-        import io
-        import boto3
-        
-        stream = io.BytesIO()
-        
-        s3_resource = boto3.resource("s3")
-        core_bucket = s3_resource.Bucket("m1-core-bucket")
-        
-        from_path = "figures/" + filename
-        
-        print(f"RUNNER from_path {from_path}")
-        
-        core_bucket.download_fileobj(
-            from_path, 
-            stream
-        )
-        
-        return stream.getvalue()
-        
-    
-    def get_figure_presigned_url(self, filename):
 
-        import boto3
-        
-        s3_client = boto3.client("s3")
-        
-        from_path = "figures/" + filename
-
-        presigned_url = s3_client.generate_presigned_url(
-            'get_object', 
-            Params = {
-                'Bucket': 'm1-core-bucket', 
-                'Key': from_path
-            }, 
-            ExpiresIn = 100
-        )
-
-        print(f"RUNNER presigned_url {presigned_url}")
-        
-        return presigned_url
-        
         
     def reset_application(self):
         

@@ -5,8 +5,8 @@ from flask import url_for
 from flask import session
 from flask import request
 from flask import redirect
+from flask import send_file
 from flask import render_template
-from flask import send_from_directory
 
 import boto3
 import botocore.exceptions
@@ -173,63 +173,24 @@ def download():
         
         figure_path = path + filename
         
+        s3_from_path = "figures/" + filename
+        
         print(f"ROUTES path {path}")
         print(f"ROUTES filename {filename}")
         print(f"ROUTES figure_path {figure_path}")
+        print(f"ROUTES s3_from_path {s3_from_path}")
         
-        runner.download_figure_from_s3(filename)
+        figure_stream = db.stream_figure_from_s3(s3_from_path)
         
-        import os
-        import io
-        from flask import send_file
-        
-        stream = io.BytesIO()
-        
-        with open(figure_path, 'rb') as figure_open:
-            stream.write(figure_open.read())
-
-        stream.seek(0)
-
-        os.remove(figure_path)
+        figure_stream.seek(0)
 
         return send_file(
-            stream, 
+            figure_stream, 
             mimetype='image/png', 
-            attachment_filename='test_' + filename,
+            attachment_filename=filename,
             as_attachment=as_attachment
             )
-                     
-      
-                     
-        
-        # try:
-        
-        #     return send_from_directory(path, filename, as_attachment=as_attachment)
-            
-        # finally:
-            
-        #     print(f"ROUTES remove figure_path {figure_path}")
-        #     os.remove(figure_path)
-            
-            
-            
-            
-            
-        
-        # presigned_url = runner.get_figure_presigned_url(filename)
-        # return presigned_url
-        # redirect(presigned_url)
-        
-        # stream = runner.stream_figure_from_s3(filename)
-        # print(f"ROUTES stream: {stream}")
-        # return send_from_directory(path, stream, as_attachment=as_attachment)
-        
-        # return send_from_directory(path, filename, as_attachment=as_attachment)
-        
-    return ''
-        
-    # return redirect(request.referrer or url_for('home'))
-    
+
 
 @app.route('/admin', methods=["GET", "POST"])
 def admin():
@@ -269,6 +230,7 @@ def admin():
     if command == 'purge_tasks':
         flash(f"Purging tasks", category='danger')        
         db.purge_tasks()
+        db.purge_s3_folder('figures/')
         
     if command == 'add_test_tasks':
         

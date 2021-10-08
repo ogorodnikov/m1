@@ -69,6 +69,8 @@ class Config():
     
     TASKS_TABLE_NAME = os.getenv('TASKS_TABLE_NAME')
     ALGORITHMS_TABLE_NAME = os.getenv('ALGORITHMS_TABLE_NAME')
+    
+    CORE_BUCKET = os.getenv('CORE_BUCKET')
 
     FACEBOOK_CLIENT_ID = os.getenv('FACEBOOK_CLIENT_ID')    
     FACEBOOK_CLIENT_SECRET = os.getenv('FACEBOOK_CLIENT_SECRET')
@@ -85,7 +87,6 @@ class Config():
     
     QISKIT_TOKEN = os.getenv('QISKIT_TOKEN')
     TELEGRAM_TOKEN = os.getenv('TELEGRAM_TOKEN')
-    
     
 
 LOGGING_CONFIG = {'version': 1,

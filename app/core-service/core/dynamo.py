@@ -1,3 +1,5 @@
+import io
+import os
 import boto3
 
 from pprint import pprint
@@ -18,11 +20,14 @@ class DB():
         
         tasks_table_name = app.config.get('TASKS_TABLE_NAME')
         algorithms_table_name = app.config.get('ALGORITHMS_TABLE_NAME')
+        core_bucket_name = app.config.get('CORE_BUCKET')
 
-        self.db_resource = boto3.resource('dynamodb')
+        db_resource = boto3.resource('dynamodb')
+        s3_resource = boto3.resource("s3")
 
-        self.tasks = self.db_resource.Table(tasks_table_name)        
-        self.algorithms = self.db_resource.Table(algorithms_table_name)
+        self.tasks = db_resource.Table(tasks_table_name)        
+        self.algorithms = db_resource.Table(algorithms_table_name)
+        self.core_bucket = s3_resource.Bucket(core_bucket_name)
         
         self.tasks.update_item(
             Key={'task_id': self.SERVICE_TASK_RECORD_ID},
@@ -438,3 +443,31 @@ class DB():
         with self.algorithms.batch_writer(overwrite_by_pkeys=['id']) as batch:
             for item in items:
                 batch.put_item(item)
+                
+    
+    
+    # Surprisingly - S3
+    
+    def move_figure_to_s3(self, from_path, to_path):
+        
+        self.core_bucket.upload_file(
+            from_path, 
+            to_path, 
+            ExtraArgs={"ACL": "private", "ContentType": "image/png"}
+        )
+        
+        os.remove(from_path)
+        
+        
+    def stream_figure_from_s3(self, s3_from_path):
+        
+        figure_stream = io.BytesIO()
+        
+        self.core_bucket.download_fileobj(s3_from_path, figure_stream)
+
+        return figure_stream
+        
+        
+    def purge_s3_folder(self, prefix):
+        
+        self.core_bucket.objects.filter(Prefix=prefix).delete()

@@ -17,6 +17,7 @@ USER_POOL_CLIENT = m1-user-pool-client
 TASKS_TABLE_NAME = m1-tasks-table
 ALGORITHMS_TABLE_NAME = m1-algorithms-table
 
+CORE_BUCKET = m1-core-bucket
 
 ###   Qiskit
 
