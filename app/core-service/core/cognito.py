@@ -1,3 +1,5 @@
+import random
+
 from flask import flash
 from flask import url_for
 from flask import session
@@ -98,15 +100,13 @@ class Users:
         )
 
         
-    def populate_facebook_user(self):
+    def populate_facebook_user(self, name, email, full_name, picture_url):
         
-        user_email = session['email']
-        
-        self.log(f'POPULATE User: {user_email}')
+        self.log(f'POPULATE User: {email}')
         
         user_response = self.cognito_client.list_users(
             UserPoolId=self.user_pool_id,
-            Filter=f"email=\"{user_email}\""
+            Filter=f"email=\"{email}\""
         )
         
         user_already_in_cognito = bool(user_response['Users'])
@@ -116,23 +116,26 @@ class Users:
         
         if user_already_in_cognito:
             
-            self.log(f'POPULATE User is already in Cognito: {user_email}')
-            
+            self.log(f'POPULATE User is already in Cognito: {email}')
             return
         
-        fb_username = 'fb_' + session['email'].replace('@', '_')
+        fb_username = 'fb_' + email.replace('@', '_')
+        
+        random_password = str(random.randint(0, 1000000))
         
         self.cognito_client.sign_up(
             ClientId=self.client_id,
             Username=fb_username,
-            Password='11111111',
+            Password=random_password,
             UserAttributes=[
                 {'Name': 'name', 
-                 'Value': session['name']},
+                 'Value': name},
                 {'Name': 'email', 
-                 'Value': session['email']},
+                 'Value': email},
+                {'Name': 'custom:full_name', 
+                 'Value': full_name},
                 {'Name': 'custom:picture_url', 
-                 'Value': session['picture_url']}
+                 'Value': picture_url}
             ]
         )
         

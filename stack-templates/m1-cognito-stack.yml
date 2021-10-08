@@ -33,6 +33,10 @@ Resources:
         AttributeDataType: String
         Mutable: True
         Required: False
+      - Name: full_name
+        AttributeDataType: String
+        Mutable: True
+        Required: False
       - Name: picture_url
         AttributeDataType: String
         Mutable: True

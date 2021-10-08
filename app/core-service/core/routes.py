@@ -62,6 +62,8 @@ def login():
 def logout():
     
     session.pop('username', None)
+    session.pop('email', None)
+    session.pop('full_name', None)
     session.pop('picture_url', None)
     session.pop('facebook_token', None)
     

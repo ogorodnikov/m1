@@ -96,27 +96,29 @@ class FB:
                       
         me_response = requests.get(me_endpoint, parameters)
         me_response_json = me_response.json()
+        
+        # self.log(f"CLAIMS me_endpoint: {me_endpoint}")
+        # self.log(f"CLAIMS parameters: {parameters}")
+        # self.log(f"CLAIMS me_response_json: {me_response_json}")
     
         picture = me_response_json.get('picture')
         picture_data = picture.get('data') if picture else ""
         picture_url = picture_data.get('url') if picture_data else ""
         
-        session['name'] = me_response_json.get('name')
-        session['email'] = me_response_json.get('email')
-        session['username'] = me_response_json.get('short_name')
+        name = me_response_json.get('short_name')        
+        email = me_response_json.get('email')
+        full_name = me_response_json.get('name')
+
+        session['username'] = name
+        session['email'] = email
+        session['full_name'] = full_name
         session['picture_url'] = picture_url
-        
-        # self.log(f"CLAIMS me_endpoint: {me_endpoint}")
-        # self.log(f"CLAIMS parameters: {parameters}")
-        # self.log(f"CLAIMS me_response_json: {me_response_json}")
             
-        self.app.users.populate_facebook_user()
+        self.app.users.populate_facebook_user(name, email, full_name, picture_url)
         
-        username = session['username']
-            
-        flash(f"Welcome, facebook user {username}!", category='warning')
+        flash(f"Welcome, facebook user {name}!", category='warning')
         
-        self.log(f'FACEBOOK Login successful: {username}')
+        self.log(f'FACEBOOK Login successful: {name}')
         
         login_referer = session.pop('login_referer', None)
         
