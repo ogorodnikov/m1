@@ -9,7 +9,8 @@ from logging.handlers import RotatingFileHandler
 
 load_dotenv()
 
-cognito_client = boto3.client('cognito-idp')
+# cognito_client = boto3.client('cognito-idp')
+
 elb_client = boto3.client('elbv2')
 
 
@@ -25,35 +26,37 @@ def get_nlb_dns(nlb_name):
     return nlb_dns
 
 
-def get_user_pool_id(user_pool):
+# def get_user_pool_id(user_pool):
 
-    user_pool_response = cognito_client.list_user_pools(MaxResults=60)
-    user_pools = user_pool_response['UserPools']
-    user_pool_id = next(attribute['Id'] for attribute in user_pools
-                        if attribute['Name'] == user_pool)
+#     user_pool_response = cognito_client.list_user_pools(MaxResults=60)
+#     user_pools = user_pool_response['UserPools']
+#     user_pool_id = next(attribute['Id'] for attribute in user_pools
+#                         if attribute['Name'] == user_pool)
                         
-    return user_pool_id
+#     return user_pool_id
     
 
-def get_user_pool_client_id(user_pool_id, user_pool_client):
+# def get_user_pool_client_id(user_pool_id, user_pool_client):
 
-    user_pool_clients_response = cognito_client.list_user_pool_clients(UserPoolId=user_pool_id,
-                                                               MaxResults=60)
-    user_pool_clients = user_pool_clients_response['UserPoolClients']
-    user_pool_client_id = next(attribute['ClientId'] for attribute in user_pool_clients
-                               if attribute['ClientName'] == user_pool_client)
+#     user_pool_clients_response = cognito_client.list_user_pool_clients(UserPoolId=user_pool_id,
+#                                                               MaxResults=60)
+#     user_pool_clients = user_pool_clients_response['UserPoolClients']
+#     user_pool_client_id = next(attribute['ClientId'] for attribute in user_pool_clients
+#                               if attribute['ClientName'] == user_pool_client)
                         
-    return user_pool_client_id
+#     return user_pool_client_id
     
     
 nlb_name = os.getenv('NLB_NAME')
 nlb_dns = get_nlb_dns(nlb_name)
-    
-user_pool = os.getenv('USER_POOL')
-user_pool_id = get_user_pool_id(user_pool)
 
-user_pool_client = os.getenv('USER_POOL_CLIENT')
-user_pool_client_id = get_user_pool_client_id(user_pool_id, user_pool_client)
+os.environ['AWS_NLB'] = nlb_name
+    
+# user_pool = os.getenv('USER_POOL')
+# user_pool_id = get_user_pool_id(user_pool)
+
+# user_pool_client = os.getenv('USER_POOL_CLIENT')
+# user_pool_client_id = get_user_pool_client_id(user_pool_id, user_pool_client)
 
     
 class Config():
@@ -64,8 +67,8 @@ class Config():
     SECRET_KEY = os.getenv('SECRET_KEY')
     TASK_ROLLOVER_SIZE = int(os.getenv('TASK_ROLLOVER_SIZE'))
     
-    COGNITO_USER_POOL_ID = user_pool_id
-    COGNITO_USER_POOL_CLIENT_ID = user_pool_client_id
+    # COGNITO_USER_POOL_ID = user_pool_id
+    # COGNITO_USER_POOL_CLIENT_ID = user_pool_client_id
     
     TASKS_TABLE_NAME = os.getenv('TASKS_TABLE_NAME')
     ALGORITHMS_TABLE_NAME = os.getenv('ALGORITHMS_TABLE_NAME')

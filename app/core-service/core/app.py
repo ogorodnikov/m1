@@ -43,7 +43,8 @@ class FlaskApp(Flask):
         bot = telegram.Bot(self)
         bot.start()
         
-        users = cognito.Users(self)
+        self.users = cognito.Users(self)
+        
         fb = facebook.FB(self)
 
     

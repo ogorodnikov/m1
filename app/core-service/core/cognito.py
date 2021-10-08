@@ -1,9 +1,5 @@
+import os
 import random
-
-from flask import flash
-from flask import url_for
-from flask import session
-from flask import redirect
 
 import boto3
 import botocore.exceptions
@@ -11,19 +7,47 @@ import botocore.exceptions
 
 class Users:
     
-    def __init__(self, app, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
+        
+        
+        # import os
+        
+        # for k, v in sorted(os.environ.items()):
+        #     print(k+':', v)
+        
+        # print()
+        # print('PATH:')
+        # print()        
+
+        # [print(item) for item in os.environ['PATH'].split(';')]
+        
+        # quit()
+        
+        
 
         self.cognito_client = boto3.client('cognito-idp')
         
-        self.app = app
+        
+        # self.app = app
 
-        self.client_id = app.config.get('COGNITO_USER_POOL_CLIENT_ID')        
-        self.user_pool_id = app.config.get('COGNITO_USER_POOL_ID')
+        # self.client_id = app.config.get('COGNITO_USER_POOL_CLIENT_ID')        
+        # self.user_pool_id = app.config.get('COGNITO_USER_POOL_ID')
         
-        self.domain = app.config.get('DOMAIN')
-        self.aws_nlb = app.config.get('AWS_NLB')
+        # self.domain = app.config.get('DOMAIN')
+        # self.aws_nlb = app.config.get('AWS_NLB')
         
-        app.users = self
+        # app.users = self
+        
+        
+        self.domain = os.getenv('DOMAIN')
+        self.aws_nlb = os.getenv('AWS_NLB')
+        
+        user_pool = os.getenv('USER_POOL')
+        user_pool_client = os.getenv('USER_POOL_CLIENT')
+        
+        self.user_pool_id = self.get_user_pool_id(user_pool)
+        self.client_id = self.get_user_pool_client_id(self.user_pool_id, user_pool_client)
+
 
         # self.log(f"COGNITO self.client_id: {self.client_id}")
         # self.log(f"COGNITO self.user_pool_id: {self.user_pool_id}")
@@ -31,11 +55,35 @@ class Users:
         # self.log(f"COGNITO self.domain: {self.domain}")
         # self.log(f"COGNITO self.aws_nlb: {self.aws_nlb}")
 
-        self.log(f"COGNITO initiated: {app.users}")
+        self.log(f"COGNITO initiated: {self}")
         
     
     def log(self, message):
-        self.app.logger.info(message)
+        
+        print('COGNITO >>> ' + message)
+        
+        # self.app.logger.info(message)
+        
+        
+    def get_user_pool_id(self, user_pool):
+
+        user_pool_response = self.cognito_client.list_user_pools(MaxResults=60)
+        user_pools = user_pool_response['UserPools']
+        user_pool_id = next(attribute['Id'] for attribute in user_pools
+                            if attribute['Name'] == user_pool)
+                            
+        return user_pool_id
+    
+
+    def get_user_pool_client_id(self, user_pool_id, user_pool_client):
+    
+        user_pool_clients_response = self.cognito_client.list_user_pool_clients(UserPoolId=user_pool_id,
+                                                                   MaxResults=60)
+        user_pool_clients = user_pool_clients_response['UserPoolClients']
+        user_pool_client_id = next(attribute['ClientId'] for attribute in user_pool_clients
+                                   if attribute['ClientName'] == user_pool_client)
+                            
+        return user_pool_client_id
 
 
     def login_user(self, login_form):
