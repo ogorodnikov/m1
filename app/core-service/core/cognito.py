@@ -38,55 +38,39 @@ class Users:
 
     def login_user(self, login_form):
         
-        print('login_form', login_form)
-        
         username = login_form.get('username')
         password = login_form.get('password')
         email = login_form.get('email')
         
-        try:
-            
-            self.log(f'LOGIN Username: {username}')
-            
-            token_response = self.cognito_client.initiate_auth(
-                ClientId=self.client_id,
-                AuthFlow='USER_PASSWORD_AUTH',
-                AuthParameters={'USERNAME': username,
-                                'PASSWORD': password}
-            )
-            
-            access_token = token_response['AuthenticationResult']['AccessToken']
-            refresh_token = token_response['AuthenticationResult']['RefreshToken']
-            
-            user_response = self.cognito_client.get_user(AccessToken=access_token)
-            
-            username = user_response['Username']
-            
-            user_attributes = user_response['UserAttributes']
-            
-            user_sub = next(attribute['Value'] for attribute in user_attributes
-                            if attribute['Name'] == 'sub')    
-            
-            # self.log(f'LOGIN token_response: {token_response}')
-            # self.log(f'LOGIN access_token: {access_token}')
-            # self.log(f'LOGIN refresh_token: {refresh_token}')
-            # self.log(f'LOGIN user_response: {user_response}')
-            # self.log(f'LOGIN user_attributes: {user_attributes}')
-            # self.log(f'LOGIN user_sub: {user_sub}')
-    
-            session.permanent = login_form.get('remember_me')
-                
-            session['username'] = username
-            
-            flash(f"Welcome, {session['username']}!", category='warning')
-            
-            self.log(f'LOGIN Successful: {username}')
+        self.log(f'LOGIN Username: {username}')
         
-        except Exception as exception:
-            
-            exception_message = f"Login did not pass... {exception}"
-            
-            flash(exception_message, category='danger')
+        token_response = self.cognito_client.initiate_auth(
+            ClientId=self.client_id,
+            AuthFlow='USER_PASSWORD_AUTH',
+            AuthParameters={'USERNAME': username,
+                            'PASSWORD': password}
+        )
+        
+        access_token = token_response['AuthenticationResult']['AccessToken']
+        refresh_token = token_response['AuthenticationResult']['RefreshToken']
+        
+        user_response = self.cognito_client.get_user(AccessToken=access_token)
+        
+        username = user_response['Username']
+        
+        user_attributes = user_response['UserAttributes']
+        
+        user_sub = next(attribute['Value'] for attribute in user_attributes
+                        if attribute['Name'] == 'sub')    
+        
+        # self.log(f'LOGIN token_response: {token_response}')
+        # self.log(f'LOGIN access_token: {access_token}')
+        # self.log(f'LOGIN refresh_token: {refresh_token}')
+        # self.log(f'LOGIN user_response: {user_response}')
+        # self.log(f'LOGIN user_attributes: {user_attributes}')
+        # self.log(f'LOGIN user_sub: {user_sub}')
+
+        return username
         
 
     def register_user_and_login(self, login_form):

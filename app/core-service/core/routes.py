@@ -49,7 +49,20 @@ def login():
         
     if flow == 'sign-in':
         
-        app.users.login_user(request.form)
+        try:
+        
+            logged_in_username = app.users.login_user(request.form)
+            
+            session.permanent = request.form.get('remember_me')
+            session['username'] = logged_in_username
+        
+            flash(f"Welcome, {logged_in_username}!", category='warning')
+            
+        except Exception as exception:
+            
+            exception_message = f"Login did not pass... {exception}"
+            flash(exception_message, category='danger')
+        
         redirect_url = session.pop('login_referer', None)
 
     return redirect(redirect_url)
