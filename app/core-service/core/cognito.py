@@ -27,18 +27,6 @@ class Users:
 
         self.cognito_client = boto3.client('cognito-idp')
         
-        
-        # self.app = app
-
-        # self.client_id = app.config.get('COGNITO_USER_POOL_CLIENT_ID')        
-        # self.user_pool_id = app.config.get('COGNITO_USER_POOL_ID')
-        
-        # self.domain = app.config.get('DOMAIN')
-        # self.aws_nlb = app.config.get('AWS_NLB')
-        
-        # app.users = self
-        
-        
         self.domain = os.getenv('DOMAIN')
         self.aws_nlb = os.getenv('AWS_NLB')
         
@@ -46,14 +34,7 @@ class Users:
         user_pool_client = os.getenv('USER_POOL_CLIENT')
         
         self.user_pool_id = self.get_user_pool_id(user_pool)
-        self.client_id = self.get_user_pool_client_id(self.user_pool_id, user_pool_client)
-
-
-        # self.log(f"COGNITO self.client_id: {self.client_id}")
-        # self.log(f"COGNITO self.user_pool_id: {self.user_pool_id}")
-        
-        # self.log(f"COGNITO self.domain: {self.domain}")
-        # self.log(f"COGNITO self.aws_nlb: {self.aws_nlb}")
+        self.client_id = self.get_client_id(self.user_pool_id, user_pool_client)
 
         self.log(f"COGNITO initiated: {self}")
         
@@ -75,7 +56,7 @@ class Users:
         return user_pool_id
     
 
-    def get_user_pool_client_id(self, user_pool_id, user_pool_client):
+    def get_client_id(self, user_pool_id, user_pool_client):
     
         user_pool_clients_response = self.cognito_client.list_user_pool_clients(UserPoolId=user_pool_id,
                                                                    MaxResults=60)
@@ -163,8 +144,6 @@ class Users:
         # self.log(f'POPULATE user_already_in_cognito: {user_already_in_cognito}')
         
         if user_already_in_cognito:
-            
-            self.log(f'POPULATE User is already in Cognito: {email}')
             return
         
         fb_username = 'fb_' + email.replace('@', '_')
