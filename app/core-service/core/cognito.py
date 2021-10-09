@@ -9,32 +9,16 @@ class Users:
     
     def __init__(self, *args, **kwargs):
         
-        
-        # import os
-        
-        # for k, v in sorted(os.environ.items()):
-        #     print(k+':', v)
-        
-        # print()
-        # print('PATH:')
-        # print()        
-
-        # [print(item) for item in os.environ['PATH'].split(';')]
-        
-        # quit()
-        
-        
-
         self.cognito_client = boto3.client('cognito-idp')
         
         self.domain = os.getenv('DOMAIN')
         self.aws_nlb = os.getenv('AWS_NLB')
         
-        user_pool = os.getenv('USER_POOL')
-        user_pool_client = os.getenv('USER_POOL_CLIENT')
+        self.user_pool = os.getenv('USER_POOL')
+        self.user_pool_client = os.getenv('USER_POOL_CLIENT')
         
-        self.user_pool_id = self.get_user_pool_id(user_pool)
-        self.client_id = self.get_client_id(self.user_pool_id, user_pool_client)
+        self.user_pool_id = self.get_user_pool_id(self.user_pool)
+        self.client_id = self.get_client_id(self.user_pool_id, self.user_pool_client)
 
         self.log(f"COGNITO initiated: {self}")
         
@@ -68,6 +52,8 @@ class Users:
 
 
     def login_user(self, login_form):
+        
+        print(f"COGNITO login_form: {login_form}")
         
         username = login_form.get('username')
         password = login_form.get('password')
