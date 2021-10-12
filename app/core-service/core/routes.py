@@ -180,10 +180,10 @@ def download():
         
         s3_from_path = "figures/" + filename
         
-        print(f"ROUTES path {path}")
-        print(f"ROUTES filename {filename}")
-        print(f"ROUTES figure_path {figure_path}")
-        print(f"ROUTES s3_from_path {s3_from_path}")
+        # print(f"ROUTES path {path}")
+        # print(f"ROUTES filename {filename}")
+        # print(f"ROUTES figure_path {figure_path}")
+        # print(f"ROUTES s3_from_path {s3_from_path}")
         
         figure_stream = db.stream_figure_from_s3(s3_from_path)
         
