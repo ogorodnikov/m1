@@ -30,16 +30,39 @@ Resources:
     Properties: 
       LogGroupName: m1-core-log-group
       
-  CoreImageRepository: 
-    Type: AWS::ECR::Repository
-    Properties: 
-      RepositoryName: m1-core-image
-      
   CoreCluster:
     Type: AWS::ECS::Cluster
     # DependsOn: CoreListener
     Properties:
       ClusterName: m1-core-cluster
+      
+  CoreImageRepository: 
+    Type: AWS::ECR::Repository
+    Properties: 
+      RepositoryName: m1-core-image
+      LifecyclePolicy:
+        LifecyclePolicyText: |
+          {"rules": [
+            {
+              "rulePriority": 1,
+              "description": "Only keep 1 tagged image",
+              "selection": {
+                "tagStatus": "tagged",
+                "tagPrefixList": ["latest"],
+                "countType": "imageCountMoreThan",
+                "countNumber": 1
+              },
+              "action": { "type": "expire" }},
+            {
+              "rulePriority": 2,
+              "description": "Only keep 2 untagged images",
+              "selection": {
+                "tagStatus": "untagged",
+                "countType": "imageCountMoreThan",
+                "countNumber": 2
+              },
+              "action": { "type": "expire" }}
+            ]}
       
 # Roles
       
