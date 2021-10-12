@@ -143,9 +143,16 @@
 <!--            </td>-->
 <!--          </tr>-->
 
+<!--          <tr class="collapse" id="collapse-{{ task_id }}">-->
+<!--            <td></td>-->
+<!--            <td colspan=6 class="text-monospace" style="white-space: pre-wrap; line-height:19px">{{ preambula }}{% for log in logs_tail %}{{ log }}-->
+<!--{% endfor %}-->
+<!--            </td>-->
+<!--          </tr>-->
+          
           <tr class="collapse" id="collapse-{{ task_id }}">
             <td></td>
-            <td colspan=6 class="text-monospace" style="white-space: pre-wrap; line-height:19px">{{ preambula }}{% for log in logs_tail %}{{ log }}
+            <td colspan=6 style="font-family:'Courier New'; white-space: pre-wrap; line-height:18px;">{{ preambula }}{% for log in logs_tail %}{{ log }}
 {% endfor %}
             </td>
           </tr>
