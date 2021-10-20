@@ -1,23 +1,35 @@
 #!/bin/sh
 
-echo  'Clearing release-folder'
-echo
-rm -r ~/environment/release-folder/*
+echo 'Removing release-folder'
 
-echo  'Copying app to release-folder'
-echo
+rm -rf ~/environment/release-folder/
+
+
+echo 'Creating release-folder'
+
+mkdir ~/environment/release-folder/
+
+
+echo 'Cloning empty Codecommit repository'
+
+cd ~/environment/release-folder/
+git clone --no-checkout https://git-codecommit.us-east-1.amazonaws.com/v1/repos/m1-core-codecommit-repository ~/environment/release-folder/
+
+
+echo 'Copying app to release-folder'
+
 cp -r ~/environment/m1/app/* ~/environment/release-folder/
 
+
+echo 'Checking Donenv config'
+
 ENV_PATH=~/environment/m1/app/core-service/core/.env
-echo  'ENV file path:' $ENV_PATH
-echo
-
 VERSION=$(cat $ENV_PATH | grep -o -P '(?<=VERSION = ).*')
-echo  'Release VERSION:' $VERSION
-echo
+echo 'Donenv file path:' $ENV_PATH
+echo 'Release VERSION:' $VERSION
 
 
-# Push to AWS CodeCommit
+echo 'Pushing to AWS CodeCommit'
 
 cd ~/environment/release-folder/
 
@@ -26,9 +38,14 @@ git commit -m "M1 Core $VERSION"
 git push --set-upstream origin main
 
 
-# Push Version Tag to GitHub
+echo 'Pushing Version tag to Github'
 
 cd ~/environment/m1/
 
 git tag $VERSION
 git push origin tag $VERSION
+
+
+echo 'Removing release-folder'
+
+rm -rf ~/environment/release-folder/
