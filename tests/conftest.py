@@ -1,11 +1,11 @@
-# import pytest
+import pytest
 
-# from core import config
+from core import config
 
 
-# @pytest.fixture(scope="session", autouse=True)
-# def run_config():
+@pytest.fixture(scope="session", autouse=True)
+def run_config():
 
-#     configuration = config.Config()
+    configuration = config.Config()
     
-#     yield configuration
+    yield configuration

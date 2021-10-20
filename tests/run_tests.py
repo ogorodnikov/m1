@@ -23,7 +23,6 @@ def add_core_package_to_path():
 def run_tests_with_coverage():
 
     test_path = os.path.dirname(__file__)
-    html_coverage_report_path = os.path.join(test_path, 'html_coverage_report')
 
     cov = coverage.Coverage()
     cov.start()
