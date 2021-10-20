@@ -6,24 +6,15 @@ from core import config
 from core import cognito
 
 
-
-test_login_data = (
-        
-        (dict((('username', 'test'), ('password', '111111'), ('remember_me', 'True'), ('flow', 'sign-in'))), True),
-        (dict((('username', 'test7'), ('password', '777777'), ('remember_me', 'True'), ('flow', 'sign-in'))), False)
-        
-    )
-
+# General tests
 
 def test_users(users):
-    
     assert users
     
 
 def test_get_user_pool_id(users):
     
     user_pool = users.user_pool
-    
     user_pool_id = users.get_user_pool_id(user_pool)
     
     # assert user_pool_id == "us-east-1_HhJBks0a8"
@@ -34,30 +25,27 @@ def test_get_client_id(users):
     
     user_pool_id = users.user_pool_id
     user_pool_client = users.user_pool_client
-    
     client_id = users.get_client_id(user_pool_id, user_pool_client)
 
     # assert client_id == "1fhh6jkt6c8ji76vk9i04u5d9f"
     assert len(client_id) == 26
     
 
-# @pytest.mark.parametrize("login_form, result", test_login_data)
-# def test_login_user(users, login_form, result):
+def test_log(users, capture_output):
     
-#     username = users.login_user(login_form)
-#     assert bool(username) == result
+    message = "Test log :)"
+    users.log(message)
+    assert message in capture_output["stderr"]
+    
 
+# Login
 
-def test_login_user_pass(users):
+@pytest.mark.parametrize("remember_me", ['True', 'False'])
+def test_login_user_pass(users, test_user, remember_me):
     
-    login_form = dict((
-        ('username', 'test'), 
-        ('password', '111111'), 
-        ('remember_me', 'True'), 
-        ('flow', 'sign-in')
-    ))
+    test_user.update({'remember_me': remember_me})
     
-    assert users.login_user(login_form) == 'test'
+    users.login_user(test_user)
     
     
 def test_login_user_exception(users, test_user_form):
@@ -74,36 +62,33 @@ def test_login_user_exception(users, test_user_form):
     assert "UserNotFoundException" in str(exception.value)
     
 
-def test_log(users, capture_output):
-    
-    message = "Test log :)"
-    
-    users.log(message)
-    
-    assert message in capture_output["stderr"]
-    
-    
-
 # Register
     
 def test_register_disable_delete_user(users, test_user_form):
     
-    print(f"test_user_form {test_user_form}")
-    
     users.register_user(test_user_form)
-    # users.disable_user(test_user_form)
+    users.disable_user(test_user_form)
     users.delete_user(test_user_form)
     
 
-def test_duplicate_register_user_exception(users, test_user_form):
+def test_duplicate_register_user_exception(users, test_user):
     
     with pytest.raises(Exception) as exception:
 
-        users.register_user(test_user_form)
-        users.register_user(test_user_form)
+        users.register_user(test_user)
     
     assert "UsernameExistsException" in str(exception.value)
     
+
+def test_populate_facebook_user(users, test_facebook_user):
+    
+    users.populate_facebook_user(*test_facebook_user)
+
+
+def test_populate_facebook_user_duplicated(users, test_facebook_user):
+    
+    users.populate_facebook_user(*test_facebook_user)
+    users.populate_facebook_user(*test_facebook_user)
     
     
 ###   Fixtures
@@ -112,7 +97,6 @@ def test_duplicate_register_user_exception(users, test_user_form):
 def users():
     
     configuration = config.Config()
-    
     users = cognito.Cognito()
     
     yield users
@@ -131,18 +115,31 @@ def test_user_form(users):
     yield test_user_form
     
     
-# @pytest.fixture
-# def test_user(users):
+@pytest.fixture
+def test_user(users, test_user_form):
     
-#     self.log(f'test_register_form: {test_register_form}')
+    users.register_user(test_user_form)
     
-#     users.register_user(test_register_form)
+    yield test_user_form
+    
+    users.delete_user(test_user_form)
 
+
+@pytest.fixture
+def test_facebook_user(users, test_user_form):
     
-#     yield test_username, test_password
+    name = test_user_form.get('username')
+    email = f"{name}@test.com"
+    full_name = f"{name} {name}"
+    picture_url = "https://test.com/test_picture.png"
     
+    fb_username = 'fb_' + email.replace('@', '_')
     
+    test_facebook_user_form = (name, email, full_name, picture_url)
     
+    yield test_facebook_user_form
+    
+    users.delete_user({'username': fb_username})
     
 
 @pytest.fixture
