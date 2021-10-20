@@ -4,7 +4,7 @@ import pytest
 
 test_path = os.path.dirname(__file__)
 
-core_relative_path = os.path.join(test_path, '..', 'core-service')
+core_relative_path = os.path.join(test_path, 'core-service')
 
 core_path = os.path.abspath(core_relative_path)
 
