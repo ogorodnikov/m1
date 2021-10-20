@@ -159,7 +159,7 @@ class Cognito:
         
         fb_username = 'fb_' + email.replace('@', '_')
         
-        random_password = str(random.randint(0, 1000000))
+        random_password = str(random.randint(100000, 999999))
         
         self.cognito_client.sign_up(
             ClientId=self.client_id,
