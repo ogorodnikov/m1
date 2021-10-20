@@ -7,7 +7,7 @@ import botocore.exceptions
 from logging import getLogger
 
 
-class Users:
+class Cognito:
     
     def __init__(self, *args, **kwargs):
         
@@ -97,7 +97,7 @@ class Users:
         password = login_form.get('password')
 
         self.log(f'REGISTER Username: {username}')
-    
+
         sign_up_response = self.cognito_client.sign_up(
             ClientId=self.client_id,
             Username=username,
@@ -114,7 +114,31 @@ class Users:
             UserPoolId=self.user_pool_id,
             Username=username
         )
+        
 
+    def disable_user(self, form):
+        
+        username = form.get('username')
+
+        self.log(f'DISABLE Username: {username}')
+
+        disable_user_response = self.cognito_client.admin_disable_user(
+            UserPoolId=self.user_pool_id,
+            Username=username
+        )
+        
+
+    def delete_user(self, form):
+        
+        username = form.get('username')
+
+        self.log(f'DELETE Username: {username}')
+
+        delete_user_response = self.cognito_client.admin_delete_user(
+            UserPoolId=self.user_pool_id,
+            Username=username
+        )
+        
         
     def populate_facebook_user(self, name, email, full_name, picture_url):
         

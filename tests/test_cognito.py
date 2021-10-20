@@ -1,5 +1,6 @@
 import sys
 import pytest
+import random
 
 from core import config
 from core import cognito
@@ -12,7 +13,7 @@ test_login_data = (
         (dict((('username', 'test7'), ('password', '777777'), ('remember_me', 'True'), ('flow', 'sign-in'))), False)
         
     )
-    
+
 
 def test_users(users):
     
@@ -59,18 +60,16 @@ def test_login_user_pass(users):
     assert users.login_user(login_form) == 'test'
     
     
-def test_login_user_fail(users):
+def test_login_user_exception(users, test_user_form):
     
-    login_form = dict((
-        ('username', 'test777'), 
-        ('password', '777111'), 
+    login_form = test_user_form.update((
         ('remember_me', 'True'), 
         ('flow', 'sign-in')
     ))
     
     with pytest.raises(Exception) as exception:
-
-        users.login_user(login_form)
+    
+        users.login_user(test_user_form)
     
     assert "UserNotFoundException" in str(exception.value)
     
@@ -82,16 +81,68 @@ def test_log(users, capture_output):
     users.log(message)
     
     assert message in capture_output["stderr"]
+    
+    
 
+# Register
+    
+def test_register_disable_delete_user(users, test_user_form):
+    
+    print(f"test_user_form {test_user_form}")
+    
+    users.register_user(test_user_form)
+    # users.disable_user(test_user_form)
+    users.delete_user(test_user_form)
+    
+
+def test_duplicate_register_user_exception(users, test_user_form):
+    
+    with pytest.raises(Exception) as exception:
+
+        users.register_user(test_user_form)
+        users.register_user(test_user_form)
+    
+    assert "UsernameExistsException" in str(exception.value)
+    
+    
+    
+###   Fixtures
     
 @pytest.fixture(scope="module")
 def users():
     
     configuration = config.Config()
     
-    users = cognito.Users()
+    users = cognito.Cognito()
     
     yield users
+    
+
+@pytest.fixture
+def test_user_form(users):
+    
+    user_index = random.randint(0, 1000)
+
+    test_username = f"test_username_{user_index}"
+    test_password = f"test_password_{user_index}"
+    
+    test_user_form = dict((('username', test_username), ('password', test_password)))
+    
+    yield test_user_form
+    
+    
+# @pytest.fixture
+# def test_user(users):
+    
+#     self.log(f'test_register_form: {test_register_form}')
+    
+#     users.register_user(test_register_form)
+
+    
+#     yield test_username, test_password
+    
+    
+    
     
 
 @pytest.fixture
