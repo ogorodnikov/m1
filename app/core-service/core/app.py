@@ -26,11 +26,15 @@ class FlaskApp(Flask):
         
         super().__init__(*args, **kwargs)
         
-        dictConfig(config.LOGGING_CONFIG)
+        configuration = config.Config()
         
-        self.config.from_object(config.Config)
+        dictConfig(configuration.LOGGING_CONFIG)
         
-        # config.start_log_files(self)
+        self.config.from_object(configuration)
+        
+        print(f"app self.config {self.config}")
+        
+        # self.start_log_files()
         
         
         CORS(self)
@@ -70,13 +74,43 @@ class FlaskApp(Flask):
         self.run(*args, **kwargs)
         
     
+    def start_log_files(self):
+    
+        log_folder = self.static_folder + '/logs/'
+        
+        formatter = logging.Formatter(fmt="[%(asctime)s] %(levelname).1s %(module)6.6s | %(message)s", 
+                                      datefmt="%Y-%m-%d %H:%M:%S")
+        
+        core_handler = RotatingFileHandler(log_folder + 'core.log', maxBytes=100000, backupCount=5)
+        core_handler.setLevel(logging.DEBUG)
+        core_handler.setFormatter(formatter)
+        
+        self.logger.addHandler(core_handler)
+        
+        gunicorn_handler = RotatingFileHandler(log_folder + 'gunicorn.log', maxBytes=10000, backupCount=1)
+        gunicorn_handler.setLevel(logging.DEBUG)
+        gunicorn_handler.setFormatter(formatter)
+        
+        gunicorn_log = logging.getLogger('gunicorn.error')
+        gunicorn_log.addHandler(gunicorn_handler)
+
+
+    def clear_figures_folder(self):
+        
+        figures_folder = os.path.join(self.static_folder, 'figures')
+    
+        for figure in os.listdir(figures_folder):
+            if figure == 'README.md':
+                continue
+            os.remove(os.path.join(figures_folder, figure))
+
+
     def termination_handler(self, signal, frame):
       
-        config.clear_figures_folder(self)
+        self.clear_figures_folder()
         
         print(f'APP termination_handler signal {signal}, {frame}')
-
-
+        
 
 app = FlaskApp(__name__)
 
