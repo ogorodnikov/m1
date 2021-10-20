@@ -28,7 +28,6 @@ class Users:
         
     
     def log(self, message):
-        
         self.logger.info(message)
 
         

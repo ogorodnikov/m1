@@ -59,32 +59,32 @@ def test_login_user_pass(users):
     assert users.login_user(login_form) == 'test'
     
     
-# def test_login_user_fail(users):
+def test_login_user_fail(users):
     
-#     login_form = dict((
-#         ('username', 'test777'), 
-#         ('password', '777111'), 
-#         ('remember_me', 'True'), 
-#         ('flow', 'sign-in')
-#     ))
+    login_form = dict((
+        ('username', 'test777'), 
+        ('password', '777111'), 
+        ('remember_me', 'True'), 
+        ('flow', 'sign-in')
+    ))
     
-#     with pytest.raises(Exception) as exception:
+    with pytest.raises(Exception) as exception:
 
-#         users.login_user(login_form)
+        users.login_user(login_form)
     
-#     assert "UserNotFoundException" in str(exception.value)
+    assert "UserNotFoundException" in str(exception.value)
     
 
-# def test_log(users, capture_stdout):
+def test_log(users, capture_output):
     
-#     message = "Test log)"
+    message = "Test log :)"
     
-#     users.log(message)
+    users.log(message)
     
-#     assert capture_stdout["stdout"] == 'COGNITO >>> ' + message + '\n'
+    assert message in capture_output["stderr"]
 
     
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="module")
 def users():
     
     configuration = config.Config()
@@ -95,13 +95,13 @@ def users():
     
 
 @pytest.fixture
-def capture_stdout(monkeypatch):
+def capture_output(monkeypatch):
     
-    buffer = {"stdout": ""}
+    buffer = {"stderr": ""}
 
     def capture(message):
-        buffer["stdout"] += message
+        buffer["stderr"] += message
 
-    monkeypatch.setattr(sys.stdout, 'write', capture)
-    
+    monkeypatch.setattr(sys.stderr, 'write', capture)
+
     return buffer

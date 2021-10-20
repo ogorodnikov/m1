@@ -33,4 +33,4 @@ cov.stop()
 cov.save()
 
 cov.report()
-# cov.html_report()
+cov.html_report()
