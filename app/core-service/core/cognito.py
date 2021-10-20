@@ -4,12 +4,16 @@ import random
 import boto3
 import botocore.exceptions
 
+from logging import getLogger
+
 
 class Users:
     
     def __init__(self, *args, **kwargs):
         
         self.cognito_client = boto3.client('cognito-idp')
+        
+        self.logger = getLogger(__name__)
         
         self.domain = os.getenv('DOMAIN')
         self.aws_nlb = os.getenv('AWS_NLB')
@@ -25,10 +29,8 @@ class Users:
     
     def log(self, message):
         
-        print('COGNITO >>> ' + message)
-        
-        # self.app.logger.info(message)
-        
+        self.logger.info(message)
+
         
     def get_user_pool_id(self, user_pool):
 

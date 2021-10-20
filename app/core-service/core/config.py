@@ -1,10 +1,11 @@
 import os
 import boto3
+
 from dotenv import load_dotenv
 from datetime import timedelta
 
 import logging
-from logging.handlers import RotatingFileHandler
+import logging.config
 
 
 class Config():
@@ -12,7 +13,7 @@ class Config():
     def __init__(self, *args, **kwargs):
         
         load_dotenv()
-
+        
         self.elb_client = boto3.client('elbv2')
         
         self.REGION = os.getenv('REGION')
@@ -28,6 +29,9 @@ class Config():
     
         self.FACEBOOK_CLIENT_ID = os.getenv('FACEBOOK_CLIENT_ID')    
         self.FACEBOOK_CLIENT_SECRET = os.getenv('FACEBOOK_CLIENT_SECRET')
+
+        self.QISKIT_TOKEN = os.getenv('QISKIT_TOKEN')
+        self.TELEGRAM_TOKEN = os.getenv('TELEGRAM_TOKEN')
         
         self.NLB_NAME = os.getenv('NLB_NAME')
         self.AWS_NLB = self.get_nlb_dns(self.NLB_NAME)
@@ -39,33 +43,30 @@ class Config():
         self.JSONIFY_PRETTYPRINT_REGULAR = False
         self.PERMANENT_SESSION_LIFETIME = timedelta(minutes=30)
         self.CPU_COUNT = os.cpu_count()
-        
-        self.QISKIT_TOKEN = os.getenv('QISKIT_TOKEN')
-        self.TELEGRAM_TOKEN = os.getenv('TELEGRAM_TOKEN')
     
         self.LOGGING_CONFIG = {'version': 1,
-        
-                                  'formatters': {
-                                      'default': {
-                                          'format': '%(levelname).1s %(module)6.6s | %(message)s'
-                                        #   'format': '[%(asctime)s] %(module)6.6s | %(levelname).4s | %(message)s',
-                                        #   'datefmt': "%Y-%m-%d %H:%M:%S"
-                                      }
-                                  },
-                                                            
-                                  'handlers': {
-                                      'wsgi': {
-                                          'class': 'logging.StreamHandler',
-                                        #   'stream': 'ext://flask.logging.wsgi_errors_stream',
-                                          'formatter': 'default'
-                                      }
-                                  },
-                                                       
-                                  'root': {
-                                      'level': 'INFO',
-                                      'handlers': ['wsgi']
-                                  }
-                                }
+                               'formatters': {
+                                    'short': {
+                                        'format': '%(levelname).1s %(module)6.6s | %(message)s'
+                                    },
+                                    'full': {
+                                        'format': '[%(asctime)s] %(module)6.6s | %(levelname).4s | %(message)s',
+                                        'datefmt': "%Y-%m-%d %H:%M:%S"
+                                    }
+                                },
+                                'handlers': {
+                                    'stream': {
+                                        'class': 'logging.StreamHandler',
+                                        # 'stream': 'ext://flask.logging.wsgi_errors_stream',
+                                        'formatter': 'short'
+                                    }
+                                },
+                                'root': {
+                                    'level': 'INFO',
+                                    'handlers': ['stream']
+                                }}
+                                
+        logging.config.dictConfig(self.LOGGING_CONFIG)
 
 
     def get_nlb_dns(self, nlb_name):

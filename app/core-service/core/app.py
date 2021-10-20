@@ -5,7 +5,7 @@ import signal
 from os import environ
 from threading import enumerate as enumerate_threads
 
-from logging.config import dictConfig
+from logging.handlers import RotatingFileHandler
 
 from core import config
 from core import dynamo
@@ -26,16 +26,11 @@ class FlaskApp(Flask):
         
         super().__init__(*args, **kwargs)
         
-        configuration = config.Config()
-        
-        dictConfig(configuration.LOGGING_CONFIG)
-        
-        self.config.from_object(configuration)
-        
-        print(f"app self.config {self.config}")
-        
         # self.start_log_files()
         
+        configuration = config.Config()
+        
+        self.config.from_object(configuration)
         
         CORS(self)
         
@@ -113,9 +108,5 @@ class FlaskApp(Flask):
         
 
 app = FlaskApp(__name__)
-
-app.launch = app.run_with_gunicorn
-
-# app.launch = app.run_with_developement_server
 
 from core import routes
