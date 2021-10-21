@@ -42,8 +42,23 @@ def test_open_algorithm(telegram_bot, test_algorithm, algorithm_type):
     telegram_bot.open_algorithm(TEST_CHAT_ID, test_algorithm)
     
 
-# @pytest.mark.skipif(should_skip, reason="No environment variables configured")
 
+def test_sticker_handler(telegram_bot, sticker_message):
+    ...
+    
+    # telegram_bot.sticker_handler(sticker_message)
+    	
+
+def test_echo_handler(telegram_bot, message):
+    ...
+    
+    
+    
+    
+    
+    
+    
+# @pytest.mark.skipif(should_skip, reason="No environment variables configured")
 
 ###   Fixtures
 
@@ -99,11 +114,24 @@ def message(user, chat):
     
     message = types.Message(
         message_id=1, from_user=user, date=None, chat=chat, 
-        content_type='text', options=parameters, json_string="", 
+        content_type='text', options=parameters, json_string=""
     )
     
     yield message
     
+
+@pytest.fixture(scope="module")
+def sticker_message(user, chat):
+    
+    sticker = types.Sticker(file_id=1, file_unique_id=1, width=1, height=1, is_animated=False)
+    
+    sticker_message = types.Message(
+        message_id=1, from_user=user, date=None, chat=chat, 
+        content_type='sticker', json_string="", options={}
+    )
+    
+    yield sticker_message
+
 
 @pytest.fixture(scope="module")
 def callback(user, chat, message):
