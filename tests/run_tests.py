@@ -27,7 +27,10 @@ def run_tests_with_coverage():
     cov = coverage.Coverage()
     cov.start()
     
-    code = pytest.main([test_path, '-v', '-rP'])
+    # pytest.main([test_path, '-v', '-rP'])
+    
+    # pytest.main([test_path + '/test_cognito.py', '-v', '-rP'])
+    pytest.main([test_path + '/test_facebook.py', '-v', '-rP'])
     
     cov.stop()
     cov.save()

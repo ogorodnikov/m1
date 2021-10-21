@@ -2,7 +2,6 @@ import sys
 import pytest
 import random
 
-from core import config
 from core import cognito
 
 
@@ -100,7 +99,6 @@ def test_populate_facebook_user_duplicated(users, test_facebook_user):
 @pytest.fixture(scope="module")
 def users():
     
-    # configuration = config.Config()
     users = cognito.Cognito()
     
     yield users

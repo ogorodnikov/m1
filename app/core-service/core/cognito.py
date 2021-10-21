@@ -12,12 +12,8 @@ class Cognito:
     def __init__(self, *args, **kwargs):
         
         self.cognito_client = boto3.client('cognito-idp')
-        
         self.logger = getLogger(__name__)
-        
-        self.domain = os.getenv('DOMAIN')
-        self.aws_nlb = os.getenv('AWS_NLB')
-        
+
         self.user_pool = os.getenv('USER_POOL')
         self.user_pool_client = os.getenv('USER_POOL_CLIENT')
         
