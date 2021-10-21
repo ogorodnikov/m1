@@ -110,12 +110,13 @@ class Bot(TeleBot):
             markup = InlineKeyboardMarkup()
 
             markup.add(InlineKeyboardButton("Open 🌻", callback_data=open_callback),
-                       InlineKeyboardButton("Like 👍", callback_data=like_callback),
-                       InlineKeyboardButton("Wiki 📖", url=link))
+                      InlineKeyboardButton("Like 👍", callback_data=like_callback),
+                      InlineKeyboardButton("Wiki 📖", url=link))
                        
             algorithm_text = f"<b>{algorithm_index}) {name}</b>\n\n{description}"
             
-            self.send_message(message.chat.id, algorithm_text, reply_markup=markup)
+            self.send_message(message.chat.id, algorithm_text, 
+                              reply_markup=markup, disable_notification=True)
 
     
     def callback_handler(self, callback):
@@ -214,7 +215,8 @@ class Bot(TeleBot):
                        InlineKeyboardButton("Like 👍", callback_data=like_callback),
                        InlineKeyboardButton("Back 🌻", callback_data="get_algorithms"))
 
-        self.send_message(chat_id, f"{text}", reply_markup=markup)
+        self.send_message(chat_id, f"{text}", reply_markup=markup, 
+                          disable_notification=True)
         
 
     def collect_parameters(self, message, **kwargs):
