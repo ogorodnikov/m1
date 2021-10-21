@@ -5,8 +5,6 @@ from urllib.parse import urlencode
 from core import facebook
 
 
-# General tests
-
 def test_get_autorization_url(fb):
     
     dummy_login_url = "https://m1.ogoro.me/login"

@@ -36,15 +36,29 @@ class FlaskApp(Flask):
         
         self.db = dynamo.DB(self)
         
-        runner = engine.Runner(self)
-        runner.start()
+        self.runner = engine.Runner(self)
+        self.runner.start()
         
-        bot = telegram.Bot(self)
-        bot.start()
-        
+        self.telegram_bot = telegram.Bot(self.db, self.runner)
+
+        self.start_telegram_bot()
+
         self.users = cognito.Cognito()
         
-        self.fb = facebook.FB()
+        self.facebook = facebook.FB()
+        
+        
+    def start_telegram_bot(self):
+        
+        if self.telegram_bot:
+            self.telegram_bot.start()
+            self.config['TELEGRAM_BOT_STATE'] = 'Running'        
+
+    def stop_telegram_bot(self):
+        
+        if self.telegram_bot:
+            self.telegram_bot.stop()
+            self.config['TELEGRAM_BOT_STATE'] = 'Stopped'            
 
     
     def run_with_gunicorn(self, *args, **kwargs):

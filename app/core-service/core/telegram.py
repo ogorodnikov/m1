@@ -1,3 +1,5 @@
+import os
+
 from telebot import TeleBot
 
 from telebot.types import Message
@@ -8,34 +10,32 @@ from telebot.types import InlineKeyboardButton
 
 from threading import Thread
 
+from logging import getLogger
+
 
 class Bot(TeleBot):
     
     BUBO_CELEBRATE_STICKER_FILE_ID = "CAACAgIAAxkBAAIF6GES9nEyKUKbGVt4XFzpjOeYv09dAAIUAAPp2BMo6LwZ1x6IhdYgBA"
     
-    def __init__(self, app, *args, **kwargs):
+    def __init__(self, db, runner, *args, **kwargs):
 
-        self.app = app
-        self.db = app.db
-                
-        self.runner = self.app.config.get('RUNNER')
-        self.domain = self.app.config.get('DOMAIN')
-
-        telegram_token = self.app.config.get('TELEGRAM_TOKEN')
+        self.db = db
+        self.runner = runner
+        self.domain = os.getenv('DOMAIN')
+        telegram_token = os.getenv('TELEGRAM_TOKEN')
+        
+        self.logger = getLogger(__name__)
         
         super().__init__(telegram_token, *args, 
                          parse_mode='HTML', threaded=False, **kwargs)
         
         self.register_handlers()
 
-        self.app.config['TELEGRAM_BOT'] = self
-        self.app.config['TELEGRAM_BOT_STATE'] = 'Stopped'
-
         self.log(f'BOT initiated: {self}')
-        
+    
     
     def log(self, message):
-        self.app.logger.info(message)
+        self.logger.info(message)
         
         
     def start(self):
@@ -45,16 +45,12 @@ class Bot(TeleBot):
         polling_worker_thread.name = "Telegram bot polling"
         polling_worker_thread.start()
         
-        self.app.config['TELEGRAM_BOT_STATE'] = 'Started'
-
         self.log(f'BOT polling: {self}')
 
 
     def stop(self):
         
         self.stop_polling()
-        
-        self.app.config['TELEGRAM_BOT_STATE'] = 'Stopped'
 
         self.log(f'BOT stop_polling: {self}')
 
@@ -134,18 +130,15 @@ class Bot(TeleBot):
         
         flash_text = None
         
-        
         if callback_data.startswith("like_"):
             
             self.db.like_algorithm(algorithm_id)
             flash_text = "Thank you!)"
-            
         
         if callback_data.startswith("open_"):
             
             chat_id = callback.message.chat.id
             self.open_algorithm(chat_id, algorithm)
-
         
         if callback_data.startswith("run_"):
             
@@ -167,21 +160,15 @@ class Bot(TeleBot):
              
             flash_text = "Please enter parameters"
             
-            
         if callback_data.startswith("get_algorithms"):
             
             self.algorithms_handler(callback.message)
 
-
         try:
-            
             self.answer_callback_query(callback_query_id=callback_query_id, 
                                        text=flash_text)
-                                       
         except Exception as exception:
-            
             self.log(f'BOT exception: {exception}')
-            
 
         
     def open_algorithm(self, chat_id, algorithm):
@@ -304,8 +291,6 @@ class Bot(TeleBot):
         self.log(f'BOT algorithm_id: {algorithm_id}')
         self.log(f'BOT run_values: {run_values}')
         self.log(f'BOT task_id: {task_id}')
-        
-
         
         task_url = f"https://{self.domain}/tasks?task_id={task_id}"
         

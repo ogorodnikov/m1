@@ -16,8 +16,9 @@ import requests
 
 db = app.db
 users = app.users
-facebook = app.fb
-runner = app.config.get('RUNNER')
+runner = app.runner
+facebook = app.facebook
+telegram_bot = app.telegram_bot
 
 
 ###   Login   ###
@@ -42,9 +43,9 @@ def login():
 
     if code:
         
-        facebook_token = facebook.code_to_token(code, login_url)
+        facebook_token = facebook.get_token_from_code(code, login_url)
         
-        name, email, full_name, picture_url = facebook.login_facebook_user(facebook_token)
+        name, email, full_name, picture_url = facebook.get_user_data(facebook_token)
         
         users.populate_facebook_user(name, email, full_name, picture_url)
         
@@ -218,38 +219,36 @@ def admin():
         
         return render_template("admin.html")
     
-    telegram_bot = app.config.get('TELEGRAM_BOT')
-    
-    if command == 'start_bot':
-        telegram_bot.start()
+    elif command == 'start_bot':
+        app.start_telegram_bot()
         flash("Telegram bot started", category='info')
 
-    if command == 'stop_bot':
-        telegram_bot.stop()
+    elif command == 'stop_bot':
+        app.stop_telegram_bot()
         flash("Telegram bot stopped", category='warning')
     
-    if command == 'add_test_data':
+    elif command == 'add_test_data':
         db.add_test_data()
         flash(f"Test data added to m1-algorithms-table", category='warning')
         
-    if command == 'reset_application':
+    elif command == 'reset_application':
         flash(f"Resetting Flask application", category='danger')
         runner.reset_application()
         
-    if command == 'start_runner':
+    elif command == 'start_runner':
         flash(f"Starting runner", category='success')
         runner.start()
 
-    if command == 'stop_runner':
+    elif command == 'stop_runner':
         flash(f"Stopping runner", category='warning')
         runner.stop()
         
-    if command == 'purge_tasks':
+    elif command == 'purge_tasks':
         flash(f"Purging tasks", category='danger')        
         db.purge_tasks()
         db.purge_s3_folder('figures/')
         
-    if command == 'add_test_tasks':
+    elif command == 'add_test_tasks':
         
         flash(f"Adding test tasks", category='primary')
 
@@ -264,7 +263,7 @@ def admin():
         task = db.get_queued_task()
         flash(f"Got queued task: {task}", category='info')        
         
-    if command == 'test':
+    elif command == 'test':
         flash(f"Test command", category='success')
         
         # db.update_task_attribute(1, 'task_log', [1, 2], if_exists=False)
