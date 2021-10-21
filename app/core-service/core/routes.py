@@ -16,7 +16,7 @@ import requests
 
 db = app.db
 runner = app.config.get('RUNNER')
-facebook = app.config.get('FACEBOOK')
+facebook = app.fb
 
 
 ###   Login   ###

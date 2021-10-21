@@ -1,3 +1,4 @@
+import os
 import requests
 
 from flask import flash
@@ -6,26 +7,28 @@ from flask import session
 
 from urllib.parse import urlencode
 
+from logging import getLogger
+
 
 class FB:
     
-    def __init__(self, app, *args, **kwargs):
+    def __init__(self, users, *args, **kwargs):
 
-        self.app = app
+        self.users = users
         
-        self.facebook_client_id = app.config.get('FACEBOOK_CLIENT_ID')
-        self.facebook_client_secret = app.config.get('FACEBOOK_CLIENT_SECRET')
+        self.logger = getLogger(__name__)
         
-        self.domain = app.config.get('DOMAIN')
-        self.aws_nlb = app.config.get('AWS_NLB')
-
-        self.app.config['FACEBOOK'] = self
+        self.facebook_client_id = os.getenv('FACEBOOK_CLIENT_ID')
+        self.facebook_client_secret = os.getenv('FACEBOOK_CLIENT_SECRET')
+        
+        self.domain = os.getenv('DOMAIN')
+        self.aws_nlb = os.getenv('AWS_NLB')
         
         self.log(f"FB initiated: {self}")
-        
+
     
     def log(self, message):
-        self.app.logger.info(message)
+        self.logger.info(message)
         
     
     @property
@@ -114,7 +117,7 @@ class FB:
         session['full_name'] = full_name
         session['picture_url'] = picture_url
             
-        self.app.users.populate_facebook_user(name, email, full_name, picture_url)
+        self.users.populate_facebook_user(name, email, full_name, picture_url)
         
         flash(f"Welcome, facebook user {name}!", category='warning')
         

@@ -42,9 +42,9 @@ class FlaskApp(Flask):
         bot = telegram.Bot(self)
         bot.start()
         
-        self.users = cognito.Cognito(self)
+        self.users = cognito.Cognito()
         
-        fb = facebook.FB(self)
+        self.fb = facebook.FB(users=self.users)
 
     
     def run_with_gunicorn(self, *args, **kwargs):
@@ -108,5 +108,7 @@ class FlaskApp(Flask):
         
 
 app = FlaskApp(__name__)
+
+print(f"app.fb {app.fb}")
 
 from core import routes

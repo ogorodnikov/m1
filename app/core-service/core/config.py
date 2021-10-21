@@ -35,6 +35,7 @@ class Config():
         
         self.NLB_NAME = os.getenv('NLB_NAME')
         self.AWS_NLB = self.get_nlb_dns(self.NLB_NAME)
+        os.environ['AWS_NLB'] = self.AWS_NLB
       
         self.TASK_TIMEOUT = 300
         self.QUEUE_WORKERS_PER_RUNNER = 1
