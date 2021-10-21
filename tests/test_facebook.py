@@ -12,13 +12,14 @@ def test_facebook(fb):
     assert fb
     
 
-# def test_get_user_pool_id(users):
+def test_get_autorization_url(fb):
     
-#     user_pool = users.user_pool
-#     user_pool_id = users.get_user_pool_id(user_pool)
+    autorization_url = fb.get_autorization_url()
     
-#     # assert user_pool_id == "us-east-1_HhJBks0a8"
-#     assert len(user_pool_id) == 19
+    print(f"autorization_url {autorization_url}")
+    
+    # assert user_pool_id == "us-east-1_HhJBks0a8"
+    # assert len(user_pool_id) == 19
     
 
 # def test_get_client_id(users):

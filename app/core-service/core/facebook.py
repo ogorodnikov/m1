@@ -2,7 +2,7 @@ import os
 import requests
 
 from flask import flash
-from flask import url_for
+# from flask import url_for
 from flask import session
 
 from urllib.parse import urlencode
@@ -15,7 +15,6 @@ class FB:
     def __init__(self, users, *args, **kwargs):
 
         self.users = users
-        
         self.logger = getLogger(__name__)
         
         self.facebook_client_id = os.getenv('FACEBOOK_CLIENT_ID')
@@ -31,25 +30,34 @@ class FB:
         self.logger.info(message)
         
     
-    @property
-    def redirect_uri_after_proxy(self):
+    # @property
+    # def redirect_uri_after_proxy(self):
         
-        redirect_uri = url_for('login', _external=True, _scheme='https')
+    #     redirect_uri = url_for('login', _external=True, _scheme='https')
     
-        redirect_uri_after_proxy = redirect_uri.replace(self.aws_nlb, self.domain)
+    #     redirect_uri_after_proxy = redirect_uri.replace(self.aws_nlb, self.domain)
         
-        # self.log(f"FB redirect_uri: {redirect_uri}")
-        # self.log(f"FB redirect_uri_after_proxy: {redirect_uri_after_proxy}")
+    #     # self.log(f"FB redirect_uri: {redirect_uri}")
+    #     # self.log(f"FB redirect_uri_after_proxy: {redirect_uri_after_proxy}")
         
-        return redirect_uri_after_proxy
+    #     return redirect_uri_after_proxy
+    
+
+    def replace_proxy(self, url):
+        
+        url_without_proxy = url.replace(self.aws_nlb, self.domain)
+
+        return url_without_proxy
         
 
-    def get_autorization_url(self):
+    def get_autorization_url(self, login_url):
         
         autorization_endpoint = 'https://www.facebook.com/v8.0/dialog/oauth'
         
+        login_url_without_proxy = self.replace_proxy(login_url)
+        
         parameters = {'client_id': self.facebook_client_id,
-                      'redirect_uri': self.redirect_uri_after_proxy,
+                      'redirect_uri': login_url_without_proxy,
                       'scope': 'public_profile,email'}
                       
         autorization_url = autorization_endpoint + '?' + urlencode(parameters)
@@ -59,14 +67,16 @@ class FB:
         return autorization_url
         
     
-    def code_to_token(self, code):
+    def code_to_token(self, code, login_url):
         
         token_endpoint = 'https://graph.facebook.com/oauth/access_token'
+        
+        login_url_without_proxy = self.replace_proxy(login_url)
         
         parameters = {'client_id': self.facebook_client_id,
                       'client_secret': self.facebook_client_secret,
                       'grant_type': 'authorization_code',
-                      'redirect_uri': self.redirect_uri_after_proxy,
+                      'redirect_uri': login_url_without_proxy,
                       'code': code}
                       
         access_token_url = token_endpoint + '?' + urlencode(parameters)
@@ -78,7 +88,7 @@ class FB:
         facebook_token = token_response_json.get('access_token')
         
         # self.log(f"AUTH code: {code}")
-        # self.log(f"TOKEN self.redirect_uri_after_proxy: {self.redirect_uri_after_proxy}")
+        # self.log(f"TOKEN login_url_without_proxy: {login_url_without_proxy}")
         # self.log(f"TOKEN parameters: {parameters}")
         # self.log(f"TOKEN access_token_url: {access_token_url}")
         # self.log(f"TOKEN token_response: {token_response}")

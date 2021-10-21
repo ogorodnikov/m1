@@ -15,8 +15,8 @@ import requests
 
 
 db = app.db
-runner = app.config.get('RUNNER')
 facebook = app.fb
+runner = app.config.get('RUNNER')
 
 
 ###   Login   ###
@@ -29,17 +29,19 @@ def login():
     flow = request.form.get('flow')
     code = request.args.get('code')
     
+    login_url = url_for('login', _external=True, _scheme='https')
+    
     if not (flow or code):
         
         return render_template("login.html")
     
     if flow == 'facebook':
         
-        redirect_url = facebook.get_autorization_url()
+        redirect_url = facebook.get_autorization_url(login_url)
 
     if code:
         
-        facebook_token = facebook.code_to_token(code)
+        facebook_token = facebook.code_to_token(code, login_url)
         redirect_url = facebook.login_facebook_user(facebook_token)
 
     if flow == 'register':
