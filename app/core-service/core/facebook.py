@@ -1,10 +1,6 @@
 import os
 import requests
 
-from flask import flash
-# from flask import url_for
-from flask import session
-
 from urllib.parse import urlencode
 
 from logging import getLogger
@@ -12,9 +8,8 @@ from logging import getLogger
 
 class FB:
     
-    def __init__(self, users, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
 
-        self.users = users
         self.logger = getLogger(__name__)
         
         self.facebook_client_id = os.getenv('FACEBOOK_CLIENT_ID')
@@ -62,8 +57,6 @@ class FB:
                       
         autorization_url = autorization_endpoint + '?' + urlencode(parameters)
 
-        # self.log(f"AUTH autorization_url: {autorization_url}")
-        
         return autorization_url
         
     
@@ -95,8 +88,6 @@ class FB:
         # self.log(f"TOKEN token_response_json: {token_response_json}")   
         # self.log(f"TOKEN facebook_token: {facebook_token}")
         
-        session['facebook_token'] = facebook_token    
-        
         return facebook_token
         
     
@@ -113,28 +104,17 @@ class FB:
         # self.log(f"CLAIMS me_endpoint: {me_endpoint}")
         # self.log(f"CLAIMS parameters: {parameters}")
         # self.log(f"CLAIMS me_response_json: {me_response_json}")
-    
-        picture = me_response_json.get('picture')
-        picture_data = picture.get('data') if picture else ""
-        picture_url = picture_data.get('url') if picture_data else ""
         
         name = me_response_json.get('short_name')        
         email = me_response_json.get('email')
         full_name = me_response_json.get('name')
+    
+        picture = me_response_json.get('picture')
+        picture_data = picture.get('data') if picture else ""
+        picture_url = picture_data.get('url') if picture_data else ""
 
-        session['username'] = name
-        session['email'] = email
-        session['full_name'] = full_name
-        session['picture_url'] = picture_url
-            
-        self.users.populate_facebook_user(name, email, full_name, picture_url)
-        
-        flash(f"Welcome, facebook user {name}!", category='warning')
-        
         self.log(f'FACEBOOK Login successful: {name}')
         
-        login_referer = session.pop('login_referer', None)
-        
-        return login_referer
+        return name, email, full_name, picture_url
     
     

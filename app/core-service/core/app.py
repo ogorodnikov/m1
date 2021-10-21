@@ -44,7 +44,7 @@ class FlaskApp(Flask):
         
         self.users = cognito.Cognito()
         
-        self.fb = facebook.FB(users=self.users)
+        self.fb = facebook.FB()
 
     
     def run_with_gunicorn(self, *args, **kwargs):
@@ -108,7 +108,5 @@ class FlaskApp(Flask):
         
 
 app = FlaskApp(__name__)
-
-print(f"app.fb {app.fb}")
 
 from core import routes

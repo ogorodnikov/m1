@@ -15,6 +15,7 @@ import requests
 
 
 db = app.db
+users = app.users
 facebook = app.fb
 runner = app.config.get('RUNNER')
 
@@ -42,7 +43,18 @@ def login():
     if code:
         
         facebook_token = facebook.code_to_token(code, login_url)
-        redirect_url = facebook.login_facebook_user(facebook_token)
+        
+        name, email, full_name, picture_url = facebook.login_facebook_user(facebook_token)
+        
+        users.populate_facebook_user(name, email, full_name, picture_url)
+        
+        session['username'] = name
+        session['picture_url'] = picture_url
+        
+        flash(f"Welcome, facebook user {name}!", category='warning')
+        
+        redirect_url = session.pop('login_referer', None)
+        
 
     if flow == 'register':
         

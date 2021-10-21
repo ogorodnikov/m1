@@ -1,6 +1,6 @@
-import sys
 import pytest
-import random
+
+from urllib.parse import urlencode
 
 from core import cognito
 from core import facebook
@@ -14,12 +14,19 @@ def test_facebook(fb):
 
 def test_get_autorization_url(fb):
     
-    autorization_url = fb.get_autorization_url()
+    dummy_login_url = "https://m1.ogoro.me/login"
+    dummy_scope = "public_profile,email"
     
-    print(f"autorization_url {autorization_url}")
+    dummy_url_parameters = urlencode({'redirect_uri': dummy_login_url,
+                                      'scope': dummy_scope})
     
-    # assert user_pool_id == "us-east-1_HhJBks0a8"
-    # assert len(user_pool_id) == 19
+    autorization_url = fb.get_autorization_url(dummy_login_url)
+    
+    # print(f"dummy_login_url {dummy_login_url}")
+    # print(f"autorization_url {autorization_url}")
+    # print(f"dummy_url_parameters {dummy_url_parameters}")
+
+    assert dummy_url_parameters in autorization_url
     
 
 # def test_get_client_id(users):
