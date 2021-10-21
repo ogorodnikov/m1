@@ -51,7 +51,7 @@ class Bot(TeleBot):
     def stop(self):
         
         self.stop_polling()
-
+        
         self.log(f'BOT stop_polling: {self}')
 
 
@@ -72,10 +72,11 @@ class Bot(TeleBot):
         bot_name = bot_data.first_name
         user_name = message.from_user.first_name
         
-        self.log(f'BOT /start')
         self.log(f'BOT bot_data {bot_data}')
         self.log(f'BOT bot_name {bot_name}')
         self.log(f'BOT user_name {user_name}')
+        self.log(f'BOT message.text {message.text}')
+        self.log(f'BOT message.chat.id {message.chat.id}')
     
         self.send_message(message.chat.id, f"{bot_name} welcomes you, {user_name}!")
         self.send_sticker(message.chat.id, Bot.BUBO_CELEBRATE_STICKER_FILE_ID)
