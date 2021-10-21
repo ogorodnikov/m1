@@ -37,8 +37,8 @@ def test_log(users, capture_output):
     assert message in capture_output["stderr"]
 
 
-def test_print_environ(run_config):
-    run_config.print_environ()
+# def test_print_environ(run_config):
+#     run_config.print_environ()
     
 
 # Login

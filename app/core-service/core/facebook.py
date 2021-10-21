@@ -24,24 +24,11 @@ class FB:
     def log(self, message):
         self.logger.info(message)
         
-    
-    # @property
-    # def redirect_uri_after_proxy(self):
-        
-    #     redirect_uri = url_for('login', _external=True, _scheme='https')
-    
-    #     redirect_uri_after_proxy = redirect_uri.replace(self.aws_nlb, self.domain)
-        
-    #     # self.log(f"FB redirect_uri: {redirect_uri}")
-    #     # self.log(f"FB redirect_uri_after_proxy: {redirect_uri_after_proxy}")
-        
-    #     return redirect_uri_after_proxy
-    
 
     def replace_proxy(self, url):
         
         url_without_proxy = url.replace(self.aws_nlb, self.domain)
-
+        
         return url_without_proxy
         
 
@@ -60,7 +47,7 @@ class FB:
         return autorization_url
         
     
-    def code_to_token(self, code, login_url):
+    def get_token_from_code(self, code, login_url):
         
         token_endpoint = 'https://graph.facebook.com/oauth/access_token'
         
@@ -91,7 +78,7 @@ class FB:
         return facebook_token
         
     
-    def login_facebook_user(self, access_token):
+    def get_user_data(self, access_token):
                 
         me_endpoint = 'https://graph.facebook.com/me'
         

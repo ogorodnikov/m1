@@ -82,7 +82,7 @@ class Config():
         return nlb_dns
         
 
-    def print_environ(self):
+    # def print_environ(self):
     
-        for key, value in sorted(os.environ.items()):
-            print(f"{key}: {value}")
+    #     for key, value in sorted(os.environ.items()):
+    #         print(f"{key}: {value}")
