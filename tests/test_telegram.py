@@ -40,25 +40,22 @@ def test_open_algorithm(telegram_bot, test_algorithm, algorithm_type):
     test_algorithm['type'] = algorithm_type
     
     telegram_bot.open_algorithm(TEST_CHAT_ID, test_algorithm)
-    
 
 
-def test_sticker_handler(telegram_bot, sticker_message):
+def test_collect_parameters(telegram_bot, message):
     ...
     
-    # telegram_bot.sticker_handler(sticker_message)
-    	
+    
+def test_sticker_handler(telegram_bot, sticker_message):
+    telegram_bot.sticker_handler(sticker_message)
+    
 
 def test_echo_handler(telegram_bot, message):
-    ...
+    telegram_bot.echo_handler(message)
     
     
     
-    
-    
-    
-    
-# @pytest.mark.skipif(should_skip, reason="No environment variables configured")
+
 
 ###   Fixtures
 
@@ -110,11 +107,11 @@ def chat():
 @pytest.fixture(scope="module")
 def message(user, chat):
     
-    parameters = {'text': 'Test Text'}
+    options = {'text': 'test_telegram message fixture :)'}
     
     message = types.Message(
         message_id=1, from_user=user, date=None, chat=chat, 
-        content_type='text', options=parameters, json_string=""
+        content_type='text', options=options, json_string=""
     )
     
     yield message
@@ -123,15 +120,22 @@ def message(user, chat):
 @pytest.fixture(scope="module")
 def sticker_message(user, chat):
     
-    sticker = types.Sticker(file_id=1, file_unique_id=1, width=1, height=1, is_animated=False)
+    sticker_file_id = telegram.Bot.BUBO_CELEBRATE_STICKER_FILE_ID
+
+    sticker = types.Sticker(
+        file_id=sticker_file_id, file_unique_id=1, 
+        width=1, height=1, is_animated=False
+    )
+    
+    options = {'sticker': sticker}
     
     sticker_message = types.Message(
         message_id=1, from_user=user, date=None, chat=chat, 
-        content_type='sticker', json_string="", options={}
+        content_type='sticker', json_string="", options=options
     )
     
     yield sticker_message
-
+    
 
 @pytest.fixture(scope="module")
 def callback(user, chat, message):

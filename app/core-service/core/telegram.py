@@ -319,13 +319,11 @@ class Bot(TeleBot):
         
         file_id = message.sticker.file_id
         
-        self.log(f'BOT file_id: {file_id}')
-        
-        self.send_sticker(message.chat.id, file_id)
+        self.log(f'BOT sticker_handler file_id: {file_id}')
+        self.send_sticker(message.chat.id, file_id, disable_notification=True)
     	
 
     def echo_handler(self, message):
         
-        self.log(f'BOT echo_handler message')
-
-        self.reply_to(message, message.text)
+        self.log(f'BOT echo_handler message.json: {message.json}')
+        self.reply_to(message, message.text, disable_notification=True)
