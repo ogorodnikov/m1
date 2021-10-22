@@ -1,8 +1,8 @@
-from flask import Flask
-from flask_cors import CORS
-
 import os
 import signal
+
+from flask import Flask
+from flask_cors import CORS
 
 from threading import enumerate as enumerate_threads
 
@@ -39,10 +39,9 @@ class FlaskApp(Flask):
         self.db = dynamo.DB(self)
         
         self.runner = engine.Runner(self)
-        self.runner.start()
+        self.start_runner()
         
         self.telegram_bot = telegram.Bot(self.db, self.runner)
-
         self.start_telegram_bot()
 
         self.users = cognito.Cognito()
@@ -62,7 +61,19 @@ class FlaskApp(Flask):
         
         if self.telegram_bot:
             self.telegram_bot.stop()
-            self.config['TELEGRAM_BOT_STATE'] = 'Stopped'            
+            self.config['TELEGRAM_BOT_STATE'] = 'Stopped'    
+            
+    def start_runner(self):
+        
+        if self.runner:
+            self.runner.start()
+            self.config['RUNNER_STATE'] = 'Running'        
+
+    def stop_runner(self):
+        
+        if self.runner:
+            self.runner.stop()
+            self.config['RUNNER_STATE'] = 'Stopped'                
 
     
     def run_with_gunicorn(self, *args, **kwargs):

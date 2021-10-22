@@ -1,5 +1,3 @@
-# from core.app import app
-
 from flask import flash
 from flask import url_for
 from flask import session
@@ -261,11 +259,11 @@ class Routes():
                 
             elif command == 'start_runner':
                 flash(f"Starting runner", category='success')
-                runner.start()
+                app.start_runner()
         
             elif command == 'stop_runner':
                 flash(f"Stopping runner", category='warning')
-                runner.stop()
+                app.stop_runner()
                 
             elif command == 'purge_tasks':
                 flash(f"Purging tasks", category='danger')        

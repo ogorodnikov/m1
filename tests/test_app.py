@@ -2,7 +2,7 @@ import pytest
 
 # from core.app import app
 
-from core.app import FlaskApp
+from core.app import create_app
 
 
 def test_home(client):
@@ -19,7 +19,8 @@ def test_home(client):
 @pytest.fixture(scope="module")
 def client():
     
-    app = FlaskApp(__name__)
+    app = create_app()
+
     app.testing = True
     
     with app.test_client() as client:
