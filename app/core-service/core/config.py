@@ -44,6 +44,8 @@ class Config():
         self.JSONIFY_PRETTYPRINT_REGULAR = False
         self.PERMANENT_SESSION_LIFETIME = timedelta(minutes=30)
         self.CPU_COUNT = os.cpu_count()
+        
+        # self.EXPLAIN_TEMPLATE_LOADING = True
     
         self.LOGGING_CONFIG = {'version': 1,
                                'formatters': {

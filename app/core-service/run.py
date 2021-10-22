@@ -1,4 +1,7 @@
-from core.app import app
+from core.app import create_app
+
+
+app = create_app()
 
 app.run_with_gunicorn()
 

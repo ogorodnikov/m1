@@ -9,7 +9,6 @@ from threading import enumerate as enumerate_threads
 from logging.handlers import RotatingFileHandler
 
 from core import config
-from core import routes
 from core import dynamo
 from core import engine
 from core import telegram
@@ -49,7 +48,7 @@ class FlaskApp(Flask):
         
         self.facebook = facebook.FB()
         
-        self.routes = routes.Routes(self)
+        from core import routes
         
         
     def start_telegram_bot(self):
@@ -132,8 +131,6 @@ class FlaskApp(Flask):
         os._exit(0)
         
 
-def create_app():
-    
-    app = FlaskApp(__name__)
-    
-    return app
+# app = FlaskApp(__name__)
+
+# from core import routes

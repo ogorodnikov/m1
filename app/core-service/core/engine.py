@@ -363,10 +363,3 @@ class Runner():
         self.db.move_figure_to_s3(from_path=full_figure_path, to_path=figure_path)
         
         self.log(f'RUNNER statevector figure: {figure}', task_id)
-
-        
-    def reset_application(self):
-        
-        self.log(f'RUNNER reset_application')
-        
-        os._exit(0)
