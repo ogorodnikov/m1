@@ -43,7 +43,12 @@ def test_open_algorithm(telegram_bot, test_algorithm, algorithm_type):
 
 
 def test_collect_parameters(telegram_bot, message):
-    ...
+    
+    kwargs = {'collected_name': 'test_parameter',
+              'parameters': [{'name': 'test_parameter', 
+                              'value': 'test_parameter_value'}]}
+                              
+    telegram_bot.collect_parameters(message, **kwargs)
     
     
 def test_sticker_handler(telegram_bot, sticker_message):
@@ -52,13 +57,9 @@ def test_sticker_handler(telegram_bot, sticker_message):
 
 def test_echo_handler(telegram_bot, message):
     telegram_bot.echo_handler(message)
-    
-    
-    
 
 
 ###   Fixtures
-
 
 test_algorithm_data = {'id': 'test_algorithm_id',
                        'name': 'test_algorithm',
@@ -78,12 +79,20 @@ class MockDB:
     
     def like_algorithm(self, algorithm_id):
         pass 
+    
+
+class MockRunner:
+    
+    def run_algorithm(self, algorithm_id, run_values):
+        task_id = 1
+        return task_id
+        
 
 @pytest.fixture(scope="module")
 def telegram_bot():
     
     mock_db = MockDB()
-    runner = ...
+    runner = MockRunner()
     
     telegram_bot = telegram.Bot(mock_db, runner)
     
