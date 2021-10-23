@@ -80,12 +80,14 @@ class FlaskApp(Flask):
         
         gunicorn_app = GunicornApp(self)
         
-        gunicorn_app.run(*args, **kwargs)
+        test_mode = kwargs.get('test_mode')
+        
+        gunicorn_app.run(*args, **kwargs) if not test_mode else None
 
         
-    def run_with_developement_server(self, *args, **kwargs):
+    def run_with_development_server(self, *args, **kwargs):
         
-        developement_server_parameters = {
+        development_server_parameters = {
             'host': "0.0.0.0", 
             'port': 8080, 
             'debug': True, 
@@ -93,9 +95,11 @@ class FlaskApp(Flask):
             'reloader_type': 'stat'
         }
         
-        kwargs.update(**developement_server_parameters)
+        kwargs.update(**development_server_parameters)
+        
+        test_mode = kwargs.get('test_mode')
 
-        self.run(*args, **kwargs)
+        self.run(*args, **kwargs) if not test_mode else None
         
     
     def start_log_files(self):

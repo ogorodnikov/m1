@@ -1,5 +1,5 @@
-from gunicorn.app.base import BaseApplication, Application
 from gunicorn.workers.sync import SyncWorker
+from gunicorn.app.base import BaseApplication, Application
 
 
 class GunicornApp(Application):
