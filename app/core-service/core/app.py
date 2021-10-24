@@ -26,9 +26,10 @@ class FlaskApp(Flask):
         
         super().__init__(*args, **kwargs)
         
-        log_file_path = self.static_folder + '/logs/core.log'
+        # log_file_path = self.static_folder + '/logs/core.log'
+        log_file_path = None
         
-        configuration = config.Config(log_file_path=None)
+        configuration = config.Config(log_file_path=log_file_path)
         
         self.config.from_object(configuration)
         
@@ -117,11 +118,11 @@ class FlaskApp(Flask):
         print(f'APP termination_handler signal {signal}, {frame}')
         
         
-    def exit_application(self):
+    def exit_application(self, test_mode=False):
         
         print(f'APP exit_application')
         
-        os._exit(0)
+        os._exit(0) if not test_mode else None
         
 
 def create_app():
