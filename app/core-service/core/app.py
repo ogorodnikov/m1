@@ -1,5 +1,6 @@
 import os
 import signal
+import logging
 
 from flask import Flask
 from flask_cors import CORS
@@ -28,7 +29,7 @@ class FlaskApp(Flask):
         
         super().__init__(*args, **kwargs)
         
-        # self.start_log_files()
+        self.start_log_files()
         
         configuration = config.Config()
         
@@ -113,14 +114,11 @@ class FlaskApp(Flask):
         core_handler.setLevel(logging.DEBUG)
         core_handler.setFormatter(formatter)
         
-        self.logger.addHandler(core_handler)
-        
-        gunicorn_handler = RotatingFileHandler(log_folder + 'gunicorn.log', maxBytes=10000, backupCount=1)
-        gunicorn_handler.setLevel(logging.DEBUG)
-        gunicorn_handler.setFormatter(formatter)
+        root_logger = logging.getLogger()
+        root_logger.addHandler(core_handler)
         
         gunicorn_log = logging.getLogger('gunicorn.error')
-        gunicorn_log.addHandler(gunicorn_handler)
+        gunicorn_log.addHandler(core_handler)
 
 
     def clear_figures_folder(self):

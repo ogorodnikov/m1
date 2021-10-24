@@ -3,7 +3,7 @@ bind = '0.0.0.0:8080'
 access_log_format = "%(h)s | %(r)s %(s)s"
 accesslog = '-'
 
-# loglevel = 'debug'
+loglevel = 'info'
 
 # workers = 2
 

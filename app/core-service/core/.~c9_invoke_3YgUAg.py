@@ -70,27 +70,7 @@ class Config():
                                 }}
                                 
         # logging.config.dictConfig(self.LOGGING_CONFIG)
-        
-        root_logger = logging.getLogger()
-        root_logger.setLevel(logging.INFO)
-        
-        short_format = "%(levelname).1s %(module)6.6s | %(message)s"
-        long_format = "[%(asctime)s] %(module)6.6s | %(levelname).4s | %(message)s"
-        date_format = "%Y-%m-%d %H:%M:%S"
-        
-        formatter = logging.Formatter(fmt=short_format, datefmt=date_format)
-                                  
-        console_handler = logging.StreamHandler()
-        console_handler.setLevel(logging.INFO)
-        console_handler.setFormatter(formatter)
-        
-        root_logger.addHandler(console_handler)
- 
-        gunicorn_logger = logging.getLogger('gunicorn.error')
-        gunicorn_logger.setLevel(logging.INFO)
-        gunicorn_logger.addHandler(console_handler)     
-        
-        
+
 
     def get_nlb_dns(self, nlb_name):
         

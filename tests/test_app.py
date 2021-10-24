@@ -34,7 +34,11 @@ def test_run_with_gunicorn(app):
     
 def test_run_with_development_server(app):
     app.run_with_development_server(test_mode=True)
-    
+
+
+def test_start_log_files(app):
+    app.start_log_files()
+
 
 @pytest.fixture(scope="module")
 def app():
