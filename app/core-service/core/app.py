@@ -29,7 +29,7 @@ class FlaskApp(Flask):
         
         super().__init__(*args, **kwargs)
         
-        self.start_log_files()
+        # self.start_log_file(self.static_folder + '/logs/core.log')
         
         configuration = config.Config()
         
@@ -103,14 +103,12 @@ class FlaskApp(Flask):
         self.run(*args, **kwargs) if not test_mode else None
         
     
-    def start_log_files(self):
+    def start_log_file(self, file_path):
     
-        log_folder = self.static_folder + '/logs/'
-        
         formatter = logging.Formatter(fmt="[%(asctime)s] %(levelname).1s %(module)6.6s | %(message)s", 
                                       datefmt="%Y-%m-%d %H:%M:%S")
         
-        core_handler = RotatingFileHandler(log_folder + 'core.log', maxBytes=100000, backupCount=5)
+        core_handler = RotatingFileHandler(file_path, maxBytes=100000, backupCount=5)
         core_handler.setLevel(logging.DEBUG)
         core_handler.setFormatter(formatter)
         
@@ -121,6 +119,8 @@ class FlaskApp(Flask):
         root_logger.addHandler(core_handler)        
         gunicorn_error_logger.addHandler(core_handler)
         gunicorn_access_logger.addHandler(core_handler)
+        
+        self.logger.info("Logging started")
 
 
     def clear_figures_folder(self):
