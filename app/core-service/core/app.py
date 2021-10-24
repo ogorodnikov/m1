@@ -1,13 +1,10 @@
 import os
 import signal
-import logging
 
 from flask import Flask
 from flask_cors import CORS
 
 from threading import enumerate as enumerate_threads
-
-from logging.handlers import RotatingFileHandler
 
 from core import config
 from core import routes
@@ -29,9 +26,9 @@ class FlaskApp(Flask):
         
         super().__init__(*args, **kwargs)
         
-        # self.start_log_file(self.static_folder + '/logs/core.log')
+        log_file_path = self.static_folder + '/logs/core.log'
         
-        configuration = config.Config()
+        configuration = config.Config(log_file_path=None)
         
         self.config.from_object(configuration)
         
@@ -103,26 +100,6 @@ class FlaskApp(Flask):
         self.run(*args, **kwargs) if not test_mode else None
         
     
-    def start_log_file(self, file_path):
-    
-        formatter = logging.Formatter(fmt="[%(asctime)s] %(levelname).1s %(module)6.6s | %(message)s", 
-                                      datefmt="%Y-%m-%d %H:%M:%S")
-        
-        core_handler = RotatingFileHandler(file_path, maxBytes=100000, backupCount=5)
-        core_handler.setLevel(logging.DEBUG)
-        core_handler.setFormatter(formatter)
-        
-        root_logger = logging.getLogger()
-        gunicorn_error_logger = logging.getLogger('gunicorn.error')
-        gunicorn_access_logger = logging.getLogger('gunicorn.access')
-
-        root_logger.addHandler(core_handler)        
-        gunicorn_error_logger.addHandler(core_handler)
-        gunicorn_access_logger.addHandler(core_handler)
-        
-        self.logger.info("Logging started")
-
-
     def clear_figures_folder(self):
         
         figures_folder = os.path.join(self.static_folder, 'figures')

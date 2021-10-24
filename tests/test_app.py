@@ -1,9 +1,5 @@
 import pytest
 
-from tempfile import NamedTemporaryFile
-
-# from core.app import app
-
 from core.app import create_app
 from core.gunicorn.app import GunicornApp
 
@@ -38,13 +34,16 @@ def test_run_with_development_server(app):
     app.run_with_development_server(test_mode=True)
 
 
-def test_start_log_files(app):
+def test_start_logging(app):
     
-    with NamedTemporaryFile() as temporary_file:
 
+    with NamedTemporaryFile() as temporary_file:
         app.start_log_file(temporary_file.name)
+        assert "LOGGING initiated" in temporary_file.read().decode("utf-8")
         
-        assert "Logging started" in temporary_file.read().decode("utf-8")
+def test_clear_figures_folder(app):
+    
+    app.clear_figures_folder()
 
 
 @pytest.fixture(scope="module")

@@ -3,7 +3,7 @@ from gunicorn import glogging
 bind = '0.0.0.0:8080'
 
 accesslog = '-'
-access_log_format = "I gunico | GUNICO %(h)s: %(r)s %(s)s"
+access_log_format = "GUNICO %(h)s: %(r)s %(s)s"
 
 glogging.Logger.datefmt = "%Y-%m-%d %H:%M:%S"
 glogging.Logger.error_fmt = "%(levelname).1s %(module)6.6s | %(message)s"
