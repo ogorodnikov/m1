@@ -115,10 +115,12 @@ class FlaskApp(Flask):
         core_handler.setFormatter(formatter)
         
         root_logger = logging.getLogger()
-        root_logger.addHandler(core_handler)
-        
-        gunicorn_log = logging.getLogger('gunicorn.error')
-        gunicorn_log.addHandler(core_handler)
+        gunicorn_error_logger = logging.getLogger('gunicorn.error')
+        gunicorn_access_logger = logging.getLogger('gunicorn.access')
+
+        root_logger.addHandler(core_handler)        
+        gunicorn_error_logger.addHandler(core_handler)
+        gunicorn_access_logger.addHandler(core_handler)
 
 
     def clear_figures_folder(self):

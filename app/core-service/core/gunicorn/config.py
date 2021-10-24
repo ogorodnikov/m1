@@ -1,31 +1,38 @@
+from gunicorn import glogging
+
 bind = '0.0.0.0:8080'
 
-access_log_format = "%(h)s | %(r)s %(s)s"
 accesslog = '-'
+access_log_format = "I gunico | GUNICO %(h)s: %(r)s %(s)s"
 
-loglevel = 'info'
+glogging.Logger.datefmt = "%Y-%m-%d %H:%M:%S"
+glogging.Logger.error_fmt = "%(levelname).1s %(module)6.6s | %(message)s"
+glogging.Logger.access_fmt = "%(levelname).1s %(module)6.6s | %(message)s"
+glogging.Logger.syslog_fmt = "%(levelname).1s %(module)6.6s | %(message)s"
 
-# workers = 2
+# syslog = True
+# loglevel = 'info'
+# capture_output = True
+# disable_redirect_access_to_syslog = True
 
 threads = 2
 
-# reload = False
-
-# reload_engine = 'inotify'
+# workers = 2
+# worker_class = 'core.CustomWorker'
 
 # max_requests = 1
 
-# worker_class = 'core.CustomWorker'
-
-# access_log_format': "%(h)s %(l)s %(u)s %(t)s '%(r)s' %(s)s %(b)s '%(f)s' '%(a)s' in %(D)sµs"
-
 # daemon = True
 
+# reload = False
+# reload_engine = 'inotify'
 # preload_app = False
+
+# wsgi_app = 'run:app'
 
 # print_config = True
 
-# wsgi_app = 'run:app'
+# access_log_format': "%(h)s %(l)s %(u)s %(t)s '%(r)s' %(s)s %(b)s '%(f)s' '%(a)s' in %(D)sµs"
 
 
 from atexit import unregister
