@@ -47,27 +47,27 @@ class Config():
         
         # self.EXPLAIN_TEMPLATE_LOADING = True
     
-        self.LOGGING_CONFIG = {'version': 1,
-                               'formatters': {
-                                    'short': {
-                                        'format': '%(levelname).1s %(module)6.6s | %(message)s'
-                                    },
-                                    'full': {
-                                        'format': '[%(asctime)s] %(module)6.6s | %(levelname).4s | %(message)s',
-                                        'datefmt': "%Y-%m-%d %H:%M:%S"
-                                    }
-                                },
-                                'handlers': {
-                                    'stream': {
-                                        'class': 'logging.StreamHandler',
-                                        # 'stream': 'ext://flask.logging.wsgi_errors_stream',
-                                        'formatter': 'short'
-                                    }
-                                },
-                                'root': {
-                                    'level': 'INFO',
-                                    'handlers': ['stream']
-                                }}
+        # self.LOGGING_CONFIG = {'version': 1,
+        #                       'formatters': {
+        #                             'short': {
+        #                                 'format': '%(levelname).1s %(module)6.6s | %(message)s'
+        #                             },
+        #                             'full': {
+        #                                 'format': '[%(asctime)s] %(module)6.6s | %(levelname).4s | %(message)s',
+        #                                 'datefmt': "%Y-%m-%d %H:%M:%S"
+        #                             }
+        #                         },
+        #                         'handlers': {
+        #                             'stream': {
+        #                                 'class': 'logging.StreamHandler',
+        #                                 # 'stream': 'ext://flask.logging.wsgi_errors_stream',
+        #                                 'formatter': 'short'
+        #                             }
+        #                         },
+        #                         'root': {
+        #                             'level': 'INFO',
+        #                             'handlers': ['stream']
+        #                         }}
                                 
         # logging.config.dictConfig(self.LOGGING_CONFIG)
         
@@ -83,17 +83,8 @@ class Config():
         console_handler.setFormatter(formatter)
 
         root_logger = logging.getLogger()
-        # gunicorn_error_logger = logging.getLogger('gunicorn.error')
-        # gunicorn_access_logger = logging.getLogger('gunicorn.access')
-
         root_logger.setLevel(logging.INFO)
-        # gunicorn_error_logger.setLevel(logging.INFO)
-        # gunicorn_access_logger.setLevel(logging.INFO)
-
         root_logger.addHandler(console_handler)        
-        # gunicorn_error_logger.addHandler(console_handler)     
-        # gunicorn_access_logger.addHandler(console_handler)     
-        
         
 
     def get_nlb_dns(self, nlb_name):
