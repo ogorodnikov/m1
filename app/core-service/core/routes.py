@@ -66,7 +66,7 @@ class Routes():
             if code:
                 
                 facebook_token = facebook.get_token_from_code(code, login_url)
-                
+
                 name, email, full_name, picture_url = facebook.get_user_data(facebook_token)
                 
                 users.populate_facebook_user(name, email, full_name, picture_url)
@@ -78,7 +78,6 @@ class Routes():
                 
                 redirect_url = session.pop('login_referer', None)
                 
-        
             if flow == 'register':
                 
                 self.register_user(request.form)
@@ -91,7 +90,7 @@ class Routes():
                 self.sign_in_user(request.form)
                 
                 redirect_url = session.pop('login_referer', None)
-        
+                
             return redirect(redirect_url)
                 
         
@@ -164,7 +163,6 @@ class Routes():
                           f"Task {task_id}</a>"
                           f"<hr class='mb-0 mt-1'>"
                           f"<p class='mb-0'>Algorithm: {algorithm_id}</p>"
-                        #   f"<p class='mb-0'>Test 50</p>"
                           f"<p class='mb-0'>Run values: {dict(run_values)}</p>")
                            
             flash(run_message, category='warning')

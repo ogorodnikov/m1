@@ -2,17 +2,6 @@ import os
 import pytest
 
 from core.app import create_app
-from core.gunicorn.app import GunicornApp
-
-
-# def test_home(client):
-
-#     response = client.get('/')
-    
-#     print(response)
-#     # print(response.data)
-    
-#     assert b'M1 Core Service' in response.data
 
 
 def test_start_telegram_bot(app):
@@ -63,17 +52,3 @@ def app():
     yield app
         
     app.stop_runner()
-
-
-# @pytest.fixture(scope="module")
-# def client():
-    
-#     app = create_app()
-
-#     app.testing = True
-    
-#     with app.test_client() as client:
-#         yield client
-        
-#     app.stop_runner()
-    

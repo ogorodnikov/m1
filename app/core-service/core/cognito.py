@@ -150,7 +150,7 @@ class Cognito:
         # self.log(f'POPULATE user_response: {user_response}')
         # self.log(f'POPULATE user_already_in_cognito: {user_already_in_cognito}')
         
-        if user_already_in_cognito:
+        if user_already_in_cognito or not email:
             return
         
         fb_username = 'fb_' + email.replace('@', '_')
