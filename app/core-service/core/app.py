@@ -45,7 +45,7 @@ class FlaskApp(Flask):
 
         self.users = cognito.Cognito()
         
-        self.facebook = facebook.FB()
+        self.facebook = facebook.Facebook()
         
         self.routes = routes.Routes(self)
         

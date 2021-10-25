@@ -42,6 +42,6 @@ def test_get_user_data(fb):
 @pytest.fixture(scope="module")
 def fb():
     
-    fb = facebook.FB()
+    fb = facebook.Facebook()
     
     yield fb

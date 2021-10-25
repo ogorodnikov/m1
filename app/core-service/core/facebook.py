@@ -6,7 +6,7 @@ from urllib.parse import urlencode
 from logging import getLogger
 
 
-class FB:
+class Facebook:
     
     def __init__(self, *args, **kwargs):
 
