@@ -1,6 +1,9 @@
+import io
 import pytest
 
+from core.app import FlaskApp
 from core.app import create_app
+
 from core.dynamo import Dynamo
 from core.runner import Runner
 from core.cognito import Cognito
@@ -26,9 +29,11 @@ def attribute_error_wrapper(test_function):
     
     
 def test_home(client):
-    response = client.get('/home')
-    assert HOME_PAGE_PHRASE in response.data.decode('utf-8')
-
+    root_response = client.get('/')
+    home_response = client.get('/home')
+    assert HOME_PAGE_PHRASE in root_response.data.decode('utf-8')
+    assert HOME_PAGE_PHRASE in home_response.data.decode('utf-8')
+    
 
 def test_login(client):
     response = client.get('/login')
@@ -42,9 +47,13 @@ def test_login_facebook(client):
     assert HOME_PAGE_PHRASE in facebook_response.data.decode('utf-8')
 
 
-@attribute_error_wrapper    
-def test_login_code(client):
-    code_response = client.get('/login?code=dummy_code')
+@attribute_error_wrapper
+def test_login_code_ok(client):   
+    client.get('/login?code=code_ok')
+    
+@attribute_error_wrapper
+def test_login_code_error(client):   
+    client.get('/login?code=code_error')
     
 
 @attribute_error_wrapper
@@ -114,8 +123,41 @@ def test_get_tasks(client):
     assert TASKS_PAGE_PHRASE in tasks_response.data.decode('utf-8') 
     assert TASKS_PAGE_PHRASE in task_response.data.decode('utf-8')
     
-    
 
+def test_download(client):
+    
+    client.get('/download?task_id=1&content=statevector')
+    # client.get('/download?task_id=1&content=statevector&as_attachment=True')
+
+
+def test_admin(client):
+    client.get('/admin')
+    
+    
+commands = [
+    'start_bot', 
+    'stop_bot', 
+    'add_test_data', 
+    'reset_application',
+    'start_runner',
+    'stop_runner',
+    'purge_tasks',
+    'add_test_tasks',
+    'test',
+]
+
+@pytest.mark.parametrize("command", commands)
+def test_admin_commands(client, command):
+    
+    print(f"command: {command}")
+    
+    # client.get(f'/admin&command={command}')
+    
+    client.post('/admin', data={'command': command})
+
+    
+    
+    
 ###   Fixtures   ###           
 
 @pytest.fixture(scope="module")
@@ -135,12 +177,19 @@ def client():
     
 
 @pytest.fixture(autouse=True)
-def create_mocks(client, monkeypatch):
+def general_mocks(client, monkeypatch):
     
     def get_home_url(*args, **kwargs):
         return '/home'
+        
+    def get_test_token_from_code(self, code, login_url):
+        if code == 'code_error':
+            facebook_token = 'token_error'
+        else:
+            facebook_token = 'token_ok'
+        return facebook_token
 
-    def get_test_user_data(*args, **kwargs):
+    def get_test_user_data(self, facebook_token):
         
         test_user_data = {
             'name': 'test_name',
@@ -149,8 +198,11 @@ def create_mocks(client, monkeypatch):
             'picture_url': 'test_picture_url',
         }
         
-        return test_user_data
+        if facebook_token == 'token_error':
+            test_user_data['error'] = 'test_error'
         
+        return test_user_data
+
     def get_dummy_tasks(*args, **kwargs):
         
         dummy_tasks = {1:{
@@ -164,15 +216,69 @@ def create_mocks(client, monkeypatch):
         
         return dummy_tasks
         
+    def get_dummy_s3_stream(*args, **kwargs):
+        return io.BytesIO()
+        
+    def get_dummy_status_updates(*args, **kwargs):
+        
+        dummy_status_updates = [(1, 'Running', ''), (1, 'Done', 'test_result')]
+        
+        return dummy_status_updates
+        
+        
     monkeypatch.setattr(Facebook, "get_autorization_url", get_home_url)
-    monkeypatch.setattr(Facebook, "get_token_from_code", get_home_url)
+    monkeypatch.setattr(Facebook, "get_token_from_code", get_test_token_from_code)
     monkeypatch.setattr(Facebook, "get_user_data", get_test_user_data)
     
     monkeypatch.setattr(Cognito, "populate_facebook_user", get_home_url)
     
     monkeypatch.setattr(Dynamo, "like_algorithm", get_home_url)
     monkeypatch.setattr(Dynamo, "set_algorithm_state", get_home_url)
+    monkeypatch.setattr(Dynamo, "add_task", get_home_url)
+    monkeypatch.setattr(Dynamo, "purge_tasks", get_home_url)
+    monkeypatch.setattr(Dynamo, "add_test_data", get_home_url)
+    
     monkeypatch.setattr(Dynamo, "get_all_tasks", get_dummy_tasks)
+    monkeypatch.setattr(Dynamo, "stream_figure_from_s3", get_dummy_s3_stream)
+    monkeypatch.setattr(Dynamo, "get_status_updates", get_dummy_status_updates)
     
     monkeypatch.setattr(Runner, "run_algorithm", get_home_url)
+
+    monkeypatch.setattr(FlaskApp, "start_telegram_bot", get_home_url)
+    monkeypatch.setattr(FlaskApp, "stop_telegram_bot", get_home_url)
+    monkeypatch.setattr(FlaskApp, "start_runner", get_home_url)
+    monkeypatch.setattr(FlaskApp, "stop_runner", get_home_url)
+    monkeypatch.setattr(FlaskApp, "exit_application", get_home_url)
     
+    
+# @pytest.fixture
+# def mock_test_user_data_error(client, monkeypatch):
+    
+#     def get_test_user_data_error(*args, **kwargs):
+        
+#         test_user_data_error = {
+#             'name': 'test_name',
+#             'email': 'test_email',
+#             'full_name': 'test_full_name',
+#             'picture_url': 'test_picture_url',
+#             'error': 'test_error_message'
+#         }
+        
+#         return test_user_data_error
+        
+#     monkeypatch.setattr(Facebook, "get_user_data", get_test_user_data_error)
+    
+#     yield
+    
+#     def get_test_user_data(*args, **kwargs):
+        
+#         test_user_data = {
+#             'name': 'test_name',
+#             'email': 'test_email',
+#             'full_name': 'test_full_name',
+#             'picture_url': 'test_picture_url',
+#         }
+        
+#         return test_user_data
+    
+#     monkeypatch.setattr(Facebook, "get_user_data", get_test_user_data)

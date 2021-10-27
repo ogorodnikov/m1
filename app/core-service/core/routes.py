@@ -213,7 +213,7 @@ class Routes():
                 return send_file(
                     figure_stream, 
                     mimetype='image/png', 
-                    attachment_filename=filename,
+                    download_name=filename,
                     as_attachment=as_attachment
                     )
         
@@ -258,8 +258,6 @@ class Routes():
                 
             elif command == 'add_test_tasks':
                 
-                flash(f"Adding test tasks", category='primary')
-        
                 db.add_task('egcd', dict((('a', '345'), ('b', '455244237'), ('run_mode', 'classical'))))
                 db.add_task('egcd', dict((('a', '345'), ('b', '455244237'), ('run_mode', 'classical'))))
                 db.add_task('egcd', dict((('a', '345'), ('b', '455244237'), ('run_mode', 'classical'))))
@@ -267,9 +265,8 @@ class Routes():
                 db.add_task('bernvaz', dict((('secret', '1010'), ('run_mode', 'simulator'))))
                 db.add_task('bernvaz', dict((('secret', '1010'), ('run_mode', 'simulator'))))
                 db.add_task('bernvaz', dict((('secret', '1010'), ('run_mode', 'simulator'))))
-        
-                task = db.get_queued_task()
-                flash(f"Got queued task: {task}", category='info')        
+
+                flash(f"Added test tasks", category='primary')        
                 
             elif command == 'test':
                 flash(f"Test command", category='success')

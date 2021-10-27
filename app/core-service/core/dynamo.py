@@ -463,7 +463,7 @@ class Dynamo():
         os.remove(from_path)
         
         
-    def stream_figure_from_s3(self, s3_from_path):
+    def stream_figure_from_s3(self, s3_from_path) -> io.BytesIO:
         
         figure_stream = io.BytesIO()
         
