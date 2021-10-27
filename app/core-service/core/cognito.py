@@ -136,9 +136,14 @@ class Cognito:
         )
         
         
-    def populate_facebook_user(self, name, email, full_name, picture_url):
+    def populate_facebook_user(self, user_data):
         
-        self.log(f'POPULATE User: {email}')
+        name = user_data.get('name')
+        email = user_data.get('email')
+        full_name = user_data.get('full_name')
+        picture_url = user_data.get('picture_url')
+        
+        self.log(f'POPULATE User email: {email}')
         
         user_response = self.cognito_client.list_users(
             UserPoolId=self.user_pool_id,

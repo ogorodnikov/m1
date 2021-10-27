@@ -83,15 +83,15 @@ def test_duplicate_register_user_exception(users, test_user):
     assert "UsernameExistsException" in str(exception.value)
     
 
-def test_populate_facebook_user(users, test_facebook_user):
+def test_populate_facebook_user(users, test_user_data):
     
-    users.populate_facebook_user(*test_facebook_user)
+    users.populate_facebook_user(test_user_data)
 
 
-def test_populate_facebook_user_duplicated(users, test_facebook_user):
+def test_populate_facebook_user_duplicated(users, test_user_data):
     
-    users.populate_facebook_user(*test_facebook_user)
-    users.populate_facebook_user(*test_facebook_user)
+    users.populate_facebook_user(test_user_data)
+    users.populate_facebook_user(test_user_data)
     
     
 ###   Fixtures
@@ -128,18 +128,23 @@ def test_user(users, test_user_form):
 
 
 @pytest.fixture
-def test_facebook_user(users, test_user_form):
+def test_user_data(users, test_user_form):
     
     name = test_user_form.get('username')
     email = f"{name}@test.com"
     full_name = f"{name} {name}"
     picture_url = "https://test.com/test_picture.png"
     
+    test_user_data = {
+        'name': name,
+        'email': email,
+        'full_name': full_name,
+        'picture_url': picture_url
+    }
+    
     fb_username = 'fb_' + email.replace('@', '_')
     
-    test_facebook_user_form = (name, email, full_name, picture_url)
-    
-    yield test_facebook_user_form
+    yield test_user_data
     
     users.delete_user({'username': fb_username})
     

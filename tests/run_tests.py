@@ -27,7 +27,7 @@ def run_tests_with_coverage():
     cov = coverage.Coverage()
     cov.start()
     
-    pytest.main([test_path, '-v'])
+    # pytest.main([test_path, '-v'])
     
     # pytest.main([test_path + '/test_cognito.py', '-v', '-rP'])
     # pytest.main([test_path + '/test_facebook.py', '-v', '-rP'])
@@ -35,7 +35,7 @@ def run_tests_with_coverage():
     # pytest.main([test_path + '/test_config.py', '-v'])
     # pytest.main([test_path + '/test_app.py', '-v', '-rP'])
     
-    # pytest.main([test_path + '/test_routes.py', '-v', '-rP'])
+    pytest.main([test_path + '/test_routes.py', '-v'])
     
 
     

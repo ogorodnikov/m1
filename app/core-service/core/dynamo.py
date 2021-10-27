@@ -11,7 +11,7 @@ from decimal import Decimal
 
 
 
-class DB():
+class Dynamo():
     
     SERVICE_TASK_RECORD_ID = 0
     GET_QUEUED_TASK_ATTEMPTS = 5

@@ -9,7 +9,7 @@ from threading import enumerate as enumerate_threads
 from core import config
 from core import routes
 from core import dynamo
-from core import engine
+from core import runner
 from core import telegram
 from core import cognito
 from core import facebook
@@ -35,9 +35,9 @@ class FlaskApp(Flask):
         
         CORS(self)
         
-        self.db = dynamo.DB(self)
+        self.db = dynamo.Dynamo(self)
         
-        self.runner = engine.Runner(self)
+        self.runner = runner.Runner(self)
         self.start_runner()
         
         self.telegram_bot = telegram.Bot(self.db, self.runner)

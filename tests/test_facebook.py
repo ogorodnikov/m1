@@ -28,13 +28,12 @@ def test_get_token_from_code_none(fb):
     assert facebook_token is None
     
     
-def test_get_user_data(fb):
+def test_get_user_data_error(fb):
     
     dummy_access_token = "K3QdgthmpEUoxpfocnmOs7OVGFO4X"
-    
     user_data = fb.get_user_data(dummy_access_token)
-    
-    assert not any(user_data)
+
+    assert "Invalid OAuth access token" in user_data['error']['message']
 
     
 ###   Fixtures

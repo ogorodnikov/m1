@@ -42,6 +42,11 @@ class Routes():
         users = self.users
         runner = self.runner
         facebook = self.facebook
+        
+        @app.route("/")
+        @app.route("/home")
+        def home():
+            return render_template("home.html")
 
         ###   Login   ###
 
@@ -65,17 +70,7 @@ class Routes():
         
             if code:
                 
-                facebook_token = facebook.get_token_from_code(code, login_url)
-
-                name, email, full_name, picture_url = facebook.get_user_data(facebook_token)
-                
-                users.populate_facebook_user(name, email, full_name, picture_url)
-                
-                session['username'] = name
-                session['picture_url'] = picture_url
-                
-                flash(f"Welcome, facebook user {name}!", category='warning')
-                
+                self.facebook_login_user(code, login_url)
                 redirect_url = session.pop('login_referer', None)
                 
             if flow == 'register':
@@ -90,7 +85,7 @@ class Routes():
                 self.sign_in_user(request.form)
                 
                 redirect_url = session.pop('login_referer', None)
-                
+            
             return redirect(redirect_url)
                 
         
@@ -109,13 +104,6 @@ class Routes():
             
         
         ###   Algirithms   ###
-        
-        @app.route("/")
-        @app.route("/home")
-        def home():
-            
-            return render_template("home.html")
-            
         
         @app.route('/algorithms')
         def get_algorithms():
@@ -144,7 +132,7 @@ class Routes():
         @app.route("/algorithms/<algorithm_id>/like", methods = ['GET'])
         def like_algorithm(algorithm_id):
             
-            response = db.like_algorithm(algorithm_id)
+            db.like_algorithm(algorithm_id)
         
             return redirect(request.referrer)
             
@@ -329,7 +317,34 @@ class Routes():
                                   f"<p class='mb-0'>Result: {result}</p>")
                 
                 flash(status_message, category='info')
+    
+    
+    def facebook_login_user(self, code, login_url):
         
+        try:
+                    
+            facebook_token = self.facebook.get_token_from_code(code, login_url)
+            user_data = self.facebook.get_user_data(facebook_token)
+            
+            username = user_data.get('name')
+            picture_url = user_data.get('picture_url')
+            error = user_data.get('error')
+            
+            if error:
+                raise UserWarning(error)
+                
+            self.users.populate_facebook_user(user_data)
+            
+            session['username'] = username
+            session['picture_url'] = picture_url
+            
+            flash(f"Welcome, facebook user {username}!", category='warning')
+                
+        except Exception as exception:
+            
+            exception_message = f"Facebook login did not pass... {exception}"
+            flash(exception_message, category='danger')
+            
         
     def register_user(self, request_form):
     

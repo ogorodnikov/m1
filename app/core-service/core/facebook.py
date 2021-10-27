@@ -91,17 +91,27 @@ class Facebook:
         # self.log(f"CLAIMS me_endpoint: {me_endpoint}")
         # self.log(f"CLAIMS parameters: {parameters}")
         # self.log(f"CLAIMS me_response_json: {me_response_json}")
-        
+
         name = me_response_json.get('short_name')        
         email = me_response_json.get('email')
         full_name = me_response_json.get('name')
+        
+        error = me_response_json.get('error')
     
         picture = me_response_json.get('picture')
         picture_data = picture.get('data') if picture else ""
         picture_url = picture_data.get('url') if picture_data else ""
-
-        self.log(f'FACEBOOK Login successful: {name}')
         
-        return name, email, full_name, picture_url
+        user_data = {
+            'name': name,
+            'email': email,
+            'full_name': full_name,
+            'picture_url': picture_url,
+            'error': error
+        }
+
+        self.log(f'FACEBOOK Login name: {name}')
+        
+        return user_data
     
     
