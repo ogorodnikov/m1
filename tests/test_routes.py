@@ -57,14 +57,22 @@ def test_login_code_error(client):
     
 
 @attribute_error_wrapper
-def test_login_register(client):
+def test_login_register_ok(client):
     register_response = client.post('/login', data={'flow': 'register'})
 
+@attribute_error_wrapper
+def test_login_register_error(client):
+    register_response = client.post('/login', data={'flow': 'register',
+                                                    'error': 'test_error'})
 
 @attribute_error_wrapper
-def test_login_sign_in(client):
+def test_login_sign_in_ok(client):
     sign_in_response = client.post('/login', data={'flow': 'sign-in'})
 
+@attribute_error_wrapper
+def test_login_sign_in_error(client):
+    sign_in_response = client.post('/login', data={'flow': 'sign-in',
+                                                   'error': 'test_error'})
 
 @attribute_error_wrapper
 def test_logout(client):
@@ -202,6 +210,14 @@ def general_mocks(client, monkeypatch):
             test_user_data['error'] = 'test_error'
         
         return test_user_data
+        
+    def register_test_user(self, request_form):
+        if request_form.get('error'):
+            raise UserWarning
+        
+    def login_test_user(self, request_form):
+        if request_form.get('error'):
+            raise UserWarning        
 
     def get_dummy_tasks(*args, **kwargs):
         
@@ -231,6 +247,8 @@ def general_mocks(client, monkeypatch):
     monkeypatch.setattr(Facebook, "get_user_data", get_test_user_data)
     
     monkeypatch.setattr(Cognito, "populate_facebook_user", get_home_url)
+    monkeypatch.setattr(Cognito, "register_user", register_test_user)
+    monkeypatch.setattr(Cognito, "login_user", login_test_user)
     
     monkeypatch.setattr(Dynamo, "like_algorithm", get_home_url)
     monkeypatch.setattr(Dynamo, "set_algorithm_state", get_home_url)
@@ -249,36 +267,3 @@ def general_mocks(client, monkeypatch):
     monkeypatch.setattr(FlaskApp, "start_runner", get_home_url)
     monkeypatch.setattr(FlaskApp, "stop_runner", get_home_url)
     monkeypatch.setattr(FlaskApp, "exit_application", get_home_url)
-    
-    
-# @pytest.fixture
-# def mock_test_user_data_error(client, monkeypatch):
-    
-#     def get_test_user_data_error(*args, **kwargs):
-        
-#         test_user_data_error = {
-#             'name': 'test_name',
-#             'email': 'test_email',
-#             'full_name': 'test_full_name',
-#             'picture_url': 'test_picture_url',
-#             'error': 'test_error_message'
-#         }
-        
-#         return test_user_data_error
-        
-#     monkeypatch.setattr(Facebook, "get_user_data", get_test_user_data_error)
-    
-#     yield
-    
-#     def get_test_user_data(*args, **kwargs):
-        
-#         test_user_data = {
-#             'name': 'test_name',
-#             'email': 'test_email',
-#             'full_name': 'test_full_name',
-#             'picture_url': 'test_picture_url',
-#         }
-        
-#         return test_user_data
-    
-#     monkeypatch.setattr(Facebook, "get_user_data", get_test_user_data)
