@@ -36,7 +36,8 @@ class Config():
       
         self.TASK_TIMEOUT = 300
         self.QUEUE_WORKERS_PER_RUNNER = 1
-        self.BACKEND_AVOID_LIST = ['ibmq_bogota']
+        self.BACKEND_AVOID_LIST = 'ibmq_bogota'
+        os.environ['BACKEND_AVOID_LIST'] = self.BACKEND_AVOID_LIST
         
         self.JSONIFY_PRETTYPRINT_REGULAR = False
         self.PERMANENT_SESSION_LIFETIME = timedelta(minutes=30)

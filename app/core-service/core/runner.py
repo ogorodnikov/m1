@@ -53,11 +53,10 @@ class Runner():
         
         self.qiskit_token = os.environ.get('QISKIT_TOKEN')
         self.task_timeout = os.environ.get('TASK_TIMEOUT')
-        self.backend_avoid_list = os.environ.get('BACKEND_AVOID_LIST')
+        self.backend_avoid_list = os.environ.get('BACKEND_AVOID_LIST').split()
         self.queue_workers_count = os.environ.get('QUEUE_WORKERS_PER_RUNNER')
         
-        IBMQ.save_account(self.qiskit_token)
-        IBMQ.load_account()
+        IBMQ.enable_account(self.qiskit_token)
         
         self.log(f'RUNNER initiated: {self}')
         
