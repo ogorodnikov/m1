@@ -20,9 +20,9 @@ class GunicornApp(Application):
         for key, value in self.options.items():
             self.cfg.set(key.lower(), value)
 
-    # def load(self):
+    def load(self):
         
-    #     return self.application
+        return self.application
         
 
 # class CustomWorker(SyncWorker):

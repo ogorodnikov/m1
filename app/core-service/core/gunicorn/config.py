@@ -40,59 +40,16 @@ from multiprocessing.util import _exit_function
 
 
 def post_worker_init(worker):
-    
     # print("GUNICORN post_worker_init")
-    
     unregister(_exit_function)
     
-    # print(f"GUNICORN Worker  {worker.pid} _exit_function unregistered")
-    
 
-def worker_int(worker):
-    
-    # print("GUNICORN worker_int")
-    
-    print(f"GUNICORN Worker received INT or QUIT signal {worker.pid}")
+# def worker_int(worker):
+#     print(f"GUNICORN worker_int - worker received INT or QUIT signal {worker.pid}")
 
-    from core import app
-    
-    runner = app.config['RUNNER']
-    runner.stop()
-    
-    print(f"GUNICORN Runner stopped: {runner}")
-    
-    print_threads_traceback()
+# def worker_abort(worker):
+#     print(f"GUNICORN worker_abort - worker received SIGABRT signal {worker.pid}")
 
-
-def worker_abort(worker):
-    print(f"GUNICORN worker_abort - worker received SIGABRT signal {worker.pid}")
-    
-    
-def print_threads_traceback():
-    
-    print("Threads traceback:")
-
-    import threading, sys, traceback
-    
-    threads_dict = {thread.ident: thread.name for thread in threading.enumerate()}
-    code = []
-    
-    for thread_id, stack in sys._current_frames().items():
-        
-        thread_name = threads_dict.get(thread_id,"")
-        
-        thread_line = f"\nThread: {thread_name}({thread_id})\n"
-        
-        code.append(thread_line)
-        
-        for filename, line_number, module, line in traceback.extract_stack(stack):
-            code.append(f'File: "{filename}", line {line_number}, in {module}')
-            if line:
-                code.append(f"  {line.strip()}")
-
-    print("\n".join(code))
-    
-    
 # def on_starting(server):
 #     server.log.info("GUNICORN on_starting")
 
