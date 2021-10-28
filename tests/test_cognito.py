@@ -1,15 +1,9 @@
-import sys
 import pytest
-import random
 
 from core import cognito
 
 
-# General tests
-
-def test_users(users):
-    assert users
-    
+###   General tests   ###
 
 def test_get_user_pool_id(users):
     
@@ -28,20 +22,9 @@ def test_get_client_id(users):
 
     # assert client_id == "1fhh6jkt6c8ji76vk9i04u5d9f"
     assert len(client_id) == 26
-    
-
-def test_log(users, capture_output):
-    
-    message = "Test log :)"
-    users.log(message)
-    assert message in capture_output["stderr"]
 
 
-# def test_print_environ(run_config):
-#     run_config.print_environ()
-    
-
-# Login
+###   Login   ###
 
 @pytest.mark.parametrize("remember_me", ['True', 'False'])
 def test_login_user_pass(users, test_user, remember_me):
@@ -65,7 +48,7 @@ def test_login_user_exception(users, test_user_form):
     assert "UserNotFoundException" in str(exception.value)
     
 
-# Register
+###   Register   ###
     
 def test_register_disable_delete_user(users, test_user_form):
     
@@ -94,7 +77,7 @@ def test_populate_facebook_user_duplicated(users, test_user_data):
     users.populate_facebook_user(test_user_data)
     
     
-###   Fixtures
+###   Fixtures   ###
 
 @pytest.fixture(scope="module")
 def users():
@@ -107,10 +90,8 @@ def users():
 @pytest.fixture
 def test_user_form(users):
     
-    user_index = random.randint(0, 1000)
-
-    test_username = f"test_username_{user_index}"
-    test_password = f"test_password_{user_index}"
+    test_username = f"test_username_555"
+    test_password = f"test_password_555"
     
     test_user_form = dict((('username', test_username), ('password', test_password)))
     
@@ -147,16 +128,3 @@ def test_user_data(users, test_user_form):
     yield test_user_data
     
     users.delete_user({'username': fb_username})
-    
-
-@pytest.fixture
-def capture_output(monkeypatch):
-    
-    buffer = {"stderr": ""}
-
-    def capture(message):
-        buffer["stderr"] += message
-
-    monkeypatch.setattr(sys.stderr, 'write', capture)
-
-    return buffer

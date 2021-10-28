@@ -1,5 +1,5 @@
+from gunicorn.app.base import Application
 from gunicorn.workers.sync import SyncWorker
-from gunicorn.app.base import BaseApplication, Application
 
 
 class GunicornApp(Application):
@@ -20,28 +20,28 @@ class GunicornApp(Application):
         for key, value in self.options.items():
             self.cfg.set(key.lower(), value)
 
-    def load(self):
+    # def load(self):
         
-        return self.application
+    #     return self.application
         
 
-class CustomWorker(SyncWorker):
+# class CustomWorker(SyncWorker):
         
-    def handle_quit(self, sig, frame):
+#     def handle_quit(self, sig, frame):
         
-        app.logger.info(f'INIT handle_quit {self, sig, frame}')
+#         app.logger.info(f'INIT handle_quit {self, sig, frame}')
         
-        # self.app.application.stop(sig)
+#         # self.app.application.stop(sig)
         
-        super().handle_quit(sig, frame)
+#         super().handle_quit(sig, frame)
 
-    def run(self):
+#     def run(self):
         
-        app.logger.info(f'INIT run {self}')
+#         app.logger.info(f'INIT run {self}')
         
-        # self.app.application.start()
+#         # self.app.application.start()
         
-        super().run()
+#         super().run()
         
         
         

@@ -29,13 +29,12 @@ def run_tests_with_coverage():
     
     # pytest.main(['--collect-only'])
     
-    pytest.main([test_path, '-v', '-rP', '--exitfirst'])
+    # pytest.main([test_path, '-v', '-rP', '--exitfirst'])
     
-    # pytest.main([test_path + '/test_cognito.py', '-v', '-rP'])
-    # pytest.main([test_path + '/test_facebook.py', '-v', '-rP'])
-    # pytest.main([test_path + '/test_telegram.py', '-v', '-rP'])
-    # pytest.main([test_path + '/test_config.py', '-v'])
-    # pytest.main([test_path + '/test_app.py', '-v', '-rP'])
+    # pytest.main([test_path + '/test_cognito.py', '-v', '--exitfirst'])
+    # pytest.main([test_path + '/test_facebook.py', '-v', '--exitfirst'])
+    # pytest.main([test_path + '/test_telegram.py', '-v', '--exitfirst'])
+    pytest.main([test_path + '/test_app.py', '-v', '-rP', '--exitfirst'])
     # pytest.main([test_path + '/test_routes.py', '-v', '-rP', '--exitfirst'])
     
     

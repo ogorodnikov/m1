@@ -36,7 +36,7 @@ def test_get_user_data_error(fb):
     assert "Invalid OAuth access token" in user_data['error']['message']
 
     
-###   Fixtures
+###   Fixtures   ###
 
 @pytest.fixture(scope="module")
 def fb():
