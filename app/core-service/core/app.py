@@ -25,7 +25,7 @@ class FlaskApp(Flask):
         
         test_mode = kwargs.get('test_mode')
         
-        gunicorn_app.run(*args, **kwargs) if not test_mode else None
+        gunicorn_app.run(*args, **kwargs)
 
         
     def run_with_development_server(self, *args, **kwargs):
@@ -42,13 +42,13 @@ class FlaskApp(Flask):
         
         test_mode = kwargs.get('test_mode')
 
-        self.run(*args, **kwargs) if not test_mode else None
+        self.run(*args, **kwargs)
         
     
     def clear_figures_folder(self):
         
         figures_folder = os.path.join(self.static_folder, 'figures')
-    
+        
         for figure in os.listdir(figures_folder):
             if figure == 'README.md':
                 continue

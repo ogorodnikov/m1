@@ -199,7 +199,7 @@ def client():
     
 
 @pytest.fixture(autouse=True)
-def general_mocks(client, monkeypatch):
+def mocks(client, monkeypatch):
     
     def get_home_url(*args, **kwargs):
         return '/home'

@@ -1,27 +1,16 @@
 import os
 import pytest
 
+from core.app import FlaskApp
 from core.app import create_app
-
-
-def test_start_telegram_bot(app):
-    
-    app.start_telegram_bot()
-    assert app.config['TELEGRAM_BOT_STATE'] == 'Running'
-    
-
-def test_stop_telegram_bot(app):
-    
-    app.stop_telegram_bot()
-    assert app.config['TELEGRAM_BOT_STATE'] == 'Stopped'
+from core.gunicorn.app import GunicornApp
 
 
 def test_run_with_gunicorn(app):
-    app.run_with_gunicorn(test_mode=True)
-    
+    app.run_with_gunicorn()
     
 def test_run_with_development_server(app):
-    app.run_with_development_server(test_mode=True)
+    app.run_with_development_server()
 
 
 def test_clear_figures_folder(app):
@@ -46,9 +35,18 @@ def test_exit_application(app):
 def app():
     
     app = create_app()
-
     app.testing = True
     
     yield app
         
-    app.stop_runner()
+    # app.stop_runner()
+    
+
+@pytest.fixture(autouse=True)
+def mocks(monkeypatch):
+    
+    def stub(*args, **kwargs):
+        pass
+    
+    monkeypatch.setattr(FlaskApp, 'run', stub)
+    monkeypatch.setattr(GunicornApp, 'run', stub)
