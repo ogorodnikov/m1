@@ -23,9 +23,9 @@ class Main:
         self.app.config.from_object(self.config)
         self.app_static_folder = self.app.static_folder
         
-        self.start_logging(log_to_file=True)
+        self.start_logging(log_to_file=False)
         
-        self.db = dynamo.Dynamo(self.app)
+        self.db = dynamo.Dynamo()
         
         self.runner = runner.Runner(self.db)
         self.start_runner()

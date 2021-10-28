@@ -69,8 +69,8 @@ class FlaskApp(Flask):
         os._exit(0) if not test_mode else None
         
 
-# def create_app():
+def create_app():
     
-#     app = FlaskApp(__name__)
+    app = FlaskApp(__name__)
     
-#     return app
+    return app

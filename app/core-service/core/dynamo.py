@@ -1,14 +1,12 @@
 import io
 import os
+import json
+
 import boto3
 
 from pprint import pprint
-
-import json
-
 from decimal import Decimal
-
-
+from logging import getLogger
 
 
 class Dynamo():
@@ -16,11 +14,13 @@ class Dynamo():
     SERVICE_TASK_RECORD_ID = 0
     GET_QUEUED_TASK_ATTEMPTS = 5
 
-    def __init__(self, app):
+    def __init__(self):
         
-        tasks_table_name = app.config.get('TASKS_TABLE_NAME')
-        algorithms_table_name = app.config.get('ALGORITHMS_TABLE_NAME')
-        core_bucket_name = app.config.get('CORE_BUCKET')
+        self.logger = getLogger(__name__)
+        
+        core_bucket_name = os.getenv('CORE_BUCKET')        
+        tasks_table_name = os.getenv('TASKS_TABLE_NAME')
+        algorithms_table_name = os.getenv('ALGORITHMS_TABLE_NAME')
 
         db_resource = boto3.resource('dynamodb')
         s3_resource = boto3.resource("s3")
@@ -37,10 +37,14 @@ class Dynamo():
             ExpressionAttributeValues={':empty_list': [], ':zero': 0}
             )
         
-        app.logger.info(f'DYNAMO initiated: {self}')
+        self.log(f'DYNAMO initiated: {self}')
 
     
-    # Algorithms
+    def log(self, message):
+        self.logger.info(message)
+        
+        
+    ###   Algorithms   ###
     
     def get_all_algorithms(self):
     

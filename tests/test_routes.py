@@ -2,10 +2,11 @@ import io
 import pytest
 
 from core.app import FlaskApp
-# from core.app import create_app
+from core.app import create_app
 
 from core.dynamo import Dynamo
 from core.runner import Runner
+from core.routes import Routes
 from core.cognito import Cognito
 from core.facebook import Facebook
 
@@ -177,7 +178,17 @@ def test_home(client):
 @pytest.fixture(scope="module")
 def client():
     
-    app = FlaskApp(__name__)
+    # app = FlaskApp(__name__)
+    
+    app = create_app()
+    
+    db = Dynamo()
+    
+    users = runner = facebook = None
+    
+    routes = Routes(db, app, users, runner, facebook)
+    
+    
     app.testing = True
     
     test_context = app.test_request_context()
@@ -256,6 +267,7 @@ def general_mocks(client, monkeypatch):
     monkeypatch.setattr(Cognito, "register_user", register_test_user)
     monkeypatch.setattr(Cognito, "login_user", login_test_user)
     
+    monkeypatch.setattr(Dynamo, "get_status_updates", get_home_url)
     monkeypatch.setattr(Dynamo, "like_algorithm", get_home_url)
     monkeypatch.setattr(Dynamo, "set_algorithm_state", get_home_url)
     monkeypatch.setattr(Dynamo, "add_task", get_home_url)

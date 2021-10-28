@@ -18,11 +18,10 @@ class Config():
         self.VERSION = os.getenv('VERSION')
         self.SECRET_KEY = os.getenv('SECRET_KEY')
         self.TASK_ROLLOVER_SIZE = int(os.getenv('TASK_ROLLOVER_SIZE'))
-        
+
+        self.CORE_BUCKET = os.getenv('CORE_BUCKET')        
         self.TASKS_TABLE_NAME = os.getenv('TASKS_TABLE_NAME')
         self.ALGORITHMS_TABLE_NAME = os.getenv('ALGORITHMS_TABLE_NAME')
-        
-        self.CORE_BUCKET = os.getenv('CORE_BUCKET')
     
         self.FACEBOOK_CLIENT_ID = os.getenv('FACEBOOK_CLIENT_ID')    
         self.FACEBOOK_CLIENT_SECRET = os.getenv('FACEBOOK_CLIENT_SECRET')
@@ -36,8 +35,8 @@ class Config():
       
         self.TASK_TIMEOUT = 300
         self.QUEUE_WORKERS_PER_RUNNER = 1
-        self.BACKEND_AVOID_LIST = 'ibmq_bogota'
-        os.environ['BACKEND_AVOID_LIST'] = self.BACKEND_AVOID_LIST
+        self.BACKEND_AVOID_STRING = 'ibmq_bogota'
+        os.environ['BACKEND_AVOID_STRING'] = self.BACKEND_AVOID_STRING
         
         self.JSONIFY_PRETTYPRINT_REGULAR = False
         self.PERMANENT_SESSION_LIFETIME = timedelta(minutes=30)

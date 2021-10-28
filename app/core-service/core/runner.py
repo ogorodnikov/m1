@@ -10,7 +10,9 @@ from multiprocessing import Event
 from multiprocessing import Process
 from concurrent.futures import ProcessPoolExecutor
 
-from qiskit import IBMQ, Aer, execute
+from qiskit import Aer
+from qiskit import IBMQ
+from qiskit import execute
 from qiskit.providers.ibmq import least_busy
 from qiskit.visualization import plot_bloch_multivector
 from qiskit.tools.monitor import backend_overview, job_monitor
@@ -36,12 +38,10 @@ class Runner():
                         'simon': simon,
                         'qft': qft,
                         'qpe': qpe,
-                        'shor': shor
-                       }
+                        'shor': shor}
                    
     post_processing = {'simon': simon_post_processing,
-                       'qpe': qpe_post_processing
-                      }
+                       'qpe': qpe_post_processing}
 
     def __init__(self, db, *args, **kwargs):
         
@@ -53,7 +53,7 @@ class Runner():
         
         self.qiskit_token = os.environ.get('QISKIT_TOKEN')
         self.task_timeout = os.environ.get('TASK_TIMEOUT')
-        self.backend_avoid_list = os.environ.get('BACKEND_AVOID_LIST').split()
+        self.backend_avoid_list = os.environ.get('BACKEND_AVOID_STRING').split()
         self.queue_workers_count = os.environ.get('QUEUE_WORKERS_PER_RUNNER')
         
         IBMQ.enable_account(self.qiskit_token)
@@ -79,20 +79,6 @@ class Runner():
         worker_future = self.queue_pool.submit(self.queue_worker)
         
         self.log(f'RUNNER started: {self}')
-        
-        # worker_future = queue_pool.submit(pow, 12, 133)
-
-        # canceled = worker_future.cancel()
-                
-        # time.sleep(3)
-        
-        # result = worker_future.result(timeout=3)
-        
-        # self.log(f'RUNNER worker_future: {worker_future}')
-        # self.log(f'RUNNER result: {result}')
-        
-        # self.log(f'RUNNER worker_future.done(): {worker_future.done()}')
-        # self.log(f'RUNNER canceled: {canceled}')
         
 
     def stop(self):
