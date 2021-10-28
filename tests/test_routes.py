@@ -2,7 +2,7 @@ import io
 import pytest
 
 from core.app import FlaskApp
-from core.app import create_app
+# from core.app import create_app
 
 from core.dynamo import Dynamo
 from core.runner import Runner
@@ -31,137 +31,143 @@ def attribute_error_wrapper(test_function):
 def test_home(client):
     root_response = client.get('/')
     home_response = client.get('/home')
+    
+    print(f"root_response {root_response}")
+    print(f"home_response {home_response}")
+    
     assert HOME_PAGE_PHRASE in root_response.data.decode('utf-8')
     assert HOME_PAGE_PHRASE in home_response.data.decode('utf-8')
     
-
-def test_login(client):
-    response = client.get('/login')
-    assert LOGIN_PAGE_PHRASE in response.data.decode('utf-8')
+    raise
     
 
-def test_login_facebook(client):   
-    facebook_response = client.post('/login', 
-                                    data={'flow': 'facebook'}, 
-                                    follow_redirects=True)
-    assert HOME_PAGE_PHRASE in facebook_response.data.decode('utf-8')
-
-
-@attribute_error_wrapper
-def test_login_code_ok(client):   
-    client.get('/login?code=code_ok')
-    
-@attribute_error_wrapper
-def test_login_code_error(client):   
-    client.get('/login?code=code_error')
+# def test_login(client):
+#     response = client.get('/login')
+#     assert LOGIN_PAGE_PHRASE in response.data.decode('utf-8')
     
 
-@attribute_error_wrapper
-def test_login_register_ok(client):
-    register_response = client.post('/login', data={'flow': 'register'})
+# def test_login_facebook(client):   
+#     facebook_response = client.post('/login', 
+#                                     data={'flow': 'facebook'}, 
+#                                     follow_redirects=True)
+#     assert HOME_PAGE_PHRASE in facebook_response.data.decode('utf-8')
 
-@attribute_error_wrapper
-def test_login_register_error(client):
-    register_response = client.post('/login', data={'flow': 'register',
-                                                    'error': 'test_error'})
 
-@attribute_error_wrapper
-def test_login_sign_in_ok(client):
-    sign_in_response = client.post('/login', data={'flow': 'sign-in'})
+# # @attribute_error_wrapper
+# def test_login_code_ok(client):   
+#     client.get('/login?code=code_ok')
+    
+# @attribute_error_wrapper
+# def test_login_code_error(client):   
+#     client.get('/login?code=code_error')
+    
 
-@attribute_error_wrapper
-def test_login_sign_in_error(client):
-    sign_in_response = client.post('/login', data={'flow': 'sign-in',
-                                                   'error': 'test_error'})
+# @attribute_error_wrapper
+# def test_login_register_ok(client):
+#     register_response = client.post('/login', data={'flow': 'register'})
 
-@attribute_error_wrapper
-def test_logout(client):
-    sign_in_response = client.get('/logout')
+# @attribute_error_wrapper
+# def test_login_register_error(client):
+#     register_response = client.post('/login', data={'flow': 'register',
+#                                                     'error': 'test_error'})
+
+# @attribute_error_wrapper
+# def test_login_sign_in_ok(client):
+#     sign_in_response = client.post('/login', data={'flow': 'sign-in'})
+
+# @attribute_error_wrapper
+# def test_login_sign_in_error(client):
+#     sign_in_response = client.post('/login', data={'flow': 'sign-in',
+#                                                   'error': 'test_error'})
+
+# @attribute_error_wrapper
+# def test_logout(client):
+#     sign_in_response = client.get('/logout')
   
 
-###   Algorithms   ###
+# ###   Algorithms   ###
 
-def test_get_algorithms(client):
+# def test_get_algorithms(client):
     
-    response = client.get('/algorithms')
-    assert b'Algorithms' in response.data
+#     response = client.get('/algorithms')
+#     assert b'Algorithms' in response.data
     
-    response = client.get('/algorithms?type=classical')
-    assert b'Extended Euclidean' in response.data
-    assert b'Bernstein Vazirani' not in response.data
+#     response = client.get('/algorithms?type=classical')
+#     assert b'Extended Euclidean' in response.data
+#     assert b'Bernstein Vazirani' not in response.data
 
-    response = client.get('/algorithms?type=quantum')
-    assert b'Extended Euclidean' not in response.data
-    assert b'Bernstein Vazirani' in response.data
+#     response = client.get('/algorithms?type=quantum')
+#     assert b'Extended Euclidean' not in response.data
+#     assert b'Bernstein Vazirani' in response.data
     
-    response = client.get('/algorithms?test_filter_name=test_filter_value')
-    assert b'Algorithms' in response.data
-    
-    
-def test_get_algorithm(client):
-    response = client.get('/algorithms/egcd')
-    assert b'Extended Euclidean' in response.data
+#     response = client.get('/algorithms?test_filter_name=test_filter_value')
+#     assert b'Algorithms' in response.data
     
     
-@attribute_error_wrapper
-def test_like_algorithm(client):
-    client.get('/algorithms/egcd/like')
-
-
-@attribute_error_wrapper
-def test_run_algorithm(client):
-    response = client.post('/algorithms/egcd/run')
+# def test_get_algorithm(client):
+#     response = client.get('/algorithms/egcd')
+#     assert b'Extended Euclidean' in response.data
+    
+    
+# @attribute_error_wrapper
+# def test_like_algorithm(client):
+#     client.get('/algorithms/egcd/like')
 
 
-def test_set_algorithm_state_enabled(client):
-    client.get('/algorithms/egcd/state?enabled=True')
-    
-    
-def test_set_algorithm_state_disabled(client):
-    client.get('/algorithms/egcd/state?enabled=False')
-    
-    
-###   Tasks   ###
-
-def test_get_tasks(client):
-    
-    tasks_response = client.get('/tasks')
-    task_response = client.get('/tasks?task_id=1')
-    
-    assert TASKS_PAGE_PHRASE in tasks_response.data.decode('utf-8') 
-    assert TASKS_PAGE_PHRASE in task_response.data.decode('utf-8')
-    
-
-def test_download(client):
-    
-    client.get('/download?task_id=1&content=statevector')
-    # client.get('/download?task_id=1&content=statevector&as_attachment=True')
+# @attribute_error_wrapper
+# def test_run_algorithm(client):
+#     response = client.post('/algorithms/egcd/run')
 
 
-def test_admin(client):
-    client.get('/admin')
+# def test_set_algorithm_state_enabled(client):
+#     client.get('/algorithms/egcd/state?enabled=True')
     
     
-commands = [
-    'start_bot', 
-    'stop_bot', 
-    'add_test_data', 
-    'reset_application',
-    'start_runner',
-    'stop_runner',
-    'purge_tasks',
-    'add_test_tasks',
-    'test',
-]
+# def test_set_algorithm_state_disabled(client):
+#     client.get('/algorithms/egcd/state?enabled=False')
+    
+    
+# ###   Tasks   ###
 
-@pytest.mark.parametrize("command", commands)
-def test_admin_commands(client, command):
+# def test_get_tasks(client):
     
-    print(f"command: {command}")
+#     tasks_response = client.get('/tasks')
+#     task_response = client.get('/tasks?task_id=1')
     
-    # client.get(f'/admin&command={command}')
+#     assert TASKS_PAGE_PHRASE in tasks_response.data.decode('utf-8') 
+#     assert TASKS_PAGE_PHRASE in task_response.data.decode('utf-8')
     
-    client.post('/admin', data={'command': command})
+
+# def test_download(client):
+    
+#     client.get('/download?task_id=1&content=statevector')
+#     # client.get('/download?task_id=1&content=statevector&as_attachment=True')
+
+
+# def test_admin(client):
+#     client.get('/admin')
+    
+    
+# commands = [
+#     'start_bot', 
+#     'stop_bot', 
+#     'add_test_data', 
+#     'reset_application',
+#     'start_runner',
+#     'stop_runner',
+#     'purge_tasks',
+#     'add_test_tasks',
+#     'test',
+# ]
+
+# @pytest.mark.parametrize("command", commands)
+# def test_admin_commands(client, command):
+    
+#     print(f"command: {command}")
+    
+#     # client.get(f'/admin&command={command}')
+    
+#     client.post('/admin', data={'command': command})
 
     
     
@@ -171,7 +177,7 @@ def test_admin_commands(client, command):
 @pytest.fixture(scope="module")
 def client():
     
-    app = create_app()
+    app = FlaskApp(__name__)
     app.testing = True
     
     test_context = app.test_request_context()
@@ -181,7 +187,7 @@ def client():
         yield client
     
     test_context.pop()
-    app.stop_runner()
+    # app.stop_runner()
     
 
 @pytest.fixture(autouse=True)
@@ -262,8 +268,8 @@ def general_mocks(client, monkeypatch):
     
     monkeypatch.setattr(Runner, "run_algorithm", get_home_url)
 
-    monkeypatch.setattr(FlaskApp, "start_telegram_bot", get_home_url)
-    monkeypatch.setattr(FlaskApp, "stop_telegram_bot", get_home_url)
-    monkeypatch.setattr(FlaskApp, "start_runner", get_home_url)
-    monkeypatch.setattr(FlaskApp, "stop_runner", get_home_url)
+    # monkeypatch.setattr(FlaskApp, "start_telegram_bot", get_home_url)
+    # monkeypatch.setattr(FlaskApp, "stop_telegram_bot", get_home_url)
+    # monkeypatch.setattr(FlaskApp, "start_runner", get_home_url)
+    # monkeypatch.setattr(FlaskApp, "stop_runner", get_home_url)
     monkeypatch.setattr(FlaskApp, "exit_application", get_home_url)

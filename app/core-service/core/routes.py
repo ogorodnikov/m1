@@ -1,3 +1,6 @@
+import os
+import requests
+
 from flask import flash
 from flask import url_for
 from flask import session
@@ -9,30 +12,24 @@ from flask import render_template
 import boto3
 import botocore.exceptions
 
-import requests
-
 from logging import getLogger
 
 
 class Routes():
     
-    def __init__(self, app, *args, **kwargs):
+    def __init__(self, db, app, users, runner, facebook, *args, **kwargs):
         
-        self.db = app.db
-        self.app = app
-        self.users = app.users
-        self.runner = app.runner
-        self.facebook = app.facebook
-
         self.logger = getLogger(__name__)
-
-        self.register_routes()
-    
-        self.log(f'ROUTES initiated: {self}')
         
-    
-    def log(self, message):
-        self.logger.info(message)
+        self.db = db
+        self.app = app
+        self.users = users
+        self.runner = runner
+        self.facebook = facebook
+        
+        self.register_routes()
+        
+        self.logger.info("ROUTES Initiated")       
         
         
     def register_routes(self):
@@ -43,6 +40,8 @@ class Routes():
         runner = self.runner
         facebook = self.facebook
         
+        ###   Routes   ###
+
         @app.route("/")
         @app.route("/home")
         def home():
@@ -171,7 +170,9 @@ class Routes():
                   f"Response: {response}", category='warning')
             
             return redirect(f'/algorithms/{algorithm_id}')
-            
+        
+        
+        ###   Tasks   ###
         
         @app.route('/tasks')
         def get_tasks():
@@ -185,7 +186,7 @@ class Routes():
                 
             else:
                 return render_template("tasks.html", tasks=tasks)
-                
+    
         
         @app.route('/download')
         def download():
@@ -217,6 +218,7 @@ class Routes():
                     as_attachment=as_attachment
                     )
         
+        ###   Admin   ###
         
         @app.route('/admin', methods=["GET", "POST"])
         def admin():
@@ -276,16 +278,15 @@ class Routes():
                 # db.update_task_attribute(1, 'task_log', 'test_log')
                 
                 # db.add_status_update(7, 'Running', '')
-                
                 # db.get_status_updates()
                 
                 # db.update_task_attribute(1, 'result', 'test_result')
-                
                 # db.test()
                 
-                
             return render_template("admin.html")
-            
+        
+        
+        ###   
         
         @app.before_request
         def show_task_results():

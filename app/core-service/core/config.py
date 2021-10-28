@@ -1,11 +1,8 @@
 import os
 import boto3
-import logging
 
 from dotenv import load_dotenv
 from datetime import timedelta
-
-from logging.handlers import RotatingFileHandler
 
 
 class Config():
@@ -46,49 +43,6 @@ class Config():
         self.CPU_COUNT = os.cpu_count()
         
         # self.EXPLAIN_TEMPLATE_LOADING = True
-        
-        self.LOG_FILE_PATH = kwargs.get('log_file_path')
-        
-        self.start_logging(self.LOG_FILE_PATH)
-        
-    
-    def start_logging(self, log_file_path=None):
-
-        short_format = "%(levelname).1s %(module)6.6s | %(message)s"
-        long_format = "[%(asctime)s] %(module)6.6s | %(levelname).4s | %(message)s"
-        file_format = "[%(asctime)s] %(levelname).1s %(module)6.6s | %(message)s"
-        date_format = "%Y-%m-%d %H:%M:%S"
-        
-        console_formatter = logging.Formatter(fmt=short_format, datefmt=date_format)
-                                  
-        console_handler = logging.StreamHandler()
-        console_handler.setLevel(logging.INFO)
-        console_handler.setFormatter(console_formatter)
-
-        root_logger = logging.getLogger()
-        root_logger.setLevel(logging.INFO)
-        root_logger.addHandler(console_handler)
-        
-        if log_file_path:
-        
-            file_formatter = logging.Formatter(fmt=file_format, datefmt=date_format)
-            
-            file_handler = RotatingFileHandler(
-                log_file_path, 
-                maxBytes=100000, 
-                backupCount=5
-            )
-            file_handler.setLevel(logging.DEBUG)
-            file_handler.setFormatter(file_formatter)
-            
-            gunicorn_error_logger = logging.getLogger('gunicorn.error')
-            gunicorn_access_logger = logging.getLogger('gunicorn.access')
-    
-            root_logger.addHandler(file_handler)        
-            gunicorn_error_logger.addHandler(file_handler)
-            gunicorn_access_logger.addHandler(file_handler)
-        
-        root_logger.info("LOGGING initiated")
         
 
     def get_nlb_dns(self, nlb_name):
