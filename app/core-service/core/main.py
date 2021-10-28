@@ -28,30 +28,18 @@ class Main:
         self.db = dynamo.Dynamo()
         
         self.runner = runner.Runner(self.db)
-        self.start_runner()
+        self.runner.start()
         
         self.telegram_bot = telegram.Bot(self.db, self.runner)
-        self.start_telegram_bot()
+        self.telegram_bot.start()
 
         self.users = cognito.Cognito()
         
         self.facebook = facebook.Facebook()
         
-        self.routes = routes.Routes(self.db, self.app, self.users, self.runner, self.facebook)
-        
-        
-        
-    def start_telegram_bot(self):
-        
-        if self.telegram_bot:
-            self.telegram_bot.start()
-            self.app.config['TELEGRAM_BOT_STATE'] = 'Running'        
+        self.routes = routes.Routes(self.db, self.app, self.users, self.runner, 
+                                    self.facebook, self.telegram_bot)
 
-    def stop_telegram_bot(self):
-        
-        if self.telegram_bot:
-            self.telegram_bot.stop()
-            self.app.config['TELEGRAM_BOT_STATE'] = 'Stopped'    
             
     def start_runner(self):
         

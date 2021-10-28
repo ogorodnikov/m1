@@ -45,12 +45,16 @@ class Bot(TeleBot):
         polling_worker_thread.name = "Telegram bot polling"
         polling_worker_thread.start()
         
+        os.environ['TELEGRAM_BOT_STATE'] = 'Running'
+        
         self.log(f'BOT polling: {self}')
 
 
     def stop(self):
         
         self.stop_polling()
+        
+        os.environ['TELEGRAM_BOT_STATE'] = 'Stopped'
         
         self.log(f'BOT stop_polling: {self}')
 

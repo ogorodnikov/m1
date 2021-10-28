@@ -17,7 +17,7 @@ from logging import getLogger
 
 class Routes():
     
-    def __init__(self, db, app, users, runner, facebook, *args, **kwargs):
+    def __init__(self, db, app, users, runner, facebook, telegram_bot):
         
         self.logger = getLogger(__name__)
         
@@ -26,6 +26,7 @@ class Routes():
         self.users = users
         self.runner = runner
         self.facebook = facebook
+        self.telegram_bot = telegram_bot
         
         self.register_routes()
         
@@ -39,6 +40,7 @@ class Routes():
         users = self.users
         runner = self.runner
         facebook = self.facebook
+        telegram_bot = self.telegram_bot
         
         ###   Routes   ###
 
@@ -225,16 +227,12 @@ class Routes():
             
             command = request.form.get('command')
             
-            if not command:
-                
-                return render_template("admin.html")
-            
-            elif command == 'start_bot':
-                app.start_telegram_bot()
+            if command == 'start_bot':
+                telegram_bot.start()
                 flash("Telegram bot started", category='info')
         
             elif command == 'stop_bot':
-                app.stop_telegram_bot()
+                telegram_bot.stop()
                 flash("Telegram bot stopped", category='warning')
             
             elif command == 'add_test_data':
@@ -247,11 +245,11 @@ class Routes():
                 
             elif command == 'start_runner':
                 flash(f"Starting runner", category='success')
-                app.start_runner()
+                runner.start()
         
             elif command == 'stop_runner':
                 flash(f"Stopping runner", category='warning')
-                app.stop_runner()
+                runner.stop()
                 
             elif command == 'purge_tasks':
                 flash(f"Purging tasks", category='danger')        
@@ -283,7 +281,7 @@ class Routes():
                 # db.update_task_attribute(1, 'result', 'test_result')
                 # db.test()
                 
-            return render_template("admin.html")
+            return render_template("admin.html", environ=os.environ)
         
         
         ###   

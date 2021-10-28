@@ -78,6 +78,8 @@ class Runner():
         
         worker_future = self.queue_pool.submit(self.queue_worker)
         
+        os.environ['RUNNER_STATE'] = 'Running'
+        
         self.log(f'RUNNER started: {self}')
         
 
@@ -86,6 +88,8 @@ class Runner():
         self.worker_active_flag.clear()
         
         self.queue_pool.shutdown()
+        
+        os.environ['RUNNER_STATE'] = 'Stopped'
         
         self.log(f'RUNNER stopped: {self}')      
         

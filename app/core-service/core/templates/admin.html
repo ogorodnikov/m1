@@ -25,7 +25,7 @@
       Add Test Data
     </button>    
 
-    {% if config['TELEGRAM_BOT_STATE'] == 'Running' %}
+    {% if environ['TELEGRAM_BOT_STATE'] == 'Running' %}
     
       <button class="btn btn-warning m-2"
               type="submit"
@@ -45,7 +45,7 @@
   
     {% endif %}
     
-    {% if config['RUNNER_STATE'] == 'Running' %}
+    {% if environ['RUNNER_STATE'] == 'Running' %}
     
       <button class="btn btn-warning m-2"
               type="submit"
