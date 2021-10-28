@@ -44,6 +44,8 @@ class Config():
         
         # self.EXPLAIN_TEMPLATE_LOADING = True
         
+        # self.QISKIT_IBMQ_PROVIDER_LOG_LEVEL = 'DEBUG'
+        
 
     def get_nlb_dns(self, nlb_name):
         

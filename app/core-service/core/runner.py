@@ -354,9 +354,6 @@ class Runner():
         
         temporary_folder = tempfile.gettempdir()
         
-        self.log(f"figure_filename: {figure_filename}")
-        self.log(f"temporary_folder: {temporary_folder}")
-        
         temporary_figure_path = os.path.join(temporary_folder, figure_filename)
         s3_figure_path = os.path.join('figures', figure_filename)
         

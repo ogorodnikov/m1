@@ -85,6 +85,11 @@ class Main:
         root_logger.setLevel(logging.INFO)
         root_logger.addHandler(console_handler)
         
+        ibmq_logger = logging.getLogger('qiskit.providers.ibmq')
+        ibmq_logger.setLevel(logging.INFO)
+        ibmq_logger.handlers.clear()
+        ibmq_logger.addHandler(console_handler)
+        
         if log_to_file:
         
             file_formatter = logging.Formatter(fmt=file_format, datefmt=date_format)
@@ -103,5 +108,5 @@ class Main:
             root_logger.addHandler(file_handler)        
             gunicorn_error_logger.addHandler(file_handler)
             gunicorn_access_logger.addHandler(file_handler)
-        
+
         root_logger.info("LOGGER initiated")
