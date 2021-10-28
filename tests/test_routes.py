@@ -10,6 +10,7 @@ from core.dynamo import Dynamo
 from core.runner import Runner
 from core.routes import Routes
 from core.cognito import Cognito
+from core.telegram import Bot
 from core.facebook import Facebook
 
 
@@ -34,9 +35,6 @@ def attribute_error_wrapper(test_function):
 def test_home(client):
     root_response = client.get('/')
     home_response = client.get('/home')
-    
-    # print(f"root_response {root_response}")
-    # print(f"home_response {home_response}")
     
     assert HOME_PAGE_PHRASE in root_response.data.decode('utf-8')
     assert HOME_PAGE_PHRASE in home_response.data.decode('utf-8')
@@ -178,27 +176,17 @@ def test_admin_commands(client, command):
 @pytest.fixture(scope="module")
 def client():
     
-    # app = FlaskApp(__name__)
-    
-    main = Main()
-    
-    print('main', main)
-    
-    raise
-    
     app = create_app()
+    app.testing = True
     app.secret_key = 'test_key'
     
     db = Dynamo()
+    users = Cognito()
     runner = Runner(db)
     facebook = Facebook()
+    telegram_bot = Bot(db, runner)
     
-    users = None
-    
-    routes = Routes(main, db, app, users, runner, facebook)
-    
-    
-    app.testing = True
+    routes = Routes(db, app, users, runner, facebook, telegram_bot)
     
     test_context = app.test_request_context()
     test_context.push()
@@ -291,8 +279,4 @@ def general_mocks(client, monkeypatch):
     
     monkeypatch.setattr(Runner, "run_algorithm", get_home_url)
 
-    # monkeypatch.setattr(FlaskApp, "start_telegram_bot", get_home_url)
-    # monkeypatch.setattr(FlaskApp, "stop_telegram_bot", get_home_url)
-    # monkeypatch.setattr(FlaskApp, "start_runner", get_home_url)
-    # monkeypatch.setattr(FlaskApp, "stop_runner", get_home_url)
     monkeypatch.setattr(FlaskApp, "exit_application", get_home_url)

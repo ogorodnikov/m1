@@ -8,8 +8,8 @@ from core import config
 from core import routes
 from core import dynamo
 from core import runner
-from core import telegram
 from core import cognito
+from core import telegram
 from core import facebook
 
 
