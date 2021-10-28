@@ -1,7 +1,9 @@
 import os
 import time
+import tempfile
 import traceback
 
+from logging import getLogger
 from functools import partial
 
 from multiprocessing import Event
@@ -41,32 +43,28 @@ class Runner():
                        'qpe': qpe_post_processing
                       }
 
-    def __init__(self, app, *args, **kwargs):
+    def __init__(self, db, *args, **kwargs):
         
-        self.app = app
-        self.db = app.db
+        self.db = db
         
-        self.qiskit_token = app.config.get('QISKIT_TOKEN')
-        self.task_timeout = app.config.get('TASK_TIMEOUT')
-        self.backend_avoid_list = app.config.get('BACKEND_AVOID_LIST')
-        self.queue_workers_count = app.config.get('QUEUE_WORKERS_PER_RUNNER')
-        
-        IBMQ.save_account(self.qiskit_token)
-        IBMQ.load_account()
-        
-        self.static_folder = app.static_folder
+        self.logger = getLogger(__name__)
 
         self.worker_active_flag = Event()
         
-        app.config['RUNNER'] = self
-        app.config['RUNNER_STATE'] = 'Stopped'
+        self.qiskit_token = os.environ.get('QISKIT_TOKEN')
+        self.task_timeout = os.environ.get('TASK_TIMEOUT')
+        self.backend_avoid_list = os.environ.get('BACKEND_AVOID_LIST')
+        self.queue_workers_count = os.environ.get('QUEUE_WORKERS_PER_RUNNER')
+        
+        IBMQ.save_account(self.qiskit_token)
+        IBMQ.load_account()
         
         self.log(f'RUNNER initiated: {self}')
         
 
     def log(self, message, task_id=None):
         
-        self.app.logger.info(message)
+        self.logger.info(message)
         
         if task_id:
             self.db.update_task_attribute(task_id, 'logs', message, append=True)
@@ -81,7 +79,6 @@ class Runner():
         
         worker_future = self.queue_pool.submit(self.queue_worker)
         
-        self.app.config['RUNNER_STATE'] = 'Started'
         self.log(f'RUNNER started: {self}')
         
         # worker_future = queue_pool.submit(pow, 12, 133)
@@ -105,7 +102,6 @@ class Runner():
         
         self.queue_pool.shutdown()
         
-        self.app.config['RUNNER_STATE'] = 'Stopped'
         self.log(f'RUNNER stopped: {self}')      
         
         
@@ -354,12 +350,19 @@ class Runner():
         
         figure = plot_bloch_multivector(statevector)
     
-        figure_path = f'figures/bloch_multivector_task_{task_id}.png'
+        figure_filename = f'bloch_multivector_task_{task_id}.png'
         
-        full_figure_path = self.static_folder + '/' + figure_path
-                    
-        figure.savefig(full_figure_path, transparent=True, bbox_inches='tight')
+        temporary_folder = tempfile.gettempdir()
         
-        self.db.move_figure_to_s3(from_path=full_figure_path, to_path=figure_path)
+        self.log(f"figure_filename: {figure_filename}")
+        self.log(f"temporary_folder: {temporary_folder}")
+        
+        temporary_figure_path = os.path.join(temporary_folder, figure_filename)
+        s3_figure_path = os.path.join('figures', figure_filename)
+        
+        figure.savefig(temporary_figure_path, transparent=True, bbox_inches='tight')
+        
+        self.db.move_figure_to_s3(from_path=temporary_figure_path, 
+                                  to_path=s3_figure_path)
         
         self.log(f'RUNNER statevector figure: {figure}', task_id)

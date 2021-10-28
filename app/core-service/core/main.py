@@ -21,24 +21,21 @@ class Main:
         
         self.app = app.FlaskApp(__name__)
         self.app.config.from_object(self.config)
+        self.app_static_folder = self.app.static_folder
         
-        self.start_logging(log_file_path=self.app.log_file_path)
+        self.start_logging(log_to_file=True)
         
         self.db = dynamo.Dynamo(self.app)
-        self.app.db = self.db
         
-        self.runner = runner.Runner(self.app)
+        self.runner = runner.Runner(self.db)
         self.start_runner()
-        self.app.runner = self.runner
         
         self.telegram_bot = telegram.Bot(self.db, self.runner)
         self.start_telegram_bot()
 
         self.users = cognito.Cognito()
-        self.app.users = self.users
         
         self.facebook = facebook.Facebook()
-        self.app.facebook = self.facebook
         
         self.routes = routes.Routes(self.db, self.app, self.users, self.runner, self.facebook)
         
@@ -69,7 +66,9 @@ class Main:
             self.app.config['RUNNER_STATE'] = 'Stopped'
             
     
-    def start_logging(self, log_file_path=None):
+    def start_logging(self, log_to_file=False):
+        
+        log_file_path = self.app_static_folder + '/logs/core.log'
 
         short_format = "%(levelname).1s %(module)6.6s | %(message)s"
         long_format = "[%(asctime)s] %(module)6.6s | %(levelname).4s | %(message)s"
@@ -86,7 +85,7 @@ class Main:
         root_logger.setLevel(logging.INFO)
         root_logger.addHandler(console_handler)
         
-        if log_file_path:
+        if log_to_file:
         
             file_formatter = logging.Formatter(fmt=file_format, datefmt=date_format)
             

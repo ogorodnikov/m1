@@ -18,12 +18,7 @@ class FlaskApp(Flask):
         
         CORS(self)
 
-        
-    @property
-    def log_file_path(self):
-        return self.static_folder + '/logs/core.log'
 
-    
     def run_with_gunicorn(self, *args, **kwargs):
         
         gunicorn_app = GunicornApp(self)
