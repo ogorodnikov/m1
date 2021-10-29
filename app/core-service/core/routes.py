@@ -30,7 +30,7 @@ class Routes():
         
         self.register_routes()
         
-        self.logger.info("ROUTES Initiated")       
+        self.logger.info(f"ROUTES initiated: {self}")       
         
         
     def register_routes(self):

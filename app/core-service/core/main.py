@@ -97,4 +97,4 @@ class Main:
             gunicorn_error_logger.addHandler(file_handler)
             gunicorn_access_logger.addHandler(file_handler)
 
-        root_logger.info("LOGGER initiated")
+        root_logger.info(f"LOGGER initiated")
