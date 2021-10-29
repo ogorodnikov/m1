@@ -22,7 +22,7 @@ def run_tests_with_coverage():
     # pytest.main(['--collect-only'])
     # pytest.main([test_path, '-v', '-rP', '-x'])
     
-    # pytest.main([test_path, '--verbose', '--exitfirst'])
+    pytest.main([test_path, '--verbose', '--exitfirst'])
 
     # pytest.main([test_path + '/test_app.py', '-v', -x'])    
     # pytest.main([test_path + '/test_cognito.py', '-v', '-x'])
@@ -31,7 +31,7 @@ def run_tests_with_coverage():
     # pytest.main([test_path + '/test_telegram.py', '-v', '-x'])
     # pytest.main([test_path + '/test_algorithms.py', '-v', '-x'])
     
-    pytest.main([test_path + '/test_main.py', '-v', '-x'])
+    # pytest.main([test_path + '/test_main.py', '-v', '-x'])
     
     cov.stop()
     cov.save()

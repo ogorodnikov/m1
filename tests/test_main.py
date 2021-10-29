@@ -1,23 +1,31 @@
 import pytest
+import logging
 
 from _pytest.monkeypatch import MonkeyPatch
 
 from core.main import Main
-
-from core.app import FlaskApp
-from core.app import create_app
-
-from core.dynamo import Dynamo
 from core.runner import Runner
-from core.routes import Routes
-from core.cognito import Cognito
 from core.telegram import Bot
-from core.facebook import Facebook
 
 
 def test_start_logging(test_main, tmpdir):
     test_main.start_logging(log_to_file=True, log_file_path=tmpdir)
+    
+    
+def test_logging(test_main, caplog):
 
+    test_message = 'Logging test'
+    
+    caplog.set_level(logging.INFO)
+    
+    root_logger = logging.getLogger()
+    root_logger.info(test_message)
+    
+    # print(f"caplog.text {caplog.text}")
+    # print(f"caplog.records {caplog.records}")
+    # print(f"caplog.record_tuples {caplog.record_tuples}")
+    
+    assert caplog.record_tuples == [("root", logging.INFO, test_message)]
 
 
 # def test_logging(users, caplog):
@@ -49,20 +57,6 @@ def test_start_logging(test_main, tmpdir):
 #     assert message in capture_output["stderr"]
 
 
-# def test_log_to_file():
-    
-#     with NamedTemporaryFile() as temporary_file:
-        
-#         configuration = config.Config(log_file_path=temporary_file.name)
-        
-#         logs = temporary_file.read().decode("utf-8")
-        
-#         assert "LOGGING initiated" in logs
-
-
-# def test_print_environ(run_config):
-#     run_config.print_environ()
-
 
 
 ###   Fixtures   ###
@@ -91,24 +85,8 @@ def mocks(monkeypatch_module):
         
     monkeypatch_module.setattr(Bot, "start", stub)
     monkeypatch_module.setattr(Runner, "start", stub)
-    
-    
 
 
-
-
-
-# @pytest.fixture
-# def capture_output(monkeypatch):
-    
-#     buffer = {"stderr": ""}
-
-#     def capture(message):
-#         buffer["stderr"] += message
-
-#     monkeypatch.setattr(sys.stderr, 'write', capture)
-
-#     return buffer
 
 
 

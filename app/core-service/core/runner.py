@@ -56,8 +56,6 @@ class Runner():
         self.backend_avoid_list = os.environ.get('BACKEND_AVOID_STRING').split()
         self.queue_workers_count = os.environ.get('QUEUE_WORKERS_PER_RUNNER')
         
-        IBMQ.enable_account(self.qiskit_token)
-        
         self.log(f'RUNNER initiated: {self}')
         
 
@@ -70,6 +68,8 @@ class Runner():
         
     
     def start(self):
+
+        IBMQ.enable_account(self.qiskit_token)
         
         self.worker_active_flag.set()
         
@@ -85,13 +85,15 @@ class Runner():
 
     def stop(self):
         
+        IBMQ.disable_account()
+        
         self.worker_active_flag.clear()
         
         self.queue_pool.shutdown()
         
         os.environ['RUNNER_STATE'] = 'Stopped'
         
-        self.log(f'RUNNER stopped: {self}')      
+        self.log(f'RUNNER stopping: {self}')      
         
         
     def run_algorithm(self, algorithm_id, run_values):
