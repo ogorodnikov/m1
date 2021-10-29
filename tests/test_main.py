@@ -15,10 +15,8 @@ from core.telegram import Bot
 from core.facebook import Facebook
 
 
-def test_start_logging(test_main):
-    
-    # test_main = Main()
-    test_main.start_logging()
+def test_start_logging(test_main, tmpdir):
+    test_main.start_logging(log_to_file=True, log_file_path=tmpdir)
 
 
 
@@ -71,6 +69,13 @@ def test_start_logging(test_main):
 
 
 @pytest.fixture(scope="module")
+def test_main():
+    
+    test_main = Main()
+    yield test_main
+
+    
+@pytest.fixture(scope="module")
 def monkeypatch_module(request):
     
     monkeypatch_module = MonkeyPatch()
@@ -88,14 +93,7 @@ def mocks(monkeypatch_module):
     monkeypatch_module.setattr(Runner, "start", stub)
     
     
-@pytest.fixture(scope="module")
-def test_main():
-    
-    test_main = Main()
 
-    yield test_main
-    
-    # test_main.runner.stop()
 
 
 

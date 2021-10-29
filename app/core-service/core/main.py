@@ -41,9 +41,11 @@ class Main:
                                     self.facebook, self.telegram_bot)
 
             
-    def start_logging(self, log_to_file=False):
+    def start_logging(self, log_to_file=False, log_file_path=None):
         
-        log_file_path = self.app_static_folder + '/logs/core.log'
+        log_file_path = log_file_path or self.app_static_folder + '/logs'
+        
+        log_file = log_file_path + '/core.log'
 
         short_format = "%(levelname).1s %(module)6.6s | %(message)s"
         long_format = "[%(asctime)s] %(module)6.6s | %(levelname).4s | %(message)s"
@@ -70,7 +72,7 @@ class Main:
             file_formatter = logging.Formatter(fmt=file_format, datefmt=date_format)
             
             file_handler = RotatingFileHandler(
-                log_file_path, 
+                log_file, 
                 maxBytes=100000, 
                 backupCount=5
             )
