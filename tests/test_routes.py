@@ -1,10 +1,10 @@
 import io
 import pytest
 
+from core.main import Main
+
 from core.app import FlaskApp
 from core.app import create_app
-
-from core.main import Main
 
 from core.dynamo import Dynamo
 from core.runner import Runner

@@ -1,3 +1,27 @@
+import pytest
+
+from _pytest.monkeypatch import MonkeyPatch
+
+from core.main import Main
+
+from core.app import FlaskApp
+from core.app import create_app
+
+from core.dynamo import Dynamo
+from core.runner import Runner
+from core.routes import Routes
+from core.cognito import Cognito
+from core.telegram import Bot
+from core.facebook import Facebook
+
+
+def test_start_logging(test_main):
+    
+    # test_main = Main()
+    test_main.start_logging()
+
+
+
 # def test_logging(users, caplog):
     
 #     message = "Test log :)"
@@ -43,7 +67,38 @@
 
 
 
-# ###   Fixtures   ###
+###   Fixtures   ###
+
+
+@pytest.fixture(scope="module")
+def monkeypatch_module(request):
+    
+    monkeypatch_module = MonkeyPatch()
+    yield monkeypatch_module
+    monkeypatch_module.undo()
+    
+
+@pytest.fixture(autouse=True, scope="module")
+def mocks(monkeypatch_module):
+    
+    def stub(*args, **kwargs):
+        pass
+        
+    monkeypatch_module.setattr(Bot, "start", stub)
+    monkeypatch_module.setattr(Runner, "start", stub)
+    
+    
+@pytest.fixture(scope="module")
+def test_main():
+    
+    test_main = Main()
+
+    yield test_main
+    
+    # test_main.runner.stop()
+
+
+
 
 # @pytest.fixture
 # def capture_output(monkeypatch):
@@ -56,3 +111,6 @@
 #     monkeypatch.setattr(sys.stderr, 'write', capture)
 
 #     return buffer
+
+
+

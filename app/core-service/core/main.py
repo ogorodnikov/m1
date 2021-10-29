@@ -41,19 +41,6 @@ class Main:
                                     self.facebook, self.telegram_bot)
 
             
-    def start_runner(self):
-        
-        if self.runner:
-            self.runner.start()
-            self.app.config['RUNNER_STATE'] = 'Running'        
-
-    def stop_runner(self):
-        
-        if self.runner:
-            self.runner.stop()
-            self.app.config['RUNNER_STATE'] = 'Stopped'
-            
-    
     def start_logging(self, log_to_file=False):
         
         log_file_path = self.app_static_folder + '/logs/core.log'
