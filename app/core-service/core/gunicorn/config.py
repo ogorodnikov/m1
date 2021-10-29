@@ -39,9 +39,9 @@ from atexit import unregister
 from multiprocessing.util import _exit_function
 
 
-def post_worker_init(worker):
+# def post_worker_init(worker):
     # print("GUNICORN post_worker_init")
-    unregister(_exit_function)
+    # unregister(_exit_function)
     
 
 # def worker_int(worker):

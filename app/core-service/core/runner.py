@@ -74,9 +74,9 @@ class Runner():
         self.worker_active_flag.set()
         
         self.queue_pool = ProcessPoolExecutor(max_workers=self.queue_workers_count,
-                                         initializer=self.queue_worker)
-        
-        worker_future = self.queue_pool.submit(self.queue_worker)
+                                              initializer=self.queue_worker)
+                                              
+        self.queue_pool.submit(None)
         
         os.environ['RUNNER_STATE'] = 'Running'
         
