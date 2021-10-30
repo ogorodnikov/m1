@@ -31,6 +31,17 @@ def test_log(runner):
 def test_run_algorithm(runner):
     runner.run_algorithm(None, None)
     
+
+def test_exception_decorator(runner):
+    
+    
+    def raise_exception():
+        raise UserWarning
+        
+    decorated_raise_exception = Runner.exception_decorator(raise_exception)
+    
+    decorated_raise_exception(runner, task_id='test_task_id')
+        
     
 def test_get_next_task(runner):
     runner.get_next_task()
