@@ -3,8 +3,10 @@ import time
 import tempfile
 import traceback
 
-from logging import getLogger
+from functools import wraps
 from functools import partial
+
+from logging import getLogger
 
 from multiprocessing import Event
 from multiprocessing import Process
@@ -107,6 +109,8 @@ class Runner():
     
     def exception_decorator(function):
         
+        @wraps(function)
+        
         def wrapper(self, *args, **kwargs):
 
             try:
@@ -125,6 +129,8 @@ class Runner():
                 if task_id:
                     
                     self.db.add_status_update(task_id, 'Failed', task_result)
+                    
+                raise exception
 
         return wrapper
 
@@ -141,9 +147,9 @@ class Runner():
         self.log(f'RUNNER queue_worker started: {os.getpid()}')
 
         while self.worker_active_flag.is_set():
-            
-            time.sleep(1)
 
+            time.sleep(1)
+            
             next_task = self.get_next_task()
 
             if next_task:
