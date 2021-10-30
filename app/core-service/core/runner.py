@@ -60,11 +60,6 @@ class Runner():
         
         self.log(f'RUNNER initiated: {self}')
         
-        self.log(f'RUNNER qiskit_token: {self.qiskit_token}')
-        self.log(f'RUNNER task_timeout: {self.task_timeout}')
-        self.log(f'RUNNER backend_avoid_list: {self.backend_avoid_list}')
-        self.log(f'RUNNER queue_workers_count: {self.queue_workers_count}')
-        
 
     def log(self, message, task_id=None):
         
@@ -150,7 +145,7 @@ class Runner():
 
             if next_task:
   
-                self.process_next_task(next_task=next_task)
+                self.process_next_task(next_task, self.task_timeout)
             
         self.log(f'RUNNER queue_worker exiting: {os.getpid()}')
 
@@ -161,7 +156,7 @@ class Runner():
         
         
     @exception_decorator      
-    def process_next_task(self, next_task):
+    def process_next_task(self, next_task, task_timeout):
         
         self.log(f'RUNNER next_task: {next_task}')
         
@@ -183,14 +178,14 @@ class Runner():
                                daemon=False)
                                  
         task_process.start()
-        task_process.join(self.task_timeout)
+        task_process.join(task_timeout)
         
         if task_process.is_alive():
 
             task_process.terminate()
             task_process.join()
             
-            raise TimeoutError(f"Task timeout: {self.task_timeout} seconds")
+            raise TimeoutError(f"Task timeout: {task_timeout} seconds")
                 
 
     @exception_decorator

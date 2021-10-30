@@ -63,15 +63,16 @@ def test_process_next_task(runner, get_test_task, undecorate):
     
     test_task = get_test_task()
     
-    runner.process_next_task(test_task)
+    runner.process_next_task(test_task, task_timeout=5)
 
 
 def test_process_next_task_timeout(runner, get_test_task, undecorate):
     
     test_task = get_test_task()
     
-    runner.process_next_task(test_task)
-    
+    with pytest.raises(TimeoutError, match=r"Task timeout: 0 seconds"):
+        runner.process_next_task(test_task, task_timeout=0)
+        
 
 def test_run_task(runner):
     ...
@@ -122,8 +123,6 @@ def mocks(monkeypatch_module, get_test_task):
     
     monkeypatch_module.setattr(Dynamo, "get_next_task", get_test_task)
     
-    monkeypatch_module.setenv("TASK_TIMEOUT", 0)
-    
 
 @pytest.fixture
 def undecorate(runner, monkeypatch):
@@ -137,3 +136,9 @@ def undecorate(runner, monkeypatch):
     monkeypatch.setattr(Runner, "get_next_task", undecorated_get_next_task)
     monkeypatch.setattr(Runner, "process_next_task", undecorated_process_next_task)
     monkeypatch.setattr(Runner, "run_task", undecorated_run_task)
+    
+
+@pytest.fixture
+def set_zero_task_timeout(monkeypatch):
+    
+    monkeypatch.setenv("TASK_TIMEOUT", '0')
