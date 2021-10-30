@@ -32,7 +32,7 @@ def run_tests_with_coverage():
     # pytest.main([test_path + '/test_algorithms.py', '-v', '-x'])
     # pytest.main([test_path + '/test_main.py', '-v', '-x'])
     
-    pytest.main([test_path + '/test_runner.py', '-v', '-x'])
+    pytest.main([test_path + '/test_runner.py', '-v', '-x', '-m not slow'])
     
     cov.stop()
     cov.save()

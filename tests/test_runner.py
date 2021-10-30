@@ -14,8 +14,14 @@ from multiprocessing import Process
 from concurrent.futures import ProcessPoolExecutor
 
 
-# def test_state(runner):
-#     assert os.environ.get('RUNNER_STATE') == 'Running'
+@pytest.mark.slow
+def test_start_stop(runner):
+    
+    runner.start()
+    assert os.environ.get('RUNNER_STATE') == 'Running'
+    
+    runner.stop()
+    assert os.environ.get('RUNNER_STATE') == 'Stopped'
 
 
 def test_log(runner):
@@ -30,78 +36,33 @@ def test_get_next_task(runner):
     runner.get_next_task()
     
  
-def test_queue_worker(runner):
+# def test_queue_worker(runner, undecorate):
     
-    # print(runner.queue_worker)
-    # print(Runner.queue_worker)
+#     runner.worker_active_flag.set()
     
-    # pytest.fail()
+#     def clear_worker_active_flag():
+#         runner.worker_active_flag.clear()
     
-    def clear_worker_active_flag():
-        runner.worker_active_flag.clear()
+#     test_timer = Timer(interval=1, function=clear_worker_active_flag)
+#     test_timer.start()
     
-    test_timer = Timer(interval=1, function=clear_worker_active_flag)
-    test_timer.start()
+#     runner.queue_worker()
     
-    runner.queue_worker.__wrapped__(self=runner)
 
-    # print('runner.queue_worker.__wrapped__', runner.queue_worker.__wrapped__)
     
     
-    # def decorator(function):
-    #     def wrapper():
-    #         return function()
-    #     return wrapper
-        
-    # @decorator
-    # def decorated():
-    #     pass
-    
-    # print('>>>', decorated.__closure__[0].cell_contents)
-    
-    # pytest.fail()
-    
-    # runner.queue_worker.__closure__[1].cell_contents()
-    
-    
-    # test_thread = Thread(target=runner.queue_worker)
-    # test_thread.start()
-    
-    # time.sleep(3)
-    
-    # runner.worker_active_flag.clear()
-    
-    
-    # test_process = Process(target=runner.queue_worker)
-    
-    # test_process.start()
-    # test_process.join(3)
-
-    # test_process.terminate()
-    # test_process.join()    
-    
-    # test_pool = ProcessPoolExecutor()
-    # test_pool.submit(runner.queue_worker)
-    
-    # runner.queue_worker()
-    
-    # runner.worker_active_flag.clear()
 
 
+    
 ###   Fixtures   ###
 
 @pytest.fixture(scope="module")
 def runner():
 
     db = Dynamo()    
-    runner = Runner(db
-    )
-    # runner.start()
+    runner = Runner(db)
     
     yield runner
-    
-    # runner.stop()
-    
 
 @pytest.fixture(scope="module")
 def monkeypatch_module(request):
@@ -118,7 +79,7 @@ def mocks(monkeypatch_module):
         pass
     
     def get_next_task(self):
-        return 'test_next_task'
+        return {'task_id': 'test_task_id'}
         
     monkeypatch_module.setattr(Dynamo, "add_task", stub)
     monkeypatch_module.setattr(Dynamo, "add_status_update", stub)
@@ -127,3 +88,11 @@ def mocks(monkeypatch_module):
     monkeypatch_module.setattr(Dynamo, "get_next_task", get_next_task)
     
 
+@pytest.fixture
+def undecorate(runner, monkeypatch):
+    
+    undecorated_queue_worker = runner.queue_worker.__wrapped__
+    undecorated_queue_worker_loop = runner.queue_worker_loop.__wrapped__
+    
+    monkeypatch.setattr(Runner, "queue_worker", undecorated_queue_worker)
+    monkeypatch.setattr(Runner, "queue_worker_loop", undecorated_queue_worker_loop)

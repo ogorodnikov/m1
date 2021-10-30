@@ -130,7 +130,7 @@ class Runner():
                     
                     self.db.add_status_update(task_id, 'Failed', task_result)
                     
-                raise exception
+                # raise exception
 
         return wrapper
 
