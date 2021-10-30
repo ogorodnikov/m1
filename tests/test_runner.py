@@ -14,7 +14,7 @@ from multiprocessing import Process
 from concurrent.futures import ProcessPoolExecutor
 
 
-@pytest.mark.slow
+# @pytest.mark.slow
 def test_start_stop(runner):
     
     runner.start()
@@ -36,23 +36,24 @@ def test_get_next_task(runner):
     runner.get_next_task()
     
  
-# def test_queue_worker(runner, undecorate):
+def test_queue_worker(runner, undecorate):
     
-#     runner.worker_active_flag.set()
+    runner.worker_active_flag.set()
     
-#     def clear_worker_active_flag():
-#         runner.worker_active_flag.clear()
+    def clear_worker_active_flag():
+        runner.worker_active_flag.clear()
     
-#     test_timer = Timer(interval=1, function=clear_worker_active_flag)
-#     test_timer.start()
+    test_timer = Timer(interval=1, function=clear_worker_active_flag)
+    test_timer.start()
     
-#     runner.queue_worker()
-    
-
-    
+    runner.queue_worker()
     
 
+def test_queue_worker_loop(runner):
+    ...
 
+def test_run_task(runner):
+    ...
     
 ###   Fixtures   ###
 
@@ -79,7 +80,15 @@ def mocks(monkeypatch_module):
         pass
     
     def get_next_task(self):
-        return {'task_id': 'test_task_id'}
+        
+        test_next_task = {
+            'task_id': '1', 
+            'run_values': 'test_run_values',
+            'algorithm_id': 'test_algorithm_id'
+        }
+        
+        return test_next_task
+        
         
     monkeypatch_module.setattr(Dynamo, "add_task", stub)
     monkeypatch_module.setattr(Dynamo, "add_status_update", stub)
@@ -93,6 +102,8 @@ def undecorate(runner, monkeypatch):
     
     undecorated_queue_worker = runner.queue_worker.__wrapped__
     undecorated_queue_worker_loop = runner.queue_worker_loop.__wrapped__
+    undecorated_run_task = runner.run_task.__wrapped__
     
     monkeypatch.setattr(Runner, "queue_worker", undecorated_queue_worker)
     monkeypatch.setattr(Runner, "queue_worker_loop", undecorated_queue_worker_loop)
+    monkeypatch.setattr(Runner, "run_task", undecorated_run_task)
