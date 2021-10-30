@@ -76,7 +76,7 @@ class Runner():
         self.worker_active_flag.set()
         
         self.queue_pool = ProcessPoolExecutor(max_workers=self.queue_workers_count,
-                                              initializer=self.queue_worker)
+                                              initializer=self.queue_worker_loop)
                                               
         self.queue_pool.submit(None)
         
@@ -133,32 +133,30 @@ class Runner():
         return wrapper
 
 
-    @exception_decorator    
-    def get_next_task(self):
-        
-        return self.db.get_next_task()
-        
-        
     @exception_decorator
-    def queue_worker(self):
+    def queue_worker_loop(self):
         
         self.log(f'RUNNER queue_worker started: {os.getpid()}')
 
         while self.worker_active_flag.is_set():
 
             time.sleep(1)
-            
             next_task = self.get_next_task()
 
             if next_task:
   
-                self.queue_worker_loop(next_task=next_task)
+                self.process_next_task(next_task=next_task)
             
         self.log(f'RUNNER queue_worker exiting: {os.getpid()}')
+
+
+    @exception_decorator    
+    def get_next_task(self):
+        return self.db.get_next_task()
         
         
     @exception_decorator      
-    def queue_worker_loop(self, next_task):
+    def process_next_task(self, next_task):
         
         self.log(f'RUNNER next_task: {next_task}')
         
@@ -171,10 +169,12 @@ class Runner():
         kwargs = {'task_id': int(task_id), 
                   'algorithm_id': algorithm_id, 
                   'run_values': run_values}
+                  
+        task_process_name = f"Process-task_{task_id}@{os.getpid()}"
         
         task_process = Process(target=self.run_task,
                                kwargs=kwargs,
-                               name=f"Task-process-{os.getpid()}",
+                               name=task_process_name,
                                daemon=False)
                                  
         task_process.start()
