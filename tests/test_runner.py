@@ -60,11 +60,23 @@ def test_get_next_task(runner, undecorate):
     
 
 def test_process_next_task(runner, get_test_task, undecorate):
-    runner.process_next_task(get_test_task())
+    
+    test_task = get_test_task()
+    
+    runner.process_next_task(test_task)
 
+
+def test_process_next_task_timeout(runner, get_test_task, undecorate):
+    
+    test_task = get_test_task()
+    
+    runner.process_next_task(test_task)
+    
 
 def test_run_task(runner):
     ...
+    
+    
     
 ###   Fixtures   ###
 
@@ -109,6 +121,8 @@ def mocks(monkeypatch_module, get_test_task):
     monkeypatch_module.setattr(Dynamo, "update_task_attribute", stub)
     
     monkeypatch_module.setattr(Dynamo, "get_next_task", get_test_task)
+    
+    monkeypatch_module.setenv("TASK_TIMEOUT", 0)
     
 
 @pytest.fixture

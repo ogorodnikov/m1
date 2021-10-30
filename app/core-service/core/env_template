@@ -1,6 +1,6 @@
 ###   Development settings
 
-VERSION = V.0.87
+VERSION = V.0.93
 
 REGION = us-east-1
 DOMAIN = m1.ogoro.me
@@ -14,16 +14,12 @@ NLB_NAME = m1-core-nlb
 USER_POOL = m1-user-pool
 USER_POOL_CLIENT = m1-user-pool-client
 
+CORE_BUCKET = m1-core-bucket
 TASKS_TABLE_NAME = m1-tasks-table
 ALGORITHMS_TABLE_NAME = m1-algorithms-table
 
-CORE_BUCKET = m1-core-bucket
-
-
-###   Qiskit
-
-QISKIT_TOKEN = ...
-
+TASK_TIMEOUT = 300
+QUEUE_WORKERS_PER_RUNNER = 1
 
 ###   Facebook App
 
@@ -38,7 +34,7 @@ QISKIT_TOKEN = ...
 # 2) Facebook Login > Settings > Valid OAuth Redirect URIs:
 #
 # 2.1) Dev login redirect from:
-# https://237bcfb1223a4e479432e7d62a7c73b6.vfs.cloud9.us-east-1.amazonaws.com/login
+# https://419c9499c3f34544843a88ea1ee032da.vfs.cloud9.us-east-1.amazonaws.com/login
 #
 # 2.2) Prod login redirect from:
 # https://m1.ogoro.me/login
@@ -48,6 +44,11 @@ QISKIT_TOKEN = ...
 
 FACEBOOK_CLIENT_ID = ...
 FACEBOOK_CLIENT_SECRET = ...
+
+
+###   Qiskit
+
+QISKIT_TOKEN = ...
 
 
 # Telegram

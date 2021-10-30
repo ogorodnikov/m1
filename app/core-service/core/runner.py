@@ -54,11 +54,16 @@ class Runner():
         self.worker_active_flag = Event()
         
         self.qiskit_token = os.environ.get('QISKIT_TOKEN')
-        self.task_timeout = os.environ.get('TASK_TIMEOUT')
+        self.task_timeout = int(os.environ.get('TASK_TIMEOUT'))
         self.backend_avoid_list = os.environ.get('BACKEND_AVOID_STRING').split()
-        self.queue_workers_count = os.environ.get('QUEUE_WORKERS_PER_RUNNER')
+        self.queue_workers_count = int(os.environ.get('QUEUE_WORKERS_PER_RUNNER'))
         
         self.log(f'RUNNER initiated: {self}')
+        
+        self.log(f'RUNNER qiskit_token: {self.qiskit_token}')
+        self.log(f'RUNNER task_timeout: {self.task_timeout}')
+        self.log(f'RUNNER backend_avoid_list: {self.backend_avoid_list}')
+        self.log(f'RUNNER queue_workers_count: {self.queue_workers_count}')
         
 
     def log(self, message, task_id=None):

@@ -17,7 +17,6 @@ class Config():
         self.DOMAIN = os.getenv('DOMAIN')
         self.VERSION = os.getenv('VERSION')
         self.SECRET_KEY = os.getenv('SECRET_KEY')
-        self.TASK_ROLLOVER_SIZE = int(os.getenv('TASK_ROLLOVER_SIZE'))
 
         self.CORE_BUCKET = os.getenv('CORE_BUCKET')        
         self.TASKS_TABLE_NAME = os.getenv('TASKS_TABLE_NAME')
@@ -32,9 +31,12 @@ class Config():
         self.NLB_NAME = os.getenv('NLB_NAME')
         self.AWS_NLB = self.get_nlb_dns(self.NLB_NAME)
         os.environ['AWS_NLB'] = self.AWS_NLB
-      
-        self.TASK_TIMEOUT = 300
-        self.QUEUE_WORKERS_PER_RUNNER = 1
+
+        self.TASK_TIMEOUT = int(os.environ['TASK_TIMEOUT'])
+        self.TASK_ROLLOVER_SIZE = int(os.getenv('TASK_ROLLOVER_SIZE'))
+        
+        self.QUEUE_WORKERS_PER_RUNNER = int(os.environ['QUEUE_WORKERS_PER_RUNNER'])
+
         self.BACKEND_AVOID_STRING = 'ibmq_bogota'
         os.environ['BACKEND_AVOID_STRING'] = self.BACKEND_AVOID_STRING
         
