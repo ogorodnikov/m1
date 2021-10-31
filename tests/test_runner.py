@@ -14,7 +14,7 @@ from multiprocessing import Process
 from concurrent.futures import ProcessPoolExecutor
 
 
-@pytest.mark.slow
+# @pytest.mark.slow
 def test_start_stop(runner):
     
     runner.start()
@@ -74,9 +74,31 @@ def test_process_next_task_timeout(runner, get_test_task, undecorate):
         runner.process_next_task(test_task, task_timeout=0)
         
 
-def test_run_task(runner):
-    ...
+def test_run_task_classical(runner, undecorate):
+
+    test_task = {'task_id': '1', 
+                 'run_values': {'run_mode': 'classical', 'a': '345', 'b': '455244237'},
+                 'algorithm_id': 'egcd'}
+
+    runner.run_task(**test_task)
     
+
+def test_run_task_simulator(runner, undecorate):
+
+    test_task = {'task_id': '1', 
+                 'run_values': {'run_mode': 'simulator', 'secret': '1010'},
+                 'algorithm_id': 'bernvaz'}
+
+    runner.run_task(**test_task)
+
+
+def test_run_task_quantum(runner, undecorate):
+
+    test_task = {'task_id': '1', 
+                 'run_values': {'run_mode': 'quantum_device', 'secret': '1010'},
+                 'algorithm_id': 'bernvaz'}
+
+    runner.run_task(**test_task)   
     
     
 ###   Fixtures   ###
@@ -103,8 +125,8 @@ def get_test_task():
     def get_test_task_wrapper(*args, **kwargs):
     
         test_task = {'task_id': '1', 
-                     'run_values': 'test_run_values',
-                     'algorithm_id': 'test_algorithm_id'}
+                     'run_values': {'run_mode': 'classical', 'a': '345', 'b': '455244237'},
+                     'algorithm_id': 'egcd'}
         
         return test_task
     

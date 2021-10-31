@@ -166,14 +166,14 @@ class Runner():
         
         self.db.add_status_update(task_id, 'Running', '')
         
-        kwargs = {'task_id': int(task_id), 
-                  'algorithm_id': algorithm_id, 
-                  'run_values': run_values}
+        task = {'task_id': int(task_id), 
+                'algorithm_id': algorithm_id, 
+                'run_values': run_values}
                   
         task_process_name = f"Process-task_{task_id}@{os.getpid()}"
         
         task_process = Process(target=self.run_task,
-                               kwargs=kwargs,
+                               kwargs=task,
                                name=task_process_name,
                                daemon=False)
                                  
@@ -189,11 +189,11 @@ class Runner():
                 
 
     @exception_decorator
-    def run_task(self, **kwargs):
+    def run_task(self, **task):
         
-        task_id = kwargs.get('task_id')
-        run_values = kwargs.get('run_values')
-        algorithm_id = kwargs.get('algorithm_id')
+        task_id = task.get('task_id')
+        run_values = task.get('run_values')
+        algorithm_id = task.get('algorithm_id')
         
         run_mode = run_values.get('run_mode')
         run_values['task_id'] = task_id
