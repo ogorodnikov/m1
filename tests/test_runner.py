@@ -86,27 +86,36 @@ def test_run_task_classical(runner, undecorate):
     runner.run_task(**test_task)
     
 
-def test_run_task_simulator(runner, undecorate):
+def test_run_task_simulator(runner, monkeypatch, undecorate):
 
     test_task = {'task_id': '1', 
                  'run_values': {'run_mode': 'simulator', 'secret': '1010'},
                  'algorithm_id': 'bernvaz'}
+                 
+    def get_dummy_run_result(*args, **kwargs):
+        
+        class DummyRunResult:
+            def get_counts(self):
+                return dict()
+                
+        return DummyRunResult()
+        
+    def get_none(*args, **kwargs):
+        return None
+                 
+    monkeypatch.setattr(Runner, "execute_task", get_dummy_run_result)
+    monkeypatch.setattr(Runner, "handle_statevector", get_none)
 
     runner.run_task(**test_task)
 
 
-def test_run_task_quantum(runner, undecorate):
+# def test_run_task_quantum(runner, undecorate):
     
-    # IBMQ.load_account()
-    # ibmq_provider = IBMQ.get_provider()
-    
-    # print(f"ibmq_provider {ibmq_provider}")
+#     test_task = {'task_id': '1', 
+#                  'run_values': {'run_mode': 'quantum_device', 'secret': '1010'},
+#                  'algorithm_id': 'bernvaz'}
 
-    test_task = {'task_id': '1', 
-                 'run_values': {'run_mode': 'quantum_device', 'secret': '1010'},
-                 'algorithm_id': 'bernvaz'}
-
-    runner.run_task(**test_task)   
+#     runner.run_task(**test_task)   
     
     
 ###   Fixtures   ###
