@@ -90,9 +90,8 @@ def test_execute_task(runner, mock_monitor_job):
     runner.execute_task(task_id=None, circuit=test_circuit, backend=test_backend)
     
     
-def test_monitor_job(runner, mock_job):
-    runner.monitor_job(task_id=None, job=mock_job, interval=0)
-
+def test_monitor_job(runner, test_job):
+    runner.monitor_job(task_id=None, job=test_job, interval=0)
 
     
 # def test_handle_statevector():
@@ -232,21 +231,21 @@ def mock_monitor_job(monkeypatch):
     
     
 @pytest.fixture
-def mock_job():
+def test_job():
 
-    class MockStatus:
+    class Status:
         
         def __init__(self, name):
             self.name = name
         
-    class MockJob:
+    class TestJob:
         
-        status_queue = [MockStatus('DONE'), MockStatus('QUEUED')]
+        status_queue = [Status('DONE'), Status('QUEUED')]
         
         def status(self):
-            return MockJob.status_queue.pop()
+            return __class__.status_queue.pop()
             
         def queue_position(self):
             pass
             
-    return MockJob()
+    return TestJob()
