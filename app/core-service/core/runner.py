@@ -213,9 +213,9 @@ class Runner():
         
         if run_mode == 'classical':
             
-            function_result = runner_function(run_values, task_log_callback)
+            run_result = runner_function(run_values, task_log_callback)
             
-            result = {'Result': function_result}
+            result = {'Result': run_result}
 
         
         elif run_mode == 'simulator':
@@ -266,7 +266,7 @@ class Runner():
             
             post_processing_function = Runner.post_processing[algorithm_id]
             
-            post_processing_result = post_processing_function(counts, task_log_callback)
+            post_processing_result = post_processing_function(run_result, task_log_callback)
             
             result = {'Result': post_processing_result}
             

@@ -57,7 +57,9 @@ def qpe(run_values, task_log):
     return circuit
     
     
-def qpe_post_processing(counts, task_log):
+def qpe_post_processing(run_result, task_log):
+    
+    counts = run_result.get_counts()
     
     counts_decimals = {int(state, 2): count for state, count in counts.items()}
     

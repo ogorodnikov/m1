@@ -134,7 +134,9 @@ def sympy_modulus(x, modulus):
     return numerator * mod_inverse(denominator, modulus) % modulus
 
 
-def simon_post_processing(counts, task_log):
+def simon_post_processing(run_result, task_log):
+    
+    counts = run_result.get_counts()
     
     counts_median = max(counts.values()) / 2
     
