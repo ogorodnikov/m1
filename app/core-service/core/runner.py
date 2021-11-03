@@ -61,6 +61,7 @@ class Runner():
         self.queue_workers_count = int(os.environ.get('QUEUE_WORKERS_PER_RUNNER'))
         
         self.ibmq_provider = None
+        self.simulator_backend = None
         
         self.log(f'RUNNER initiated: {self}')
         
@@ -76,6 +77,8 @@ class Runner():
     def start(self):
 
         self.ibmq_provider = IBMQ.enable_account(self.qiskit_token)
+        
+        self.simulator_backend = Aer.get_backend('aer_simulator')
         
         self.worker_active_flag.set()
         
@@ -223,13 +226,11 @@ class Runner():
             circuit = runner_function(run_values, task_log_callback)
             qubit_count = circuit.num_qubits
             
-            backend = Aer.get_backend('aer_simulator')
-            
-            self.log(f'RUNNER backend: {backend}', task_id)
-            
             circuit.save_statevector()
             
-            run_result = self.execute_task(task_id, circuit, backend)
+            self.log(f'RUNNER backend: {self.simulator_backend}', task_id)
+            
+            run_result = self.execute_task(task_id, circuit, self.simulator_backend)
             counts = run_result.get_counts()
             
             self.handle_statevector(run_result, qubit_count, task_id)

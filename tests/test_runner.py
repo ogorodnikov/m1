@@ -6,11 +6,19 @@ from threading import Timer
 
 from _pytest.monkeypatch import MonkeyPatch
 
+# from qiskit import execute
+
 from core.runner import Runner
 from core.dynamo import Dynamo
 
 
-# @pytest.mark.slow
+from qiskit import Aer
+from qiskit import QuantumCircuit
+
+from qiskit.test.mock import FakeQasmSimulator
+
+
+@pytest.mark.slow
 def test_start_stop(runner):
     
     runner.start()
@@ -38,6 +46,7 @@ def test_exception_decorator(runner):
     decorated_raise_exception(runner, task_id='test_task_id')
         
 
+@pytest.mark.slow
 def test_queue_worker_loop(runner, undecorate):
     
     runner.worker_active_flag.set()
@@ -78,20 +87,30 @@ def test_run_task_classical(runner, test_task, run_mode, mock_runner_functions,
     runner.run_task(**test_task)
     
 
-def test_execute_task():
-    ...
+def test_execute_task(runner):
     
-def test_monitor_job():
-    ...
+    # test_backend = FakeTokyo()
     
-def test_handle_statevector():
-    ...
+    # test_backend = FakeQasmSimulator()
     
-def test_get_least_busy_backend():
-    ...
+    test_circuit = QuantumCircuit()
     
-def test_plot_statevector_figure():
-    ...
+    test_backend = Aer.get_backend('aer_simulator')
+    
+    runner.execute_task(task_id=1, circuit=test_circuit, backend=test_backend)
+    
+    
+# def test_monitor_job():
+#     ...
+    
+# def test_handle_statevector():
+#     ...
+    
+# def test_get_least_busy_backend():
+#     ...
+    
+# def test_plot_statevector_figure():
+#     ...
     
     
 ###   Fixtures   ###
@@ -211,4 +230,11 @@ def mock_ibmq_backend(monkeypatch):
     monkeypatch.setattr(Runner, "handle_statevector", get_none)
     
 
+# @pytest.fixture
+# def mock_ibmq_execute_monitor(monkeypatch):
     
+#     def get_none(*args, **kwargs):
+#         return None
+
+#     monkeypatch.setattr(qiskit, "execute", get_none)  
+#     monkeypatch.setattr(Runner, "monitor_job", get_none)
