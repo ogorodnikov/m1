@@ -58,6 +58,8 @@ class Runner():
         self.backend_avoid_list = os.environ.get('BACKEND_AVOID_STRING').split()
         self.queue_workers_count = int(os.environ.get('QUEUE_WORKERS_PER_RUNNER'))
         
+        self.ibmq_provider = None
+        
         self.log(f'RUNNER initiated: {self}')
         
 
@@ -71,7 +73,7 @@ class Runner():
     
     def start(self):
 
-        IBMQ.enable_account(self.qiskit_token)
+        self.ibmq_provider = IBMQ.enable_account(self.qiskit_token)
         
         self.worker_active_flag.set()
         
@@ -219,7 +221,7 @@ class Runner():
             circuit = runner_function(run_values, task_log_callback)
             qubit_count = circuit.num_qubits
             
-            backend = Aer.get_backend('qasm_simulator')
+            backend = Aer.get_backend('aer_simulator')
             
             self.log(f'RUNNER backend: {backend}', task_id)
             
@@ -242,11 +244,9 @@ class Runner():
             circuit = runner_function(run_values, task_log_callback)
             qubit_count = circuit.num_qubits       
                 
-            ibmq_provider = IBMQ.get_provider()
+            self.log(f'RUNNER ibmq_provider: {self.ibmq_provider}', task_id)
             
-            self.log(f'RUNNER ibmq_provider: {ibmq_provider}', task_id)
-            
-            backend = self.get_least_busy_backend(ibmq_provider, qubit_count)
+            backend = self.get_least_busy_backend(self.ibmq_provider, qubit_count)
             
             self.log(f'RUNNER backend: {backend}', task_id)
             

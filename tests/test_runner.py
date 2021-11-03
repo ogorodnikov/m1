@@ -14,6 +14,9 @@ from multiprocessing import Process
 from concurrent.futures import ProcessPoolExecutor
 
 
+from qiskit import IBMQ
+
+
 # @pytest.mark.slow
 def test_start_stop(runner):
     
@@ -93,6 +96,11 @@ def test_run_task_simulator(runner, undecorate):
 
 
 def test_run_task_quantum(runner, undecorate):
+    
+    # IBMQ.load_account()
+    # ibmq_provider = IBMQ.get_provider()
+    
+    # print(f"ibmq_provider {ibmq_provider}")
 
     test_task = {'task_id': '1', 
                  'run_values': {'run_mode': 'quantum_device', 'secret': '1010'},
