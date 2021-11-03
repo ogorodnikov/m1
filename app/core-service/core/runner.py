@@ -322,27 +322,11 @@ class Runner():
             state = f'{state_index:0{qubit_count}b}'
                 
             self.log(f'{state}: {probability_amplitude}', task_id)
-                
-        self.plot_statevector_figure(task_id, statevector)
+
+        self.plot_statevector_figure(statevector, task_id)
         
     
-    def get_least_busy_backend(self, provider, qubit_count):
-    
-        backend_filter = lambda backend: (not backend.configuration().simulator 
-                                          and backend.configuration().n_qubits >= qubit_count
-                                          and backend.status().operational==True
-                                          and backend.name() not in self.backend_avoid_list)
-                                          
-        filtered_backends = provider.backends(filters=backend_filter)
-        
-        if filtered_backends:
-            return least_busy(filtered_backends)
-        
-        else:
-            raise ValueError(f"No IBMQ backends match specified qubit_count: {qubit_count}")
-        
-    
-    def plot_statevector_figure(self, task_id, statevector):
+    def plot_statevector_figure(self, statevector, task_id):
         
         figure = plot_bloch_multivector(statevector)
     
@@ -359,3 +343,19 @@ class Runner():
                                   to_path=s3_figure_path)
         
         self.log(f'RUNNER statevector figure: {figure}', task_id)
+        
+        
+    def get_least_busy_backend(self, provider, qubit_count):
+    
+        backend_filter = lambda backend: (not backend.configuration().simulator 
+                                          and backend.configuration().n_qubits >= qubit_count
+                                          and backend.status().operational==True
+                                          and backend.name() not in self.backend_avoid_list)
+                                          
+        filtered_backends = provider.backends(filters=backend_filter)
+        
+        if filtered_backends:
+            return least_busy(filtered_backends)
+        
+        else:
+            raise ValueError(f"No IBMQ backends match specified qubit_count: {qubit_count}")

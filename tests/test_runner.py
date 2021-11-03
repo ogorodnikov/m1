@@ -7,7 +7,6 @@ from threading import Timer
 from _pytest.monkeypatch import MonkeyPatch
 
 from qiskit import QuantumCircuit
-from qiskit.test.mock import FakeJob
 
 from core.runner import Runner
 from core.dynamo import Dynamo
@@ -91,11 +90,11 @@ def test_execute_task(runner, mock_monitor_job):
     
     
 def test_monitor_job(runner, test_job):
-    runner.monitor_job(task_id=None, job=test_job, interval=0)
+    runner.monitor_job(job=test_job, task_id=None, interval=0)
 
     
-# def test_handle_statevector():
-#     ...
+def test_handle_statevector(runner, test_run_result, mock_plot_statevector_figure):
+    runner.handle_statevector(run_result=test_run_result, qubit_count=0, task_id=None)
     
 # def test_get_least_busy_backend():
 #     ...
@@ -203,21 +202,29 @@ def mock_runner_functions(runner, monkeypatch, request):
 
 
 @pytest.fixture
-def mock_ibmq_backend(monkeypatch):
+def test_run_result():
     
-    def get_dummy_run_result(*args, **kwargs):
-        
-        class DummyRunResult:
-            def get_counts(self):
-                return dict()
+    class TestRunResult:
+        def get_counts(self):
+            return {'test_state': 0}
+            
+        def get_statevector(self, decimals):
+            return [0, 0, 1, 0]
                 
-        return DummyRunResult()
+    return TestRunResult()
+    
+
+@pytest.fixture
+def mock_ibmq_backend(monkeypatch, test_run_result):
+    
+    def get_test_run_result(*args, **kwargs):
+        return test_run_result
         
     def get_none(*args, **kwargs):
         return None
 
     monkeypatch.setattr(Runner, "get_least_busy_backend", get_none)                 
-    monkeypatch.setattr(Runner, "execute_task", get_dummy_run_result)
+    monkeypatch.setattr(Runner, "execute_task", get_test_run_result)
     monkeypatch.setattr(Runner, "handle_statevector", get_none)
     
 
@@ -249,3 +256,12 @@ def test_job():
             pass
             
     return TestJob()
+    
+
+@pytest.fixture
+def mock_plot_statevector_figure(monkeypatch):
+    
+    def stub(*args, **kwargs):
+        pass
+
+    monkeypatch.setattr(Runner, "plot_statevector_figure", stub)
