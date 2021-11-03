@@ -235,7 +235,7 @@ class Runner():
             self.handle_statevector(run_result, qubit_count, task_id)
 
             self.log(f'RUNNER run_result: {run_result}', task_id)
-            self.log(f'RUNNER counts:')
+            self.log(f'RUNNER counts:', task_id)
             [self.log(f'{state}: {count}', task_id) for state, count in sorted(counts.items())]
             
             result = {'Counts': counts}
@@ -256,7 +256,7 @@ class Runner():
             counts = run_result.get_counts()
 
             self.log(f'RUNNER run_result: {run_result}', task_id)
-            self.log(f'RUNNER counts:')
+            self.log(f'RUNNER counts:', task_id)
             [self.log(f'{state}: {count}', task_id) for state, count in sorted(counts.items())]
             
             result = {'Counts': counts}
@@ -270,7 +270,7 @@ class Runner():
             
             result = {'Result': post_processing_result}
             
-        
+            
         self.log(f'RUNNER result: {result}', task_id)
 
         self.db.add_status_update(task_id, 'Done', result)
