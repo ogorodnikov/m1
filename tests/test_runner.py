@@ -34,7 +34,7 @@ def test_run_algorithm(runner):
 
 def test_exception_decorator(runner):
     
-    def raise_exception():
+    def raise_exception(*args, **kwargs):
         raise UserWarning
         
     decorated_raise_exception = Runner.exception_decorator(raise_exception)
@@ -161,10 +161,7 @@ def get_test_task(test_task):
     
 
 @pytest.fixture(autouse=True, scope="module")
-def mocks(monkeypatch_module, get_test_task):
-    
-    def stub(*args, **kwargs):
-        pass
+def mocks(monkeypatch_module, get_test_task, stub):
     
     monkeypatch_module.setattr(Dynamo, "add_task", stub)
     monkeypatch_module.setattr(Dynamo, "add_status_update", stub)
@@ -189,17 +186,8 @@ def undecorate(runner, monkeypatch):
     
 
 @pytest.fixture
-def set_zero_task_timeout(monkeypatch):
-    
-    monkeypatch.setenv("TASK_TIMEOUT", '0')
+def mock_runner_functions(runner, monkeypatch, request, stub):
 
-
-@pytest.fixture
-def mock_runner_functions(runner, monkeypatch, request):
-
-    def get_none(*args, **kwargs):
-        return None
-        
     def get_dummy_circuit(*args, **kwargs):
         
         class DummyCircuit:
@@ -215,7 +203,7 @@ def mock_runner_functions(runner, monkeypatch, request):
     
     if request.param == 'post_processing':
         
-        monkeypatch.setitem(runner.post_processing, "test_algorithm", get_none)
+        monkeypatch.setitem(runner.post_processing, "test_algorithm", stub)
 
 
 @pytest.fixture
@@ -232,25 +220,18 @@ def test_run_result():
     
 
 @pytest.fixture
-def mock_ibmq_backend(monkeypatch, test_run_result):
+def mock_ibmq_backend(monkeypatch, test_run_result, stub):
     
     def get_test_run_result(*args, **kwargs):
         return test_run_result
-        
-    def get_none(*args, **kwargs):
-        return None
 
-    monkeypatch.setattr(Runner, "get_least_busy_backend", get_none)                 
+    monkeypatch.setattr(Runner, "get_least_busy_backend", stub)                 
     monkeypatch.setattr(Runner, "execute_task", get_test_run_result)
-    monkeypatch.setattr(Runner, "handle_statevector", get_none)
+    monkeypatch.setattr(Runner, "handle_statevector", stub)
     
 
 @pytest.fixture
-def mock_monitor_job(monkeypatch):
-    
-    def stub(*args, **kwargs):
-        pass
-
+def mock_monitor_job(monkeypatch, stub):
     monkeypatch.setattr(Runner, "monitor_job", stub)
     
     
@@ -276,11 +257,7 @@ def test_job():
     
 
 @pytest.fixture
-def mock_plot_statevector_figure(monkeypatch):
-    
-    def stub(*args, **kwargs):
-        pass
-
+def mock_plot_statevector_figure(monkeypatch, stub):
     monkeypatch.setattr(Runner, "plot_statevector_figure", stub)
     
 
@@ -299,9 +276,5 @@ def test_provider():
     
 
 @pytest.fixture
-def mock_least_busy(monkeypatch):
-    
-    def stub(*args, **kwargs):
-        pass
-    
+def mock_least_busy(monkeypatch, stub):
     monkeypatch.setattr("core.runner.least_busy", stub)

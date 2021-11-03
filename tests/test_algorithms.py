@@ -29,7 +29,7 @@ test_data = {
                              
     dj: {'secret': '1010'},
     
-    simon: {'period': '1010', 'masquerade': 'True'},
+    simon: {'period': '10101010', 'masquerade': 'True'},
     partial(simon): {'period': '0000', 'masquerade': 'True'},
     
     qft: {'number': '101'},
