@@ -44,6 +44,8 @@ class Runner():
                    
     post_processing = {'simon': simon_post_processing,
                        'qpe': qpe_post_processing}
+                       
+    DEFAULT_TASK_TIMEOUT = 300
 
     def __init__(self, db, *args, **kwargs):
         
@@ -158,7 +160,7 @@ class Runner():
         
         
     @exception_decorator      
-    def process_next_task(self, next_task, task_timeout):
+    def process_next_task(self, next_task, task_timeout=DEFAULT_TASK_TIMEOUT):
         
         self.log(f'RUNNER next_task: {next_task}')
         

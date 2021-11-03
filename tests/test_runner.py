@@ -17,7 +17,7 @@ from concurrent.futures import ProcessPoolExecutor
 from qiskit import IBMQ
 
 
-# @pytest.mark.slow
+@pytest.mark.slow
 def test_start_stop(runner):
     
     runner.start()
@@ -66,7 +66,7 @@ def test_process_next_task(runner, get_test_task, undecorate):
     
     test_task = get_test_task()
     
-    runner.process_next_task(test_task, task_timeout=5)
+    runner.process_next_task(test_task)
 
 
 def test_process_next_task_timeout(runner, get_test_task, undecorate):
@@ -80,39 +80,36 @@ def test_process_next_task_timeout(runner, get_test_task, undecorate):
 def test_run_task_classical(runner, undecorate):
 
     test_task = {'task_id': '1', 
-                 'run_values': {'run_mode': 'classical', 'a': '345', 'b': '455244237'},
+                 'run_values': {
+                     'run_mode': 'classical', 'a': '345', 'b': '455244237'},
                  'algorithm_id': 'egcd'}
 
     runner.run_task(**test_task)
     
 
-def test_run_task_simulator(runner, monkeypatch, undecorate):
+def test_run_task_simulator(runner, mock_runner_functions, mock_ibmq_backend, undecorate):
 
     test_task = {'task_id': '1', 
                  'run_values': {'run_mode': 'simulator', 'secret': '1010'},
-                 'algorithm_id': 'bernvaz'}
+                 'algorithm_id': 'test_algorithm'}
                  
-    def get_dummy_run_result(*args, **kwargs):
-        
-        class DummyRunResult:
-            def get_counts(self):
-                return dict()
-                
-        return DummyRunResult()
-        
-    def get_none(*args, **kwargs):
-        return None
-                 
-    monkeypatch.setattr(Runner, "execute_task", get_dummy_run_result)
-    monkeypatch.setattr(Runner, "handle_statevector", get_none)
-
     runner.run_task(**test_task)
 
 
-# def test_run_task_quantum(runner, undecorate):
+def test_run_task_quantum(runner, mock_runner_functions, mock_ibmq_backend, undecorate):
+    
+    test_task = {'task_id': '1', 
+                 'run_values': {'run_mode': 'quantum_device', 'secret': '1010'},
+                 'algorithm_id': 'test_algorithm'}
+
+    runner.run_task(**test_task)
+    
+
+# def test_run_task_post_processing(runner, mock_runner_functions, mock_post_processing, 
+#                                   mock_ibmq_backend, undecorate):
     
 #     test_task = {'task_id': '1', 
-#                  'run_values': {'run_mode': 'quantum_device', 'secret': '1010'},
+#                  'run_values': {'run_mode': 'simulator', 'secret': '1010'},
 #                  'algorithm_id': 'bernvaz'}
 
 #     runner.run_task(**test_task)   
@@ -142,7 +139,8 @@ def get_test_task():
     def get_test_task_wrapper(*args, **kwargs):
     
         test_task = {'task_id': '1', 
-                     'run_values': {'run_mode': 'classical', 'a': '345', 'b': '455244237'},
+                     'run_values': {
+                         'run_mode': 'classical', 'a': '345', 'b': '455244237'},
                      'algorithm_id': 'egcd'}
         
         return test_task
@@ -181,3 +179,55 @@ def undecorate(runner, monkeypatch):
 def set_zero_task_timeout(monkeypatch):
     
     monkeypatch.setenv("TASK_TIMEOUT", '0')
+
+
+@pytest.fixture
+def mock_runner_functions(runner, monkeypatch):
+    
+    def get_dummy_circuit(*args, **kwargs):
+        
+        class DummyCircuit:
+            
+            num_qubits = None
+            
+            def save_statevector(self):
+                pass
+                
+        return DummyCircuit()
+    
+    monkeypatch.setitem(runner.runner_functions, "test_algorithm", get_dummy_circuit)
+    
+    # runner_functions = {'egcd': egcd,
+    #                     'bernvaz': bernvaz,
+    #                     'grover': grover,
+    #                     'grover_sudoku': grover_sudoku,
+    #                     'dj': dj,
+    #                     'simon': simon,
+    #                     'qft': qft,
+    #                     'qpe': qpe,
+    #                     'shor': shor}
+                   
+    # post_processing = {'simon': simon_post_processing,
+    #                   'qpe': qpe_post_processing}
+    
+    
+@pytest.fixture
+def mock_ibmq_backend(monkeypatch):
+    
+    def get_dummy_run_result(*args, **kwargs):
+        
+        class DummyRunResult:
+            def get_counts(self):
+                return dict()
+                
+        return DummyRunResult()
+        
+    def get_none(*args, **kwargs):
+        return None
+
+    monkeypatch.setattr(Runner, "get_least_busy_backend", get_none)                 
+    monkeypatch.setattr(Runner, "execute_task", get_dummy_run_result)
+    monkeypatch.setattr(Runner, "handle_statevector", get_none)
+    
+
+    
