@@ -8,6 +8,8 @@ from _pytest.monkeypatch import MonkeyPatch
 
 from qiskit import QuantumCircuit
 
+# from qiskit.providers.ibmq import least_busy
+
 from core.runner import Runner
 from core.dynamo import Dynamo
 
@@ -95,14 +97,30 @@ def test_monitor_job(runner, test_job):
     
 def test_handle_statevector(runner, test_run_result, mock_plot_statevector_figure):
     runner.handle_statevector(run_result=test_run_result, qubit_count=0, task_id=None)
+
+
+@pytest.mark.filterwarnings("ignore::PendingDeprecationWarning")
+@pytest.mark.filterwarnings("ignore::::69")
+def test_plot_statevector_figure(runner, test_run_result):
+
+    test_statevector = test_run_result.get_statevector(decimals=0)
     
-# def test_get_least_busy_backend():
-#     ...
+    runner.plot_statevector_figure(statevector=test_statevector, task_id=None)
     
-# def test_plot_statevector_figure():
-#     ...
+
+
+def test_get_least_busy_backend_ok(runner, test_provider, mock_least_busy):
+    test_provider.backends_list = 'test_backends'
+    runner.get_least_busy_backend(test_provider, qubit_count=0)
     
-    
+
+def test_get_least_busy_backend_exception(runner, test_provider, mock_least_busy):
+    with pytest.raises(ValueError):
+        runner.get_least_busy_backend(test_provider, qubit_count=0)
+
+
+
+
 ###   Fixtures   ###
 
 @pytest.fixture(scope="module")
@@ -114,7 +132,7 @@ def runner():
     yield runner
 
 @pytest.fixture(scope="module")
-def monkeypatch_module(request):
+def monkeypatch_module():
     
     monkeypatch_module = MonkeyPatch()
     yield monkeypatch_module
@@ -153,6 +171,7 @@ def mocks(monkeypatch_module, get_test_task):
     monkeypatch_module.setattr(Dynamo, "add_task", stub)
     monkeypatch_module.setattr(Dynamo, "add_status_update", stub)
     monkeypatch_module.setattr(Dynamo, "update_task_attribute", stub)
+    monkeypatch_module.setattr(Dynamo, "move_figure_to_s3", stub)
     
     monkeypatch_module.setattr(Dynamo, "get_next_task", get_test_task)
     
@@ -265,3 +284,26 @@ def mock_plot_statevector_figure(monkeypatch):
         pass
 
     monkeypatch.setattr(Runner, "plot_statevector_figure", stub)
+    
+
+@pytest.fixture
+def test_provider():
+
+    class TestProvider:
+        
+        def __init__(self):
+            self.backends_list = None
+        
+        def backends(self, filters):
+            return self.backends_list
+
+    return TestProvider()
+    
+
+@pytest.fixture
+def mock_least_busy(monkeypatch):
+    
+    def stub(*args, **kwargs):
+        pass
+    
+    monkeypatch.setattr("core.runner.least_busy", stub)
