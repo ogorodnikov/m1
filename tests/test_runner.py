@@ -62,50 +62,31 @@ def test_get_next_task(runner, undecorate):
     runner.get_next_task()
     
 
-def test_process_next_task(runner, get_test_task, undecorate):
-    
-    test_task = get_test_task()
-    
+def test_process_next_task(runner, test_task, undecorate):
     runner.process_next_task(test_task)
 
 
-def test_process_next_task_timeout(runner, get_test_task, undecorate):
-    
-    test_task = get_test_task()
-    
+def test_process_next_task_timeout(runner, test_task, undecorate):
     with pytest.raises(TimeoutError, match=r"Task timeout: 0 seconds"):
         runner.process_next_task(test_task, task_timeout=0)
         
-
-def test_run_task_classical(runner, undecorate):
-
-    test_task = {'task_id': '1', 
-                 'run_values': {
-                     'run_mode': 'classical', 'a': '345', 'b': '455244237'},
-                 'algorithm_id': 'egcd'}
-
+@pytest.mark.parametrize("run_mode", ('classical', 'simulator', 'quantum_device'))
+def test_run_task_classical(runner, test_task, run_mode, mock_runner_functions, mock_ibmq_backend, undecorate):
+    test_task['run_values']['run_mode'] = run_mode
     runner.run_task(**test_task)
     
 
-def test_run_task_simulator(runner, mock_runner_functions, mock_ibmq_backend, undecorate):
-
-    test_task = {'task_id': '1', 
-                 'run_values': {'run_mode': 'simulator', 'secret': '1010'},
-                 'algorithm_id': 'test_algorithm'}
-                 
-    runner.run_task(**test_task)
+# def test_run_task_simulator(runner, test_task, mock_runner_functions, mock_ibmq_backend, undecorate):
+#     test_task['run_values']['run_mode'] = 'simulator'
+#     runner.run_task(**test_task)
 
 
-def test_run_task_quantum(runner, mock_runner_functions, mock_ibmq_backend, undecorate):
-    
-    test_task = {'task_id': '1', 
-                 'run_values': {'run_mode': 'quantum_device', 'secret': '1010'},
-                 'algorithm_id': 'test_algorithm'}
-
-    runner.run_task(**test_task)
+# def test_run_task_quantum(runner, test_task, mock_runner_functions, mock_ibmq_backend, undecorate):
+#     test_task['run_values']['run_mode'] = 'quantum_device'    
+#     runner.run_task(**test_task)
     
 
-# def test_run_task_post_processing(runner, mock_runner_functions, mock_post_processing, 
+# def test_run_task_post_processing(runner, test_task, mock_runner_functions, mock_post_processing, 
 #                                   mock_ibmq_backend, undecorate):
     
 #     test_task = {'task_id': '1', 
@@ -134,15 +115,23 @@ def monkeypatch_module(request):
     
 
 @pytest.fixture(scope="module")
-def get_test_task():
+def test_task():
+    
+    test_task = {'task_id': '1', 
+                 'run_values': {
+                     'run_mode': 'test_mode', 
+                     'test_parameter_a': 'value_a', 
+                     'test_parameter_b': 'value_b',
+                 },
+                 'algorithm_id': 'test_algorithm'}
+                 
+    return test_task
+
+
+@pytest.fixture(scope="module")
+def get_test_task(test_task):
     
     def get_test_task_wrapper(*args, **kwargs):
-    
-        test_task = {'task_id': '1', 
-                     'run_values': {
-                         'run_mode': 'classical', 'a': '345', 'b': '455244237'},
-                     'algorithm_id': 'egcd'}
-        
         return test_task
     
     yield get_test_task_wrapper
