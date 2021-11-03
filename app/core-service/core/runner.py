@@ -59,9 +59,9 @@ class Runner():
         self.task_timeout = int(os.environ.get('TASK_TIMEOUT'))
         self.backend_avoid_list = os.environ.get('BACKEND_AVOID_STRING').split()
         self.queue_workers_count = int(os.environ.get('QUEUE_WORKERS_PER_RUNNER'))
-        
+
+        self.simulator_backend = Aer.get_backend('aer_simulator')
         self.ibmq_provider = None
-        self.simulator_backend = None
         
         self.log(f'RUNNER initiated: {self}')
         
@@ -77,8 +77,6 @@ class Runner():
     def start(self):
 
         self.ibmq_provider = IBMQ.enable_account(self.qiskit_token)
-        
-        self.simulator_backend = Aer.get_backend('aer_simulator')
         
         self.worker_active_flag.set()
         

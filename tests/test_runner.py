@@ -6,16 +6,11 @@ from threading import Timer
 
 from _pytest.monkeypatch import MonkeyPatch
 
-# from qiskit import execute
+from qiskit import QuantumCircuit
+from qiskit.test.mock import FakeJob
 
 from core.runner import Runner
 from core.dynamo import Dynamo
-
-
-from qiskit import Aer
-from qiskit import QuantumCircuit
-
-from qiskit.test.mock import FakeQasmSimulator
 
 
 @pytest.mark.slow
@@ -87,21 +82,18 @@ def test_run_task_classical(runner, test_task, run_mode, mock_runner_functions,
     runner.run_task(**test_task)
     
 
-def test_execute_task(runner):
-    
-    # test_backend = FakeTokyo()
-    
-    # test_backend = FakeQasmSimulator()
+def test_execute_task(runner, mock_monitor_job):
     
     test_circuit = QuantumCircuit()
+    test_backend = runner.simulator_backend
     
-    test_backend = Aer.get_backend('aer_simulator')
-    
-    runner.execute_task(task_id=1, circuit=test_circuit, backend=test_backend)
+    runner.execute_task(task_id=None, circuit=test_circuit, backend=test_backend)
     
     
-# def test_monitor_job():
-#     ...
+def test_monitor_job(runner, mock_job):
+    runner.monitor_job(task_id=None, job=mock_job, interval=0)
+
+
     
 # def test_handle_statevector():
 #     ...
@@ -230,11 +222,31 @@ def mock_ibmq_backend(monkeypatch):
     monkeypatch.setattr(Runner, "handle_statevector", get_none)
     
 
-# @pytest.fixture
-# def mock_ibmq_execute_monitor(monkeypatch):
+@pytest.fixture
+def mock_monitor_job(monkeypatch):
     
-#     def get_none(*args, **kwargs):
-#         return None
+    def stub(*args, **kwargs):
+        pass
 
-#     monkeypatch.setattr(qiskit, "execute", get_none)  
-#     monkeypatch.setattr(Runner, "monitor_job", get_none)
+    monkeypatch.setattr(Runner, "monitor_job", stub)
+    
+    
+@pytest.fixture
+def mock_job():
+
+    class MockStatus:
+        
+        def __init__(self, name):
+            self.name = name
+        
+    class MockJob:
+        
+        status_queue = [MockStatus('DONE'), MockStatus('QUEUED')]
+        
+        def status(self):
+            return MockJob.status_queue.pop()
+            
+        def queue_position(self):
+            pass
+            
+    return MockJob()
