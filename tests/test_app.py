@@ -5,7 +5,6 @@ from core.app import FlaskApp
 from core.app import create_app
 
 from core.gunicorn.app import GunicornApp
-from core.gunicorn.config import post_worker_init
 
 
 def test_run_with_gunicorn(app):
@@ -40,10 +39,7 @@ def test_gunicorn_app_load():
     gunicorn_app = GunicornApp(None)
     gunicorn_app.load()
 
-def test_post_worker_init():
-    post_worker_init(None)
-    
-    
+
 ###   Fixtures   ###
     
 @pytest.fixture(scope="module")

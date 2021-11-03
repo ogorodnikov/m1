@@ -14,7 +14,7 @@ from core.runner import Runner
 from core.dynamo import Dynamo
 
 
-@pytest.mark.slow
+# @pytest.mark.slow
 def test_start_stop(runner):
     
     runner.start()
@@ -42,7 +42,7 @@ def test_exception_decorator(runner):
     decorated_raise_exception(runner, task_id='test_task_id')
         
 
-@pytest.mark.slow
+# @pytest.mark.slow
 def test_queue_worker_loop(runner, undecorate):
     
     runner.worker_active_flag.set()
@@ -108,7 +108,6 @@ def test_plot_statevector_figure(runner, test_run_result):
     runner.plot_statevector_figure(statevector=test_statevector, task_id=None)
     
 
-
 def test_get_least_busy_backend_ok(runner, test_provider, mock_least_busy):
     test_provider.backends_list = 'test_backends'
     runner.get_least_busy_backend(test_provider, qubit_count=0)
@@ -117,7 +116,6 @@ def test_get_least_busy_backend_ok(runner, test_provider, mock_least_busy):
 def test_get_least_busy_backend_exception(runner, test_provider, mock_least_busy):
     with pytest.raises(ValueError):
         runner.get_least_busy_backend(test_provider, qubit_count=0)
-
 
 
 

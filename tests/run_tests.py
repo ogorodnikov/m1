@@ -24,15 +24,15 @@ def run_tests_with_coverage():
     
     # pytest.main([test_path, '--verbose', '--exitfirst'])
 
-    # pytest.main([test_path + '/test_app.py', '-v', -x'])    
+    # pytest.main([test_path + '/test_app.py', '-v', '-x'])    
     # pytest.main([test_path + '/test_cognito.py', '-v', '-x'])
     # pytest.main([test_path + '/test_facebook.py', '-v', '-x'])
     # pytest.main([test_path + '/test_routes.py', '-v', '-x'])
     # pytest.main([test_path + '/test_telegram.py', '-v', '-x'])
-    # pytest.main([test_path + '/test_algorithms.py', '-v', '-x'])
+    pytest.main([test_path + '/test_algorithms.py', '-v', '-x'])
     # pytest.main([test_path + '/test_main.py', '-v', '-x'])
     
-    pytest.main([test_path + '/test_runner.py', '-v', '-x', '-m not slow'])
+    # pytest.main([test_path + '/test_runner.py', '-v', '-x', '-m not slow'])
     
     cov.stop()
     cov.save()

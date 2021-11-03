@@ -42,16 +42,19 @@ test_data = {
 post_processing = {simon: simon_post_processing,
                    qpe: qpe_post_processing}
 
-def log_stub(message):
-    pass
 
-dummy_counts = {'0': 0, '1': 1}
+class TestRunResult:
+    def get_counts(self):
+        return {'0': 0, '1': 1}
 
 
 @pytest.mark.parametrize("runner_function, run_values", test_data.items())
-def test_algorithm(runner_function, run_values):
-    runner_function(run_values, log_stub)
+def test_algorithm(runner_function, run_values, stub):
+    
+    runner_function(run_values, stub)
     
     if runner_function in post_processing:
+        
+        test_run_result = TestRunResult()
         post_processing_function = post_processing[runner_function]
-        post_processing_function(dummy_counts, log_stub)
+        post_processing_function(run_result=test_run_result, task_log=stub)

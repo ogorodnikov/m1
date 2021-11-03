@@ -11,6 +11,15 @@ def run_config():
     yield configuration
     
 
+@pytest.fixture(scope="session")
+def stub():
+    
+    def get_stub(*args, **kwargs):
+        pass
+    
+    return get_stub
+    
+
 def pytest_configure(config):
 
     config.addinivalue_line(

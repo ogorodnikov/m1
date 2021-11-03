@@ -35,14 +35,13 @@ threads = 2
 # access_log_format': "%(h)s %(l)s %(u)s %(t)s '%(r)s' %(s)s %(b)s '%(f)s' '%(a)s' in %(D)sµs"
 
 
-from atexit import unregister
-from multiprocessing.util import _exit_function
+# from atexit import unregister
+# from multiprocessing.util import _exit_function
 
 
 # def post_worker_init(worker):
     # print("GUNICORN post_worker_init")
     # unregister(_exit_function)
-    
 
 # def worker_int(worker):
 #     print(f"GUNICORN worker_int - worker received INT or QUIT signal {worker.pid}")
