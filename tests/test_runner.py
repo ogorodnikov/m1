@@ -1,7 +1,8 @@
 import os
 import time
 import pytest
-import decorator
+
+from threading import Timer
 
 from _pytest.monkeypatch import MonkeyPatch
 
@@ -9,15 +10,7 @@ from core.runner import Runner
 from core.dynamo import Dynamo
 
 
-from threading import Thread, Timer
-from multiprocessing import Process
-from concurrent.futures import ProcessPoolExecutor
-
-
-from qiskit import IBMQ
-
-
-@pytest.mark.slow
+# @pytest.mark.slow
 def test_start_stop(runner):
     
     runner.start()
@@ -85,13 +78,20 @@ def test_run_task_classical(runner, test_task, run_mode, mock_runner_functions,
     runner.run_task(**test_task)
     
 
-# def test_run_task_post_processing(runner, test_task, mock_runner_functions, 
-#                                   undecorate, mock_ibmq_backend, 
-#                                   mock_post_processing):
-                                      
-#     test_task['run_values']['run_mode'] = 'simulator'                                
-
-#     runner.run_task(**test_task)   
+def test_execute_task():
+    ...
+    
+def test_monitor_job():
+    ...
+    
+def test_handle_statevector():
+    ...
+    
+def test_get_least_busy_backend():
+    ...
+    
+def test_plot_statevector_figure():
+    ...
     
     
 ###   Fixtures   ###
@@ -191,14 +191,6 @@ def mock_runner_functions(runner, monkeypatch, request):
         
         monkeypatch.setitem(runner.post_processing, "test_algorithm", get_none)
 
-
-# @pytest.fixture
-# def mock_post_processing(runner, monkeypatch):
-    
-
-    
-#     monkeypatch.setitem(runner.post_processing, "test_algorithm", get_none)
-    
 
 @pytest.fixture
 def mock_ibmq_backend(monkeypatch):
