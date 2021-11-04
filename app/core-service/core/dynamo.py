@@ -67,14 +67,18 @@ class Dynamo():
         query_response = self.algorithms.query(IndexName='type-index',
                                                KeyConditions=key_conditions)
         
-        return query_response['Items']
+        algorithms = query_response.get('Items', {})
+        
+        return algorithms
     
     
     def get_algorithm(self, algorithm_id):
     
         item_response = self.algorithms.get_item(Key={'id': algorithm_id})
         
-        return item_response['Item']
+        algorithm = item_response.get('Item', {})
+        
+        return algorithm
     
     
     def like_algorithm(self, algorithm_id):

@@ -12,7 +12,15 @@ import boto3
 
 def test_get_all_algorithms(db):
     db.get_all_algorithms()
+    
 
+def test_query_algorithms(db):
+    
+    test_query_parameters = {'test_filter': 'test_value'}
+    
+    db.query_algorithms(test_query_parameters)
+    
+    
 
 ###   Fixtures   ###
 
@@ -50,6 +58,9 @@ def mocks(monkeypatch_module):
                 pass
             
             def scan(*args, **kwargs):
+                return {'Items': []}
+                
+            def query(*args, **kwargs):
                 return {'Items': []}
 
         class Bucket:
