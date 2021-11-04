@@ -8,8 +8,6 @@ from _pytest.monkeypatch import MonkeyPatch
 
 from qiskit import QuantumCircuit
 
-# from qiskit.providers.ibmq import least_busy
-
 from core.runner import Runner
 from core.dynamo import Dynamo
 
@@ -116,7 +114,6 @@ def test_get_least_busy_backend_ok(runner, test_provider, mock_least_busy):
 def test_get_least_busy_backend_exception(runner, test_provider, mock_least_busy):
     with pytest.raises(ValueError):
         runner.get_least_busy_backend(test_provider, qubit_count=0)
-
 
 
 ###   Fixtures   ###

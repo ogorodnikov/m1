@@ -2,7 +2,7 @@ import io
 import os
 import json
 
-import boto3
+from boto3 import resource
 
 from pprint import pprint
 from decimal import Decimal
@@ -22,8 +22,8 @@ class Dynamo():
         tasks_table_name = os.getenv('TASKS_TABLE_NAME')
         algorithms_table_name = os.getenv('ALGORITHMS_TABLE_NAME')
 
-        db_resource = boto3.resource('dynamodb')
-        s3_resource = boto3.resource("s3")
+        db_resource = resource('dynamodb')
+        s3_resource = resource('s3')
 
         self.tasks = db_resource.Table(tasks_table_name)        
         self.algorithms = db_resource.Table(algorithms_table_name)
