@@ -274,14 +274,13 @@ class Dynamo():
     def purge_tasks(self):
 
         scan_response = self.tasks.scan(ProjectionExpression='task_id')
-        
-        scan_response_items = scan_response['Items']
+        scan_response_items = scan_response.get('Items', [])
 
         while scan_response.get('LastEvaluatedKey'):
             
             scan_response = self.tasks.scan(ExclusiveStartKey=scan_response['LastEvaluatedKey'])
-            
-            scan_response_items.extend(scan_response['Items'])
+            new_items = scan_response.get('Items', [])
+            scan_response_items.extend(new_items)
         
         print(f"DYNAMO purging all tasks")        
 
