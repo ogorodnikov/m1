@@ -4,7 +4,6 @@ import json
 
 from boto3 import resource
 
-from pprint import pprint
 from decimal import Decimal
 from logging import getLogger
 
@@ -118,8 +117,6 @@ class Dynamo():
             ExpressionAttributeValues={":record_type": 'task_record'}
         )
 
-        # print(f"DYNAMO all_tasks_response {all_tasks_response}")    
-
         all_tasks = all_tasks_response.get('Items', [])
         
         tasks_dict = {}
@@ -130,10 +127,7 @@ class Dynamo():
             
             tasks_dict[task_id] = task
             
-        # print(f"DYNAMO all_tasks {all_tasks}")
-        # print(f"DYNAMO tasks_dict:")
-        # for task_id, values in tasks_dict.items():
-        #     print(f"DYNAMO {task_id}: {values}\n")       
+        self.log(f"DYNAMO get_all_tasks {tasks_dict.keys()}")
     
         return tasks_dict
         
@@ -178,17 +172,14 @@ class Dynamo():
                                        ':logs': []},
                                        
             ReturnValues = 'ALL_NEW'
-            
             )
         
-        # print(f"DYNAMO add_task {(new_task_id, algorithm_id, run_values)}")
+        # self.log(f"DYNAMO add_task {(new_task_id, algorithm_id, run_values)}")
 
         return new_task_id
         
         
     def get_next_task(self):
-        
-        # print(f"DYNAMO get_next_task")
         
         queued_task_response = self.tasks.update_item(
                 Key={'task_id': self.SERVICE_TASK_RECORD_ID},
@@ -197,25 +188,17 @@ class Dynamo():
                 ReturnValues = 'ALL_OLD'
             )
                 
-        # print(f"DYNAMO queued_task_response {queued_task_response}")
-            
         service_task_record = queued_task_response.get('Attributes')
-        
-        # print(f"DYNAMO service_task_record {service_task_record}")
         
         if not service_task_record:
             return None
         
         queued_tasks = service_task_record.get('queued_tasks')
         
-        # print(f"DYNAMO queued_tasks {queued_tasks}")
-        
         if not queued_tasks:
             return None
             
         next_task_id = queued_tasks[0]
-            
-        # print(f"DYNAMO next_task_id {next_task_id}")
 
         set_running_status_response = self.tasks.update_item(
             
@@ -228,20 +211,18 @@ class Dynamo():
             
             )
 
-        # print(f"DYNAMO set_running_status_response {set_running_status_response}")
-        
         next_task = set_running_status_response.get('Attributes')
-
-        # print(f"DYNAMO next_task {next_task}")
+        
+        self.log(f"DYNAMO queued_tasks {queued_tasks}")
+        self.log(f"DYNAMO next_task_id {next_task_id}")
+        # self.log(f"DYNAMO next_task {next_task}")
         
         return next_task
 
 
     def update_task_attribute(self, task_id, attribute, value, append=False):
-        
+
         cleaned_value = json.loads(json.dumps(value), parse_float=Decimal)
-        
-        # print(f"DYNAMO update_task_attribute: {task_id, attribute, value, cleaned_value, append}")
         
         if append:
             update_expression = (f"SET {attribute} = "
@@ -263,15 +244,14 @@ class Dynamo():
             'ReturnConsumedCapacity': 'INDEXES'
         }
         
-        # print(f"DYNAMO update_parameters {update_parameters}")
+        # self.log(f"DYNAMO update_parameters {update_parameters}")
         
-        update_task_response = self.tasks.update_item(**update_parameters)
+        self.tasks.update_item(**update_parameters)
        
-        # print(f"DYNAMO update_task_response:")
-        # pprint(update_task_response)
-        
 
     def purge_tasks(self):
+        
+        self.log(f"DYNAMO purge_tasks")  
 
         scan_response = self.tasks.scan(ProjectionExpression='task_id')
         scan_response_items = scan_response.get('Items', [])
@@ -281,8 +261,6 @@ class Dynamo():
             scan_response = self.tasks.scan(ExclusiveStartKey=scan_response['LastEvaluatedKey'])
             new_items = scan_response.get('Items', [])
             scan_response_items.extend(new_items)
-        
-        print(f"DYNAMO purging all tasks")        
 
         with self.tasks.batch_writer() as batch:
             for item in scan_response_items:
@@ -295,19 +273,17 @@ class Dynamo():
         
         status_update = [int(task_id), status, result]
         
-        # print(f'DYNAMO add_status_update {status_update}')
-        
         self.update_task_attribute(task_id, 'task_status', status)
         self.update_task_attribute(task_id, 'task_result', result)
         
         self.update_task_attribute(self.SERVICE_TASK_RECORD_ID, 'status_updates', 
                                    status_update, append=True)
+                                   
+        self.log(f'DYNAMO add_status_update {status_update}')
         
 
     def get_status_updates(self):
         
-        # print(f">>> DYNAMO get_status_updates")
-
         status_updates_response = self.tasks.update_item(
             Key={'task_id': self.SERVICE_TASK_RECORD_ID},
             UpdateExpression="SET status_updates = :empty_list",
@@ -315,8 +291,6 @@ class Dynamo():
             ReturnValues = 'ALL_OLD'
             )
             
-        # print(f"DYNAMO status_updates_response {status_updates_response}")
-                
         status_updates_attributes = status_updates_response.get('Attributes')
             
         if not status_updates_attributes:
@@ -324,7 +298,7 @@ class Dynamo():
         
         status_updates = status_updates_attributes['status_updates']
                 
-        # print(f"DYNAMO status_updates {status_updates}")
+        self.log(f"DYNAMO status_updates {status_updates}")
         
         return status_updates
 
@@ -455,7 +429,7 @@ class Dynamo():
                 
     
     
-    # Surprisingly - S3
+    ###   Surprisingly - S3  ###
     
     def move_figure_to_s3(self, from_path, to_path):
         
