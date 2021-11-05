@@ -86,6 +86,14 @@ def test_purge_tasks(db, monkeypatch):
     db.purge_tasks()
 
 
+###   Statuses   ###
+    
+def test_add_status_update(db, monkeypatch, stub):
+    
+    monkeypatch.setattr(Dynamo, "update_task_attribute", stub)
+    
+    db.add_status_update(task_id=1, status='test_status', result='test_result')
+        
 
 ###   Fixtures   ###
 
