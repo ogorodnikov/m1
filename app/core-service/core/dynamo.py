@@ -289,7 +289,7 @@ class Dynamo():
                 batch.delete_item(Key=item)
                 
                 
-    ###   Statuses
+    ###   Statuses   ###
     
     def add_status_update(self, task_id, status, result):
         

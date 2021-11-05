@@ -2,6 +2,8 @@ import pytest
 
 from _pytest.monkeypatch import MonkeyPatch
 
+from contextlib import contextmanager
+
 from core.dynamo import Dynamo
 
 import boto3
@@ -40,29 +42,20 @@ def test_add_task(db):
     db.add_task(algorithm_id='test_algorithm', run_values='test_run_values')
 
 
-def test_get_next_task_no_service_record(db, monkeypatch):
-    
-    no_service_record_response = {}
-    
-    monkeypatch.setattr(MockTable, "update_response", no_service_record_response)
 
-    db.get_next_task()
+no_service_record_response = {}
+no_queued_tasks_response = {'Attributes': {'queued_tasks': []}}
+queued_tasks_response = {'Attributes': {'queued_tasks': [1, 2, 3]}}
 
-
-def test_get_next_task_no_queued_tasks(db, monkeypatch):
+@pytest.mark.parametrize("update_response", [no_service_record_response,
+                                             no_queued_tasks_response,
+                                             queued_tasks_response])
+def test_get_next_task(db, monkeypatch, update_response):
     
-    no_queued_tasks_response = {'Attributes': {'queued_tasks': []}}
+    def mock_update_item(*args, **kwargs):
+        return update_response
     
-    monkeypatch.setattr(MockTable, "update_response", no_queued_tasks_response)
-
-    db.get_next_task()
-    
-
-def test_get_next_task_with_queued_tasks(db, monkeypatch):
-    
-    with_queued_tasks_response = {'Attributes': {'queued_tasks': [1, 2, 3]}}
-    
-    monkeypatch.setattr(MockTable, "update_response", with_queued_tasks_response)
+    monkeypatch.setattr(MockTable, "update_item", mock_update_item)
 
     db.get_next_task()
 
@@ -76,20 +69,38 @@ def test_update_task_attribute(db, append):
         value='test_value', 
         append=append
     )
+    
 
-def test_purge_tasks(db):
-    ...
+def test_purge_tasks(db, monkeypatch):
+    
+    def mock_scan(*args, **kwargs):
+        
+        if not kwargs.get('ExclusiveStartKey'):
+            return {'Items': ['test_item_1'], 'LastEvaluatedKey': 'test_key'}
+        
+        else:
+            return {'Items': ['test_item_2']}    
+    
+    monkeypatch.setattr(MockTable, "scan", mock_scan)
+
+    db.purge_tasks()
 
 
 
 ###   Fixtures   ###
 
 
+class MockBatch:
+    
+    def delete_item(*args, **kwargs):
+        pass
+    
+
 class MockTable:
             
     update_response = {'ResponseMetadata': {'HTTPStatusCode': 200},
                        'Attributes': {}}
-            
+                       
     def __init__(*args, **kwargs):
         pass
     
@@ -104,7 +115,12 @@ class MockTable:
         
     def get_item(*args, **kwargs):
         return {'Item': []}
-        
+      
+    @contextmanager 
+    def batch_writer(*args, **kwargs):
+
+        yield MockBatch
+
 
 class MockBucket:
     
