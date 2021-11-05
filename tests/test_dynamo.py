@@ -95,6 +95,22 @@ def test_add_status_update(db, monkeypatch, stub):
     db.add_status_update(task_id=1, status='test_status', result='test_result')
         
 
+def test_get_status_updates(db, monkeypatch):
+    
+    test_response = {'Attributes': {'status_updates': []}}
+    
+    monkeypatch.setattr(MockTable, "update_item", lambda *_, **__: test_response)
+    
+    db.get_status_updates()
+    
+    
+def test_get_status_updates_empty(db, monkeypatch):
+    
+    monkeypatch.setattr(MockTable, "update_item", lambda *_, **__: {})
+    
+    db.get_status_updates()
+    
+    
 ###   Fixtures   ###
 
 
