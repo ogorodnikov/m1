@@ -42,9 +42,6 @@ def test_add_task(db):
 
 def test_get_next_task_no_service_record(db, monkeypatch):
     
-    # def raise_warning(*args, **kwargs):
-    #     raise UserWarning
-        
     no_service_record_response = {}
     
     monkeypatch.setattr(MockTable, "update_response", no_service_record_response)
@@ -61,7 +58,27 @@ def test_get_next_task_no_queued_tasks(db, monkeypatch):
     db.get_next_task()
     
 
+def test_get_next_task_with_queued_tasks(db, monkeypatch):
+    
+    with_queued_tasks_response = {'Attributes': {'queued_tasks': [1, 2, 3]}}
+    
+    monkeypatch.setattr(MockTable, "update_response", with_queued_tasks_response)
 
+    db.get_next_task()
+
+
+@pytest.mark.parametrize("append", [True, False])
+def test_update_task_attribute(db, append):
+    
+    db.update_task_attribute(
+        task_id=1, 
+        attribute='test_attribute', 
+        value='test_value', 
+        append=append
+    )
+
+def test_purge_tasks(db):
+    ...
 
 
 
@@ -90,7 +107,7 @@ class MockTable:
         
 
 class MockBucket:
-            
+    
     def __init__(*args, **kwargs):
         pass
     
