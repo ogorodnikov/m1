@@ -303,7 +303,37 @@ class Dynamo():
         return status_updates
 
 
+    ###   Surprisingly - S3  ###
+    
+    def move_figure_to_s3(self, from_path, to_path):
+        
+        self.core_bucket.upload_file(
+            from_path, 
+            to_path, 
+            ExtraArgs={"ACL": "private", "ContentType": "image/png"}
+        )
+        
+        os.remove(from_path)
+        
+        
+    def stream_figure_from_s3(self, s3_from_path) -> io.BytesIO:
+        
+        figure_stream = io.BytesIO()
+        
+        self.core_bucket.download_fileobj(s3_from_path, figure_stream)
+        
+        figure_stream.seek(0)
 
+        return figure_stream
+        
+        
+    def purge_s3_folder(self, prefix):
+        
+        self.core_bucket.objects.filter(Prefix=prefix).delete()
+        
+        
+    ###   Test Data   ##
+    
     def add_test_data(self):
     
         items = [{'id': 'bernvaz',
@@ -426,33 +456,3 @@ class Dynamo():
         with self.algorithms.batch_writer(overwrite_by_pkeys=['id']) as batch:
             for item in items:
                 batch.put_item(item)
-                
-    
-    
-    ###   Surprisingly - S3  ###
-    
-    def move_figure_to_s3(self, from_path, to_path):
-        
-        self.core_bucket.upload_file(
-            from_path, 
-            to_path, 
-            ExtraArgs={"ACL": "private", "ContentType": "image/png"}
-        )
-        
-        os.remove(from_path)
-        
-        
-    def stream_figure_from_s3(self, s3_from_path) -> io.BytesIO:
-        
-        figure_stream = io.BytesIO()
-        
-        self.core_bucket.download_fileobj(s3_from_path, figure_stream)
-        
-        figure_stream.seek(0)
-
-        return figure_stream
-        
-        
-    def purge_s3_folder(self, prefix):
-        
-        self.core_bucket.objects.filter(Prefix=prefix).delete()

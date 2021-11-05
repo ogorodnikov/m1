@@ -6,22 +6,17 @@ from contextlib import contextmanager
 
 from core.dynamo import Dynamo
 
-import boto3
-
 
 ###   Algorithms   ###
 
 def test_get_all_algorithms(db):
     db.get_all_algorithms()
     
-    
 def test_query_algorithms(db):
     db.query_algorithms(query_parameters={'test_filter': 'test_value'})
 
-
 def test_get_algorithm(db):
     db.get_algorithm(algorithm_id='test_algorithm')
-    
   
 def test_like_algorithm(db):
     db.like_algorithm(algorithm_id='test_algorithm')
@@ -37,10 +32,8 @@ def test_set_algorithm_state(db, is_enabled):
 def test_get_all_tasks(db):
     db.get_all_tasks()
     
-    
 def test_add_task(db):
     db.add_task(algorithm_id='test_algorithm', run_values='test_run_values')
-
 
 
 no_service_record_response = {}
@@ -110,13 +103,34 @@ def test_get_status_updates_empty(db, monkeypatch):
     
     db.get_status_updates()
     
-    
-###   Fixtures   ###
 
+###   S3  ###
+
+def test_move_figure_to_s3(db, monkeypatch, stub):
+    monkeypatch.setattr("core.dynamo.os.remove", stub)
+    db.move_figure_to_s3(from_path='', to_path='')
+
+def test_stream_figure_from_s3(db):
+    db.stream_figure_from_s3(s3_from_path='')
+
+def test_purge_s3_folder(db):
+    db.purge_s3_folder(prefix='test_prefix')
+
+
+###   Test Data   ##
+    
+def test_add_test_data(db):
+    db.add_test_data()
+
+        
+###   Fixtures   ###
 
 class MockBatch:
     
     def delete_item(*args, **kwargs):
+        pass
+    
+    def put_item(*args, **kwargs):
         pass
     
 
@@ -151,6 +165,20 @@ class MockBucket:
     def __init__(*args, **kwargs):
         pass
     
+    def upload_file(*args, **kwargs):
+        pass
+    
+    def download_fileobj(*args, **kwargs):
+        pass
+    
+    class MockObjects:
+        
+        def filter(*args, **kwargs):
+            
+            return type("MockFilter", (), {'delete': lambda: None})
+            
+    objects = MockObjects
+    
             
 class MockDynamoResource:
         
@@ -182,5 +210,3 @@ def monkeypatch_module():
 def mocks(monkeypatch_module):
     
     monkeypatch_module.setattr("core.dynamo.resource", MockDynamoResource)
-    
-    # monkeypatch_module.setattr(Dynamo, "algorithms", MockTable())
