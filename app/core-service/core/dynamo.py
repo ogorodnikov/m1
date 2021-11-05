@@ -107,10 +107,8 @@ class Dynamo():
             
         return {'status_code': status_code}
     
-    
-    
         
-    ### Tasks
+    ###   Tasks   ###
     
     def get_all_tasks(self):
         
@@ -150,8 +148,8 @@ class Dynamo():
             ReturnValues = 'ALL_NEW'
             
             )
-
-        new_task_id = increment_task_count_response['Attributes']['task_count']
+            
+        new_task_id = increment_task_count_response['Attributes'].get('task_count')
 
         add_queued_task_response = self.tasks.update_item(
 

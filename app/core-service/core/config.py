@@ -33,8 +33,6 @@ class Config():
         os.environ['AWS_NLB'] = self.AWS_NLB
 
         self.TASK_TIMEOUT = int(os.environ['TASK_TIMEOUT'])
-        self.TASK_ROLLOVER_SIZE = int(os.getenv('TASK_ROLLOVER_SIZE'))
-        
         self.QUEUE_WORKERS_PER_RUNNER = int(os.environ['QUEUE_WORKERS_PER_RUNNER'])
 
         self.BACKEND_AVOID_STRING = 'ibmq_bogota'
