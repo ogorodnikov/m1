@@ -3,47 +3,46 @@ import logging
 
 from logging.handlers import RotatingFileHandler
 
-from core import app
-from core import config
-from core import routes
-from core import dynamo
-from core import runner
-from core import cognito
-from core import telegram
-from core import facebook
+from core.app import FlaskApp
+from core.config import Config
+from core.routes import Routes
+from core.dynamo import Dynamo
+from core.runner import Runner
+from core.cognito import Cognito
+from core.telegram import Bot
+from core.facebook import Facebook
 
 
 class Main:
 
     def __init__(self, *args, **kwargs):
         
-        self.config = config.Config()
+        self.config = Config()
         
-        self.app = app.FlaskApp(__name__)
+        self.app = FlaskApp(__name__)
         self.app.config.from_object(self.config)
-        self.app_static_folder = self.app.static_folder
         
         self.start_logging(log_to_file=False)
         
-        self.db = dynamo.Dynamo()
+        self.db = Dynamo()
         
-        self.runner = runner.Runner(self.db)
+        self.runner = Runner(self.db)
         self.runner.start()
         
-        self.telegram_bot = telegram.Bot(self.db, self.runner)
+        self.telegram_bot = Bot(self.db, self.runner)
         self.telegram_bot.start()
 
-        self.users = cognito.Cognito()
+        self.cognito = Cognito()
         
-        self.facebook = facebook.Facebook()
+        self.facebook = Facebook()
         
-        self.routes = routes.Routes(self.db, self.app, self.users, self.runner, 
-                                    self.facebook, self.telegram_bot)
+        self.routes = Routes(self.db, self.app, self.cognito, self.runner, 
+                             self.facebook, self.telegram_bot)
 
             
     def start_logging(self, log_to_file=False, log_file_path=None):
         
-        log_file_path = log_file_path or self.app_static_folder + '/logs'
+        log_file_path = log_file_path or self.app.static_folder + '/logs'
         
         log_file = log_file_path + '/core.log'
 

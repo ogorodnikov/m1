@@ -298,7 +298,7 @@ class Dynamo():
         
         status_updates = status_updates_attributes['status_updates']
                 
-        self.log(f"DYNAMO status_updates {status_updates}")
+        # self.log(f"DYNAMO status_updates {status_updates}")
         
         return status_updates
 

@@ -10,11 +10,11 @@ from core.telegram import Bot
 
 ###   Logging   ###
 
-def test_start_logging(test_main, tmpdir):
-    test_main.start_logging(log_to_file=True, log_file_path=tmpdir)
+def test_start_logging(main, tmpdir):
+    main.start_logging(log_to_file=True, log_file_path=tmpdir)
     
     
-def test_logging(test_main, caplog):
+def test_logging(main, caplog):
 
     test_message = 'Logging test'
     
@@ -29,12 +29,10 @@ def test_logging(test_main, caplog):
 ###   Fixtures   ###
 
 @pytest.fixture(scope="module")
-def test_main():
-    
-    test_main = Main()
-    yield test_main
+def main():
+    return Main()
 
-    
+
 @pytest.fixture(scope="module")
 def monkeypatch_module(request):
     
