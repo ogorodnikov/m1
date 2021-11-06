@@ -1,24 +1,24 @@
 import pytest
 
-from core import cognito
+from core import cognito as aws_cognito
 
 
-###   General tests   ###
+###   General   ###
 
-def test_get_user_pool_id(users):
+def test_get_user_pool_id(cognito):
     
-    user_pool = users.user_pool
-    user_pool_id = users.get_user_pool_id(user_pool)
+    user_pool = cognito.user_pool
+    user_pool_id = cognito.get_user_pool_id(user_pool)
     
     # assert user_pool_id == "us-east-1_HhJBks0a8"
     assert len(user_pool_id) == 19
     
 
-def test_get_client_id(users):
+def test_get_client_id(cognito):
     
-    user_pool_id = users.user_pool_id
-    user_pool_client = users.user_pool_client
-    client_id = users.get_client_id(user_pool_id, user_pool_client)
+    user_pool_id = cognito.user_pool_id
+    user_pool_client = cognito.user_pool_client
+    client_id = cognito.get_client_id(user_pool_id, user_pool_client)
 
     # assert client_id == "1fhh6jkt6c8ji76vk9i04u5d9f"
     assert len(client_id) == 26
@@ -27,14 +27,14 @@ def test_get_client_id(users):
 ###   Login   ###
 
 @pytest.mark.parametrize("remember_me", ['True', 'False'])
-def test_login_user_pass(users, test_user, remember_me):
+def test_login_user_pass(cognito, test_user, remember_me):
     
     test_user.update({'remember_me': remember_me})
     
-    users.login_user(test_user)
+    cognito.login_user(test_user)
     
     
-def test_login_user_exception(users, test_user_form):
+def test_login_user_exception(cognito, test_user_form):
     
     login_form = test_user_form.update((
         ('remember_me', 'True'), 
@@ -43,80 +43,76 @@ def test_login_user_exception(users, test_user_form):
     
     with pytest.raises(Exception) as exception:
     
-        users.login_user(test_user_form)
+        cognito.login_user(test_user_form)
     
     assert "UserNotFoundException" in str(exception.value)
     
 
 ###   Register   ###
     
-def test_register_disable_delete_user(users, test_user_form):
+def test_register_disable_delete_user(cognito, test_user_form):
     
-    users.register_user(test_user_form)
-    users.disable_user(test_user_form)
-    users.delete_user(test_user_form)
+    cognito.register_user(test_user_form)
+    cognito.disable_user(test_user_form)
+    cognito.delete_user(test_user_form)
     
 
-def test_duplicate_register_user_exception(users, test_user):
+def test_duplicate_register_user_exception(cognito, test_user):
     
     with pytest.raises(Exception) as exception:
 
-        users.register_user(test_user)
+        cognito.register_user(test_user)
     
     assert "UsernameExistsException" in str(exception.value)
     
 
-def test_populate_facebook_user(users, test_user_data):
+def test_populate_facebook_user(cognito, test_facebook_user_data):
     
-    users.populate_facebook_user(test_user_data)
+    cognito.populate_facebook_user(test_facebook_user_data)
 
 
-def test_populate_facebook_user_duplicated(users, test_user_data):
+def test_populate_facebook_user_duplicated(cognito, test_facebook_user_data):
     
-    users.populate_facebook_user(test_user_data)
-    users.populate_facebook_user(test_user_data)
+    cognito.populate_facebook_user(test_facebook_user_data)
+    cognito.populate_facebook_user(test_facebook_user_data)
     
     
 ###   Fixtures   ###
 
 @pytest.fixture(scope="module")
-def users():
+def cognito():
     
-    users = cognito.Cognito()
+    cognito = aws_cognito.Cognito()
     
-    yield users
+    yield cognito
     
 
 @pytest.fixture
-def test_user_form(users):
+def test_user_form(cognito):
     
-    test_username = f"test_username_555"
-    test_password = f"test_password_555"
+    return {'username': 'test_username_555', 
+            'password': 'test_password_555'}
+
     
-    test_user_form = dict((('username', test_username), ('password', test_password)))
+@pytest.fixture
+def test_user(cognito, test_user_form):
+    
+    cognito.register_user(test_user_form)
     
     yield test_user_form
     
-    
-@pytest.fixture
-def test_user(users, test_user_form):
-    
-    users.register_user(test_user_form)
-    
-    yield test_user_form
-    
-    users.delete_user(test_user_form)
+    cognito.delete_user(test_user_form)
 
 
 @pytest.fixture
-def test_user_data(users, test_user_form):
+def test_facebook_user_data(cognito, test_user_form):
     
     name = test_user_form.get('username')
     email = f"{name}@test.com"
     full_name = f"{name} {name}"
     picture_url = "https://test.com/test_picture.png"
     
-    test_user_data = {
+    test_facebook_user_data = {
         'name': name,
         'email': email,
         'full_name': full_name,
@@ -125,6 +121,6 @@ def test_user_data(users, test_user_form):
     
     fb_username = 'fb_' + email.replace('@', '_')
     
-    yield test_user_data
+    yield test_facebook_user_data
     
-    users.delete_user({'username': fb_username})
+    cognito.delete_user({'username': fb_username})
