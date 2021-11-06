@@ -17,8 +17,15 @@ def test_run_with_development_server(app):
 
 ###   Service   ###
 
-def test_clear_figures_folder(app):
+def test_clear_figures_folder(app, monkeypatch, stub):
+    
+    test_filenames = ['README.md', 'test.png']
+    
+    monkeypatch.setattr('core.app.os.remove', stub)
+    monkeypatch.setattr('core.app.os.listdir', lambda folder: test_filenames)
+    
     app.clear_figures_folder()
+    
 
 def test_termination_handler(app):
     app.termination_handler(signal='test_signal', frame='test_frame')
@@ -52,5 +59,3 @@ def set_mocks(monkeypatch, stub):
     
     monkeypatch.setattr(FlaskApp, 'run', stub)
     monkeypatch.setattr(GunicornApp, 'run', stub)
-    
-    monkeypatch.setattr('core.app.os.remove', stub)

@@ -49,10 +49,10 @@ class FlaskApp(Flask):
         
         figures_folder = os.path.join(self.static_folder, 'figures')
         
-        for figure in os.listdir(figures_folder):
-            if figure == 'README.md':
+        for filename in os.listdir(figures_folder):
+            if filename == 'README.md':
                 continue
-            os.remove(os.path.join(figures_folder, figure))
+            os.remove(os.path.join(figures_folder, filename))
 
 
     def termination_handler(self, signal, frame):
