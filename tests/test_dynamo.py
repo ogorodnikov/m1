@@ -136,14 +136,12 @@ class MockBatch:
 
 class MockTable:
             
-    update_response = {'ResponseMetadata': {'HTTPStatusCode': 200},
-                       'Attributes': {}}
-                       
     def __init__(*args, **kwargs):
         pass
     
     def update_item(*args, **kwargs):
-        return __class__.update_response
+        return {'ResponseMetadata': {'HTTPStatusCode': 200},
+                'Attributes': {}}
     
     def scan(*args, **kwargs):
         return {'Items': []}
@@ -187,15 +185,11 @@ class MockDynamoResource:
     
     Table = MockTable
     Bucket = MockBucket
-        
             
 
 @pytest.fixture(scope="module")
 def db():
-
-    db = Dynamo()    
-
-    yield db
+    return Dynamo()
     
     
 @pytest.fixture(scope="module")
@@ -207,6 +201,6 @@ def monkeypatch_module():
 
 
 @pytest.fixture(autouse=True, scope="module")
-def mocks(monkeypatch_module):
+def set_mocks(monkeypatch_module):
     
     monkeypatch_module.setattr("core.dynamo.resource", MockDynamoResource)

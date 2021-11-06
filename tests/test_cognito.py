@@ -1,6 +1,6 @@
 import pytest
 
-from core import cognito as aws_cognito
+from core.cognito import Cognito
 
 
 ###   General   ###
@@ -81,10 +81,7 @@ def test_populate_facebook_user_duplicated(cognito, test_facebook_user_data):
 
 @pytest.fixture(scope="module")
 def cognito():
-    
-    cognito = aws_cognito.Cognito()
-    
-    yield cognito
+    return Cognito()
     
 
 @pytest.fixture

@@ -52,7 +52,7 @@ def app():
     app = create_app()
     app.testing = True
     
-    yield app
+    return app
 
 @pytest.fixture(autouse=True)
 def set_mocks(monkeypatch, stub):
