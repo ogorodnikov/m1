@@ -1,4 +1,3 @@
-import os
 import pytest
 
 from core.app import FlaskApp
@@ -7,6 +6,8 @@ from core.app import create_app
 from core.gunicorn.app import GunicornApp
 
 
+###   Run   ###
+
 def test_run_with_gunicorn(app):
     app.run_with_gunicorn()
     
@@ -14,17 +15,13 @@ def test_run_with_development_server(app):
     app.run_with_development_server()
 
 
+###   Service   ###
+
 def test_clear_figures_folder(app):
-    
-    test_figure_path = os.path.join(app.static_folder, 'figures/test_figure.png')
-    open(test_figure_path, 'w')
-    
     app.clear_figures_folder()
-    
 
 def test_termination_handler(app):
     app.termination_handler(signal='test_signal', frame='test_frame')
-    
     
 def test_exit_application(app):
     app.exit_application(test_mode=True)
@@ -49,15 +46,11 @@ def app():
     app.testing = True
     
     yield app
-        
-    # app.stop_runner()
-    
 
 @pytest.fixture(autouse=True)
-def mocks(monkeypatch):
-    
-    def stub(*args, **kwargs):
-        pass
+def set_mocks(monkeypatch, stub):
     
     monkeypatch.setattr(FlaskApp, 'run', stub)
     monkeypatch.setattr(GunicornApp, 'run', stub)
+    
+    monkeypatch.setattr('core.app.os.remove', stub)

@@ -41,9 +41,7 @@ def shor_classical(run_values, task_log):
         
         period = get_period_classical(number, coprime)
         
-        if period % 2:
-            
-            ValueError("Period is odd")
+        if period % 2: ValueError("Period is odd")
             
         factor_p = gcd(random_pick ** (period // 2) + 1, number)
         
