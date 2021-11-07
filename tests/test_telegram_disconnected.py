@@ -27,18 +27,18 @@ def test_register_handlers(bot_with_register_handlers):
     bot_with_register_handlers.register_handlers()
     
 
-# def test_start_handler(bot):
-#     bot.start_handler(None)
+def test_start_handler(bot, message):
+    bot.start_handler(message=message)
     
 
 ###   Fixtures   ###
 
 @pytest.fixture(scope="module", autouse=True)
-def set_mocks(monkeypatch_module, stub):
+def set_mocks(monkeypatch_module, user, stub):
     
     monkeypatch_module.setenv("TELEGRAM_TOKEN", "")
     
-    monkeypatch_module.setattr("core.telegram.Bot.get_me", stub)
+    monkeypatch_module.setattr("core.telegram.Bot.get_me", lambda self: user)
     
     monkeypatch_module.setattr("core.telegram.Bot.send_message", stub)
     monkeypatch_module.setattr("core.telegram.Bot.send_sticker", stub)
@@ -57,3 +57,11 @@ def bot(monkeypatch, stub):
 def bot_with_register_handlers(monkeypatch, stub):
     
     return Bot(db=None, runner=None)
+    
+
+from test_telegram import user
+from test_telegram import chat
+from test_telegram import message
+from test_telegram import sticker_message
+from test_telegram import callback
+from test_telegram import test_algorithm
