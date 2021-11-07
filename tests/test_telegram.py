@@ -38,15 +38,30 @@ def test_start_handler(bot, message):
 def test_algorithms_handler(bot, message, callback):
     bot.algorithms_handler(message)
     bot.algorithms_handler(callback)
-    
+
+
 callback_prefixes = ['like_', 'open_', 'run_classical_', 'run_on_simulator_',
                      'run_on_quantum_device_', 'get_algorithms']
 
 @pytest.mark.parametrize("prefix", callback_prefixes)
-def test_callback_handler(telegram_bot, callback, prefix):
+def test_callback_handler(bot, prefix, callback, monkeypatch, stub):
+    
+    monkeypatch.setattr("core.telegram.Bot.open_algorithm", stub)
+    monkeypatch.setattr("core.telegram.Bot.collect_parameters", stub)
+    monkeypatch.setattr("core.telegram.Bot.algorithms_handler", stub)
+    monkeypatch.setattr("core.telegram.Bot.answer_callback_query", stub)
     
     callback.data = f"{prefix}test_algorithm"
-    telegram_bot.callback_handler(callback)
+    
+    bot.callback_handler(callback)
+
+
+def test_callback_handler_exception(bot, callback, monkeypatch, warn):
+    
+    monkeypatch.setattr("core.telegram.Bot.answer_callback_query", warn)
+    
+    bot.callback_handler(callback)
+    
     
 ###   Fixtures   ###
 
@@ -63,6 +78,10 @@ def set_mocks(monkeypatch_module, user, stub, test_algorithm):
     monkeypatch_module.setattr(Runner, "__init__", stub)
     
     monkeypatch_module.setattr(Dynamo, "__init__", stub) 
+    monkeypatch_module.setattr(Dynamo, "like_algorithm", stub) 
+    
+    monkeypatch_module.setattr(Dynamo, "get_algorithm",
+                               lambda self, algorithm_id: test_algorithm) 
     monkeypatch_module.setattr(Dynamo, "get_all_algorithms", 
                                lambda self: [test_algorithm])
     
