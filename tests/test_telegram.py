@@ -112,7 +112,14 @@ def test_query_next_parameter(bot, monkeypatch, stub):
                              run_mode=None, 
                              parameters=None)
     
+
+def test_run_algorithm(bot):
     
+    bot.run_algorithm(chat_id=None, 
+                      algorithm_id=None, 
+                      run_mode=None, 
+                      parameters=[])
+       
     
 ###   Fixtures   ###
 
@@ -127,6 +134,7 @@ def set_mocks(monkeypatch_module, user, stub, test_algorithm):
     monkeypatch_module.setattr("core.telegram.Bot.send_sticker", stub)
     
     monkeypatch_module.setattr(Runner, "__init__", stub)
+    monkeypatch_module.setattr(Runner, "run_algorithm", stub)
     
     monkeypatch_module.setattr(Dynamo, "__init__", stub) 
     monkeypatch_module.setattr(Dynamo, "like_algorithm", stub) 
