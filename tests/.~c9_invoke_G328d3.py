@@ -2,11 +2,16 @@ import os
 
 import pytest
 
-from telebot import types
-
 from core.telegram import Bot
 from core.dynamo import Dynamo
 from core.runner import Runner
+
+from integration.test_telegram_integration import user
+from integration.test_telegram_integration import chat
+from integration.test_telegram_integration import message
+from integration.test_telegram_integration import sticker_message
+from integration.test_telegram_integration import callback
+from integration.test_telegram_integration import test_algorithm
 
 
 def test_start(bot, monkeypatch, stub):
@@ -82,16 +87,17 @@ def bot_with_register_handlers(monkeypatch, stub):
     return Bot(db=None, runner=None)
     
 
-###   Type fixtures   ###
-
 @pytest.fixture(scope="module")
 def user():
     yield types.User(id=1, is_bot=False, first_name='Test User')
 
 
+
+###   Type fixtures   ###
+    
 @pytest.fixture(scope="module")
 def chat():
-    yield types.Chat(id=0, type='private')
+    yield types.Chat(id=TEST_CHAT_ID, type='private')
     
     
 @pytest.fixture(scope="module")
@@ -110,7 +116,7 @@ def message(user, chat):
 @pytest.fixture(scope="module")
 def sticker_message(user, chat):
     
-    sticker_file_id = Bot.BUBO_CELEBRATE_STICKER_FILE_ID
+    sticker_file_id = telegram.Bot.BUBO_CELEBRATE_STICKER_FILE_ID
 
     sticker = types.Sticker(
         file_id=sticker_file_id, file_unique_id=1, 
@@ -135,17 +141,7 @@ def callback(user, chat, message):
     )
 
     yield callback
-
-
-test_algorithm_data = {'id': 'test_algorithm_id',
-                   'name': 'test_algorithm',
-                   'link': 'https://test.com/test_algorithm',
-                   'description': 'test_algorithm_description',
-                   'parameters': [{'name': 'test_parameter', 
-                                   'default_value': 'test_parameter_value'}]
-}
-
-@pytest.fixture(scope="module")
-def test_algorithm():
-    return test_algorithm_data
     
+    
+def callback_test():
+    pass

@@ -2,7 +2,16 @@ import pytest
 
 from telebot import types
 
-from core import telegram
+from core.telegram import Bot
+
+from test_telegram import user
+from test_telegram import chat
+from test_telegram import message
+from test_telegram import sticker_message
+from test_telegram import callback
+from test_telegram import test_algorithm
+
+from test_telegram import test_algorithm_data
 
 
 TEST_CHAT_ID = 221192775
@@ -63,19 +72,6 @@ def test_echo_handler(telegram_bot, message):
 
 ###   Fixtures   ###
 
-test_algorithm_data = {'id': 'test_algorithm_id',
-                       'name': 'test_algorithm',
-                       'link': 'https://test.com/test_algorithm',
-                       'description': 'test_algorithm_description',
-                       'parameters': [{'name': 'test_parameter', 
-                                       'default_value': 'test_parameter_value'}]
-}
-
-@pytest.fixture(scope="module")
-def test_algorithm():
-    return test_algorithm_data
-    
-
 class MockDB:
     
     def get_all_algorithms(self):
@@ -102,7 +98,7 @@ def telegram_bot():
     mock_db = MockDB()
     runner = MockRunner()
     
-    telegram_bot = telegram.Bot(mock_db, runner)
+    telegram_bot = Bot(mock_db, runner)
     
     telegram_bot.start()
     
@@ -111,54 +107,8 @@ def telegram_bot():
     telegram_bot.stop()
     
 
-@pytest.fixture(scope="module")
-def user():
-    yield types.User(id=1, is_bot=False, first_name='Test User')
-    
-    
+###   Type fixtures override   ###
+
 @pytest.fixture(scope="module")
 def chat():
     yield types.Chat(id=TEST_CHAT_ID, type='private')
-    
-    
-@pytest.fixture(scope="module")
-def message(user, chat):
-    
-    options = {'text': 'test_telegram message fixture :)'}
-    
-    message = types.Message(
-        message_id=1, from_user=user, date=None, chat=chat, 
-        content_type='text', options=options, json_string=""
-    )
-    
-    yield message
-    
-
-@pytest.fixture(scope="module")
-def sticker_message(user, chat):
-    
-    sticker_file_id = telegram.Bot.BUBO_CELEBRATE_STICKER_FILE_ID
-
-    sticker = types.Sticker(
-        file_id=sticker_file_id, file_unique_id=1, 
-        width=1, height=1, is_animated=False
-    )
-    
-    options = {'sticker': sticker}
-    
-    sticker_message = types.Message(
-        message_id=1, from_user=user, date=None, chat=chat, 
-        content_type='sticker', json_string="", options=options
-    )
-    
-    yield sticker_message
-    
-
-@pytest.fixture(scope="module")
-def callback(user, chat, message):
-
-    callback = types.CallbackQuery(
-        id=1, from_user=user, message=message, data="", chat_instance=chat
-    )
-
-    yield callback

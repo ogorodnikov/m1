@@ -46,10 +46,11 @@ def run_tests_with_coverage():
     # pytest.main([test_path + '/test_routes.py', '-v', '-x', '--durations=0'])
     # pytest.main([test_path + '/test_runner.py', '-v', '-x', '-m not slow', '--durations=0'])
 
-    # pytest.main([test_path + '/integration/test_telegram_integration.py', '-v', '-x', '--durations=0'])
+
+    pytest.main([test_path + '/integration/test_telegram_integration.py', '-v', '-x', '--durations=0'])
 
 
-    pytest.main([test_path + '/test_telegram.py', '-v', '-x', '--durations=0'])
+    # pytest.main([test_path + '/test_telegram.py', '-v', '-x', '--durations=0'])
 
 
     
