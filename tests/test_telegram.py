@@ -69,6 +69,37 @@ def test_open_algorithm(bot, test_algorithm, algorithm_type):
     test_algorithm['type'] = algorithm_type
     
     bot.open_algorithm(chat_id=None, algorithm=test_algorithm)
+
+
+@pytest.mark.parametrize("algorithm_type", ['classical', 'quantum'])
+def test_open_algorithm(bot, test_algorithm, algorithm_type):
+    
+    test_algorithm['type'] = algorithm_type
+    
+    bot.open_algorithm(chat_id=None, algorithm=test_algorithm)
+    
+
+def test_collect_parameters_run(bot, monkeypatch, stub, message):
+    
+    test_algorithm = {'collected_name': 'collected_parameter',
+                      'parameters': [{'name': 'collected_parameter', 
+                                      'value': 'collected_value'}]}
+                              
+    monkeypatch.setattr("core.telegram.Bot.run_algorithm", stub)
+                              
+    bot.collect_parameters(message, **test_algorithm)
+
+
+def test_collect_parameters_next(bot, monkeypatch, stub, message):
+    
+    test_algorithm = {'collected_name': 'collected_parameter',
+                      'parameters': [{'name': 'collected_parameter', 
+                                      'value': 'collected_value'},
+                                     {'name': 'not_collected_parameter'}]}
+                              
+    monkeypatch.setattr("core.telegram.Bot.query_next_parameter", stub)
+                              
+    bot.collect_parameters(message, **test_algorithm)
     
     
 ###   Fixtures   ###

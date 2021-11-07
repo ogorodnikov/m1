@@ -222,14 +222,14 @@ class Bot(TeleBot):
                           disable_notification=True)
         
 
-    def collect_parameters(self, message, **kwargs):
+    def collect_parameters(self, message, **algorithm):
 
         chat_id = message.chat.id
 
-        run_mode = kwargs.get('run_mode')        
-        parameters = kwargs.get('parameters')
-        algorithm_id = kwargs.get('algorithm_id')
-        collected_name = kwargs.get('collected_name')
+        run_mode = algorithm.get('run_mode')        
+        parameters = algorithm.get('parameters')
+        algorithm_id = algorithm.get('algorithm_id')
+        collected_name = algorithm.get('collected_name')
 
         if collected_name:
             
@@ -242,7 +242,7 @@ class Bot(TeleBot):
             
         not_collected_parameters = (parameter for parameter in parameters
                                     if 'value' not in parameter)
-
+                                    
         next_parameter = next(iter(not_collected_parameters), None)
         
         self.log(f'BOT chat_id: {chat_id}')
