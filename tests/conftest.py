@@ -10,20 +10,21 @@ def run_config():
     configuration = core_config.Config()
     
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="session", autouse=True)
 def stub():
     return lambda *args, **kwargs: None
 
 
-@pytest.fixture(scope="session")    
+@pytest.fixture(scope="session", autouse=True)    
 def warn():
+    return lambda *_, **__: (_ for _ in ()).throw(UserWarning)
+    
+    # def raise_user_warning(*args, **kwargs):
+    #     raise UserWarning
+    
+    # return raise_user_warning
+    
 
-    def raise_user_warning(*args, **kwargs):
-        raise UserWarning
-    
-    return raise_user_warning
-    
-    # return lambda *_, **__: (_ for _ in ()).throw(UserWarning)
 
 
 @pytest.fixture(scope="module")
