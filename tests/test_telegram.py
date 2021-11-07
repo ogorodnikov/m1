@@ -102,6 +102,18 @@ def test_collect_parameters_next(bot, monkeypatch, stub, message):
     bot.collect_parameters(message, **test_algorithm)
     
     
+def test_query_next_parameter(bot, monkeypatch, stub):
+    
+    monkeypatch.setattr("core.telegram.Bot.register_next_step_handler", stub)
+    
+    bot.query_next_parameter(next_parameter={'default_value': ''}, 
+                             chat_id=None, 
+                             algorithm_id=None, 
+                             run_mode=None, 
+                             parameters=None)
+    
+    
+    
 ###   Fixtures   ###
 
 @pytest.fixture(scope="module", autouse=True)
