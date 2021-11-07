@@ -10,11 +10,18 @@ def run_config():
 
 @pytest.fixture(scope="session")
 def stub():
+    return lambda *args, **kwargs: None
+
+
+@pytest.fixture(scope="session")    
+def warn():
+
+    def raise_user_warning(*args, **kwargs):
+        raise UserWarning
     
-    def get_none(*args, **kwargs):
-        pass
+    return raise_user_warning
     
-    return get_none
+    # return lambda *_, **__: (_ for _ in ()).throw(UserWarning)
     
 
 def pytest_configure(config):

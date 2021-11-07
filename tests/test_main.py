@@ -3,16 +3,14 @@ import logging
 
 from _pytest.monkeypatch import MonkeyPatch
 
+from flask import Flask
+from flask import Config as FlaskConfig    
+
 from core.main import Main
 
 from core.app import FlaskApp
-from core.config import Config
-from core.routes import Routes
-from core.dynamo import Dynamo
 from core.runner import Runner
-from core.cognito import Cognito
 from core.telegram import Bot
-from core.facebook import Facebook
 
 
 ###   Logging   ###
@@ -48,35 +46,20 @@ def monkeypatch_module(request):
     monkeypatch_module.undo()
     
 
-@pytest.fixture(autouse=True, scope="module")
+@pytest.fixture(scope="module", autouse=True)
 def mocks(monkeypatch_module, stub):
     
-    def test(*args, **kwargs):
-        raise UserWarning
+    monkeypatch_module.setattr("core.main.Config", stub) 
+    monkeypatch_module.setattr("core.main.Routes", stub) 
+    monkeypatch_module.setattr("core.main.Dynamo", stub) 
+    monkeypatch_module.setattr("core.main.Cognito", stub)
+    monkeypatch_module.setattr("core.main.Facebook", stub)
+
+    monkeypatch_module.setattr(Bot, "__init__", stub)    
+    monkeypatch_module.setattr(Runner, "__init__", stub)
     
-    
-    class MockFlaskApp:
-        
-        class MockConfig:
-            
-            def from_object(config):
-                pass
-        
-        config = MockConfig
-    
-    
-    from flask import Config as C
-    from flask import Flask
-    
+    monkeypatch_module.setattr(FlaskApp, "__init__", Flask.__init__)    
+    monkeypatch_module.setattr(FlaskConfig, "from_object", stub)
+
     monkeypatch_module.setattr(Bot, "start", stub)
     monkeypatch_module.setattr(Runner, "start", stub)
-    monkeypatch_module.setattr(C, "from_object", stub)
-    
-    monkeypatch_module.setattr(FlaskApp, "__init__", Flask.__init__)
-    monkeypatch_module.setattr(Config, "__init__", stub) 
-    monkeypatch_module.setattr(Routes, "__init__", stub) 
-    monkeypatch_module.setattr(Dynamo, "__init__", stub) 
-    monkeypatch_module.setattr(Runner, "__init__", stub) 
-    monkeypatch_module.setattr(Cognito, "__init__", stub) 
-    monkeypatch_module.setattr(Bot, "__init__", stub) 
-    monkeypatch_module.setattr(Facebook, "__init__", stub)
