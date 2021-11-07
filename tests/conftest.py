@@ -5,9 +5,6 @@ from _pytest.monkeypatch import MonkeyPatch
 from core import config as core_config
 
 
-collect_ignore_glob = ["*/integration/*"]
-
-
 @pytest.fixture(scope="session", autouse=True)
 def run_config():
     configuration = core_config.Config()

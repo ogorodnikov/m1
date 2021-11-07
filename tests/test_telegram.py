@@ -69,14 +69,6 @@ def test_open_algorithm(bot, test_algorithm, algorithm_type):
     test_algorithm['type'] = algorithm_type
     
     bot.open_algorithm(chat_id=None, algorithm=test_algorithm)
-
-
-@pytest.mark.parametrize("algorithm_type", ['classical', 'quantum'])
-def test_open_algorithm(bot, test_algorithm, algorithm_type):
-    
-    test_algorithm['type'] = algorithm_type
-    
-    bot.open_algorithm(chat_id=None, algorithm=test_algorithm)
     
 
 def test_collect_parameters_run(bot, monkeypatch, stub, message):
@@ -120,8 +112,10 @@ def test_run_algorithm(bot):
                       run_mode=None, 
                       parameters=[])
                       
+                      
 def test_sticker_handler(bot, sticker_message):
     bot.sticker_handler(sticker_message)
+    
     
 def test_echo_handler(bot, message):
     bot.echo_handler(message)
