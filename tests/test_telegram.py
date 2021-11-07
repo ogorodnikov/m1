@@ -119,7 +119,13 @@ def test_run_algorithm(bot):
                       algorithm_id=None, 
                       run_mode=None, 
                       parameters=[])
-       
+                      
+def test_sticker_handler(bot, sticker_message):
+    bot.sticker_handler(sticker_message)
+    
+def test_echo_handler(bot, message):
+    bot.echo_handler(message)
+    
     
 ###   Fixtures   ###
 
@@ -132,6 +138,7 @@ def set_mocks(monkeypatch_module, user, stub, test_algorithm):
     
     monkeypatch_module.setattr("core.telegram.Bot.send_message", stub)
     monkeypatch_module.setattr("core.telegram.Bot.send_sticker", stub)
+    monkeypatch_module.setattr("core.telegram.Bot.reply_to", stub)
     
     monkeypatch_module.setattr(Runner, "__init__", stub)
     monkeypatch_module.setattr(Runner, "run_algorithm", stub)
