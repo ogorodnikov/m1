@@ -62,6 +62,14 @@ def test_callback_handler_exception(bot, callback, monkeypatch, warn):
     
     bot.callback_handler(callback)
     
+
+@pytest.mark.parametrize("algorithm_type", ['classical', 'quantum'])
+def test_open_algorithm(bot, test_algorithm, algorithm_type):
+    
+    test_algorithm['type'] = algorithm_type
+    
+    bot.open_algorithm(chat_id=None, algorithm=test_algorithm)
+    
     
 ###   Fixtures   ###
 
@@ -110,7 +118,7 @@ def user():
 
 @pytest.fixture(scope="module")
 def chat():
-    yield types.Chat(id=0, type='private')
+    yield types.Chat(id=None, type='private')
     
     
 @pytest.fixture(scope="module")
