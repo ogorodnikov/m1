@@ -90,8 +90,6 @@ class Bot(TeleBot):
         
         self.log(f'BOT /algorithms')
         
-        algorithms = self.db.get_all_algorithms()
-
         if isinstance(message_or_callback, Message):
             message = message_or_callback
         
@@ -99,7 +97,8 @@ class Bot(TeleBot):
             message = message_or_callback.message
 
         self.send_message(message.chat.id, f"Algorithms:", disable_notification=True)
-        
+
+        algorithms = self.db.get_all_algorithms()        
             
         for algorithm_index, algorithm in enumerate(algorithms, 1):
             

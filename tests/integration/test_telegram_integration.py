@@ -8,6 +8,8 @@ from core import telegram
 TEST_CHAT_ID = 221192775
 
 
+###   Telegram   ###
+
 def test_send_message(telegram_bot):
     test_text = 'Test Message :)'
     message_response = telegram_bot.send_message(TEST_CHAT_ID, test_text, 
@@ -59,7 +61,7 @@ def test_echo_handler(telegram_bot, message):
     telegram_bot.echo_handler(message)
 
 
-###   Fixtures
+###   Fixtures   ###
 
 test_algorithm_data = {'id': 'test_algorithm_id',
                        'name': 'test_algorithm',
@@ -68,6 +70,11 @@ test_algorithm_data = {'id': 'test_algorithm_id',
                        'parameters': [{'name': 'test_parameter', 
                                        'default_value': 'test_parameter_value'}]
 }
+
+@pytest.fixture(scope="module")
+def test_algorithm():
+    return test_algorithm_data
+    
 
 class MockDB:
     
@@ -86,6 +93,7 @@ class MockRunner:
     def run_algorithm(self, algorithm_id, run_values):
         task_id = 1
         return task_id
+
         
 
 @pytest.fixture(scope="module")
@@ -154,17 +162,3 @@ def callback(user, chat, message):
     )
 
     yield callback
-    
-    
-@pytest.fixture(scope="module")
-def test_algorithm():
-    
-    test_algorithm_data = {'id': 'test_algorithm_id',
-                           'name': 'test_algorithm',
-                           'link': 'https://test.com/test_algorithm',
-                           'description': 'test_algorithm_description',
-                           'parameters': [{'name': 'test_parameter', 
-                                           'default_value': 'test_parameter_value'}]
-                          }
-                                           
-    yield test_algorithm_data
