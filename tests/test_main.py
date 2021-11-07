@@ -1,8 +1,6 @@
 import pytest
 import logging
 
-from _pytest.monkeypatch import MonkeyPatch
-
 from flask import Flask
 from flask import Config as FlaskConfig    
 
@@ -38,16 +36,8 @@ def main():
     return Main()
 
 
-@pytest.fixture(scope="module")
-def monkeypatch_module(request):
-    
-    monkeypatch_module = MonkeyPatch()
-    yield monkeypatch_module
-    monkeypatch_module.undo()
-    
-
 @pytest.fixture(scope="module", autouse=True)
-def mocks(monkeypatch_module, stub):
+def set_mocks(monkeypatch_module, stub):
     
     monkeypatch_module.setattr("core.main.Config", stub) 
     monkeypatch_module.setattr("core.main.Routes", stub) 

@@ -87,28 +87,6 @@ class MockRunner:
         task_id = 1
         return task_id
         
-        
-###   Fixtures   ###
-
-
-# @pytest.fixture(scope="module", autouse=True)
-# def set_mocks(monkeypatch_module, stub):
-    
-#     monkeypatch_module.setattr("core.main.Config", stub) 
-#     monkeypatch_module.setattr("core.main.Routes", stub) 
-#     monkeypatch_module.setattr("core.main.Dynamo", stub) 
-#     monkeypatch_module.setattr("core.main.Cognito", stub)
-#     monkeypatch_module.setattr("core.main.Facebook", stub)
-
-#     monkeypatch_module.setattr(Bot, "__init__", stub)    
-#     monkeypatch_module.setattr(Runner, "__init__", stub)
-    
-#     monkeypatch_module.setattr(FlaskApp, "__init__", Flask.__init__)    
-#     monkeypatch_module.setattr(FlaskConfig, "from_object", stub)
-
-#     monkeypatch_module.setattr(Bot, "start", stub)
-#     monkeypatch_module.setattr(Runner, "start", stub)
-
 
 @pytest.fixture(scope="module")
 def telegram_bot():

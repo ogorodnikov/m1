@@ -1,5 +1,7 @@
 import pytest
 
+from _pytest.monkeypatch import MonkeyPatch
+
 from core import config as core_config
 
 
@@ -22,7 +24,15 @@ def warn():
     return raise_user_warning
     
     # return lambda *_, **__: (_ for _ in ()).throw(UserWarning)
+
+
+@pytest.fixture(scope="module")
+def monkeypatch_module():
     
+    monkeypatch_module = MonkeyPatch()
+    yield monkeypatch_module
+    monkeypatch_module.undo()
+
 
 def pytest_configure(config):
 

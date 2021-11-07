@@ -4,8 +4,6 @@ import pytest
 
 from threading import Timer
 
-from _pytest.monkeypatch import MonkeyPatch
-
 from qiskit import QuantumCircuit
 
 from core.runner import Runner
@@ -126,13 +124,6 @@ def runner():
     
     yield runner
 
-@pytest.fixture(scope="module")
-def monkeypatch_module():
-    
-    monkeypatch_module = MonkeyPatch()
-    yield monkeypatch_module
-    monkeypatch_module.undo()
-    
 
 @pytest.fixture(scope="module")
 def test_task():

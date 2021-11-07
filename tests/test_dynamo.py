@@ -1,7 +1,5 @@
 import pytest
 
-from _pytest.monkeypatch import MonkeyPatch
-
 from contextlib import contextmanager
 
 from core.dynamo import Dynamo
@@ -190,14 +188,6 @@ class MockDynamoResource:
 @pytest.fixture(scope="module")
 def db():
     return Dynamo()
-    
-    
-@pytest.fixture(scope="module")
-def monkeypatch_module():
-    
-    monkeypatch_module = MonkeyPatch()
-    yield monkeypatch_module
-    monkeypatch_module.undo()
 
 
 @pytest.fixture(autouse=True, scope="module")
