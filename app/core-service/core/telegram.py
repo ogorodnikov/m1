@@ -22,11 +22,11 @@ class Bot(TeleBot):
         self.db = db
         self.runner = runner
         self.domain = os.getenv('DOMAIN')
-        telegram_token = os.getenv('TELEGRAM_TOKEN')
+        self.telegram_token = os.getenv('TELEGRAM_TOKEN')
         
         self.logger = getLogger(__name__)
         
-        super().__init__(telegram_token, *args, 
+        super().__init__(self.telegram_token, *args, 
                          parse_mode='HTML', threaded=False, **kwargs)
         
         self.register_handlers()
