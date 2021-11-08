@@ -287,5 +287,4 @@ def set_mocks(mock, stub):
     mock(Runner, "stop", stub)
     mock(Runner, "run_algorithm", stub)
 
-    # mock(FlaskApp, "__init__", stub)
     mock(FlaskApp, "exit_application", stub)
