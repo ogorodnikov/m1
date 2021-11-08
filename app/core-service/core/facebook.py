@@ -9,6 +9,8 @@ from logging import getLogger
 class Facebook:
     
     def __init__(self, *args, **kwargs):
+        
+        raise
 
         self.logger = getLogger(__name__)
         

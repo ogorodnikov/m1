@@ -175,12 +175,12 @@ def app():
     test_app.secret_key = 'test_key'
     
     db = Dynamo()
-    users = Cognito()
+    cognito = Cognito()
     runner = Runner(db)
     facebook = Facebook()
     telegram_bot = Bot(db, runner)
     
-    routes = Routes(db, test_app, users, runner, facebook, telegram_bot)
+    routes = Routes(db, test_app, cognito, runner, facebook, telegram_bot)
     
     test_context = test_app.test_request_context()
     test_context.push()
@@ -192,7 +192,7 @@ def app():
 
 
 @pytest.fixture(scope="module", autouse=True)
-def set_mocks(app, mock, stub):
+def set_mocks(mock, stub):
     
     def get_test_token_from_code(self, code, login_url):
         if code == 'code_error':
@@ -246,7 +246,8 @@ def set_mocks(app, mock, stub):
         return dummy_status_updates
         
     mock(Main, "__init__", stub)
-    
+
+    mock(Facebook, "__init__", stub)    
     mock(Facebook, "get_autorization_url", lambda *_, **__: '/home')
     mock(Facebook, "get_token_from_code", get_test_token_from_code)
     mock(Facebook, "get_user_data", get_test_user_data)
@@ -255,8 +256,12 @@ def set_mocks(app, mock, stub):
     mock(Cognito, "populate_facebook_user", stub)
     mock(Cognito, "register_user", register_test_user)
     mock(Cognito, "login_user", login_test_user)
+
+    # mock(Dynamo, "__init__", stub)
+    # mock(Dynamo, "query_algorithms", stub)
+    # mock(Dynamo, "get_all_algorithms", stub)
+    # mock(Dynamo, "get_algorithm", stub)
     
-    mock(Dynamo, "__init__", stub)
     mock(Dynamo, "get_status_updates", stub)
     mock(Dynamo, "like_algorithm", stub)
     mock(Dynamo, "set_algorithm_state", stub)
@@ -270,15 +275,11 @@ def set_mocks(app, mock, stub):
     mock(Dynamo, "get_all_tasks", get_dummy_tasks)
     mock(Dynamo, "stream_figure_from_s3", get_dummy_s3_stream)
     mock(Dynamo, "get_status_updates", get_dummy_status_updates)
-
-    # mock(Dynamo, "query_algorithms", stub)
-    # mock(Dynamo, "get_all_algorithms", stub)
-    # mock(Dynamo, "get_algorithm", stub)
     
     mock(Runner, "__init__", stub)
     mock(Runner, "start", stub)
     mock(Runner, "stop", stub)
     mock(Runner, "run_algorithm", stub)
 
-    mock(FlaskApp, "__init__", stub)
+    # mock(FlaskApp, "__init__", stub)
     mock(FlaskApp, "exit_application", stub)
