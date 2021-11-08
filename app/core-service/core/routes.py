@@ -104,7 +104,7 @@ class Routes():
             return redirect(request.referrer)
             
         
-        ###   Algirithms   ###
+        ###   Algorithms   ###
         
         @app.route('/algorithms')
         def get_algorithms():
@@ -279,7 +279,6 @@ class Routes():
                 # db.get_status_updates()
                 
                 # db.update_task_attribute(1, 'result', 'test_result')
-                # db.test()
                 
             return render_template("admin.html", environ=os.environ)
         

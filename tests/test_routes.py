@@ -263,10 +263,32 @@ def set_mocks(client, mock, stub):
     mock(Dynamo, "add_task", stub)
     mock(Dynamo, "purge_tasks", stub)
     mock(Dynamo, "add_test_data", stub)
+    mock(Dynamo, "purge_s3_folder", stub)
+    mock(Dynamo, "update_task_attribute", stub)
+    mock(Dynamo, "add_status_update", stub)
     
     mock(Dynamo, "get_all_tasks", get_dummy_tasks)
     mock(Dynamo, "stream_figure_from_s3", get_dummy_s3_stream)
     mock(Dynamo, "get_status_updates", get_dummy_status_updates)
+
+    # mock(Dynamo, "query_algorithms", stub)
+    # mock(Dynamo, "get_all_algorithms", stub)
+    # mock(Dynamo, "get_algorithm", stub)
+    
+    # query_algorithms
+    # get_all_algorithms
+    # get_algorithm
+    # like_algorithm
+    # set_algorithm_state
+    # get_all_tasks
+    # stream_figure_from_s3
+    # add_test_data
+    # purge_tasks
+    # purge_s3_folder
+    # add_task
+    # update_task_attribute
+    # add_status_update
+    # get_status_updates
     
     mock(Runner, "__init__", stub)
     mock(Runner, "start", stub)
