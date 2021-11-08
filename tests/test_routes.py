@@ -21,21 +21,21 @@ TASKS_PAGE_PHRASE = 'Tasks'
 
 ###   Login   ###
 
-def test_home(client):
-    root_response = client.get('/')
-    home_response = client.get('/home')
+def test_home(app):
+    root_response = app.get('/')
+    home_response = app.get('/home')
     
     assert HOME_PAGE_PHRASE in root_response.data.decode('utf-8')
     assert HOME_PAGE_PHRASE in home_response.data.decode('utf-8')
     
 
-def test_login(client):
-    response = client.get('/login')
+def test_login(app):
+    response = app.get('/login')
     assert LOGIN_PAGE_PHRASE in response.data.decode('utf-8')
     
 
-def test_login_facebook(client):   
-    facebook_response = client.post('/login', 
+def test_login_facebook(app):   
+    facebook_response = app.post('/login', 
                                     data={'flow': 'facebook'}, 
                                     follow_redirects=True)
     assert HOME_PAGE_PHRASE in facebook_response.data.decode('utf-8')
@@ -43,106 +43,106 @@ def test_login_facebook(client):
 
 def attribute_error_wrapper(test_function):
     
-    def inner_function(client, *args, **kwargs):
+    def inner_function(app, *args, **kwargs):
         
         with pytest.raises(AttributeError) as error:
-            test_function(client, *args, **kwargs)
+            test_function(app, *args, **kwargs)
         assert "'NoneType' object has no attribute 'replace'" in str(error.value)
         
     return inner_function
     
 
 @attribute_error_wrapper
-def test_login_code_ok(client):   
-    client.get('/login?code=code_ok')
+def test_login_code_ok(app):   
+    app.get('/login?code=code_ok')
     
 @attribute_error_wrapper
-def test_login_code_error(client):   
-    client.get('/login?code=code_error')
+def test_login_code_error(app):   
+    app.get('/login?code=code_error')
     
 
 @attribute_error_wrapper
-def test_login_register_ok(client):
-    register_response = client.post('/login', data={'flow': 'register'})
+def test_login_register_ok(app):
+    register_response = app.post('/login', data={'flow': 'register'})
 
 @attribute_error_wrapper
-def test_login_register_error(client):
-    register_response = client.post('/login', data={'flow': 'register',
+def test_login_register_error(app):
+    register_response = app.post('/login', data={'flow': 'register',
                                                     'error': 'test_error'})
 
 @attribute_error_wrapper
-def test_login_sign_in_ok(client):
-    sign_in_response = client.post('/login', data={'flow': 'sign-in'})
+def test_login_sign_in_ok(app):
+    sign_in_response = app.post('/login', data={'flow': 'sign-in'})
 
 @attribute_error_wrapper
-def test_login_sign_in_error(client):
-    sign_in_response = client.post('/login', data={'flow': 'sign-in',
+def test_login_sign_in_error(app):
+    sign_in_response = app.post('/login', data={'flow': 'sign-in',
                                                   'error': 'test_error'})
 
 @attribute_error_wrapper
-def test_logout(client):
-    sign_in_response = client.get('/logout')
+def test_logout(app):
+    sign_in_response = app.get('/logout')
   
 
 ###   Algorithms   ###
 
-def test_get_algorithms(client):
+def test_get_algorithms(app):
     
-    response = client.get('/algorithms')
+    response = app.get('/algorithms')
     assert b'Algorithms' in response.data
     
-    response = client.get('/algorithms?type=classical')
+    response = app.get('/algorithms?type=classical')
     assert b'Extended Euclidean' in response.data
     assert b'Bernstein Vazirani' not in response.data
 
-    response = client.get('/algorithms?type=quantum')
+    response = app.get('/algorithms?type=quantum')
     assert b'Extended Euclidean' not in response.data
     assert b'Bernstein Vazirani' in response.data
     
-    response = client.get('/algorithms?test_filter_name=test_filter_value')
+    response = app.get('/algorithms?test_filter_name=test_filter_value')
     assert b'Algorithms' in response.data
     
     
-def test_get_algorithm(client):
-    response = client.get('/algorithms/egcd')
+def test_get_algorithm(app):
+    response = app.get('/algorithms/egcd')
     assert b'Extended Euclidean' in response.data
     
     
 @attribute_error_wrapper
-def test_like_algorithm(client):
-    client.get('/algorithms/egcd/like')
+def test_like_algorithm(app):
+    app.get('/algorithms/egcd/like')
 
 
 @attribute_error_wrapper
-def test_run_algorithm(client):
-    response = client.post('/algorithms/egcd/run')
+def test_run_algorithm(app):
+    response = app.post('/algorithms/egcd/run')
 
 
-def test_set_algorithm_state_enabled(client):
-    client.get('/algorithms/egcd/state?enabled=True')
+def test_set_algorithm_state_enabled(app):
+    app.get('/algorithms/egcd/state?enabled=True')
     
-def test_set_algorithm_state_disabled(client):
-    client.get('/algorithms/egcd/state?enabled=False')
+def test_set_algorithm_state_disabled(app):
+    app.get('/algorithms/egcd/state?enabled=False')
     
     
 ###   Tasks   ###
 
-def test_get_tasks(client):
-    tasks_response = client.get('/tasks')
+def test_get_tasks(app):
+    tasks_response = app.get('/tasks')
     assert TASKS_PAGE_PHRASE in tasks_response.data.decode('utf-8')
 
-def test_get_task(client):
-    task_response = client.get('/tasks?task_id=1')
+def test_get_task(app):
+    task_response = app.get('/tasks?task_id=1')
     assert TASKS_PAGE_PHRASE in task_response.data.decode('utf-8')
 
     
-def test_download(client):
-    client.get('/download?task_id=1&content=statevector')
-    client.get('/download?task_id=1&content=statevector&as_attachment=True')
+def test_download(app):
+    app.get('/download?task_id=1&content=statevector')
+    app.get('/download?task_id=1&content=statevector&as_attachment=True')
 
 
-def test_admin(client):
-    client.get('/admin')
+def test_admin(app):
+    app.get('/admin')
     
     
 commands = [
@@ -158,21 +158,21 @@ commands = [
 ]
 
 @pytest.mark.parametrize("command", commands)
-def test_admin_commands(client, command):
+def test_admin_commands(app, command):
     
     print(f"command: {command}")
     
-    client.post('/admin', data={'command': command})
+    app.post('/admin', data={'command': command})
     
     
 ###   Fixtures   ###           
 
 @pytest.fixture(scope="module")
-def client():
+def app():
     
-    app = create_app()
-    app.testing = True
-    app.secret_key = 'test_key'
+    test_app = create_app()
+    test_app.testing = True
+    test_app.secret_key = 'test_key'
     
     db = Dynamo()
     users = Cognito()
@@ -180,19 +180,19 @@ def client():
     facebook = Facebook()
     telegram_bot = Bot(db, runner)
     
-    routes = Routes(db, app, users, runner, facebook, telegram_bot)
+    routes = Routes(db, test_app, users, runner, facebook, telegram_bot)
     
-    test_context = app.test_request_context()
+    test_context = test_app.test_request_context()
     test_context.push()
     
-    with app.test_client() as client:
-        yield client
+    with test_app.test_client() as app:
+        yield app
     
     test_context.pop()
 
 
 @pytest.fixture(scope="module", autouse=True)
-def set_mocks(client, mock, stub):
+def set_mocks(app, mock, stub):
     
     def get_test_token_from_code(self, code, login_url):
         if code == 'code_error':
@@ -274,21 +274,6 @@ def set_mocks(client, mock, stub):
     # mock(Dynamo, "query_algorithms", stub)
     # mock(Dynamo, "get_all_algorithms", stub)
     # mock(Dynamo, "get_algorithm", stub)
-    
-    # query_algorithms
-    # get_all_algorithms
-    # get_algorithm
-    # like_algorithm
-    # set_algorithm_state
-    # get_all_tasks
-    # stream_figure_from_s3
-    # add_test_data
-    # purge_tasks
-    # purge_s3_folder
-    # add_task
-    # update_task_attribute
-    # add_status_update
-    # get_status_updates
     
     mock(Runner, "__init__", stub)
     mock(Runner, "start", stub)
