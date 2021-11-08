@@ -10,8 +10,6 @@ class Facebook:
     
     def __init__(self, *args, **kwargs):
         
-        raise
-
         self.logger = getLogger(__name__)
         
         self.facebook_client_id = os.getenv('FACEBOOK_CLIENT_ID')

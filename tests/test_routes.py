@@ -1,11 +1,10 @@
 import io
 import pytest
 
-from core.main import Main
-
 from core.app import FlaskApp
 from core.app import create_app
 
+from core.main import Main
 from core.dynamo import Dynamo
 from core.runner import Runner
 from core.routes import Routes
@@ -88,24 +87,15 @@ def test_logout(app):
 
 def test_get_algorithms(app):
     
-    response = app.get('/algorithms')
-    assert b'Algorithms' in response.data
-    
-    response = app.get('/algorithms?type=classical')
-    assert b'Extended Euclidean' in response.data
-    assert b'Bernstein Vazirani' not in response.data
-
-    response = app.get('/algorithms?type=quantum')
-    assert b'Extended Euclidean' not in response.data
-    assert b'Bernstein Vazirani' in response.data
-    
-    response = app.get('/algorithms?test_filter_name=test_filter_value')
-    assert b'Algorithms' in response.data
+    app.get('/algorithms')
+    app.get('/algorithms?type=classical')
+    app.get('/algorithms?type=quantum')
+    app.get('/algorithms?test_filter_name=test_filter_value')
+    app.get('/algorithms?test_filter_name_error=test_filter_value')
     
     
 def test_get_algorithm(app):
-    response = app.get('/algorithms/egcd')
-    assert b'Extended Euclidean' in response.data
+    app.get('/algorithms/egcd')
     
     
 @attribute_error_wrapper
@@ -223,9 +213,9 @@ def set_mocks(mock, stub):
         if request_form.get('error'):
             raise UserWarning        
 
-    def get_dummy_tasks(*args, **kwargs):
+    def get_test_tasks(*args, **kwargs):
         
-        dummy_tasks = {1:{
+        test_tasks = {1:{
                 'logs': ['',], 
                 'run_values': {'test_run_value': '1', 'run_mode': 'classical'}, 
                 'task_status': 'Done', 
@@ -234,16 +224,32 @@ def set_mocks(mock, stub):
                 'task_result': {'Result': {'test_result': 1,}}}
         }
         
-        return dummy_tasks
+        return test_tasks
         
-    def get_dummy_s3_stream(*args, **kwargs):
+    def get_test_s3_stream(*args, **kwargs):
         return io.BytesIO()
         
-    def get_dummy_status_updates(*args, **kwargs):
+    def get_test_status_updates(*args, **kwargs):
         
-        dummy_status_updates = [(1, 'Running', ''), (1, 'Done', 'test_result')]
+        test_status_updates = [(1, 'Running', ''), (1, 'Done', 'test_result')]
         
-        return dummy_status_updates
+        return test_status_updates
+    
+    
+    def get_test_query_algorithms(self, query_parameters):
+        
+        if "test_filter_name_error" in query_parameters:
+            raise UserWarning
+        else:
+            return []
+    
+    test_algorithm_data = {'id': 'test_algorithm_id',
+                   'name': 'test_algorithm',
+                   'link': 'https://test.com/test_algorithm',
+                   'description': 'test_algorithm_description',
+                   'parameters': [{'name': 'test_parameter', 
+                                   'default_value': 'test_parameter_value'}]
+    }
         
     mock(Main, "__init__", stub)
 
@@ -257,10 +263,10 @@ def set_mocks(mock, stub):
     mock(Cognito, "register_user", register_test_user)
     mock(Cognito, "login_user", login_test_user)
 
-    # mock(Dynamo, "__init__", stub)
-    # mock(Dynamo, "query_algorithms", stub)
-    # mock(Dynamo, "get_all_algorithms", stub)
-    # mock(Dynamo, "get_algorithm", stub)
+    mock(Dynamo, "__init__", stub)
+    mock(Dynamo, "query_algorithms", get_test_query_algorithms)
+    mock(Dynamo, "get_all_algorithms", lambda *_, **__: [])
+    mock(Dynamo, "get_algorithm", lambda *_, **__: [])
     
     mock(Dynamo, "get_status_updates", stub)
     mock(Dynamo, "like_algorithm", stub)
@@ -272,9 +278,9 @@ def set_mocks(mock, stub):
     mock(Dynamo, "update_task_attribute", stub)
     mock(Dynamo, "add_status_update", stub)
     
-    mock(Dynamo, "get_all_tasks", get_dummy_tasks)
-    mock(Dynamo, "stream_figure_from_s3", get_dummy_s3_stream)
-    mock(Dynamo, "get_status_updates", get_dummy_status_updates)
+    mock(Dynamo, "get_all_tasks", get_test_tasks)
+    mock(Dynamo, "stream_figure_from_s3", get_test_s3_stream)
+    mock(Dynamo, "get_status_updates", get_test_status_updates)
     
     mock(Runner, "__init__", stub)
     mock(Runner, "start", stub)
