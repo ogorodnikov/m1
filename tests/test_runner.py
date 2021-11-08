@@ -80,14 +80,12 @@ def test_run_task_classical(runner, test_task, run_mode, mock_runner_functions,
     runner.run_task(**test_task)
     
 
-def test_execute_task(runner, monkeypatch, stub):
+def test_execute_task(runner, monkeypatch, stub, test_job):
     
-    monkeypatch.setattr(Runner, "monitor_job", stub)
+    monkeypatch.setattr("core.runner.execute", lambda *_, **__: test_job)
+    monkeypatch.setattr("core.runner.Runner.monitor_job", stub)
     
-    test_circuit = QuantumCircuit()
-    test_backend = runner.simulator_backend
-    
-    runner.execute_task(task_id=None, circuit=test_circuit, backend=test_backend)
+    runner.execute_task(task_id=None, circuit=None, backend=None)
     
     
 def test_monitor_job(runner, test_job):
@@ -191,23 +189,25 @@ def undecorate(runner, monkeypatch):
 
 @pytest.fixture
 def mock_runner_functions(runner, monkeypatch, request, stub):
-
-    def get_dummy_circuit(*args, **kwargs):
         
-        class DummyCircuit:
-            
-            num_qubits = None
-            
-            def save_statevector(self):
-                pass
-                
-        return DummyCircuit()
+    class TestCircuit:
+        num_qubits = None
+        save_statevector = stub
     
-    monkeypatch.setitem(runner.runner_functions, "test_algorithm", get_dummy_circuit)
+    monkeypatch.setitem(runner.runner_functions, "test_algorithm",
+                        lambda *_, **__: TestCircuit())
     
     if request.param == 'post_processing':
         
         monkeypatch.setitem(runner.post_processing, "test_algorithm", stub)
+        
+
+@pytest.fixture
+def mock_ibmq_backend(monkeypatch, test_run_result, stub):
+
+    monkeypatch.setattr(Runner, "get_least_busy_backend", stub)                 
+    monkeypatch.setattr(Runner, "execute_task", lambda *_, **__: test_run_result)
+    monkeypatch.setattr(Runner, "handle_statevector", stub)
 
 
 @pytest.fixture
@@ -224,23 +224,7 @@ def test_run_result():
     
 
 @pytest.fixture
-def mock_ibmq_backend(monkeypatch, test_run_result, stub):
-    
-    def get_test_run_result(*args, **kwargs):
-        return test_run_result
-
-    monkeypatch.setattr(Runner, "get_least_busy_backend", stub)                 
-    monkeypatch.setattr(Runner, "execute_task", get_test_run_result)
-    monkeypatch.setattr(Runner, "handle_statevector", stub)
-    
-
-@pytest.fixture
-def mock_monitor_job(monkeypatch, stub):
-    monkeypatch.setattr(Runner, "monitor_job", stub)
-    
-    
-@pytest.fixture
-def test_job():
+def test_job(test_run_result):
 
     class Status:
         
@@ -256,6 +240,10 @@ def test_job():
             
         def queue_position(self):
             pass
+        
+        def result(self):
+            return test_run_result
+            
             
     return TestJob()
     
