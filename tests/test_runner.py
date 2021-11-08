@@ -80,7 +80,9 @@ def test_run_task_classical(runner, test_task, run_mode, mock_runner_functions,
     runner.run_task(**test_task)
     
 
-def test_execute_task(runner, mock_monitor_job):
+def test_execute_task(runner, monkeypatch, stub):
+    
+    monkeypatch.setattr(Runner, "monitor_job", stub)
     
     test_circuit = QuantumCircuit()
     test_backend = runner.simulator_backend
@@ -92,7 +94,10 @@ def test_monitor_job(runner, test_job):
     runner.monitor_job(job=test_job, task_id=None, interval=0)
 
     
-def test_handle_statevector(runner, test_run_result, mock_plot_statevector_figure):
+def test_handle_statevector(runner, monkeypatch, stub, test_run_result):
+    
+    monkeypatch.setattr(Runner, "plot_statevector_figure", stub)
+    
     runner.handle_statevector(run_result=test_run_result, qubit_count=0, task_id=None)
 
 
@@ -111,12 +116,19 @@ def test_plot_statevector_figure(runner, monkeypatch, stub, test_run_result):
     runner.plot_statevector_figure(statevector=test_statevector, task_id=None)
     
 
-def test_get_least_busy_backend_ok(runner, test_provider, mock_least_busy):
+def test_get_least_busy_backend_ok(runner, monkeypatch, stub, test_provider):
+    
+    monkeypatch.setattr("core.runner.least_busy", stub)
+    
     test_provider.backends_list = 'test_backends'
+    
     runner.get_least_busy_backend(test_provider, qubit_count=0)
     
 
-def test_get_least_busy_backend_exception(runner, test_provider, mock_least_busy):
+def test_get_least_busy_backend_exception(runner, monkeypatch, stub, test_provider):
+    
+    monkeypatch.setattr("core.runner.least_busy", stub)
+    
     with pytest.raises(ValueError):
         runner.get_least_busy_backend(test_provider, qubit_count=0)
 
@@ -249,11 +261,6 @@ def test_job():
     
 
 @pytest.fixture
-def mock_plot_statevector_figure(monkeypatch, stub):
-    monkeypatch.setattr(Runner, "plot_statevector_figure", stub)
-    
-
-@pytest.fixture
 def test_provider():
 
     class TestProvider:
@@ -265,8 +272,3 @@ def test_provider():
             return self.backends_list
 
     return TestProvider()
-    
-
-@pytest.fixture
-def mock_least_busy(monkeypatch, stub):
-    monkeypatch.setattr("core.runner.least_busy", stub)
