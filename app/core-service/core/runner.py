@@ -149,7 +149,6 @@ class Runner():
             next_task = self.get_next_task()
 
             if next_task:
-  
                 self.process_next_task(next_task, self.task_timeout)
             
         self.log(f'RUNNER queue_worker exiting: {os.getpid()}')

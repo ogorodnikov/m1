@@ -38,7 +38,6 @@ def test_exception_decorator(runner):
     decorated_raise_exception(runner, task_id='test_task_id')
         
 
-# @pytest.mark.slow
 def test_queue_worker_loop(runner, monkeypatch, stub, undecorate):
     
     monkeypatch.setattr('core.runner.time.sleep', stub)
@@ -48,7 +47,7 @@ def test_queue_worker_loop(runner, monkeypatch, stub, undecorate):
     def clear_worker_active_flag():
         runner.worker_active_flag.clear()
     
-    test_timer = Timer(interval=0.01, function=clear_worker_active_flag)
+    test_timer = Timer(interval=0.001, function=clear_worker_active_flag)
     test_timer.start()
     
     runner.queue_worker_loop()
@@ -99,8 +98,14 @@ def test_handle_statevector(runner, test_run_result, mock_plot_statevector_figur
 
 @pytest.mark.filterwarnings("ignore::PendingDeprecationWarning")
 @pytest.mark.filterwarnings("ignore::::69")
-def test_plot_statevector_figure(runner, test_run_result):
-
+def test_plot_statevector_figure(runner, monkeypatch, stub, test_run_result):
+    
+    class MockFigure:
+        savefig = stub
+    
+    monkeypatch.setattr('core.runner.plot_bloch_multivector', 
+                        lambda statevector: MockFigure())
+                        
     test_statevector = test_run_result.get_statevector(decimals=0)
     
     runner.plot_statevector_figure(statevector=test_statevector, task_id=None)
