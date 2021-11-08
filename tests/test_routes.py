@@ -21,17 +21,6 @@ TASKS_PAGE_PHRASE = 'Tasks'
 
 ###   Login   ###
 
-def attribute_error_wrapper(test_function):
-    
-    def inner_function(client, *args, **kwargs):
-        
-        with pytest.raises(AttributeError) as error:
-            test_function(client, *args, **kwargs)
-        assert "'NoneType' object has no attribute 'replace'" in str(error.value)
-        
-    return inner_function
-    
-    
 def test_home(client):
     root_response = client.get('/')
     home_response = client.get('/home')
@@ -51,6 +40,17 @@ def test_login_facebook(client):
                                     follow_redirects=True)
     assert HOME_PAGE_PHRASE in facebook_response.data.decode('utf-8')
 
+
+def attribute_error_wrapper(test_function):
+    
+    def inner_function(client, *args, **kwargs):
+        
+        with pytest.raises(AttributeError) as error:
+            test_function(client, *args, **kwargs)
+        assert "'NoneType' object has no attribute 'replace'" in str(error.value)
+        
+    return inner_function
+    
 
 @attribute_error_wrapper
 def test_login_code_ok(client):   
@@ -84,7 +84,7 @@ def test_logout(client):
     sign_in_response = client.get('/logout')
   
 
-# ###   Algorithms   ###
+###   Algorithms   ###
 
 def test_get_algorithms(client):
     
@@ -121,7 +121,6 @@ def test_run_algorithm(client):
 def test_set_algorithm_state_enabled(client):
     client.get('/algorithms/egcd/state?enabled=True')
     
-    
 def test_set_algorithm_state_disabled(client):
     client.get('/algorithms/egcd/state?enabled=False')
     
@@ -129,18 +128,17 @@ def test_set_algorithm_state_disabled(client):
 ###   Tasks   ###
 
 def test_get_tasks(client):
-    
     tasks_response = client.get('/tasks')
-    task_response = client.get('/tasks?task_id=1')
-    
-    assert TASKS_PAGE_PHRASE in tasks_response.data.decode('utf-8') 
-    assert TASKS_PAGE_PHRASE in task_response.data.decode('utf-8')
-    
+    assert TASKS_PAGE_PHRASE in tasks_response.data.decode('utf-8')
 
-def test_download(client):
+def test_get_task(client):
+    task_response = client.get('/tasks?task_id=1')
+    assert TASKS_PAGE_PHRASE in task_response.data.decode('utf-8')
+
     
+def test_download(client):
     client.get('/download?task_id=1&content=statevector')
-    # client.get('/download?task_id=1&content=statevector&as_attachment=True')
+    client.get('/download?task_id=1&content=statevector&as_attachment=True')
 
 
 def test_admin(client):
@@ -164,11 +162,7 @@ def test_admin_commands(client, command):
     
     print(f"command: {command}")
     
-    # client.get(f'/admin&command={command}')
-    
     client.post('/admin', data={'command': command})
-
-    
     
     
 ###   Fixtures   ###           
@@ -195,15 +189,11 @@ def client():
         yield client
     
     test_context.pop()
-    # app.stop_runner()
-    
 
-@pytest.fixture(autouse=True)
-def mocks(client, monkeypatch):
+
+@pytest.fixture(scope="module", autouse=True)
+def set_mocks(client, mock, stub):
     
-    def get_home_url(*args, **kwargs):
-        return '/home'
-        
     def get_test_token_from_code(self, code, login_url):
         if code == 'code_error':
             facebook_token = 'token_error'
@@ -255,28 +245,33 @@ def mocks(client, monkeypatch):
         
         return dummy_status_updates
         
-        
-    monkeypatch.setattr(Main, "__init__", get_home_url)
+    mock(Main, "__init__", stub)
     
-    monkeypatch.setattr(Facebook, "get_autorization_url", get_home_url)
-    monkeypatch.setattr(Facebook, "get_token_from_code", get_test_token_from_code)
-    monkeypatch.setattr(Facebook, "get_user_data", get_test_user_data)
+    mock(Facebook, "get_autorization_url", lambda *_, **__: '/home')
+    mock(Facebook, "get_token_from_code", get_test_token_from_code)
+    mock(Facebook, "get_user_data", get_test_user_data)
     
-    monkeypatch.setattr(Cognito, "populate_facebook_user", get_home_url)
-    monkeypatch.setattr(Cognito, "register_user", register_test_user)
-    monkeypatch.setattr(Cognito, "login_user", login_test_user)
+    mock(Cognito, "__init__", stub)
+    mock(Cognito, "populate_facebook_user", stub)
+    mock(Cognito, "register_user", register_test_user)
+    mock(Cognito, "login_user", login_test_user)
     
-    monkeypatch.setattr(Dynamo, "get_status_updates", get_home_url)
-    monkeypatch.setattr(Dynamo, "like_algorithm", get_home_url)
-    monkeypatch.setattr(Dynamo, "set_algorithm_state", get_home_url)
-    monkeypatch.setattr(Dynamo, "add_task", get_home_url)
-    monkeypatch.setattr(Dynamo, "purge_tasks", get_home_url)
-    monkeypatch.setattr(Dynamo, "add_test_data", get_home_url)
+    mock(Dynamo, "__init__", stub)
+    mock(Dynamo, "get_status_updates", stub)
+    mock(Dynamo, "like_algorithm", stub)
+    mock(Dynamo, "set_algorithm_state", stub)
+    mock(Dynamo, "add_task", stub)
+    mock(Dynamo, "purge_tasks", stub)
+    mock(Dynamo, "add_test_data", stub)
     
-    monkeypatch.setattr(Dynamo, "get_all_tasks", get_dummy_tasks)
-    monkeypatch.setattr(Dynamo, "stream_figure_from_s3", get_dummy_s3_stream)
-    monkeypatch.setattr(Dynamo, "get_status_updates", get_dummy_status_updates)
+    mock(Dynamo, "get_all_tasks", get_dummy_tasks)
+    mock(Dynamo, "stream_figure_from_s3", get_dummy_s3_stream)
+    mock(Dynamo, "get_status_updates", get_dummy_status_updates)
     
-    monkeypatch.setattr(Runner, "run_algorithm", get_home_url)
+    mock(Runner, "__init__", stub)
+    mock(Runner, "start", stub)
+    mock(Runner, "stop", stub)
+    mock(Runner, "run_algorithm", stub)
 
-    monkeypatch.setattr(FlaskApp, "exit_application", get_home_url)
+    mock(FlaskApp, "__init__", stub)
+    mock(FlaskApp, "exit_application", stub)

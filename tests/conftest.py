@@ -33,6 +33,11 @@ def monkeypatch_module():
     monkeypatch_module = MonkeyPatch()
     yield monkeypatch_module
     monkeypatch_module.undo()
+    
+    
+@pytest.fixture(scope="module")
+def mock(monkeypatch_module):    
+    return monkeypatch_module.setattr
 
 
 def pytest_configure(config):

@@ -17,14 +17,14 @@ from logging import getLogger
 
 class Routes():
     
-    def __init__(self, db, app, users, runner, facebook, telegram_bot):
+    def __init__(self, db, app, cognito, runner, facebook, telegram_bot):
         
         self.logger = getLogger(__name__)
         
         self.db = db
         self.app = app
-        self.users = users
         self.runner = runner
+        self.cognito = cognito
         self.facebook = facebook
         self.telegram_bot = telegram_bot
         
@@ -37,8 +37,8 @@ class Routes():
         
         db = self.db
         app = self.app
-        users = self.users
         runner = self.runner
+        cognito = self.cognito
         facebook = self.facebook
         telegram_bot = self.telegram_bot
         
@@ -329,7 +329,7 @@ class Routes():
             if error:
                 raise UserWarning(error)
                 
-            self.users.populate_facebook_user(user_data)
+            self.cognito.populate_facebook_user(user_data)
             
             session['username'] = username
             session['picture_url'] = picture_url
@@ -346,7 +346,7 @@ class Routes():
     
         try:
         
-            self.users.register_user(request_form)
+            self.cognito.register_user(request_form)
             flash(f"New user registered", category='info')
     
         except Exception as exception:
@@ -359,7 +359,7 @@ class Routes():
     
         try:
             
-            logged_in_username = self.users.login_user(request_form)
+            logged_in_username = self.cognito.login_user(request_form)
             
             session.permanent = request_form.get('remember_me')
             session['username'] = logged_in_username
