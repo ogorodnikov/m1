@@ -279,7 +279,7 @@ class Dynamo():
         self.update_task_attribute(self.SERVICE_TASK_RECORD_ID, 'status_updates', 
                                    status_update, append=True)
                                    
-        self.log(f'DYNAMO add_status_update {status_update}')
+        # self.log(f'DYNAMO add_status_update {status_update}')
         
 
     def get_status_updates(self):

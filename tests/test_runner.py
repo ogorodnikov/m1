@@ -10,8 +10,12 @@ from core.runner import Runner
 from core.dynamo import Dynamo
 
 
-# @pytest.mark.slow
-def test_start_stop(runner):
+def test_start_stop(runner, monkeypatch, stub):
+    
+    monkeypatch.setattr('core.runner.IBMQ.enable_account', stub)
+    monkeypatch.setattr('core.runner.IBMQ.disable_account', stub)
+    
+    monkeypatch.setattr('core.runner.Runner.queue_worker_loop', stub)
     
     runner.start()
     assert os.environ.get('RUNNER_STATE') == 'Running'
@@ -20,11 +24,7 @@ def test_start_stop(runner):
     assert os.environ.get('RUNNER_STATE') == 'Stopped'
 
 
-def test_log(runner):
-    runner.log(message='test', task_id=1)
-    
-
-def test_run_algorithm(runner):
+def test_run_algorithm(runner, monkeypatch, stub):
     runner.run_algorithm(None, None)
     
 
@@ -39,14 +39,16 @@ def test_exception_decorator(runner):
         
 
 # @pytest.mark.slow
-def test_queue_worker_loop(runner, undecorate):
+def test_queue_worker_loop(runner, monkeypatch, stub, undecorate):
+    
+    monkeypatch.setattr('core.runner.time.sleep', stub)
     
     runner.worker_active_flag.set()
     
     def clear_worker_active_flag():
         runner.worker_active_flag.clear()
     
-    test_timer = Timer(interval=1, function=clear_worker_active_flag)
+    test_timer = Timer(interval=0.01, function=clear_worker_active_flag)
     test_timer.start()
     
     runner.queue_worker_loop()
@@ -116,13 +118,21 @@ def test_get_least_busy_backend_exception(runner, test_provider, mock_least_busy
 
 ###   Fixtures   ###
 
-@pytest.fixture(scope="module")
-def runner():
-
-    db = Dynamo()    
-    runner = Runner(db)
+@pytest.fixture(scope="module", autouse=True)
+def set_mocks(mock, get_test_task, stub):
     
-    yield runner
+    mock(Dynamo, "__init__", stub)
+    mock(Dynamo, "add_task", stub)
+    mock(Dynamo, "add_status_update", stub)
+    mock(Dynamo, "update_task_attribute", stub)
+    mock(Dynamo, "move_figure_to_s3", stub)
+    
+    mock(Dynamo, "get_next_task", get_test_task)
+    
+
+@pytest.fixture
+def runner():
+    return Runner(db=Dynamo())
 
 
 @pytest.fixture(scope="module")
@@ -145,19 +155,8 @@ def get_test_task(test_task):
     def get_test_task_wrapper(*args, **kwargs):
         return test_task
     
-    yield get_test_task_wrapper
-    
+    return get_test_task_wrapper
 
-@pytest.fixture(autouse=True, scope="module")
-def mocks(monkeypatch_module, get_test_task, stub):
-    
-    monkeypatch_module.setattr(Dynamo, "add_task", stub)
-    monkeypatch_module.setattr(Dynamo, "add_status_update", stub)
-    monkeypatch_module.setattr(Dynamo, "update_task_attribute", stub)
-    monkeypatch_module.setattr(Dynamo, "move_figure_to_s3", stub)
-    
-    monkeypatch_module.setattr(Dynamo, "get_next_task", get_test_task)
-    
 
 @pytest.fixture
 def undecorate(runner, monkeypatch):

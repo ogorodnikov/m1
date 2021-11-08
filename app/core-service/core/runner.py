@@ -92,7 +92,7 @@ class Runner():
 
     def stop(self):
         
-        IBMQ.disable_account()
+        self.ibmq_provider = IBMQ.disable_account()
         
         self.worker_active_flag.clear()
         
