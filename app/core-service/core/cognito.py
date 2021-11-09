@@ -32,10 +32,6 @@ class Cognito:
         user_pool_response = self.cognito.list_user_pools(MaxResults=60)
         user_pools = user_pool_response['UserPools']
         
-        print(f"self.user_pool {self.user_pool}")
-        print(f"user_pools {user_pools}")
-        print(f"list {[pool['Id'] for pool in user_pools if pool['Name'] == self.user_pool]}")
-        
         user_pool_id = next(pool['Id'] for pool in user_pools
                             if pool['Name'] == self.user_pool)
                             
