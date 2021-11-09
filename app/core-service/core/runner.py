@@ -329,38 +329,38 @@ class Runner():
         
         self.log(f'RUNNER plot_statevector_figure', task_id)
         
-        self.log(f'RUNNER plot_bloch_multivector', task_id)
+        # self.log(f'RUNNER plot_bloch_multivector', task_id)
         
         figure = plot_bloch_multivector(statevector)
         
-        self.log(f'RUNNER statevector figure: {figure}', task_id)
+        # self.log(f'RUNNER statevector figure: {figure}', task_id)
         
-        self.log(f'RUNNER after plot_bloch_multivector', task_id)
+        # self.log(f'RUNNER after plot_bloch_multivector', task_id)
     
         figure_filename = f'bloch_multivector_task_{task_id}.png'
 
-        self.log(f'RUNNER figure_filename', task_id)
+        # self.log(f'RUNNER figure_filename', task_id)
         
         temporary_folder = tempfile.gettempdir()
         
-        self.log(f'RUNNER temporary_folder', task_id)
+        # self.log(f'RUNNER temporary_folder', task_id)
         
         temporary_figure_path = os.path.join(temporary_folder, figure_filename)
         s3_figure_path = os.path.join('figures', figure_filename)
         
-        self.log(f'RUNNER temporary_figure_path: {temporary_figure_path}', task_id)
-        self.log(f'RUNNER s3_figure_path: {s3_figure_path}', task_id)
+        # self.log(f'RUNNER temporary_figure_path: {temporary_figure_path}', task_id)
+        # self.log(f'RUNNER s3_figure_path: {s3_figure_path}', task_id)
 
-        self.log(f'RUNNER before figure.savefig', task_id)
+        # self.log(f'RUNNER before figure.savefig', task_id)
         
         figure.savefig(temporary_figure_path, transparent=True, bbox_inches='tight')
         
-        self.log(f'RUNNER after figure.savefig', task_id)        
+        # self.log(f'RUNNER after figure.savefig', task_id)        
         
         self.db.move_figure_to_s3(from_path=temporary_figure_path, 
                                   to_path=s3_figure_path)
                                   
-        self.log(f'RUNNER after db.move_figure_to_s3', task_id)
+        # self.log(f'RUNNER after db.move_figure_to_s3', task_id)
         
         
     def get_least_busy_backend(self, provider, qubit_count):
