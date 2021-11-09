@@ -80,7 +80,7 @@ Outputs:
     Description: Hosted Zone ID
     Value: !Ref HostedZone
     Export:
-      Name: !Sub ${AWS::StackName}:HostedZone
+      Name: !Sub ${AWS::StackName}:HostedZoneId
 
   NameServers:
     Description: Name Servers
