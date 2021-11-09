@@ -11,7 +11,7 @@ class Cognito:
     
     def __init__(self, *args, **kwargs):
         
-        self.cognito_client = boto3.client('cognito-idp')
+        self.cognito = boto3.client('cognito-idp')
         self.logger = getLogger(__name__)
 
         self.user_pool = os.getenv('USER_POOL')
@@ -29,7 +29,7 @@ class Cognito:
         
     def get_user_pool_id(self, user_pool):
 
-        user_pool_response = self.cognito_client.list_user_pools(MaxResults=60)
+        user_pool_response = self.cognito.list_user_pools(MaxResults=60)
         user_pools = user_pool_response['UserPools']
         user_pool_id = next(attribute['Id'] for attribute in user_pools
                             if attribute['Name'] == user_pool)
@@ -39,7 +39,7 @@ class Cognito:
 
     def get_client_id(self, user_pool_id, user_pool_client):
     
-        user_pool_clients_response = self.cognito_client.list_user_pool_clients(UserPoolId=user_pool_id,
+        user_pool_clients_response = self.cognito.list_user_pool_clients(UserPoolId=user_pool_id,
                                                                    MaxResults=60)
         user_pool_clients = user_pool_clients_response['UserPoolClients']
         user_pool_client_id = next(attribute['ClientId'] for attribute in user_pool_clients
@@ -58,7 +58,7 @@ class Cognito:
         
         self.log(f'LOGIN Username: {username}')
         
-        token_response = self.cognito_client.initiate_auth(
+        token_response = self.cognito.initiate_auth(
             ClientId=self.client_id,
             AuthFlow='USER_PASSWORD_AUTH',
             AuthParameters={'USERNAME': username,
@@ -68,7 +68,7 @@ class Cognito:
         access_token = token_response['AuthenticationResult']['AccessToken']
         refresh_token = token_response['AuthenticationResult']['RefreshToken']
         
-        user_response = self.cognito_client.get_user(AccessToken=access_token)
+        user_response = self.cognito.get_user(AccessToken=access_token)
         
         username = user_response['Username']
         
@@ -94,19 +94,19 @@ class Cognito:
 
         self.log(f'REGISTER Username: {username}')
 
-        sign_up_response = self.cognito_client.sign_up(
+        sign_up_response = self.cognito.sign_up(
             ClientId=self.client_id,
             Username=username,
             Password=password
         )
         
-        # confirmation_response = self.cognito_client.confirm_sign_up(
+        # confirmation_response = self.cognito.confirm_sign_up(
         #     ClientId=self.client_id,
         #     Username=username,
         #     ConfirmationCode=''
         # )
         
-        confirmation_response = self.cognito_client.admin_confirm_sign_up(
+        confirmation_response = self.cognito.admin_confirm_sign_up(
             UserPoolId=self.user_pool_id,
             Username=username
         )
@@ -118,7 +118,7 @@ class Cognito:
 
         self.log(f'DISABLE Username: {username}')
 
-        disable_user_response = self.cognito_client.admin_disable_user(
+        disable_user_response = self.cognito.admin_disable_user(
             UserPoolId=self.user_pool_id,
             Username=username
         )
@@ -130,7 +130,7 @@ class Cognito:
 
         self.log(f'DELETE Username: {username}')
 
-        delete_user_response = self.cognito_client.admin_delete_user(
+        delete_user_response = self.cognito.admin_delete_user(
             UserPoolId=self.user_pool_id,
             Username=username
         )
@@ -145,7 +145,7 @@ class Cognito:
         
         self.log(f'POPULATE User email: {email}')
         
-        user_response = self.cognito_client.list_users(
+        user_response = self.cognito.list_users(
             UserPoolId=self.user_pool_id,
             Filter=f"email=\"{email}\""
         )
@@ -162,7 +162,7 @@ class Cognito:
         
         random_password = str(random.randint(100000, 999999))
         
-        self.cognito_client.sign_up(
+        self.cognito.sign_up(
             ClientId=self.client_id,
             Username=fb_username,
             Password=random_password,
@@ -178,7 +178,7 @@ class Cognito:
             ]
         )
         
-        self.cognito_client.admin_confirm_sign_up(
+        self.cognito.admin_confirm_sign_up(
             UserPoolId=self.user_pool_id,
             Username=fb_username
         )

@@ -190,7 +190,7 @@ def db():
     return Dynamo()
 
 
-@pytest.fixture(autouse=True, scope="module")
-def set_mocks(monkeypatch_module):
+@pytest.fixture(scope="module", autouse=True)
+def set_mocks(mock):
     
-    monkeypatch_module.setattr("core.dynamo.resource", MockDynamoResource)
+    mock("core.dynamo.resource", MockDynamoResource)

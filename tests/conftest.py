@@ -18,13 +18,6 @@ def stub():
 @pytest.fixture(scope="session", autouse=True)    
 def warn():
     return lambda *_, **__: (_ for _ in ()).throw(UserWarning)
-    
-    # def raise_user_warning(*args, **kwargs):
-    #     raise UserWarning
-    
-    # return raise_user_warning
-    
-
 
 
 @pytest.fixture(scope="module")
