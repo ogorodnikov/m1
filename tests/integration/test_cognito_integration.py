@@ -61,7 +61,9 @@ def test_duplicate_register_user_exception(cognito, test_user):
         cognito.register_user(test_user)
     
     assert "UsernameExistsException" in str(exception.value)
-    
+
+
+###   Facebook   ###   
 
 def test_populate_facebook_user(cognito, test_facebook_user_data):
     

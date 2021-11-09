@@ -18,33 +18,29 @@ def test_login_user(cognito, test_user_form):
     cognito.login_user(test_user_form)
     
 
-# ###   Register   ###
+###   Register   ###
     
-# def test_register_disable_delete_user(cognito, test_user_form):
-    
-#     cognito.register_user(test_user_form)
-#     cognito.disable_user(test_user_form)
-#     cognito.delete_user(test_user_form)
-    
+def test_register_user(cognito, test_user_form):
+    cognito.register_user(test_user_form)
 
-# def test_duplicate_register_user_exception(cognito, test_user):
-    
-#     with pytest.raises(Exception) as exception:
+def test_disable_user(cognito, test_user_form):    
+    cognito.disable_user(test_user_form)
 
-#         cognito.register_user(test_user)
-    
-#     assert "UsernameExistsException" in str(exception.value)
-    
-
-# def test_populate_facebook_user(cognito, test_facebook_user_data):
-    
-#     cognito.populate_facebook_user(test_facebook_user_data)
+def test_delete_user(cognito, test_user_form):
+    cognito.delete_user(test_user_form)
 
 
-# def test_populate_facebook_user_duplicated(cognito, test_facebook_user_data):
+###   Facebook   ###
+
+def test_populate_facebook_user(cognito, test_facebook_user_data):
+    cognito.populate_facebook_user(test_facebook_user_data)
+
+def test_populate_facebook_already_in_cognito(cognito, monkeypatch, warn, test_facebook_user_data):
     
-#     cognito.populate_facebook_user(test_facebook_user_data)
-#     cognito.populate_facebook_user(test_facebook_user_data)
+    monkeypatch.setattr("core.cognito.boto3.client.list_users",
+                        lambda *_, **__: {'Users': [{'username': 'test_username'}]})
+    
+    cognito.populate_facebook_user(test_facebook_user_data)
     
     
 ###   Fixtures   ###
@@ -58,6 +54,11 @@ def set_mocks(monkeypatch_module, stub):
     class MockClient:
         
         __init__ = stub
+        
+        sign_up = stub
+        admin_confirm_sign_up = stub
+        admin_disable_user = stub
+        admin_delete_user = stub
         
         def list_user_pools(*args, **kwargs):
             return {'UserPools': [{'Id': 'test_user_pool_id', 
@@ -75,6 +76,9 @@ def set_mocks(monkeypatch_module, stub):
             return {'Username': 'test_username', 
                     'UserAttributes': [{'Name': 'sub',
                                         'Value': 'test_value'}]}
+                                        
+        def list_users(*args, **kwargs):
+            return {'Users': []}
                                        
     monkeypatch_module.setattr("core.cognito.boto3.client", MockClient)
     
@@ -118,6 +122,4 @@ def test_facebook_user_data(cognito, test_user_form):
     
     fb_username = 'fb_' + email.replace('@', '_')
     
-    yield test_facebook_user_data
-    
-    cognito.delete_user({'username': fb_username})
+    return test_facebook_user_data
