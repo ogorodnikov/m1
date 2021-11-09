@@ -48,7 +48,8 @@ Resources:
       
   APIBasePathMapping:
     Type: AWS::ApiGateway::BasePathMapping
-    Properties: 
+    DependsOn: APIDeployment
+    Properties:
       DomainName: !Ref APIDomainName
       RestApiId: !Ref RESTAPI
       Stage: m1-api-stage-prod
@@ -76,6 +77,7 @@ Resources:
         swagger: 2.0
         info:
           title: m1-api
+          
         # securityDefinitions:
         #   m1-user-pool-authorizer:
         #     type: apiKey
