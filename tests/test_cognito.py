@@ -5,20 +5,11 @@ from core.cognito import Cognito
 
 ###   General   ###
 
-def test_get_user_pool_id(cognito):
-    
-    user_pool = cognito.user_pool
-    user_pool_id = cognito.get_user_pool_id(user_pool)
-    
+def test_get_user_pool_id(cognito_with_init):
+    cognito_with_init.get_user_pool_id()
 
-# def test_get_client_id(cognito):
-    
-#     user_pool_id = cognito.user_pool_id
-#     user_pool_client = cognito.user_pool_client
-#     client_id = cognito.get_client_id(user_pool_id, user_pool_client)
-
-#     # assert client_id == "1fhh6jkt6c8ji76vk9i04u5d9f"
-#     assert len(client_id) == 26
+def test_get_client_id(cognito_with_init):
+    cognito_with_init.get_client_id()
 
 
 # ###   Login   ###
@@ -77,19 +68,37 @@ def test_get_user_pool_id(cognito):
 ###   Fixtures   ###
 
 @pytest.fixture(scope="module", autouse=True)
-def set_mocks(mock, stub):
+def set_mocks(monkeypatch_module, stub):
+
+    monkeypatch_module.setenv("USER_POOL", "test_user_pool")
+    monkeypatch_module.setenv("USER_POOL_CLIENT", "test_client")
     
-    mock("core.cognito.boto3.client", stub)
+    class MockClient:
+        
+        __init__ = stub
+        
+        def list_user_pools(*args, **kwargs):
+            return {'UserPools': [{'Id': 'test_user_pool_id', 
+                                   'Name': 'test_user_pool'}]}
+                                   
+        def list_user_pool_clients(*args, **kwargs):
+            return {'UserPoolClients': [{'ClientId': 'test_client_id', 
+                                         'ClientName': 'test_client'}]}            
+    
+    monkeypatch_module.setattr("core.cognito.boto3.client", MockClient)
     
 
 @pytest.fixture
 def cognito(monkeypatch, stub):
     
-    monkeypatch.setenv("USER_POOL", "")
-    monkeypatch.setenv("USER_POOL_CLIENT", "")
-    
     monkeypatch.setattr(Cognito, "get_user_pool_id", stub)
     monkeypatch.setattr(Cognito, "get_client_id", stub)
+    
+    return Cognito()
+
+
+@pytest.fixture
+def cognito_with_init(monkeypatch, stub):
     
     return Cognito()
     

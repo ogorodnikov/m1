@@ -31,8 +31,13 @@ class Cognito:
 
         user_pool_response = self.cognito.list_user_pools(MaxResults=60)
         user_pools = user_pool_response['UserPools']
-        user_pool_id = next(attribute['Id'] for attribute in user_pools
-                            if attribute['Name'] == self.user_pool)
+        
+        print(f"self.user_pool {self.user_pool}")
+        print(f"user_pools {user_pools}")
+        print(f"list {[pool['Id'] for pool in user_pools if pool['Name'] == self.user_pool]}")
+        
+        user_pool_id = next(pool['Id'] for pool in user_pools
+                            if pool['Name'] == self.user_pool)
                             
         return user_pool_id
     
@@ -43,8 +48,8 @@ class Cognito:
             UserPoolId=self.user_pool_id,
             MaxResults=60)
         user_pool_clients = user_pool_clients_response['UserPoolClients']
-        user_pool_client_id = next(attribute['ClientId'] for attribute in user_pool_clients
-                                   if attribute['ClientName'] == self.user_pool_client)
+        user_pool_client_id = next(client['ClientId'] for client in user_pool_clients
+                                   if client['ClientName'] == self.user_pool_client)
                             
         return user_pool_client_id
 
