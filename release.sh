@@ -33,6 +33,7 @@ echo 'Pushing to AWS CodeCommit'
 
 cd ~/environment/release-folder/
 
+git checkout -b main
 git add .
 git commit -m "M1 Core $VERSION"
 git push --set-upstream origin main
