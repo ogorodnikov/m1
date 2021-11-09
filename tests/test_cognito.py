@@ -14,26 +14,8 @@ def test_get_client_id(cognito_with_init):
 
 # ###   Login   ###
 
-# @pytest.mark.parametrize("remember_me", ['True', 'False'])
-# def test_login_user_pass(cognito, test_user, remember_me):
-    
-#     test_user.update({'remember_me': remember_me})
-    
-#     cognito.login_user(test_user)
-    
-    
-# def test_login_user_exception(cognito, test_user_form):
-    
-#     login_form = test_user_form.update((
-#         ('remember_me', 'True'), 
-#         ('flow', 'sign-in')
-#     ))
-    
-#     with pytest.raises(Exception) as exception:
-    
-#         cognito.login_user(test_user_form)
-    
-#     assert "UserNotFoundException" in str(exception.value)
+def test_login_user(cognito, test_user_form):
+    cognito.login_user(test_user_form)
     
 
 # ###   Register   ###
@@ -83,8 +65,17 @@ def set_mocks(monkeypatch_module, stub):
                                    
         def list_user_pool_clients(*args, **kwargs):
             return {'UserPoolClients': [{'ClientId': 'test_client_id', 
-                                         'ClientName': 'test_client'}]}            
-    
+                                         'ClientName': 'test_client'}]}    
+        
+        def initiate_auth(*args, **kwargs):
+            return {'AuthenticationResult': {'AccessToken': 'test_token',
+                                             'RefreshToken': 'test_token'}}
+                                             
+        def get_user(*args, **kwargs):
+            return {'Username': 'test_username', 
+                    'UserAttributes': [{'Name': 'sub',
+                                        'Value': 'test_value'}]}
+                                       
     monkeypatch_module.setattr("core.cognito.boto3.client", MockClient)
     
 
@@ -108,16 +99,6 @@ def test_user_form(cognito):
     
     return {'username': 'test_username_555', 
             'password': 'test_password_555'}
-
-    
-@pytest.fixture
-def test_user(cognito, test_user_form):
-    
-    cognito.register_user(test_user_form)
-    
-    yield test_user_form
-    
-    cognito.delete_user(test_user_form)
 
 
 @pytest.fixture
