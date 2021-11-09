@@ -76,8 +76,8 @@ Resources:
 
 Outputs:
 
-  HostedZone:
-    Description: Hosted Zone
+  HostedZoneId:
+    Description: Hosted Zone ID
     Value: !Ref HostedZone
     Export:
       Name: !Sub ${AWS::StackName}:HostedZone
