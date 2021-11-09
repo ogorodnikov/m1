@@ -63,10 +63,10 @@ Resources:
       AttributeDefinitions:
       - AttributeName: task_id
         AttributeType: N
-      - AttributeName: algorithm_id
-        AttributeType: S
-      - AttributeName: task_status
-        AttributeType: S
+      # - AttributeName: algorithm_id
+      #   AttributeType: S
+      # - AttributeName: task_status
+      #   AttributeType: S
       - AttributeName: record_type
         AttributeType: S
         

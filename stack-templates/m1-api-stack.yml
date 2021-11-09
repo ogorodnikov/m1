@@ -23,6 +23,26 @@ Resources:
         Types: [REGIONAL]
       RegionalCertificateArn: !ImportValue m1-dns-stack:Certificate
       SecurityPolicy: TLS_1_2
+      
+# Records
+
+  RecordSetGroup:
+    Type: AWS::Route53::RecordSetGroup
+    Properties:
+      HostedZoneId: !ImportValue m1-dns-stack:HostedZoneId
+      RecordSets:
+      
+      - Name: m1.ogoro.me
+        Type: A
+        AliasTarget:
+          HostedZoneId: !GetAtt APIDomainName.RegionalHostedZoneId
+          DNSName: !GetAtt APIDomainName.RegionalDomainName
+          
+      - Name: www.m1.ogoro.me
+        Type: A
+        AliasTarget:
+          HostedZoneId: !GetAtt APIDomainName.RegionalHostedZoneId
+          DNSName: !GetAtt APIDomainName.RegionalDomainName
 
 # Mapping to stage
       
@@ -565,16 +585,16 @@ Resources:
             #         Access-Control-Allow-Origin:
             #           type: string
 
-Outputs:
+# Outputs:
 
-  APIDomainNameRegionalHostedZoneId:
-    Description: API Domain Name Regional Hosted Zone Id
-    Value: !GetAtt APIDomainName.RegionalHostedZoneId
-    Export:
-      Name: !Sub ${AWS::StackName}:APIDomainNameRegionalHostedZoneId
+#   APIDomainNameRegionalHostedZoneId:
+#     Description: API Domain Name Regional Hosted Zone Id
+#     Value: !GetAtt APIDomainName.RegionalHostedZoneId
+#     Export:
+#       Name: !Sub ${AWS::StackName}:APIDomainNameRegionalHostedZoneId
 
-  APIDomainNameRegionalDomainName:
-    Description: API Domain Name Regional Domain Name
-    Value: !GetAtt APIDomainName.RegionalDomainName
-    Export:
-      Name: !Sub ${AWS::StackName}:APIDomainNameRegionalDomainName
+#   APIDomainNameRegionalDomainName:
+#     Description: API Domain Name Regional Domain Name
+#     Value: !GetAtt APIDomainName.RegionalDomainName
+#     Export:
+#       Name: !Sub ${AWS::StackName}:APIDomainNameRegionalDomainName

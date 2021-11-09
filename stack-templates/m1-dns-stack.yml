@@ -13,7 +13,7 @@ Resources:
       HostedZoneConfig: 
         Comment: M1 hosted zone
 
-  RecordSetGroup:
+  RecordSetGroupCloudfront:
     Type: AWS::Route53::RecordSetGroup
     Properties:
       HostedZoneId: !Ref HostedZone
@@ -33,22 +33,6 @@ Resources:
           HostedZoneId: Z2FDTNDATAQYW2
           DNSName: !GetAtt CloudFrontDistribution.DomainName
           
-      - Name: m1.ogoro.me
-        Type: A
-        AliasTarget:
-          HostedZoneId: 
-            !ImportValue m1-api-stack:APIDomainNameRegionalHostedZoneId
-          DNSName: 
-            !ImportValue m1-api-stack:APIDomainNameRegionalDomainName
-          
-      - Name: www.m1.ogoro.me
-        Type: A
-        AliasTarget:
-          HostedZoneId: 
-            !ImportValue m1-api-stack:APIDomainNameRegionalHostedZoneId
-          DNSName: 
-            !ImportValue m1-api-stack:APIDomainNameRegionalDomainName
-  
 # Certificate
 
   Certificate:
@@ -91,6 +75,12 @@ Resources:
           SslSupportMethod: sni-only
 
 Outputs:
+
+  HostedZone:
+    Description: Hosted Zone
+    Value: !Ref HostedZone
+    Export:
+      Name: !Sub ${AWS::StackName}:HostedZone
 
   NameServers:
     Description: Name Servers
