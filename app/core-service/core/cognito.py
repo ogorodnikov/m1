@@ -17,8 +17,8 @@ class Cognito:
         self.user_pool = os.getenv('USER_POOL')
         self.user_pool_client = os.getenv('USER_POOL_CLIENT')
         
-        self.user_pool_id = self.get_user_pool_id(self.user_pool)
-        self.client_id = self.get_client_id(self.user_pool_id, self.user_pool_client)
+        self.user_pool_id = self.get_user_pool_id()
+        self.client_id = self.get_client_id()
 
         self.log(f"COGNITO initiated: {self}")
         
@@ -27,23 +27,24 @@ class Cognito:
         self.logger.info(message)
 
         
-    def get_user_pool_id(self, user_pool):
+    def get_user_pool_id(self):
 
         user_pool_response = self.cognito.list_user_pools(MaxResults=60)
         user_pools = user_pool_response['UserPools']
         user_pool_id = next(attribute['Id'] for attribute in user_pools
-                            if attribute['Name'] == user_pool)
+                            if attribute['Name'] == self.user_pool)
                             
         return user_pool_id
     
 
-    def get_client_id(self, user_pool_id, user_pool_client):
+    def get_client_id(self):
     
-        user_pool_clients_response = self.cognito.list_user_pool_clients(UserPoolId=user_pool_id,
-                                                                   MaxResults=60)
+        user_pool_clients_response = self.cognito.list_user_pool_clients(
+            UserPoolId=self.user_pool_id,
+            MaxResults=60)
         user_pool_clients = user_pool_clients_response['UserPoolClients']
         user_pool_client_id = next(attribute['ClientId'] for attribute in user_pool_clients
-                                   if attribute['ClientName'] == user_pool_client)
+                                   if attribute['ClientName'] == self.user_pool_client)
                             
         return user_pool_client_id
 

@@ -7,8 +7,7 @@ from core.cognito import Cognito
 
 def test_get_user_pool_id(cognito):
     
-    user_pool = cognito.user_pool
-    user_pool_id = cognito.get_user_pool_id(user_pool)
+    user_pool_id = cognito.get_user_pool_id()
     
     # assert user_pool_id == "us-east-1_HhJBks0a8"
     assert len(user_pool_id) == 19
@@ -16,9 +15,7 @@ def test_get_user_pool_id(cognito):
 
 def test_get_client_id(cognito):
     
-    user_pool_id = cognito.user_pool_id
-    user_pool_client = cognito.user_pool_client
-    client_id = cognito.get_client_id(user_pool_id, user_pool_client)
+    client_id = cognito.get_client_id()
 
     # assert client_id == "1fhh6jkt6c8ji76vk9i04u5d9f"
     assert len(client_id) == 26
