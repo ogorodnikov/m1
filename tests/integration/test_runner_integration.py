@@ -62,8 +62,8 @@ def runner():
 def test_run_result():
     
     class TestRunResult:
-        def get_counts(self):
-            return {'test_state': 0}
+        # def get_counts(self):
+        #     return {'test_state': 0}
             
         def get_statevector(self, decimals):
             return [0, 0, 1, 0]
