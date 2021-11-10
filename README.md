@@ -9,6 +9,7 @@
 - [Quantum Algorithms](#quantum-algorithms)
 - [Web Application](#web-application)
 - [AWS Infrastructure](#aws-infrastructure)
+- [Python Modules](#python-modules)
 - [CloudFormation Stacks](#cloudformation-stacks)
 
 ### Quantum Algorithms:
@@ -89,7 +90,7 @@
 
 - [Flask](https://flask.palletsprojects.com/) framework on [Gunicorn](https://gunicorn.org/) WSGI server
 - Quantum computation on real devices with [IBM Qiskit](https://qiskit.org/)
-- Telegram bot with [pyTelegramBotAPI](https://github.com/eternnoir/pyTelegramBotAPI)
+- Telegram bot @ogoro_bot with [pyTelegramBotAPI](https://github.com/eternnoir/pyTelegramBotAPI)
 - Facebook login with [OAuth flow](https://developers.facebook.com/docs/facebook-login/manually-build-a-login-flow)
 - Frontend with [Bootstrap](https://getbootstrap.com/docs/4.6/getting-started/introduction/)
 - 100% [Pytest](https://docs.pytest.org/) [Coverage](https://coverage.readthedocs.io/)
@@ -113,6 +114,62 @@
 - 100% of AWS Infrastructure is automatically deployed
 - 78 AWS Resources in 8 CloudFormation Stacks
 - 150 Unit and Integration tests
+
+### Python Modules:
+
+- [main.py](app/core-service/core/main.py)
+
+  Launches all modules and logs.
+
+- [config.py](app/core-service/core/config.py)
+
+  Initates config and environment.
+
+- [app.py](app/core-service/core/app.py)
+
+  Creates Flask web application.<br>
+  Runs on Gunicorn or built-in Development server.
+
+- [routes.py](app/core-service/core/routes.py)
+
+  Creates Flask routes.<br>
+  Links Flask API to other modules.
+
+- [runner.py](app/core-service/core/runner.py)
+
+  Runs multi-process worker loop.<br>
+  Puts new tasks to queue.<br>
+  Polls DynamoDB task queue.<br>
+  Runs tasks.<br>
+  Uses Qiskit API.<br>
+  Finds least busy IBMQ backend.<br>
+  Executes quantum algorithms on IBMQ backend.<br>
+  Executes quantum algorithms on Qiskit Aer Simulator.<br>
+  Monitors execution.<br>
+  Writes task statuses and results to DynamoDB.<br>
+  Renders Statevector Figures for execution results.<br>
+  Sends Statevector Figures in S3 Bucket.
+
+- [dynamo.py](app/core-service/core/dynamo.py)
+
+  Connects to DynamoDB.<br>
+  Scans, queries, likes, enables and disables algorithms.<br>
+  Scans, adds, pops, updates and purges tasks.<br>
+  Adds and pops status updates.<br>
+  Uploads data to S3 Bucket.<br>
+  Streams data from S3 Bucket.
+
+- [facebook.py](app/core-service/core/facebook.py)
+
+  Handles Facebook OAuth login flow.
+
+- [telegram.py](app/core-service/core/telegram.py)
+
+  Handles very cool telegram bot @ogoro_bot!
+
+- [cognito.py](app/core-service/core/cognito.py)
+
+  Handles user management.
 
 ### CloudFormation Stacks:
 
