@@ -1,23 +1,30 @@
-## M1 Project
+# M1 Project
 
 🌈 Run algorithms on real Quantum Computers:
 
 [m1.ogoro.me](https://m1.ogoro.me/)
 
-M1 is complete web application using:
+---
+
+M1 is a complete web application using:
 
 <a id="my-anchor"></a>
 
+- [Flask](https://flask.palletsprojects.com/) web framework on [Gunicorn](https://gunicorn.org/) WSGI server
+- Quantum computation on real devices with [IBM Qiskit](https://qiskit.org/)
+- Docker containers in [AWS ECS](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/Welcome.html) cluster
+- Automated infrastructure with [AWS Cloudformation](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/Welcome.html)
+- User management with [AWS Cognito](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-identity-pools.html)
+- Facebook login with [OAuth flow](https://developers.facebook.com/docs/facebook-login/manually-build-a-login-flow)
+- Telegram bot with [pyTelegramBotAPI](https://github.com/eternnoir/pyTelegramBotAPI)
+- Multi-process and multi-threaded tasks, queue and execution
+- 100% [Pytest](https://docs.pytest.org/) [Coverage](https://coverage.readthedocs.io/)
 
+---
 
-- Flask web framework on Gunicorn WSGI server
-- Docker container
-- AWS infrastructure with Cloudformation CDK
-- 100% Pytest Coverage
-
-- 150 unit and integration tests
 - 100% of AWS infrastructure is automatically deployed
 - 78 AWS Resources in 8 Cloudformation Stacks
+- 150 unit and integration tests
 
 [Top](#m1-project)
 
