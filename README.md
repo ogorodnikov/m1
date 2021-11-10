@@ -1,6 +1,25 @@
-# M1 project
+## M1 Project
 
-🌈 AWS practice, cats, and cool quantum algorithms)
+🌈 Run algorithms on real Quantum Computers:
+
+[m1.ogoro.me](https://m1.ogoro.me/)
+
+M1 is complete web application using:
+
+<a id="my-anchor"></a>
+
+
+
+- Flask web framework on Gunicorn WSGI server
+- Docker container
+- AWS infrastructure with Cloudformation CDK
+- 100% Pytest Coverage
+
+- 150 unit and integration tests
+- 100% of AWS infrastructure is automatically deployed
+- 78 AWS Resources in 8 Cloudformation Stacks
+
+[Top](#m1-project)
 
 Using:
 
