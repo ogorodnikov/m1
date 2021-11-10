@@ -4,9 +4,16 @@
 
 [m1.ogoro.me](https://m1.ogoro.me/)
 
-### Quantum algorithms:
+### Contents:
 
-- #### Berstein-Vazirani:
+- [Quantum Algorithms](#quantum-algorithms)
+- [Web Application](#web-application)
+- [AWS Infrastructure](#aws-infrastructure)
+- [CloudFormation Stacks](#cloudformation-stacks)
+
+### Quantum Algorithms:
+
+- #### Bernstein-Vazirani:
 
   Determines hidden message encoded in black-box function.<br>
   Classical algorith complexity is O(N) while quantum is O(1).
@@ -78,7 +85,7 @@
   [wiki](https://en.wikipedia.org/wiki/Shor%27s_algorithm) |
   [qiskit](https://qiskit.org/textbook/ch-algorithms/shor.html)
 
-### Application:
+### Web Application:
 
 - [Flask](https://flask.palletsprojects.com/) framework on [Gunicorn](https://gunicorn.org/) WSGI server
 - Quantum computation on real devices with [IBM Qiskit](https://qiskit.org/)
@@ -90,24 +97,24 @@
 - Integration with AWS infrastructure using [Boto3 SDK](https://github.com/boto/boto3#readme)
 
 
-### Infrastructure:
+### AWS Infrastructure:
 
-- Automated infrastructure with [AWS Cloudformation](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/Welcome.html)
+- Automated infrastructure with [AWS CloudFormation](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/Welcome.html)
 - Docker containers in [AWS ECS](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/Welcome.html) cluster
 - NoSQL DB with [AWS DynamoDB](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Introduction.html)
 - API with [AWS API Gateway](https://docs.aws.amazon.com/apigateway/latest/developerguide/welcome.html) and [Swagger](https://swagger.io/)
-- CDN distribution with [AWS Cloudfront](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Introduction.html)
+- CDN distribution with [AWS CloudFront](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Introduction.html)
 - SSL Certificate from [AWS ACM](https://docs.aws.amazon.com/acm/latest/userguide/acm-overview.html) 
 - User management with [AWS Cognito](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-identity-pools.html)
 - Virtual IDE in [AWS Cloud9](https://docs.aws.amazon.com/cloud9/latest/user-guide/welcome.html)
 
 ### Information:
 
-- 100% of AWS infrastructure is automatically deployed
-- 78 AWS Resources in 8 Cloudformation Stacks
-- 150 unit and integration tests
+- 100% of AWS Infrastructure is automatically deployed
+- 78 AWS Resources in 8 CloudFormation Stacks
+- 150 Unit and Integration tests
 
-### Cloudformation Stacks:
+### CloudFormation Stacks:
 
 - [Core stack](stack-templates/m1-core-stack.yml):
 
@@ -119,7 +126,7 @@
 
 - [DNS stack](stack-templates/m1-dns-stack.yml):
 
-  Route 53, ACM Certificate, Cloudfront
+  Route 53, ACM Certificate, CloudFront
 
 - [API stack](stack-templates/m1-api-stack.yml):
 
@@ -140,3 +147,7 @@
 - [Cognito stack](stack-templates/m1-cognito-stack.yml):
 
   UserPool
+
+### Credits
+
+[M1 Project](#m1-project) 🔥 is being developed by [Mykhailo Ohorodnikov](https://github.com/ogorodnikov) 🌻 in Kyiv, Ukraine 💛💙 under [MIT License](LICENSE)
