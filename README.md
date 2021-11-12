@@ -108,6 +108,8 @@
 
 ### AWS Infrastructure:
 
+![infrastructure_diagram](/app/core-service/core/static/m1_infrastructure_diagram.drawio.png)
+
 - Automated infrastructure with [AWS CloudFormation](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/Welcome.html)
 - Docker containers in [AWS ECS](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/Welcome.html) cluster
 - NoSQL DB with [AWS DynamoDB](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Introduction.html)
