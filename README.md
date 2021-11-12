@@ -2,6 +2,10 @@
 
 🌈 Run algorithms on real Quantum Computers:
 
+![bloch multivector diagram](/app/core-service/core/static/bloch_multivector_diagram.png)
+
+Up and running free application:
+
 [m1.ogoro.me](https://m1.ogoro.me/)
 
 ### Contents:
