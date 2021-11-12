@@ -110,7 +110,7 @@ Resources:
       VpcId: !Ref VPC
       CidrBlock: !FindInMap [SubnetConfig, PrivateTwo, CIDR]
       
-# Routing
+# Public Routing
 
   PublicRouteTable:
     Type: AWS::EC2::RouteTable
