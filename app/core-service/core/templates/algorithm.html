@@ -12,7 +12,10 @@
 
     <div class="mb-3">{{ algorithm.description }}</div>
 
-    <img class="rounded mb-3" src={{ url_for('static', filename='diagrams/' + algorithm.id + '.png') }} alt="diagram" style="width: 100%;">
+    <img class="rounded mb-3"
+         src={{ url_for('static', filename='diagrams/' + algorithm.id + '.png') }}
+         style="width: 100%;"
+         alt="diagram">
 
     <!-- Parameters -->
     
