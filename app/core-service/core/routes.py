@@ -307,8 +307,32 @@ class Routes():
                 task_id, status, result = status_update
                 
                 if status == 'Running':
-                    continue     
-            
+                    continue
+                
+                
+                counts_dict = result.get('Counts')
+                result_dict = result.get('Result')
+                
+                if counts_dict:
+                    
+                    counts_string = ', '.join(f'{key}: {value}' 
+                                              for key, value 
+                                              in counts_dict.items())
+                    
+                    result_string = f"Counts: {counts_string}"
+                    
+                elif result_dict:
+                    
+                    result_string = ', '.join(f'{key}: {value}' 
+                                              for key, value 
+                                              in result_dict.items())
+                    
+                    result_string = f"Results: {result_string}"
+                
+                else:
+                    result_string = f"Results: None"
+                                 
+                
                 task_url = f"/tasks?task_id={task_id}"
                 
                 status_message = (f"<a href='{task_url}' class='mb-0'"
@@ -316,7 +340,7 @@ class Routes():
                                   f"Task {task_id}</a>"
                                   f"<hr class='mb-0 mt-1'>"
                                   f"<p class='mb-0'>Status: {status}</p>"
-                                  f"<p class='mb-0'>Result: {result}</p>")
+                                  f"<p class='mb-0'>{result_string}</p>")
                 
                 flash(status_message, category='info')
     
