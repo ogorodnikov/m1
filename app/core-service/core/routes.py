@@ -143,6 +143,12 @@ class Routes():
             
             run_values = request.form
             
+            run_mode = run_values.get('run_mode')
+            
+            run_values_string = ', '.join(f'{key}: {value}' 
+                                          for key, value in run_values.items()
+                                          if key != 'run_mode')
+            
             task_id = runner.run_algorithm(algorithm_id, run_values)
         
             task_url = f"/tasks?task_id={task_id}"
@@ -152,7 +158,8 @@ class Routes():
                           f"Task {task_id}</a>"
                           f"<hr class='mb-0 mt-1'>"
                           f"<p class='mb-0'>Algorithm: {algorithm_id}</p>"
-                          f"<p class='mb-0'>Run values: {dict(run_values)}</p>")
+                          f"<p class='mb-0'>Run mode: {run_mode}</p>"
+                          f"<p class='mb-0'>Run values: {run_values_string}</p>")
                            
             flash(run_message, category='warning')
         
