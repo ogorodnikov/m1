@@ -12,9 +12,8 @@
 
     <div class="mb-3">{{ algorithm.description }}</div>
 
-    <img class="img-thumbnail mb-3" src="https://indulgeyourpet.com/wp-content/uploads/Bombay.png" alt="image">
-    
-    
+    <img class="rounded mb-3" src={{ url_for('static', filename='diagrams/' + algorithm.id + '.png') }} alt="diagram" style="width: 100%;">
+
     <!-- Parameters -->
     
     <form action={{ url_for('run_algorithm', algorithm_id=algorithm.id) }} method="POST">
