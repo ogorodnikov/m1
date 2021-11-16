@@ -21,9 +21,13 @@
           
           <div class="row justify-content-start">
           
-            <div class="col-9 col-lg-auto m-1" style="width: 200px;">
+            <div class="col-7 col-lg-auto m-1" style="width: 200px;">
               Name
             </div>
+            
+            <div class="col-2 col-lg-auto d-lg-none m-1" style="width: 100px;">
+              Image
+            </div> 
             
             <div class="col-2 col-lg-auto m-1" style="width: 90px;">
               
@@ -76,7 +80,7 @@
         <td>
           <div class="row justify-content-start">
           
-            <div class="col-9 col-lg-auto">
+            <div class="col-7 col-lg-auto">
               
               <a class="btn btn-secondary m-1"
                 href={{ url_for('get_algorithm', algorithm_id=item.id) }}
@@ -88,6 +92,14 @@
               
             </div>
             
+            <div class="col-2 col-lg-auto d-lg-none m-1" style="width: 100px;">
+              
+              <img class="rounded shadow-lg border border-secondary m-0 p-0"
+               src={{ url_for('static', filename='diagrams/' + item.id + '.png') }}
+               style="height: 38px;">
+              
+            </div> 
+            
             <div class="col-2 col-lg-auto m-1" style="width: 90px;">
               {{ item.type }}
             </div>
@@ -96,16 +108,11 @@
               {{ item.description }}
             </div> 
             
-            <div class="col-12 col-lg-auto m-1" style="width: 100px;">
+            <div class="col-2 col-lg-auto d-none d-lg-block m-1" style="width: 100px;">
               
               <img class="rounded shadow-lg border border-secondary m-0 p-0"
                src={{ url_for('static', filename='diagrams/' + item.id + '.png') }}
                style="height: 38px;">
-               
-         
-              <!--style="height: 38px; width: 100%; box-shadow: 0px 0px 5px 1px grey;"-->
-              
-              <!--<img class="img-thumbnail" src="https://indulgeyourpet.com/wp-content/uploads/Bombay.png" style="height: 38px;" alt="image">-->
               
             </div> 
             
