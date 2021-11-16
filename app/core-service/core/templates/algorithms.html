@@ -59,7 +59,7 @@
               Image
             </div> 
             
-            <div class="col-12 col-lg-auto d-none d-lg-block text-center m-1" style="width: 330px;">
+            <div class="col-12 col-lg-auto d-none d-lg-block text-center m-1" style="width: 450px;">
               Actions
             </div> 
             
@@ -118,10 +118,11 @@
             
             <!--   Large Screen Actions Panel   -->
             
-            <div class="col-12 col-lg-auto d-none d-lg-block m-1" style="width: 330px;">
+            <div class="col-12 col-lg-auto d-none d-lg-block m-1" style="width: 450px;">
               
               <a href={{ url_for('get_algorithm', algorithm_id=item.id) }}
                 class="btn btn-success" 
+                style="width: 100px;"
                 role="button">
                 Open
               </a>
@@ -140,16 +141,29 @@
                 class="btn btn-secondary"
                 role="button"
                 target="_blank"
+                style="width: 100px; background-color: #A9A9A9;"
                 rel="noopener noreferrer">
                 Wiki
+                
+                <span class="badge bg-white text-dark rounded-pill align-text-bottom">
+                  <i class="fas fa-info"></i>
+                  <!--  <i class="fab fa-wikipedia-w"></i>-->
+                </span>
+                
               </a>
 
               <a href={{ 'https://github.com/ogorodnikov/m1/tree/main/app/core-service/core/algorithms/' + item.id + '.py' }}
-                class="btn btn-dark"
+                class="btn btn-secondary"
                 role="button"
                 target="_blank"
+                style="width: 100px;"
                 rel="noopener noreferrer">
                 Code
+                
+                <span class="badge bg-warning text-dark rounded-pill align-text-bottom">
+                  <i class="fas fa-code-branch"></i>
+                </span>
+                
               </a>
               
             </div>
