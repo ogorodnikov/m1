@@ -21,13 +21,9 @@
           
           <div class="row justify-content-start">
           
-            <div class="col-7 col-lg-auto m-1" style="width: 200px;">
+            <div class="col-9 col-lg-auto m-1" style="width: 200px;">
               Name
             </div>
-            
-            <div class="col-2 col-lg-auto d-lg-none m-1" style="width: 100px;">
-              Image
-            </div> 
             
             <div class="col-2 col-lg-auto m-1" style="width: 90px;">
               
@@ -63,7 +59,7 @@
               Image
             </div> 
             
-            <div class="col-12 col-lg-auto d-none d-lg-block m-1" style="width: 260px;">
+            <div class="col-12 col-lg-auto d-none d-lg-block text-center m-1" style="width: 330px;">
               Actions
             </div> 
             
@@ -80,7 +76,7 @@
         <td>
           <div class="row justify-content-start">
           
-            <div class="col-7 col-lg-auto">
+            <div class="col-9 col-lg-auto">
               
               <a class="btn btn-secondary m-1"
                 href={{ url_for('get_algorithm', algorithm_id=item.id) }}
@@ -92,20 +88,20 @@
               
             </div>
             
-            <div class="col-2 col-lg-auto d-lg-none m-1" style="width: 100px;">
-              
-              <img class="rounded shadow-lg border border-secondary m-0 p-0"
-               src={{ url_for('static', filename='diagrams/' + item.id + '.png') }}
-               style="height: 38px;">
-              
-            </div> 
-            
             <div class="col-2 col-lg-auto m-1" style="width: 90px;">
               {{ item.type }}
             </div>
             
             <div class="col-lg m-1">
               {{ item.description }}
+            </div>
+            
+            <div class="col-12 col-lg-auto d-lg-none m-1" style="width: 100px;">
+              
+              <img class="rounded shadow-lg border border-secondary m-0 p-0"
+               src={{ url_for('static', filename='diagrams/' + item.id + '.png') }}
+               style="width: 350px;">
+              
             </div> 
             
             <div class="col-2 col-lg-auto d-none d-lg-block m-1" style="width: 100px;">
@@ -116,7 +112,7 @@
               
             </div> 
             
-            <div class="col-12 col-lg-auto m-1" style="width: 260px;">
+            <div class="col-12 col-lg-auto m-1" style="width: 330px;">
               
               <a href={{ url_for('get_algorithm', algorithm_id=item.id) }}
                 class="btn btn-success" 
@@ -126,6 +122,7 @@
                  
               <a href={{ url_for('like_algorithm', algorithm_id=item.id) }}
                 class="btn btn-info"
+                style="width: 100px;"
                 role="button">
                 Like
                 <span class="badge bg-light text-dark rounded-pill align-text-bottom">
@@ -139,6 +136,14 @@
                 target="_blank"
                 rel="noopener noreferrer">
                 Wiki
+              </a>
+
+              <a href={{ 'https://github.com/ogorodnikov/m1/tree/main/app/core-service/core/algorithms/' + item.id + '.py' }}
+                class="btn btn-dark"
+                role="button"
+                target="_blank"
+                rel="noopener noreferrer">
+                Code
               </a>
               
             </div>
