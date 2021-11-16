@@ -342,7 +342,7 @@ class Dynamo():
                   'description': 'Determines hidden message encoded in black-box function.\n' +
                                  'Classical algorith complexity is O(N) while quantum is O(1).',
                   'link': 'https://en.wikipedia.org/wiki/Bernstein%E2%80%93Vazirani_algorithm',
-                  'image': '',
+                  'image': b'1010',
                   'parameters': [{'name': 'secret', 'default_value': '1010'}],
                   'color': 'green',
                   'likes': 1324,
@@ -353,7 +353,7 @@ class Dynamo():
                   'type': 'classical',
                   'description': 'Calculates GCD (Greatest common divisor) and Bézout coefficents.',
                   'link': 'https://en.wikipedia.org/wiki/Extended_Euclidean_algorithm',
-                  'image': 'https://upload.wikimedia.org/wikipedia/commons/3/37/Euclid%27s_algorithm_Book_VII_Proposition_2_3.png',
+                  'image': b'1010',
                   'parameters': [{'name': 'a', 'default_value': '345'}, 
                                  {'name': 'b', 'default_value': '455244237'}],
                   'color': 'red',
