@@ -96,6 +96,18 @@
               {{ item.description }}
             </div>
             
+            <!--   Large Screen Diagram   -->
+            
+            <div class="col-2 col-lg-auto d-none d-lg-block m-1" style="width: 100px;">
+              
+              <img class="rounded shadow-lg border border-secondary m-0 p-0"
+               src={{ url_for('static', filename='diagrams/' + item.id + '.png') }}
+               style="height: 38px;">
+              
+            </div>
+            
+            <!--   Small Screen Diagram   -->
+            
             <div class="col-12 col-lg-auto d-lg-none m-1" style="width: 100px;">
               
               <img class="rounded shadow-lg border border-secondary m-0 p-0"
@@ -104,15 +116,9 @@
               
             </div> 
             
-            <div class="col-2 col-lg-auto d-none d-lg-block m-1" style="width: 100px;">
-              
-              <img class="rounded shadow-lg border border-secondary m-0 p-0"
-               src={{ url_for('static', filename='diagrams/' + item.id + '.png') }}
-               style="height: 38px;">
-              
-            </div> 
+            <!--   Large Screen Actions Panel   -->
             
-            <div class="col-12 col-lg-auto m-1" style="width: 330px;">
+            <div class="col-12 col-lg-auto d-none d-lg-block m-1" style="width: 330px;">
               
               <a href={{ url_for('get_algorithm', algorithm_id=item.id) }}
                 class="btn btn-success" 
@@ -144,6 +150,58 @@
                 target="_blank"
                 rel="noopener noreferrer">
                 Code
+              </a>
+              
+            </div>
+
+            <!--   Small Screen Actions Panel   -->
+            
+            <div class="col-12 d-lg-none m-1" style="width: 330px;">
+              
+              <a href={{ url_for('get_algorithm', algorithm_id=item.id) }}
+                class="btn btn-success" 
+                style="width: 100px;"
+                role="button">
+                Open
+              </a>
+                 
+              <a href={{ url_for('like_algorithm', algorithm_id=item.id) }}
+                class="btn btn-info"
+                style="width: 100px;"
+                role="button">
+                Like
+                <span class="badge bg-light text-dark rounded-pill align-text-bottom">
+                  {{ item.likes }}
+                </span>
+              </a>
+                    
+              <a href={{ item.link }}
+                class="btn btn-secondary"
+                role="button"
+                target="_blank"
+                style="width: 100px;"
+                rel="noopener noreferrer">
+                Wiki
+                
+                <span class="badge bg-white text-dark rounded-pill align-text-bottom">
+                  <i class="fas fa-info"></i>
+                  <!--  <i class="fab fa-wikipedia-w"></i>-->
+                </span>
+                
+              </a>
+
+              <a href={{ 'https://github.com/ogorodnikov/m1/tree/main/app/core-service/core/algorithms/' + item.id + '.py' }}
+                class="btn btn-secondary"
+                role="button"
+                target="_blank"
+                style="width: 100px;"
+                rel="noopener noreferrer">
+                Code
+                
+                <span class="badge bg-warning text-dark rounded-pill align-text-bottom">
+                  <i class="fas fa-code-branch"></i>
+                </span>
+                
               </a>
               
             </div>
