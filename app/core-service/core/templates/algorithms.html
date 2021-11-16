@@ -49,7 +49,6 @@
               </div>
               
             </div>
-            
     
             <div class="col-lg d-none d-lg-block m-1">
               Description
@@ -91,13 +90,17 @@
             <div class="col-2 col-lg-auto m-1" style="width: 90px;">
               {{ item.type }}
             </div>
-            
-            <div class="col-lg m-1">
-              {{ item.description }}
               
-              Test. {{ "<br>" }} Test. Test.
+            <div class="col-lg m-1">
+              {% set lines = item.description.split('\n') %}
+              {% for line in lines %}
+                {{ line }}
+                {% if not loop.last %}
+                  <br/>
+                {% endif %}
+              {% endfor %}
             </div>
-            
+              
             <!--   Large Screen Diagram   -->
             
             <div class="col-2 col-lg-auto d-none d-lg-block m-1" style="width: 100px;">
