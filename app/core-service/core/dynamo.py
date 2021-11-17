@@ -127,7 +127,7 @@ class Dynamo():
             
             tasks_dict[task_id] = task
             
-        self.log(f"DYNAMO get_all_tasks {tasks_dict.keys()}")
+        # self.log(f"DYNAMO get_all_tasks {tasks_dict.keys()}")
     
         return tasks_dict
         
@@ -297,52 +297,14 @@ class Dynamo():
             return []
         
         status_updates = status_updates_attributes['status_updates']
-        
-        
-        filtered_status_updates = []
-        
-        for status_update in status_updates:
-            
-            task_id, status, result = status_update
-            
-            if result:
-                
-                filtered_result = dict()
-                
-                for result_key in result:
-                    
-                    key_dict = result.get(result_key, dict())
-                    
-                    if key_dict:
-                    
-                        filtered_result[result_key] = dict()                   
 
-                    for key, value in key_dict.items():
-                        
-                        filtered_value = value
-                        
-                        if isinstance(value, Decimal):
-                            
-                            filtered_value = int(value)
-                        
-                        filtered_result[result_key][key] = value
+        replaced_status_updates = self.replace_decimals(status_updates)
                 
-                filtered_status_updates.append([task_id, status, filtered_result])
-            
-            else:
-                
-                filtered_status_updates.append([task_id, status, result])                
-                
+        # self.log(f"DYNAMO status_updates {status_updates}")
         
-        alt_status_updates = self.replace_decimals(status_updates)
-                
-        self.log(f"DYNAMO status_updates {status_updates}")
+        # self.log(f"DYNAMO replaced_status_updates {replaced_status_updates}")
         
-        self.log(f"DYNAMO filtered_status_updates {filtered_status_updates}")
-        
-        self.log(f"DYNAMO alt_status_updates {alt_status_updates}")
-        
-        return status_updates
+        return replaced_status_updates
         
     
     def replace_decimals(self, node):
@@ -365,7 +327,13 @@ class Dynamo():
                 
             # return node
             
-            return {key: self.replace_decimals(value) for key, value in node.items()}
+            # return {key: self.replace_decimals(value) for key, value in node.items()}
+            
+            keys, values = zip(*node.items())
+            
+            replaced_values = map(self.replace_decimals, values)
+            
+            return dict(zip(keys, replaced_values))
             
         elif isinstance(node, Decimal):
             
