@@ -93,7 +93,7 @@ class MockRunner:
         
 
 @pytest.fixture(scope="module")
-def telegram_bot():
+def telegram_bot(run_config):
     
     mock_db = MockDB()
     runner = MockRunner()

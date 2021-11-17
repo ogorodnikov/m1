@@ -79,7 +79,7 @@ def test_populate_facebook_user_duplicated(cognito, test_facebook_user_data):
 ###   Fixtures   ###
 
 @pytest.fixture(scope="module")
-def cognito():
+def cognito(run_config):
     return Cognito()
     
 

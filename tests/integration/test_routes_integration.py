@@ -40,7 +40,7 @@ def test_get_algorithm(app):
 ###   Fixtures   ###
 
 @pytest.fixture(scope="module")
-def app():
+def app(run_config):
     
     test_app = create_app()
     test_app.testing = True

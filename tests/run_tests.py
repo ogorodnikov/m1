@@ -12,17 +12,24 @@ def add_core_package_to_path():
     sys.path.insert(0, core_path)
 
 
-def run_tests_with_coverage():
+def run_tests():
 
     test_path = os.path.dirname(__file__)
 
     cov = coverage.Coverage()
     cov.start()
     
+    from core import config
+    
+    config.Config()
+    
     # pytest.main(['--collect-only'])
     # pytest.main([test_path, '-v', '-rP', '-x'])
     # pytest.main([test_path, '--verbose', '--exitfirst'])
+    
     # pytest.main([test_path, '-v', '-x', '--durations=0'])
+    
+    # pytest.main([test_path + '/integration/', '-v', '-x', '--durations=0'])
     
     pytest.main([test_path, '-v', '-x', '--ignore-glob=**/integration/*', '--durations=0'])
 
@@ -69,9 +76,10 @@ def run_tests_with_coverage():
     cov.report(show_missing=True, skip_empty=True)
     
     # cov.html_report(directory='html_coverage_report')
-    
+
 
 if __name__ == '__main__':
     
     add_core_package_to_path()
-    run_tests_with_coverage()
+    
+    run_tests()

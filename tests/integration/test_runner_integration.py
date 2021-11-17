@@ -54,7 +54,7 @@ def set_mocks(mock, get_test_task, stub):
     
 
 @pytest.fixture
-def runner():
+def runner(run_config):
     return Runner(db=Dynamo())
     
     
