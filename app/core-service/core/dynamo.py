@@ -297,8 +297,41 @@ class Dynamo():
             return []
         
         status_updates = status_updates_attributes['status_updates']
+        
+        
+        filtered_status_updates = []
+        
+        for status_update in status_updates:
+            
+            task_id, status, result = status_update
+            
+            if result:
                 
-        # self.log(f"DYNAMO status_updates {status_updates}")
+                filtered_result = dict()
+                
+                for result_key in result:
+                    
+                    key_dict = result.get(result_key, dict())
+                    
+                    if key_dict:
+                    
+                        filtered_result[result_key] = dict()                   
+
+                    for key, value in key_dict.items():
+                        
+                        filtered_result[result_key][key] = value
+                
+                filtered_status_updates.append([task_id, status, filtered_result])
+            
+            else:
+                
+                filtered_status_updates.append([task_id, status, result])                
+                
+                
+                
+        self.log(f"DYNAMO status_updates {status_updates}")
+        
+        self.log(f"DYNAMO filtered_status_updates {filtered_status_updates}")
         
         return status_updates
 

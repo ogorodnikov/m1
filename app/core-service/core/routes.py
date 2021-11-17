@@ -310,7 +310,7 @@ class Routes():
                 counts_dict = result.get('Counts')
                 result_dict = result.get('Result')
                 
-                result_string = f"Results: None"
+                result_string = f"Result: None"
             
                 if counts_dict:
                     
@@ -326,7 +326,7 @@ class Routes():
                                               for key, value 
                                               in result_dict.items())
                     
-                    result_string = f"Results: {result_string}"
+                    result_string = f"Result: {result_string}"
                 
                 task_url = f"/tasks?task_id={task_id}"
                 
