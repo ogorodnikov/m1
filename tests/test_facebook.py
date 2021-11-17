@@ -43,3 +43,10 @@ def test_get_user_data_error(fb):
 @pytest.fixture(scope="module")
 def fb():
     return Facebook()
+
+
+@pytest.fixture(scope="module", autouse=True)
+def set_mocks(monkeypatch_module):
+    
+    monkeypatch_module.setenv('DOMAIN', '')
+    monkeypatch_module.setenv('AWS_NLB', '')
