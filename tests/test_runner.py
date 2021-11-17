@@ -134,7 +134,7 @@ def test_get_least_busy_backend_exception(runner, monkeypatch, stub, test_provid
 ###   Fixtures   ###
 
 @pytest.fixture(scope="module", autouse=True)
-def set_mocks(mock, get_test_task, stub):
+def set_mocks(mock, mock_env, get_test_task, stub):
     
     mock(Dynamo, "__init__", stub)
     mock(Dynamo, "add_task", stub)
@@ -144,6 +144,9 @@ def set_mocks(mock, get_test_task, stub):
     
     mock(Dynamo, "get_next_task", get_test_task)
     
+    mock_env('TASK_TIMEOUT', '300')
+    mock_env('BACKEND_AVOID_STRING', '')
+    mock_env('QUEUE_WORKERS_PER_RUNNER', '1')
 
 @pytest.fixture
 def runner():

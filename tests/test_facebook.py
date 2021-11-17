@@ -46,7 +46,7 @@ def fb():
 
 
 @pytest.fixture(scope="module", autouse=True)
-def set_mocks(monkeypatch_module):
+def set_mocks(mock_env):
     
-    monkeypatch_module.setenv('DOMAIN', '')
-    monkeypatch_module.setenv('AWS_NLB', '')
+    mock_env('DOMAIN', '')
+    mock_env('AWS_NLB', '')

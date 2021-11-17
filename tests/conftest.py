@@ -36,6 +36,11 @@ def mock(monkeypatch_module):
     return monkeypatch_module.setattr
 
 
+@pytest.fixture(scope="module")
+def mock_env(monkeypatch_module):    
+    return monkeypatch_module.setenv
+    
+
 def pytest_configure(config):
 
     config.addinivalue_line(
