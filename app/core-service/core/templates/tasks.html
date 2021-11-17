@@ -114,17 +114,13 @@
             
             <td class="col-sm-auto">
               {% if values.task_result %}
-                {% if values.task_result['Result'] %}
-                  {% for name, value in values.task_result['Result'].items() %}
+                {% for result_type in values.task_result %}
+
+                  {% for name, value in values.task_result[result_type].items() %}
                     {{ name }}: {{ value }}<br>
                   {% endfor %}
-                {% endif %}
-                
-                {% if values.task_result['Counts'] %}
-                  {% for name, value in values.task_result['Counts'].items() %}
-                    {{ name }}: {{ value }}<br>
-                  {% endfor %}
-                {% endif %}
+                  
+                {% endfor %}
               {% endif %}
             </td>
             
