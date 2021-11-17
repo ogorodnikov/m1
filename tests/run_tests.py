@@ -58,7 +58,7 @@ def run_tests_with_coverage():
     # pytest.main([test_path + '/integration/test_cognito_integration.py', '-v', '-x', '--durations=0'])
 
 
-
+    # pytest.main([test_path + '/test_routes.py', '-v', '-x', '-rP', '--durations=0'])
 
 
 

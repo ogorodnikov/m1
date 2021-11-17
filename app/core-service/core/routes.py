@@ -290,8 +290,6 @@ class Routes():
             return render_template("admin.html", environ=os.environ)
         
         
-        ###   
-        
         @app.before_request
         def show_task_results():
             
@@ -301,7 +299,7 @@ class Routes():
                 return
             
             status_updates = db.get_status_updates()
-        
+
             for status_update in status_updates:
                 
                 task_id, status, result = status_update
@@ -309,10 +307,11 @@ class Routes():
                 if status == 'Running':
                     continue
                 
-                
                 counts_dict = result.get('Counts')
                 result_dict = result.get('Result')
                 
+                result_string = f"Results: None"
+            
                 if counts_dict:
                     
                     counts_string = ', '.join(f'{key}: {value}' 
@@ -321,17 +320,13 @@ class Routes():
                     
                     result_string = f"Counts: {counts_string}"
                     
-                elif result_dict:
+                if result_dict:
                     
                     result_string = ', '.join(f'{key}: {value}' 
                                               for key, value 
                                               in result_dict.items())
                     
                     result_string = f"Results: {result_string}"
-                
-                else:
-                    result_string = f"Results: None"
-                                 
                 
                 task_url = f"/tasks?task_id={task_id}"
                 

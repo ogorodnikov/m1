@@ -150,8 +150,6 @@ commands = [
 @pytest.mark.parametrize("command", commands)
 def test_admin_commands(app, command):
     
-    print(f"command: {command}")
-    
     app.post('/admin', data={'command': command})
     
     
@@ -231,7 +229,9 @@ def set_mocks(mock, stub):
         
     def get_test_status_updates(*args, **kwargs):
         
-        test_status_updates = [(1, 'Running', ''), (1, 'Done', 'test_result')]
+        test_status_updates = [(1, 'Running', ''), 
+                               (1, 'Done', {'Result': {'result_1': 1},
+                                            'Counts': {'count_1': 1}})]
         
         return test_status_updates
     
@@ -266,9 +266,8 @@ def set_mocks(mock, stub):
     mock(Dynamo, "__init__", stub)
     mock(Dynamo, "query_algorithms", get_test_query_algorithms)
     mock(Dynamo, "get_all_algorithms", lambda *_, **__: [])
-    mock(Dynamo, "get_algorithm", lambda *_, **__: [])
+    mock(Dynamo, "get_algorithm", lambda *_, **__: test_algorithm_data)
     
-    mock(Dynamo, "get_status_updates", stub)
     mock(Dynamo, "like_algorithm", stub)
     mock(Dynamo, "set_algorithm_state", stub)
     mock(Dynamo, "add_task", stub)
