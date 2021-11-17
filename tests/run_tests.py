@@ -19,10 +19,6 @@ def run_tests():
     cov = coverage.Coverage()
     cov.start()
     
-    from core import config
-    
-    config.Config()
-    
     # pytest.main(['--collect-only'])
     # pytest.main([test_path, '-v', '-rP', '-x'])
     # pytest.main([test_path, '--verbose', '--exitfirst'])

@@ -2,12 +2,12 @@ import pytest
 
 from _pytest.monkeypatch import MonkeyPatch
 
-# from core import config as core_config
+from core import config as core_config
 
 
 @pytest.fixture(scope="session")
 def run_config():
-    configuration = core_config.Config()
+    core_config.Config()
 
 
 @pytest.fixture(scope="session", autouse=True)

@@ -1,7 +1,2 @@
-# from core import config
-
-
-# def test_config(run_config):
-#     pass
-    
-    
+def test_config(run_config):
+    pass
