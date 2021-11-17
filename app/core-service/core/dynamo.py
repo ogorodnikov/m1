@@ -349,19 +349,23 @@ class Dynamo():
         
         if isinstance(node, list):
             
-            for i in range(len(node)):
+            # for i in range(len(node)):
                 
-                node[i] = self.replace_decimals(node[i])
+            #     node[i] = self.replace_decimals(node[i])
                 
-            return node
+            # return node
+            
+            return list(map(self.replace_decimals, node))
             
         elif isinstance(node, dict):
             
-            for k in node:
+            # for k in node:
                 
-                node[k] = self.replace_decimals(node[k])
+            #     node[k] = self.replace_decimals(node[k])
                 
-            return node
+            # return node
+            
+            return {key: self.replace_decimals(value) for key, value in node.items()}
             
         elif isinstance(node, Decimal):
             
