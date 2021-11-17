@@ -114,9 +114,17 @@
             
             <td class="col-sm-auto">
               {% if values.task_result %}
-                {% for name, value in values.task_result.items() %}
-                  {{ name }}: {{ value }}
-                {% endfor %}
+                {% if values.task_result['Result'] %}
+                  {% for name, value in values.task_result['Result'].items() %}
+                    {{ name }}: {{ value }}<br>
+                  {% endfor %}
+                {% endif %}
+                
+                {% if values.task_result['Counts'] %}
+                  {% for name, value in values.task_result['Counts'].items() %}
+                    {{ name }}: {{ value }}<br>
+                  {% endfor %}
+                {% endif %}
               {% endif %}
             </td>
             

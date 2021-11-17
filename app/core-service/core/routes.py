@@ -194,9 +194,6 @@ class Routes():
                 return render_template("task.html", task=task)
                 
             else:
-                
-                print(f"ROUTES tasks {tasks}")
-                
                 return render_template("tasks.html", tasks=tasks)
     
         

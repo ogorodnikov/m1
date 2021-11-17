@@ -121,22 +121,10 @@ class Dynamo():
         
         all_tasks_replaced = self.replace_decimals(all_tasks)
         
-        # tasks_dict = {}
-        
-        # for task in all_tasks_replaced:
-            
-        #     task_id = task['task_id']
-            
-        #     tasks_dict[task_id] = task
-            
         tasks_dict = {task['task_id']: task for task in all_tasks_replaced}
             
         # self.log(f"DYNAMO tasks_dict keys: {tasks_dict.keys()}")
         
-        # self.log(f"DYNAMO all_tasks {all_tasks}")
-        
-        # self.log(f"DYNAMO all_tasks_replaced {all_tasks_replaced}")
-    
         return tasks_dict
         
 
