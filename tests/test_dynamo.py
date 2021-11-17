@@ -1,5 +1,7 @@
 import pytest
 
+from decimal import Decimal
+
 from contextlib import contextmanager
 
 from core.dynamo import Dynamo
@@ -100,6 +102,22 @@ def test_get_status_updates_empty(db, monkeypatch):
     monkeypatch.setattr(MockTable, "update_item", lambda *_, **__: {})
     
     db.get_status_updates()
+
+
+def test_replace_status_updates(db):
+    
+    status_updates = [[Decimal('86'), 'Running', ''], 
+                      [Decimal('86'), 'Done', {'Result': {'GCD': Decimal('3'), 
+                                               'Bézout coefficients': 
+                                                   [Decimal('-51462392'), 
+                                                    Decimal('39.5')]}}]]
+                                                    
+    replaced_status_updates = [[86, 'Running', ''], 
+                               [86, 'Done', {'Result': {'GCD': 3, 
+                                             'Bézout coefficients':
+                                                [-51462392, 39.5]}}]]
+                                                
+    assert db.replace_decimals(status_updates) == replaced_status_updates
     
 
 ###   S3  ###
