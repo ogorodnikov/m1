@@ -14,7 +14,7 @@ def test_start(bot, monkeypatch, stub):
     monkeypatch.setattr("core.telegram.Bot.polling", stub)
     monkeypatch.setattr("core.telegram.Bot.stop_polling", stub)
     monkeypatch.setattr("core.telegram.Thread.start", stub)
-    
+
     bot.start()
     
     assert os.environ['TELEGRAM_BOT_STATE'] == 'Running'
@@ -147,7 +147,7 @@ def set_mocks(mock, mock_env, user, stub, test_algorithm):
 @pytest.fixture
 def bot(monkeypatch, stub):
 
-    monkeypatch.setenv("TELEGRAM_TOKEN", "")    
+    # monkeypatch.setenv("TELEGRAM_TOKEN", "")    
     monkeypatch.setattr("core.telegram.Bot.register_handlers", stub)
     
     return Bot(db=Dynamo(), runner=Runner())

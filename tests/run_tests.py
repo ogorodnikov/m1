@@ -24,7 +24,7 @@ def run_tests_with_coverage():
     # pytest.main([test_path, '--verbose', '--exitfirst'])
     # pytest.main([test_path, '-v', '-x', '--durations=0'])
     
-    # pytest.main([test_path, '-v', '-x', '--ignore-glob=**/integration/*', '--durations=0'])
+    pytest.main([test_path, '-v', '-x', '--ignore-glob=**/integration/*', '--durations=0'])
 
     
     # pytest.main([test_path + '/test_algorithms.py', '-v', '-x'])
@@ -58,7 +58,7 @@ def run_tests_with_coverage():
     # pytest.main([test_path + '/integration/test_cognito_integration.py', '-v', '-x', '--durations=0'])
 
 
-    pytest.main([test_path + '/test_telegram.py', '-v', '-x', '-rP', '--durations=0'])
+    # pytest.main([test_path + '/test_telegram.py', '-v', '-x', '-rP', '--durations=0'])
 
 
 
