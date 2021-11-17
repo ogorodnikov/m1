@@ -319,6 +319,12 @@ class Dynamo():
 
                     for key, value in key_dict.items():
                         
+                        filtered_value = value
+                        
+                        if isinstance(value, Decimal):
+                            
+                            filtered_value = int(value)
+                        
                         filtered_result[result_key][key] = value
                 
                 filtered_status_updates.append([task_id, status, filtered_result])
@@ -327,13 +333,45 @@ class Dynamo():
                 
                 filtered_status_updates.append([task_id, status, result])                
                 
-                
+        
+        alt_status_updates = self.replace_decimals(status_updates)
                 
         self.log(f"DYNAMO status_updates {status_updates}")
         
         self.log(f"DYNAMO filtered_status_updates {filtered_status_updates}")
         
+        self.log(f"DYNAMO alt_status_updates {alt_status_updates}")
+        
         return status_updates
+        
+    
+    def replace_decimals(self, node):
+        
+        if isinstance(node, list):
+            
+            for i in range(len(node)):
+                
+                node[i] = self.replace_decimals(node[i])
+                
+            return node
+            
+        elif isinstance(node, dict):
+            
+            for k in node:
+                
+                node[k] = self.replace_decimals(node[k])
+                
+            return node
+            
+        elif isinstance(node, Decimal):
+            
+            if node % 1:
+                return float(node)
+            else:
+                return int(node)
+                
+        else:
+            return node
 
 
     ###   Surprisingly - S3  ###
