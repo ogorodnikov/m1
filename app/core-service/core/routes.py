@@ -8,6 +8,7 @@ from flask import request
 from flask import redirect
 from flask import send_file
 from flask import render_template
+from flask import send_from_directory
 
 import boto3
 import botocore.exceptions
@@ -200,24 +201,14 @@ class Routes():
         @app.route('/download')
         def download():
             
-            task_id = request.args.get('task_id')
-            content = request.args.get('content')
+            resource_id = request.args.get('resource_id')
+            content_type = request.args.get('content_type')
             as_attachment = request.args.get('as_attachment', False)
             
-            if content == 'statevector':
+            if content_type == 'statevector':
                 
-                path = app.static_folder + "/figures/"
-                filename = f"bloch_multivector_task_{task_id}.png"
-                
-                figure_path = path + filename
-                
+                filename = f"bloch_multivector_task_{resource_id}.png"
                 s3_from_path = "figures/" + filename
-                
-                # print(f"ROUTES path {path}")
-                # print(f"ROUTES filename {filename}")
-                # print(f"ROUTES figure_path {figure_path}")
-                # print(f"ROUTES s3_from_path {s3_from_path}")
-                
                 figure_stream = db.stream_figure_from_s3(s3_from_path)
                 
                 return send_file(
@@ -226,6 +217,10 @@ class Routes():
                     download_name=filename,
                     as_attachment=as_attachment
                     )
+                    
+            elif content_type == 'diagram':
+                return send_from_directory("static/diagrams", f"{resource_id}.png")
+                
         
         ###   Admin   ###
         

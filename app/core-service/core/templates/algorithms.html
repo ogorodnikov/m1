@@ -106,7 +106,7 @@
             <div class="col-2 col-lg-auto d-none d-lg-block m-1" style="width: 100px;">
               
               <img class="rounded shadow-lg border border-secondary m-0 p-0"
-               src={{ url_for('static', filename='diagrams/' + item.id + '.png') }}
+               src={{ url_for('download', resource_id=item.id, content_type='diagram') }}
                style="height: 38px;">
               
             </div>
