@@ -127,8 +127,11 @@ def test_get_task(app):
 
     
 def test_download(app):
-    app.get('/download?task_id=1&content=statevector')
-    app.get('/download?task_id=1&content=statevector&as_attachment=True')
+    
+    app.get('/download?resource_id=1&content_type=statevector')
+    app.get('/download?resource_id=1&content_type=statevector&as_attachment=True')
+    
+    app.get('/download?resource_id=egcd&content_type=diagram')
 
 
 def test_admin(app):
