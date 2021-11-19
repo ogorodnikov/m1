@@ -65,7 +65,7 @@ def get_factor_classical(number, task_log):
     
     if factor == 1:
         
-        period = get_period_classical(number, exponentiation_base)
+        period = get_period_classical(number, exponentiation_base, task_log)
 
         task_log(f'SHOR period: {period}')
         
@@ -80,17 +80,28 @@ def get_factor_classical(number, task_log):
     return factor
 
 
-def get_period_classical(number, exponentiation_base):
+def get_period_classical(number, exponentiation_base, task_log):
+    
+    task_log(f'SHOR get_period_classical: {number, exponentiation_base}')
     
     period = 1
     
     modulo = number
     modular_exponent = exponentiation_base
     
+    task_log(f'SHOR modulo: {modulo}')
+    task_log(f'SHOR initial period: {period}')    
+    task_log(f'SHOR initial modular_exponent: {modular_exponent}')    
+    
     while modular_exponent != 1:
         
         modular_exponent = (modular_exponent * exponentiation_base) % modulo
         period += 1
+        
+        if period % 1000 == 0:
+        
+            task_log(f'SHOR modular_exponent: {modular_exponent}') 
+            task_log(f'SHOR period: {period}') 
         
     return period
     

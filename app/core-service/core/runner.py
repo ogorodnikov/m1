@@ -129,7 +129,7 @@ class Runner():
                 
                 self.log(stack_trace, task_id)
                 
-                task_result = {'Exception': repr(exception)}
+                task_result = {'Result': {'Exception': repr(exception)}}
                 
                 if task_id:
                     
