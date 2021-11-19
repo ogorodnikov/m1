@@ -1,7 +1,8 @@
 from math import gcd
 from random import randint
 
-from qiskit import QuantumCircuit, Aer
+from qiskit import Aer
+from qiskit import QuantumCircuit
 
 from core.algorithms.qft import build_qft_circuit
 
@@ -9,14 +10,60 @@ from core.algorithms.qft import build_qft_circuit
 MAX_EXPONENTIAL_BASE_PICKS = 10
 
 
+
 def shor(run_values, task_log):
     
-    shor_classical(run_values, task_log)
+    number_input = run_values.get('number')
+    number = int(number_input)
+    
+    task_log(f'SHOR number: {number}')
+    
+    a = 7
+    
+    task_log(f'SHOR a: {a}')
+    
+    phase = qpe_a_mod_15(a)
+    
+    
 
     circuit = QuantumCircuit(1, 1)
     circuit.name = 'Shor Circuit'
     
     return circuit
+    
+    
+def qpe_a_mod15(a):
+    
+    """ https://qiskit.org/textbook/ch-algorithms/shor.html """
+    
+    counting_qubits_count = 8
+    
+    counting_qubits = range(counting_qubits_count)
+    
+    ancilla_qubits_count = 4
+    
+    ancilla_qubits = range(counting_qubits_count, 
+                           counting_qubits_count + ancilla_qubits_count)
+                         
+    register_qubit = range(counting_qubits_count + ancilla_qubits_count,
+                           counting_qubits_count + ancilla_qubits_count + 1)
+                           
+    circuit = QuantumCircuit(counting_qubits_count + ancilla_qubits_count, 
+                             counting_qubits_count)
+    
+    for counting_qubit in counting_qubits:
+        circuit.h(counting_qubit)
+    
+    circuit.x(register_qubit)
+
+     
+     
+     
+    
+
+
+
+###   Shor classical   ###
     
     
 def shor_classical(run_values, task_log):
@@ -98,7 +145,7 @@ def get_period_classical(number, exponentiation_base, task_log):
         modular_exponent = (modular_exponent * exponentiation_base) % modulo
         period += 1
         
-        if period % 1000 == 0:
+        if period % 10000000 == 0:
         
             task_log(f'SHOR modular_exponent: {modular_exponent}') 
             task_log(f'SHOR period: {period}') 

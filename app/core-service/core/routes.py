@@ -193,14 +193,14 @@ class Routes():
             if task_id:
                 task = tasks[int(task_id)]
                 
-                print(f"ROUTES task: {task}")
-                print(f"ROUTES task['task_result']: {task['task_result']}")
+                # print(f"ROUTES task: {task}")
+                # print(f"ROUTES task['task_result']: {task['task_result']}")
                 
                 return render_template("task.html", task=task)
                 
             else:
                 
-                print(f"ROUTES tasks: {tasks}")
+                # print(f"ROUTES tasks: {tasks}")
                 
                 return render_template("tasks.html", tasks=tasks)
     
