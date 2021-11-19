@@ -7,11 +7,11 @@
 {% block content %}
 
 
-<div class="col-12 text-center h5 m-3">
-  Available algorithms:
-</div>
-
 <div class="container-fluid">
+  
+  <div class="text-center h5 m-3">
+    Available algorithms:
+  </div>
   
   <table class="table table-hover table-dark">
     
@@ -22,7 +22,7 @@
           
           <div class="row">
           
-            <div class="col-9 col-lg-auto m-1" style="width: 200px;">
+            <div class="col-8 col-lg-auto m-1" style="width: 200px;">
               Name
             </div>
             
@@ -55,11 +55,11 @@
               Description
             </div>            
             
-            <div class="col-12 col-lg-auto d-none d-lg-block m-1" style="width: 100px;">
+            <div class="col-12 col-lg-auto d-none d-lg-block text-right m-1">
               Image
             </div> 
             
-            <div class="col-12 col-lg-auto d-none d-lg-block text-center m-1" style="width: 450px;">
+            <div class="col-12 col-lg-auto d-none d-lg-block text-center m-1" style="width: 440px;">
               Actions
             </div> 
             
@@ -76,7 +76,7 @@
         <td>
           <div class="row justify-content-start">
           
-            <div class="col-9 col-lg-auto">
+            <div class="col-8 col-lg-auto">
               
               <a class="btn btn-secondary m-1"
                 href={{ url_for('get_algorithm', algorithm_id=item.id) }}
@@ -104,7 +104,7 @@
               
             <!--   Large Screen Diagram   -->
             
-            <div class="col-2 col-lg-auto d-none d-lg-block m-1" style="width: 100px;">
+            <div class="col-2 col-lg-auto d-none d-lg-block">
               
               <img class="rounded shadow-lg border border-secondary m-0 p-0"
                src={{ url_for('static', filename='diagrams/' + item.id + '.png') }}
@@ -114,27 +114,28 @@
             
             <!--   Small Screen Diagram   -->
             
-            <div class="col-12 col-lg-auto d-lg-none m-1" style="width: 100px;">
+            <div class="col-12 col-lg-auto d-lg-none m-1">
               
               <img class="rounded shadow-lg border border-secondary m-0 p-0"
                src={{ url_for('static', filename='diagrams/' + item.id + '.png') }}
-               style="width: 350px;">
+               style="max-width: 100%;">
               
             </div> 
             
             <!--   Screen Actions Panel   -->
             
-            <div class="col-12 col-lg-auto m-1" style="width: 450px;">
+            <!--<div class="col-12 col-lg-auto m-1" style="width: 450px;">-->
+            <div class="col-12 col-lg-auto m-1 m-sm-0">
               
               <a href={{ url_for('get_algorithm', algorithm_id=item.id) }}
-                class="btn btn-success" 
+                class="btn btn-success mb-1" 
                 style="width: 100px;"
                 role="button">
                 Open
               </a>
                  
               <a href={{ url_for('like_algorithm', algorithm_id=item.id) }}
-                class="btn btn-info text-nowrap"
+                class="btn btn-info text-nowrap mb-1"
                 style="width: 100px;"
                 role="button">
                 Like
@@ -144,10 +145,10 @@
               </a>
                     
               <a href={{ item.link }}
-                class="btn btn-secondary"
+                class="btn btn-secondary mb-1"
+                style="width: 100px; background-color: #A0A0A0;"
                 role="button"
                 target="_blank"
-                style="width: 100px; background-color: #A0A0A0;"
                 rel="noopener noreferrer">
                 Wiki
                 
@@ -158,10 +159,10 @@
               </a>
 
               <a href={{ 'https://github.com/ogorodnikov/m1/tree/main/app/core-service/core/algorithms/' + item.id + '.py' }}
-                class="btn btn-secondary"
+                class="btn btn-secondary mb-1"
+                style="width: 100px;"
                 role="button"
                 target="_blank"
-                style="width: 100px;"
                 rel="noopener noreferrer">
                 Code
                 
