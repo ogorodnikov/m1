@@ -1,7 +1,35 @@
 from qiskit import QuantumCircuit
 
 
-def build_truth_table_oracle(truth_table):
+def build_truth_table_oracle(truth_table) -> QuantumCircuit:
+    
+    """
+    Create Oracle quantum circuit for input truth table.
+    
+    - for each row of input truth table:
+      if output is 1:
+      flip each input qubit which is 0 in input state
+      
+    Example:
+    
+      Truth table:
+      
+      00: 1
+      01: 0
+      10: 1
+      11: 0
+      
+      Input states: 00, 01, 10, 11
+      Outputs: 1, 0, 1, 0
+     
+    Actions:
+    
+      00: 1 -> Output is 1 -> Both input qubits are 0 -> Flip both input qubits
+      01: 0 -> Output is 0 -> Nothing
+      10: 1 -> Output is 1 -> 2nd input qubit is 0 -> Flip only 2nd input qubit
+      11: 0 -> Output is 0 -> Nothing
+    
+    """
     
     
     input_qubits_count = len(next(iter(truth_table)))
@@ -37,7 +65,76 @@ def build_truth_table_oracle(truth_table):
     return oracle
     
     
-def dj(run_values, task_log):
+def dj(run_values, task_log) -> QuantumCircuit:
+
+    """
+    Create Deutch-Jozsa quantum circuit for input 'secret' value:
+    
+    - get 'secret' from input run values
+    - convert 'secret' to string of '1' and '0'
+    - fill 'secret' with '0' up to integer power of 2:
+    
+      101    -> 1010
+      1010   -> 1010
+      10101  -> 10101000
+      101010 -> 10101000
+    
+    - create truth table from input 'secret':
+    
+      'Secret': String of '1' and '0':
+      
+      1010
+      
+      Truth table: Each output is '1' or '0' from input 'secret':
+      
+      00: 1
+      01: 0
+      10: 1
+      11: 0
+      
+    - create Oracle quantum circuit for truth table
+    - apply H and X gates to Oracle
+    - measure qubits
+    
+    Results:
+    
+    - if majority of counts in 'all 0' state:
+      
+      secret is constant
+      
+    - if majority of counts in not 'all 0' state:
+    
+      secret is balanced
+      
+    - if counts are distributed via multiple states:
+    
+      probably secret is unbalanced
+      
+    Example:
+    
+      1)
+    
+      Input 'secret': 1111
+      Counts: {'00': 1024}
+      
+      ->
+      
+      Majority of counts in 'all 0' state '00': 
+    
+      Secret is constant     
+
+      2)
+    
+      Input 'secret': 1010
+      Counts: {'01': 1024}
+      
+      ->
+      
+      Majority of counts in not 'all 0' state '01': 
+    
+      Secret is balanced
+      
+    """
     
     input_secret = run_values.get('secret')
     
