@@ -72,10 +72,12 @@ class Shor:
         
         circuit.x(register_qubit)
         
-        # for ancilla_index in ancilla_qubits:
+        for camod_index in range(precision):
             
-        #     circuit.append(self.controlled_amod15(exponentiation_base, 2**ancilla_index),
-        #                   [ancilla_index] + [counting_qubits])
+            print(f'SHOR camod_index: {camod_index}')
+            
+            circuit.append(self.controlled_amod15(exponentiation_base, 2**camod_index),
+                           [camod_index] + [*ancilla_qubits])
                            
         print(f'SHOR circuit: \n{circuit}')
         
@@ -86,33 +88,31 @@ class Shor:
         
         for iteration in range(power):
             
-            if exponentiation_base in [2,13]:
-                camod_circuit.swap(0,1)
-                camod_circuit.swap(1,2)
-                camod_circuit.swap(2,3)
+            if exponentiation_base in [2, 13]:
+                camod_circuit.swap(0, 1)
+                camod_circuit.swap(1, 2)
+                camod_circuit.swap(2, 3)
                 
-            elif exponentiation_base in [7,8]:
-                camod_circuit.swap(2,3)
-                camod_circuit.swap(1,2)
-                camod_circuit.swap(0,1)
+            elif exponentiation_base in [7, 8]:
+                camod_circuit.swap(2, 3)
+                camod_circuit.swap(1, 2)
+                camod_circuit.swap(0, 1)
                 
             elif exponentiation_base == 11:
-                camod_circuit.swap(1,3)
-                camod_circuit.swap(0,2)
+                camod_circuit.swap(1, 3)
+                camod_circuit.swap(0, 2)
                 
-            if exponentiation_base in [7,11,13]:
+            if exponentiation_base in [7, 11, 13]:
                 for q in range(4):
-                    circuit.x(q)
+                    camod_circuit.x(q)
                     
         camod_gate = camod_circuit.to_gate()
         
-        camod_gate.name = f"{exponentiation_base} ** {power} mod 15"
+        camod_gate.name = f"{exponentiation_base}^{power} mod 15"
         
         controlled_camod_gate = camod_gate.control()
         
-        print(f'SHOR camod_circuit: {camod_circuit}')  
-        print(f'SHOR camod_gate: {camod_gate}')  
-        print(f'SHOR controlled_camod_gate: {controlled_camod_gate}')  
+        # print(f'SHOR camod_circuit: {camod_circuit}')  
         
         return controlled_camod_gate
 
