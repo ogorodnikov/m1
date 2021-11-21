@@ -88,15 +88,21 @@
             </td>
             
             <td class="col-auto">
+              
               {% if task.task_result %}
                 {% for result_type in task.task_result %}
 
-                  {% for name, value in task.task_result[result_type].items() %}
-                    {{ name }}: {{ value }}<br>
-                  {% endfor %}
+                  {% if task.task_result[result_type] %}
+                    {% for name, value in task.task_result[result_type].items() %}
+                    
+                      {{ name }}: {{ value }}<br>
+                      
+                    {% endfor %}
+                  {% endif %}
                   
                 {% endfor %}
               {% endif %}
+
             </td>
             
             <td class="col-1">

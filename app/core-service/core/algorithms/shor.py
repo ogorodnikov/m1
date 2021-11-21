@@ -140,3 +140,11 @@ class Shor:
 def shor(run_values, task_log):
     
     return Shor().shor(run_values, task_log)
+    
+    
+def shor_post_processing(run_result, task_log):
+    
+    counts = run_result.get_counts()
+    
+    task_log(f'SHOR run_result: {run_result}')
+    task_log(f'SHOR counts: {counts}')

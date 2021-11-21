@@ -27,7 +27,7 @@ from core.algorithms.dj import dj
 from core.algorithms.simon import simon, simon_post_processing
 from core.algorithms.qft import qft
 from core.algorithms.qpe import qpe, qpe_post_processing
-from core.algorithms.shor import shor
+from core.algorithms.shor import shor, shor_post_processing
 
 
 class Runner():
@@ -43,7 +43,8 @@ class Runner():
                         'shor': shor}
                    
     post_processing = {'simon': simon_post_processing,
-                       'qpe': qpe_post_processing}
+                       'qpe': qpe_post_processing,
+                       'shor': shor_post_processing}
                        
     DEFAULT_TASK_TIMEOUT = 300
 
