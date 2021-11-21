@@ -43,10 +43,13 @@ class Shor:
         print(f'SHOR precision: {precision}')
         
         counting_qubits_count = precision
+        measurement_bits_count = precision
         
         counting_qubits = range(counting_qubits_count)
+        measurement_bits = range(measurement_bits_count)
         
         print(f'SHOR counting_qubits: {counting_qubits}')
+        print(f'SHOR measurement_bits: {measurement_bits}')
         
         ancilla_qubits_count = int(log(precision, 2)) + 1
         
@@ -78,6 +81,15 @@ class Shor:
             
             circuit.append(self.controlled_amod15(exponentiation_base, 2**camod_index),
                            [camod_index] + [*ancilla_qubits])
+        
+        inverted_qft_circuit = build_qft_circuit(qubits_count=counting_qubits_count, 
+                                                 inverted=True)
+                                                 
+        print(f'SHOR inverted_qft_circuit: \n{inverted_qft_circuit}')
+            
+        circuit.append(inverted_qft_circuit, counting_qubits)
+        
+        circuit.measure(counting_qubits, measurement_bits)
                            
         print(f'SHOR circuit: \n{circuit}')
         
