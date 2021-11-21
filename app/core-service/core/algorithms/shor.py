@@ -6,8 +6,9 @@ from math import log
 from qiskit import Aer
 from qiskit import QuantumCircuit
 
-# from core.algorithms.qft import build_qft_circuit
-from qft import build_qft_circuit
+from core.algorithms.qft import build_qft_circuit
+
+# from qft import build_qft_circuit
 
 
 # MAX_EXPONENTIAL_BASE_PICKS = 10
@@ -15,32 +16,31 @@ from qft import build_qft_circuit
 
 class Shor:
     
-    def shor(self, run_values):
-        
-        print(f'>>> SHOR')    
+    def shor(self, run_values, task_log):
         
         number_input = run_values.get('number')
         number = int(number_input)
         
-        print(f'SHOR number: {number}')
+        task_log(f'SHOR number: {number}')
         
         exponentiation_base = 7
         precision = 8
         
-        phase = self.estimate_phase(exponentiation_base, precision)
+        circuit = self.estimate_phase(exponentiation_base, precision, task_log)
     
-        # circuit = QuantumCircuit(1, 1)
-        # circuit.name = 'Shor Circuit'
+        circuit.name = 'Shor Circuit'
         
-        # return circuit
+        task_log(f'SHOR circuit: \n{circuit}')
+        
+        return circuit
         
 
-    def estimate_phase(self, exponentiation_base, precision):
+    def estimate_phase(self, exponentiation_base, precision, task_log):
         
         """ https://qiskit.org/textbook/ch-algorithms/shor.html """
         
-        print(f'SHOR exponentiation_base: {exponentiation_base}')
-        print(f'SHOR precision: {precision}')
+        task_log(f'SHOR exponentiation_base: {exponentiation_base}')
+        task_log(f'SHOR precision: {precision}')
         
         counting_qubits_count = precision
         measurement_bits_count = precision
@@ -48,21 +48,21 @@ class Shor:
         counting_qubits = range(counting_qubits_count)
         measurement_bits = range(measurement_bits_count)
         
-        print(f'SHOR counting_qubits: {counting_qubits}')
-        print(f'SHOR measurement_bits: {measurement_bits}')
+        task_log(f'SHOR counting_qubits: {counting_qubits}')
+        task_log(f'SHOR measurement_bits: {measurement_bits}')
         
         ancilla_qubits_count = int(log(precision, 2)) + 1
         
-        print(f'SHOR ancilla_qubits_count: {ancilla_qubits_count}')
+        task_log(f'SHOR ancilla_qubits_count: {ancilla_qubits_count}')
         
         ancilla_qubits = range(counting_qubits_count, 
                                counting_qubits_count + ancilla_qubits_count)
 
-        print(f'SHOR ancilla_qubits: {ancilla_qubits}')
+        task_log(f'SHOR ancilla_qubits: {ancilla_qubits}')
         
         register_qubit = counting_qubits_count + ancilla_qubits_count - 1
 
-        print(f'SHOR register_qubit: {register_qubit}')
+        task_log(f'SHOR register_qubit: {register_qubit}')
         
                                        
         circuit = QuantumCircuit(counting_qubits_count + ancilla_qubits_count, 
@@ -77,7 +77,7 @@ class Shor:
         
         for camod_index in range(precision):
             
-            print(f'SHOR camod_index: {camod_index}')
+            task_log(f'SHOR camod_index: {camod_index}')
             
             circuit.append(self.controlled_amod15(exponentiation_base, 2**camod_index),
                            [camod_index] + [*ancilla_qubits])
@@ -85,13 +85,15 @@ class Shor:
         inverted_qft_circuit = build_qft_circuit(qubits_count=counting_qubits_count, 
                                                  inverted=True)
                                                  
-        print(f'SHOR inverted_qft_circuit: \n{inverted_qft_circuit}')
+        task_log(f'SHOR inverted_qft_circuit: \n{inverted_qft_circuit}')
             
         circuit.append(inverted_qft_circuit, counting_qubits)
         
         circuit.measure(counting_qubits, measurement_bits)
                            
-        print(f'SHOR circuit: \n{circuit}')
+        task_log(f'SHOR circuit: \n{circuit}')
+        
+        return circuit
         
 
     def controlled_amod15(self, exponentiation_base, power):
@@ -124,12 +126,17 @@ class Shor:
         
         controlled_camod_gate = camod_gate.control()
         
-        # print(f'SHOR camod_circuit: {camod_circuit}')  
+        # task_log(f'SHOR camod_circuit: {camod_circuit}')  
         
         return controlled_camod_gate
 
 
 
-run_values = {'number': '330023'}
+# run_values = {'number': '330023'}
 
-Shor().shor(run_values)
+# Shor().shor(run_values)
+
+
+def shor(run_values, task_log):
+    
+    return Shor().shor(run_values, task_log)

@@ -200,6 +200,8 @@ class Runner():
         algorithm_id = task.get('algorithm_id')
         
         run_mode = run_values.get('run_mode')
+        skip_statevector = run_values.get('skip_statevector')
+        
         run_values['task_id'] = task_id
         
         runner_function = Runner.runner_functions[algorithm_id]
@@ -223,14 +225,16 @@ class Runner():
             circuit = runner_function(run_values, task_log_callback)
             qubit_count = circuit.num_qubits
             
-            circuit.save_statevector()
+            if not skip_statevector:
+                circuit.save_statevector()
             
             self.log(f'RUNNER backend: {self.simulator_backend}', task_id)
             
             run_result = self.execute_task(task_id, circuit, self.simulator_backend)
             counts = run_result.get_counts()
             
-            self.handle_statevector(run_result, qubit_count, task_id)
+            if not skip_statevector:
+                self.handle_statevector(run_result, qubit_count, task_id)
 
             self.log(f'RUNNER run_result: {run_result}', task_id)
             self.log(f'RUNNER counts:', task_id)
