@@ -2,6 +2,7 @@
 # from random import randint
 
 from math import log
+from fractions import Fraction
 
 from qiskit import Aer
 from qiskit import QuantumCircuit
@@ -29,8 +30,6 @@ class Shor:
         circuit = self.estimate_phase(exponentiation_base, precision, task_log)
     
         circuit.name = 'Shor Circuit'
-        
-        task_log(f'SHOR circuit: \n{circuit}')
         
         return circuit
         
@@ -146,5 +145,37 @@ def shor_post_processing(run_result, task_log):
     
     counts = run_result.get_counts()
     
-    task_log(f'SHOR run_result: {run_result}')
+    sorted_counts = dict(sorted(counts.items(), key=lambda item: -item[1]))
+  
+    top_states = list(sorted_counts.keys())
+    
+    precision = len(top_states[0])
+    
     task_log(f'SHOR counts: {counts}')
+    task_log(f'SHOR sorted_counts: {sorted_counts}')
+    task_log(f'SHOR top_states: {top_states}')
+    task_log(f'SHOR precision: {precision}')
+    
+    periods = []
+    
+    for state in top_states:
+        
+        state_binary = int(state[::-1], 2)
+        
+        phase = state_binary / 2 ** precision
+        
+        phase_fraction = Fraction(phase).limit_denominator(15)
+        
+        period = phase_fraction.denominator
+        
+        periods.append(period)
+        
+        task_log(f'SHOR state: {state}')
+        task_log(f'SHOR state_binary: {state_binary}')
+        task_log(f'SHOR phase: {phase}')
+        task_log(f'SHOR phase_fraction: {phase_fraction}')
+        task_log(f'SHOR period: {period}')
+    
+    task_log(f'SHOR periods: {periods}')
+        
+    return {'Periods': periods}
