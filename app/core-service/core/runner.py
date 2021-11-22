@@ -28,6 +28,7 @@ from core.algorithms.simon import simon, simon_post_processing
 from core.algorithms.qft import qft
 from core.algorithms.qpe import qpe, qpe_post_processing
 from core.algorithms.shor import shor, shor_post_processing
+from core.algorithms.teleport import teleport
 
 
 class Runner():
@@ -40,7 +41,8 @@ class Runner():
                         'simon': simon,
                         'qft': qft,
                         'qpe': qpe,
-                        'shor': shor}
+                        'shor': shor,
+                        'teleport': teleport}
                    
     post_processing = {'simon': simon_post_processing,
                        'qpe': qpe_post_processing,

@@ -34,11 +34,11 @@
           <input class="form-control text-light bg-dark"
                  name={{ parameter.name }}
                  type="tel"
-                 pattern="[A-Za-z0-9\.\-]{1,50}"
+                 pattern="[A-Za-z0-9\.\-\+]{1,50}"
                  value="{{ parameter.default_value }}"
                  aria-label="Parameter"
                  aria-describedby="parameters"
-                 title="Please use digits, letters, dot and minus - up to 50 symbols">
+                 title="Please use digits, letters, dot, plus and minus - up to 50 symbols">
               <!--required-->
               
         </div>

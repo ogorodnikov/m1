@@ -1,4 +1,6 @@
 from qiskit import QuantumCircuit
+from qiskit import QuantumRegister
+from qiskit import ClassicalRegister
 
 
 def teleport(run_values, task_log):
@@ -6,7 +8,9 @@ def teleport(run_values, task_log):
     
     
     # state = 0, 1
-    state = −0.38591 − 0.11057j, −0.31966 + 0.85829j
+    # state = -0.38591 - 0.11057j, -0.31966 + 0.85829j
+    
+    state = 2**-0.5, 2**-0.5
     
     alice_source_qubit = 0
     alice_entangled_qubit = 1
@@ -17,8 +21,8 @@ def teleport(run_values, task_log):
     
     quantum_register = QuantumRegister(3, name="q")
     
-    classical_register_z = ClassicalRegister(1, name="Classical register Z")
-    classical_register_x = ClassicalRegister(1, name="Classical register X")
+    classical_register_z = ClassicalRegister(1, name="bit_z")
+    classical_register_x = ClassicalRegister(1, name="bit_x")
     
     circuit = QuantumCircuit(quantum_register,
                              classical_register_z,
