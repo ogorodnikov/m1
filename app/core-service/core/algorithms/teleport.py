@@ -3,7 +3,8 @@ from qiskit import QuantumCircuit
 
 def teleport(run_values, task_log):
     
-    state = 0 + 1j
+    # state = 0, 1
+    state = −0.38591 − 0.11057j, −0.31966 + 0.85829j
     
     alice_source_qubit = 0
     alice_entangled_qubit = 1
@@ -49,6 +50,15 @@ def teleport(run_values, task_log):
     circuit.x(bob_entangled_qubit).c_if(bit_x, 1)
     circuit.z(bob_entangled_qubit).c_if(bit_z, 1)
     
+    
+    task_log(f'TELEPORT state: {state}')
+    
+    task_log(f'TELEPORT alice_source_qubit: {alice_source_qubit}')
+    task_log(f'TELEPORT alice_entangled_qubit: {alice_entangled_qubit}')
+    task_log(f'TELEPORT bob_entangled_qubit: {bob_entangled_qubit}')
+    
+    task_log(f'TELEPORT bit_x: {bit_x}')
+    task_log(f'TELEPORT bit_z: {bit_z}')
     
     task_log(f'TELEPORT circuit: \n{circuit}')
     
