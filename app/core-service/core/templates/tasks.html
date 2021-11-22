@@ -117,12 +117,16 @@
               {% if values.task_result %}
                 {% for result_type in values.task_result %}
 
-                  {% if values.task_result[result_type] %}
+                  {% if values.task_result[result_type] is mapping %}
                     {% for name, value in values.task_result[result_type].items() %}
                     
                       {{ name }}: {{ value }}<br>
                       
                     {% endfor %}
+                  {% else %}
+                  
+                    {{ values.task_result[result_type] }}
+                    
                   {% endif %}
                   
                 {% endfor %}

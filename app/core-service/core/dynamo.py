@@ -490,7 +490,18 @@ class Dynamo():
                   'color': 'orange',
                   'likes': 2045,
                   'enabled': True},
-                                
+
+                  {'id': 'teleport',
+                  'name': 'Quantum Teleportation',
+                  'type': 'quantum',
+                  'description': 'Transfers quantum state using 2 entangled qubits and 2 classical bits.',
+                  'link': 'https://en.wikipedia.org/wiki/Quantum_teleportation',
+                  'image': b'1010',
+                  'parameters': [{'name': 'alpha', 'default_value': '−0.38591 − 0.11057j'},
+                                 {'name': 'beta', 'default_value': '−0.31966 + 0.85829j'}],
+                  'likes': 824,
+                  'enabled': True},
+                  
                   ]
         
         with self.algorithms.batch_writer(overwrite_by_pkeys=['id']) as batch:
