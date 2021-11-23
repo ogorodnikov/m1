@@ -67,7 +67,6 @@ from qiskit.providers import BaseBackend
 from qiskit.utils import summarize_circuits
 from qiskit.utils.arithmetic import is_power
 from qiskit.utils.quantum_instance import QuantumInstance
-from qiskit.algorithms.algorithm_result import AlgorithmResult
 from qiskit.algorithms.exceptions import AlgorithmError
 
 logger = logging.getLogger(__name__)
@@ -401,69 +400,25 @@ class Shor:
 
     def factor(self, number, base=2):
 
-        result = ShorResult()
+        result = set()
+        circuit = self.construct_circuit(N=number, a=base, measurement=True)
+        
+        execution_job = self._quantum_instance.execute(circuit)
+        counts = execution_job.get_counts(circuit)
+        
+        print(f"SHOR counts: {counts}")
 
-        if not result.factors:
+        for measurement in counts:
 
-            circuit = self.construct_circuit(N=number, a=base, measurement=True)
+            factors = self._get_factors(number, base, measurement)
+            result |= set(factors or {})
             
-            execution_job = self._quantum_instance.execute(circuit)
-            counts = execution_job.get_counts(circuit)
-            
-            print(f"SHOR counts: {counts}")
-
-            for measurement in counts:
-                print(f"SHOR measurement: {measurement}")
-                factors = self._get_factors(number, base, measurement)
-
-                print(f"SHOR factors: {factors}")
-                
-                if factors:
-                    print("Found factors %s from measurement %s.", factors, measurement)
-                    if factors not in result.factors:
-                        result.factors.append(factors)
+            print(f"SHOR measurement: {measurement}")
+            print(f"SHOR factors: {factors}")
+        
+        print(f"SHOR result: {result}")
 
         return result
 
-
-class ShorResult(AlgorithmResult):
-    """Shor Result."""
-
-    def __init__(self) -> None:
-        super().__init__()
-        self._factors = []
-        self._total_counts = 0
-        self._successful_counts = 0
-
-    @property
-    def factors(self) -> List[List[int]]:
-        """returns factors"""
-        return self._factors
-
-    @factors.setter
-    def factors(self, value: List[List[int]]) -> None:
-        """set factors"""
-        self._factors = value
-
-    @property
-    def total_counts(self) -> int:
-        """returns total counts"""
-        return self._total_counts
-
-    @total_counts.setter
-    def total_counts(self, value: int) -> None:
-        """set total counts"""
-        self._total_counts = value
-
-    @property
-    def successful_counts(self) -> int:
-        """returns successful counts"""
-        return self._successful_counts
-
-    @successful_counts.setter
-    def successful_counts(self, value: int) -> None:
-        """set successful counts"""
-        self._successful_counts = value
-        
 
 run_shor()
