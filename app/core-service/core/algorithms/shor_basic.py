@@ -18,7 +18,6 @@ def run_shor():
     task_log = print
     
     print(f"SHOR number: {number}")
-    print(f"SHOR number: {number}")
     
     if (number < 3 or 
         number % 2 == 0 or
@@ -39,10 +38,8 @@ def run_shor():
     print(f"SHOR Result: {result}")
     
     theoretical_qubits_count = 4 * math.ceil(math.log(number, 2)) + 2
-    actual_qubits_count = shor.construct_circuit(number).num_qubits
     
     print(f'SHOR theoretical_qubits_count: {theoretical_qubits_count}')
-    print(f'SHOR actual_qubits_count: {actual_qubits_count}')
 
 
 
@@ -233,25 +230,18 @@ class Shor:
         return circuit.to_instruction()
 
 
-    def construct_circuit(self, N: int, a: int = 2, measurement: bool = False) -> QuantumCircuit:
-        """Construct quantum part of the algorithm.
-        Args:
-            N: The odd integer to be factored, has a min. value of 3.
-            a: Any integer that satisfies 1 < a < N and gcd(a, N) = 1.
-            measurement: Boolean flag to indicate if measurement should be included in the circuit.
-        Returns:
-            Quantum circuit.
-        """
+    def construct_circuit(self, N, a, measurement=False):
 
-        # Get n value used in Shor's algorithm, to know how many qubits are used
-        n = N.bit_length()
+        qubit_count = N.bit_length()
+        
+        print(f"SHOR qubit_count {qubit_count}")
 
         # quantum register where the sequential QFT is performed
-        up_qreg = QuantumRegister(2 * n, name="up")
+        up_qreg = QuantumRegister(2 * qubit_count, name="up")
         # quantum register where the multiplications are made
-        down_qreg = QuantumRegister(n, name="down")
+        down_qreg = QuantumRegister(qubit_count, name="down")
         # auxiliary quantum register used in addition and multiplication
-        aux_qreg = QuantumRegister(n + 2, name="aux")
+        aux_qreg = QuantumRegister(qubit_count + 2, name="aux")
 
         # Create Quantum Circuit
         circuit = QuantumCircuit(up_qreg, down_qreg, aux_qreg, name=f"Shor(N={N}, a={a})")
@@ -263,7 +253,7 @@ class Shor:
         circuit.x(down_qreg[0])
 
         # Apply modulo exponentiation
-        modulo_power = self._power_mod_N(n, N, a)
+        modulo_power = self._power_mod_N(qubit_count, N, a)
         circuit.append(modulo_power, circuit.qubits)
 
         # Apply inverse QFT
@@ -271,7 +261,7 @@ class Shor:
         circuit.append(iqft, up_qreg)
 
         if measurement:
-            up_cqreg = ClassicalRegister(2 * n, name="m")
+            up_cqreg = ClassicalRegister(2 * qubit_count, name="m")
             circuit.add_register(up_cqreg)
             circuit.measure(up_qreg, up_cqreg)
 
@@ -398,7 +388,7 @@ class Shor:
         return frac.denominator
         
 
-    def factor(self, number, base=2):
+    def factor(self, number, base):
 
         result = set()
         circuit = self.construct_circuit(N=number, a=base, measurement=True)
@@ -416,8 +406,6 @@ class Shor:
             print(f"SHOR measurement: {measurement}")
             print(f"SHOR factors: {factors}")
         
-        print(f"SHOR result: {result}")
-
         return result
 
 
