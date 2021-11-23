@@ -12,9 +12,19 @@ from qiskit.utils import QuantumInstance
 
 def run_shor():
     
-    number = 15
+    number = 9
+    base = 2
     
     print(f"SHOR number: {number}")
+    print(f"SHOR number: {number}")
+    
+    if (number < 3 or 
+        number % 2 == 0 or
+        base < 2 or
+        base >= number or
+        math.gcd(base, number) != 1):
+        
+        raise ValueError("Incorrect input values")
     
     backend = Aer.get_backend('aer_simulator')
     
@@ -57,27 +67,15 @@ from qiskit.quantum_info import partial_trace
 from qiskit.utils import summarize_circuits
 from qiskit.utils.arithmetic import is_power
 from qiskit.utils.quantum_instance import QuantumInstance
-from qiskit.utils.validation import validate_min
 from qiskit.algorithms.algorithm_result import AlgorithmResult
 from qiskit.algorithms.exceptions import AlgorithmError
 
 logger = logging.getLogger(__name__)
 
 
-# pylint: disable=invalid-name
-
-
 class Shor:
-    """Shor's factoring algorithm.
-    Shor's Factoring algorithm is one of the most well-known quantum algorithms and finds the
-    prime factors for input integer :math:`N` in polynomial time.
-    Adapted from https://github.com/ttlion/ShorAlgQiskit
-    See also https://arxiv.org/abs/quant-ph/0205095
-    """
 
-    def __init__(
-        self, quantum_instance: Optional[Union[QuantumInstance, BaseBackend, Backend]] = None
-    ) -> None:
+    def __init__(self, quantum_instance):
         """
         Args:
             quantum_instance: Quantum Instance or Backend
@@ -235,23 +233,6 @@ class Shor:
 
         return circuit.to_instruction()
 
-    @staticmethod
-    def _validate_input(N: int, a: int):
-        """Check parameters of the algorithm.
-        Args:
-            N: The odd integer to be factored, has a min. value of 3.
-            a: Any integer that satisfies 1 < a < N and gcd(a, N) = 1.
-        Raises:
-            ValueError: Invalid input
-        """
-        validate_min("N", N, 3)
-        validate_min("a", a, 2)
-
-        if N < 1 or N % 2 == 0:
-            raise ValueError("The input needs to be an odd integer greater than 1.")
-
-        if a >= N or math.gcd(a, N) != 1:
-            raise ValueError("The integer a needs to satisfy a < N and gcd(a, N) = 1.")
 
     def construct_circuit(self, N: int, a: int = 2, measurement: bool = False) -> QuantumCircuit:
         """Construct quantum part of the algorithm.
@@ -262,7 +243,6 @@ class Shor:
         Returns:
             Quantum circuit.
         """
-        self._validate_input(N, a)
 
         # Get n value used in Shor's algorithm, to know how many qubits are used
         n = N.bit_length()
@@ -417,27 +397,9 @@ class Shor:
         logger.debug("Approximation number %s of continued fractions:", len(b))
         logger.debug("Numerator:%s \t\t Denominator: %s.", frac.numerator, frac.denominator)
         return frac.denominator
+        
 
-    def factor(
-        self,
-        N: int,
-        a: int = 2,
-    ) -> "ShorResult":
-        """Execute the algorithm.
-        The input integer :math:`N` to be factored is expected to be odd and greater than 2.
-        Even though this implementation is general, its capability will be limited by the
-        capacity of the simulator/hardware. Another input integer :math:`a`  can also be supplied,
-        which needs to be a co-prime smaller than :math:`N` .
-        Args:
-            N: The odd integer to be factored, has a min. value of 3.
-            a: Any integer that satisfies 1 < a < N and gcd(a, N) = 1.
-        Returns:
-            ShorResult: results of the algorithm.
-        Raises:
-            ValueError: Invalid input
-            AlgorithmError: If a quantum instance or backend has not been provided
-        """
-        self._validate_input(N, a)
+    def factor(self, N, a = 2):
 
         if self.quantum_instance is None:
             raise AlgorithmError(
