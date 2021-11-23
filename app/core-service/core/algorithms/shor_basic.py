@@ -232,24 +232,26 @@ class Shor:
 
     def create_shor_circuit(self, number, base):
 
-        qubit_count = number.bit_length()
+        basic_qubit_count = number.bit_length()
         
-        print(f"SHOR qubit_count {qubit_count}")
-
-        qft_qubits_count = qubit_count * 2
+        qft_qubits_count = basic_qubit_count * 2
+        mult_qubits_count = basic_qubit_count
+        ancilla_qubits_count = basic_qubit_count + 2
+        measure_bits_count = basic_qubit_count * 2
+        
         qft_register = QuantumRegister(qft_qubits_count, name="qft")
-        
-        multiplication_register = QuantumRegister(qubit_count, name="mul")
-        
-        ancilla_register = QuantumRegister(qubit_count + 2, name="anc")
+        mult_register = QuantumRegister(mult_qubits_count, name="mul")
+        ancilla_register = QuantumRegister(ancilla_qubits_count, name="anc")
+        measure_register = ClassicalRegister(measure_bits_count, name="mea")
 
         circuit = QuantumCircuit(qft_register, 
-                                 multiplication_register, 
-                                 ancilla_register, 
+                                 mult_register, 
+                                 ancilla_register,
+                                 measure_register,
                                  name=f"Shor(N={number}, a={base})")
 
         circuit.h(qft_register)
-        circuit.x(multiplication_register[0])
+        circuit.x(mult_register[0])
 
         modular_exponentiation_circuit = self._power_mod_N(qubit_count, number, base)
         circuit.append(modular_exponentiation_circuit, circuit.qubits)
@@ -257,12 +259,6 @@ class Shor:
         iqft_circuit = QFT(qft_qubits_count).inverse().to_gate()
         circuit.append(iqft_circuit, qft_register)
 
-        # Measure
-        
-        measure_bits_count = qubit_count * 2
-        
-        measure_register = ClassicalRegister(measure_bits_count, name="mea")
-        circuit.add_register(measure_register)
         circuit.measure(qft_register, measure_register)
 
         print(f"SHOR circuit:\n {circuit}")
