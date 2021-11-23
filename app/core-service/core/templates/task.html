@@ -136,7 +136,7 @@
           </tr>
           
           
-          {% if task.task_status == 'Done' and task.run_values.run_mode == 'simulator' %}
+          {% if task.task_status == 'Done' and task.run_values.run_mode == 'simulator' and task.run_values.skip_statevector != 'True' %}
           
             <!--<tr class="collapse show" id="collapse-{{ task.task_id }}" style="background-color:#212121">-->
             <tr class="collapse show" id="collapse-{{ task.task_id }}">

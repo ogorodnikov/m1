@@ -228,4 +228,8 @@ def shor_post_processing(run_data, task_log):
 
     task_log(f'SHOR factors: {factors}')
     
-    return {'Factors': factors}
+    non_trivial_factors = list(factors - {1, number})
+
+    task_log(f'SHOR non_trivial_factors: {non_trivial_factors}')
+    
+    return {'Factors': non_trivial_factors}
