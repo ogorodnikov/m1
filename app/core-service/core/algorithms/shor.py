@@ -1,4 +1,5 @@
-# from math import gcd
+from math import gcd
+
 # from random import randint
 
 from math import log
@@ -146,15 +147,26 @@ def shor(run_values, task_log):
     return Shor().shor(run_values, task_log)
     
     
-def shor_post_processing(run_result, task_log):
+def shor_post_processing(run_data, task_log):
+
+    run_result = run_data.get('Result')
+    run_values = run_data.get('Run Values')
     
-    counts = run_result.get_counts()
+    counts = run_result.get('Counts')
+    number = run_values.get('number')
     
     sorted_counts = dict(sorted(counts.items(), key=lambda item: -item[1]))
   
     top_states = list(sorted_counts.keys())
     
     precision = len(top_states[0])
+    
+
+    task_log(f'SHOR run_data: {run_data}')
+    task_log(f'SHOR run_result: {run_result}')
+    task_log(f'SHOR run_values: {run_values}')
+
+    task_log(f'SHOR number: {number}')
     
     task_log(f'SHOR counts: {counts}')
     task_log(f'SHOR sorted_counts: {sorted_counts}')
@@ -182,5 +194,13 @@ def shor_post_processing(run_result, task_log):
         task_log(f'SHOR order: {order}')
     
     task_log(f'SHOR orders: {orders}')
+    
+    factors = {}
+    
+    for order in orders:
+        
+        factor_p = gcd()
+        
+        factors.add(gcd())
         
     return {'Orders': orders}

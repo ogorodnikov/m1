@@ -57,9 +57,10 @@ def qpe(run_values, task_log):
     return circuit
     
     
-def qpe_post_processing(run_result, task_log):
+def qpe_post_processing(run_data, task_log):
     
-    counts = run_result.get_counts()
+    run_result = run_data.get('Result')
+    counts = run_result.get('Counts')
     
     counts_decimals = {int(state, 2): count for state, count in counts.items()}
     
@@ -91,4 +92,4 @@ def qpe_post_processing(run_result, task_log):
     task_log(f'QPE theta: {theta}')
     task_log(f'QPE angle: {angle}')
     
-    return {'Theta': theta}
+    return {'Angle': angle}

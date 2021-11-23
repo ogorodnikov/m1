@@ -270,8 +270,13 @@ class Runner():
         if algorithm_id in Runner.post_processing:
             
             post_processing_function = Runner.post_processing[algorithm_id]
+
+            run_data = {'Result': result, 'Run Values': run_values}
             
-            post_processing_result = post_processing_function(run_result, task_log_callback)
+            self.log(f'RUNNER run_data: {run_data}', task_id)
+            
+            post_processing_result = post_processing_function(run_data, 
+                                                              task_log_callback)
             
             result = {'Result': post_processing_result}
             
