@@ -494,6 +494,7 @@ class Dynamo():
                   'qiskit_link': 'https://qiskit.org/textbook/ch-algorithms/shor.html',
                   'image': b'1010',
                   'parameters': [{'name': 'number', 'default_value': '15'},
+                                 {'name': 'precision', 'default_value': '8'},
                                  {'name': 'exponentiation_base', 'default_value': '7'},
                                  {'name': 'skip_statevector', 'default_value': 'True'}],
                   'color': 'orange',

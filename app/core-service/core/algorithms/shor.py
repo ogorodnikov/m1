@@ -7,9 +7,12 @@ from fractions import Fraction
 
 from qiskit import QuantumCircuit
 
-from core.algorithms.qft import build_qft_circuit
 
-# from qft import build_qft_circuit
+try:
+    from core.algorithms.qft import build_qft_circuit
+
+except ModuleNotFoundError:
+    from qft import build_qft_circuit
 
 
 # MAX_EXPONENTIAL_BASE_PICKS = 10
@@ -26,18 +29,24 @@ class Shor:
         # the factor p (this can be done in polynomial time).
         
         number_input = run_values.get('number')
+        precision_input = run_values.get('precision')
+        exponentiation_base_input = run_values.get('exponentiation_base')
+        
         number = int(number_input)
+        precision = int(precision_input)
+        exponentiation_base = int(exponentiation_base_input)
         
         task_log(f'SHOR number: {number}')
-        
-        exponentiation_base = 7
-        precision = 8
+        task_log(f'SHOR precision: {precision}')
+        task_log(f'SHOR exponentiation_base: {exponentiation_base}')
         
         circuit = self.estimate_phase(exponentiation_base, precision, task_log)
-    
         circuit.name = 'Shor Circuit'
         
         return circuit
+        
+    
+
         
 
     def estimate_phase(self, exponentiation_base, precision, task_log):
@@ -136,12 +145,6 @@ class Shor:
         return controlled_camod_gate
 
 
-
-# run_values = {'number': '330023'}
-
-# Shor().shor(run_values)
-
-
 def shor(run_values, task_log):
     
     return Shor().shor(run_values, task_log)
@@ -233,3 +236,10 @@ def shor_post_processing(run_data, task_log):
     task_log(f'SHOR non_trivial_factors: {non_trivial_factors}')
     
     return {'Factors': non_trivial_factors}
+    
+    
+    
+
+run_values = {'number': '15', 'precision': '8', 'exponentiation_base': '7'}
+
+Shor().shor(run_values, print)
