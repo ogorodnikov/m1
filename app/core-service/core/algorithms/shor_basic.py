@@ -236,40 +236,34 @@ class Shor:
         
         print(f"SHOR qubit_count {qubit_count}")
 
-        # quantum register where the sequential QFT is performed
-        qft_register = QuantumRegister(2 * qubit_count, name="qft")
+        qft_qubits_count = qubit_count * 2
+        qft_register = QuantumRegister(qft_qubits_count, name="qft")
         
-        # quantum register where the multiplications are made
         multiplication_register = QuantumRegister(qubit_count, name="mul")
         
-        # auxiliary quantum register used in addition and multiplication
         ancilla_register = QuantumRegister(qubit_count + 2, name="anc")
 
-        # Create Quantum Circuit
         circuit = QuantumCircuit(qft_register, 
                                  multiplication_register, 
                                  ancilla_register, 
                                  name=f"Shor(N={number}, a={base})")
 
-        # Create maximal superposition in top register
         circuit.h(qft_register)
-
-        # Initialize down register to 1
         circuit.x(multiplication_register[0])
 
-        # Apply modulo exponentiation
-        modulo_power = self._power_mod_N(qubit_count, number, base)
-        circuit.append(modulo_power, circuit.qubits)
+        modular_exponentiation_circuit = self._power_mod_N(qubit_count, number, base)
+        circuit.append(modular_exponentiation_circuit, circuit.qubits)
 
-        # Apply inverse QFT
-        iqft = QFT(len(qft_register)).inverse().to_gate()
-        circuit.append(iqft, qft_register)
+        iqft_circuit = QFT(qft_qubits_count).inverse().to_gate()
+        circuit.append(iqft_circuit, qft_register)
 
         # Measure
         
-        up_cqreg = ClassicalRegister(2 * qubit_count, name="mea")
-        circuit.add_register(up_cqreg)
-        circuit.measure(qft_register, up_cqreg)
+        measure_bits_count = qubit_count * 2
+        
+        measure_register = ClassicalRegister(measure_bits_count, name="mea")
+        circuit.add_register(measure_register)
+        circuit.measure(qft_register, measure_register)
 
         print(f"SHOR circuit:\n {circuit}")
 
