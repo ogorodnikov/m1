@@ -380,7 +380,8 @@ class Dynamo():
                   'type': 'quantum',
                   'description': 'Determines hidden message encoded in black-box function.\n' +
                                  'Classical algorith complexity is O(N) while quantum is O(1).',
-                  'link': 'https://en.wikipedia.org/wiki/Bernstein%E2%80%93Vazirani_algorithm',
+                  'wiki_link': 'https://en.wikipedia.org/wiki/Bernstein%E2%80%93Vazirani_algorithm',
+                  'qiskit_link': 'https://qiskit.org/textbook/ch-algorithms/bernstein-vazirani.html',
                   'image': b'1010',
                   'parameters': [{'name': 'secret', 'default_value': '1010'}],
                   'color': 'green',
@@ -391,7 +392,7 @@ class Dynamo():
                   'name': 'Extended Euclidean',
                   'type': 'classical',
                   'description': 'Calculates GCD (Greatest common divisor) and Bézout coefficents.',
-                  'link': 'https://en.wikipedia.org/wiki/Extended_Euclidean_algorithm',
+                  'wiki_link': 'https://en.wikipedia.org/wiki/Extended_Euclidean_algorithm',
                   'image': b'1010',
                   'parameters': [{'name': 'a', 'default_value': '345'}, 
                                  {'name': 'b', 'default_value': '455244237'}],
@@ -404,7 +405,7 @@ class Dynamo():
                   'type': 'quantum',
                   'description': 'Finds elements which satisfy constraints determined by black-box function.\n' +
                                  'Classical algorith complexity is O(N) while quantum is O(square root of N).',
-                  'link': 'https://en.wikipedia.org/wiki/Grover%27s_algorithm',
+                  'wiki_link': 'https://en.wikipedia.org/wiki/Grover%27s_algorithm',
                   'image': b'1010',
                   'parameters': [{'name': 'secret_1', 'default_value': '10111'}, 
                                  {'name': 'secret_2', 'default_value': '10101'}],
@@ -416,7 +417,7 @@ class Dynamo():
                   'type': 'quantum',
                   'description': 'Finds elements in sudoku-style matrix using Grover quantum search algorithm.\n' +
                                  'Classical algorith complexity is O(N) while quantum is O(square root of N).',
-                  'link': 'https://en.wikipedia.org/wiki/Grover%27s_algorithm',
+                  'wiki_link': 'https://en.wikipedia.org/wiki/Grover%27s_algorithm',
                   'image': b'1010',
                   'parameters': [
                       {'name': 'row_1', 'default_value': '1.'},
@@ -436,7 +437,7 @@ class Dynamo():
                   'type': 'quantum',
                   'description': 'Determines if black-box function is constant (returns all 1 or all 0) or balanced (returns half of 1 and half of 0).\n' +
                                  'Classical algorith complexity is O(2^N) while quantum is O(1).',
-                  'link': 'https://en.wikipedia.org/wiki/Deutsch%E2%80%93Jozsa_algorithm',
+                  'wiki_link': 'https://en.wikipedia.org/wiki/Deutsch%E2%80%93Jozsa_algorithm',
                   'image': b'1010',
                   'image_url_1': 'https://www.ae-info.org/attach/User/Jozsa_Richard/Jozsa_Richard_small.jpg',
                   'image_url_2': 'https://media.springernature.com/m685/springer-static/image/art%3A10.1038%2F526S16a/MediaObjects/41586_2015_Article_BF526S16a_Figa_HTML.jpg',
@@ -449,7 +450,7 @@ class Dynamo():
                   'type': 'quantum',
                   'description': 'Finds period of black-box function.\n' +
                                  'Classical algorithm complexity is O(2^N) while quantum is O(N^3).',
-                  'link': 'https://en.wikipedia.org/wiki/Simon%27s_problem',
+                  'wiki_link': 'https://en.wikipedia.org/wiki/Simon%27s_problem',
                   'image': b'1010',
                   'parameters': [{'name': 'period', 'default_value': '1010'},
                                  {'name': 'masquerade', 'default_value': 'True'}],
@@ -461,7 +462,7 @@ class Dynamo():
                   'type': 'quantum',
                   'description': 'Applies discrete Fourier transform to quantum state amplitudes.\n' +
                                  'Classical algorithm complexity is O(N*2^N) while quantum is O(N*log(N)).',
-                  'link': 'https://en.wikipedia.org/wiki/Quantum_Fourier_transform',
+                  'wiki_link': 'https://en.wikipedia.org/wiki/Quantum_Fourier_transform',
                   'image': b'1010',
                   'parameters': [{'name': 'number', 'default_value': '101'}],
                   'likes': 432,
@@ -471,7 +472,7 @@ class Dynamo():
                   'name': 'Quantum Phase Estimation',
                   'type': 'quantum',
                   'description': 'Estimates phase for unitary operator.',
-                  'link': 'https://en.wikipedia.org/wiki/Quantum_phase_estimation_algorithm',
+                  'wiki_link': 'https://en.wikipedia.org/wiki/Quantum_phase_estimation_algorithm',
                   'image': b'1010',
                   'parameters': [{'name': 'angle', 'default_value': '0.25'},
                                  {'name': 'precision', 'default_value': '3'}],              
@@ -483,7 +484,7 @@ class Dynamo():
                   'type': 'quantum',
                   'description': 'Factors integers using quantum spectographer and modular exponentiation.\n' +
                                  'Classical algorithm complexity is O(2 ^ square root of N) while quantum is O(N^3).',
-                  'link': 'https://en.wikipedia.org/wiki/Shor%27s_algorithm',
+                  'wiki_link': 'https://en.wikipedia.org/wiki/Shor%27s_algorithm',
                   'image': b'1010',
                   'parameters': [{'name': 'number', 'default_value': '330023'},
                                  {'name': 'skip_statevector', 'default_value': 'True'}],
@@ -495,7 +496,7 @@ class Dynamo():
                   'name': 'Quantum Teleportation',
                   'type': 'quantum',
                   'description': 'Transfers quantum state using 2 entangled qubits and 2 classical bits.',
-                  'link': 'https://en.wikipedia.org/wiki/Quantum_teleportation',
+                  'wiki_link': 'https://en.wikipedia.org/wiki/Quantum_teleportation',
                   'image': b'1010',
                   'parameters': [{'name': 'alpha', 'default_value': '-0.38591-0.11057j'},
                                  {'name': 'beta', 'default_value': '-0.31966+0.85829j'}],
