@@ -12,8 +12,10 @@ from qiskit.utils import QuantumInstance
 
 def run_shor():
     
-    number = 9
+    number = 15
     base = 2
+    
+    task_log = print
     
     print(f"SHOR number: {number}")
     print(f"SHOR number: {number}")
@@ -32,10 +34,9 @@ def run_shor():
     
     shor = Shor(quantum_instance=quantum_instance)
     
-    result = shor.factor(number)
+    result = shor.factor(number, base)
     
-    print(f"SHOR Result factors: {result.factors}")
-    print(f"SHOR Result factors: {result.factors[0]}")
+    print(f"SHOR Result: {result}")
     
     theoretical_qubits_count = 4 * math.ceil(math.log(number, 2)) + 2
     actual_qubits_count = shor.construct_circuit(number).num_qubits
@@ -63,7 +64,6 @@ from qiskit.circuit import Gate, Instruction, ParameterVector
 from qiskit.circuit.library import QFT
 from qiskit.providers import Backend
 from qiskit.providers import BaseBackend
-from qiskit.quantum_info import partial_trace
 from qiskit.utils import summarize_circuits
 from qiskit.utils.arithmetic import is_power
 from qiskit.utils.quantum_instance import QuantumInstance
@@ -399,59 +399,27 @@ class Shor:
         return frac.denominator
         
 
-    def factor(self, N, a = 2):
-
-        if self.quantum_instance is None:
-            raise AlgorithmError(
-                "A QuantumInstance or Backend must be supplied to run the quantum algorithm."
-            )
+    def factor(self, number, base=2):
 
         result = ShorResult()
 
-        # check if the input integer N is a power
-        tf, b, p = is_power(N, return_decomposition=True)
-        if tf:
-            logger.info("The input integer is a power: %s=%s^%s.", N, b, p)
-            result.factors.append(b)
-
         if not result.factors:
-            logger.debug("Running with N=%s and a=%s.", N, a)
 
-            if self._quantum_instance.is_statevector:
-                # Get n value used in Shor's algorithm, to know how many qubits are used
-                n = N.bit_length()
+            circuit = self.construct_circuit(N=number, a=base, measurement=True)
+            
+            execution_job = self._quantum_instance.execute(circuit)
+            counts = execution_job.get_counts(circuit)
+            
+            print(f"SHOR counts: {counts}")
 
-                circuit = self.construct_circuit(N=N, a=a, measurement=False)
-                logger.warning(
-                    "The statevector_simulator might lead to "
-                    "subsequent computation using too much memory."
-                )
-                result = self._quantum_instance.execute(circuit)
-                complete_state_vec = result.get_statevector(circuit)
-                # TODO: this uses too much memory
-                up_qreg_density_mat = partial_trace(complete_state_vec, range(2 * n, 4 * n + 2))
-                up_qreg_density_mat_diag = np.diag(up_qreg_density_mat)
+            for measurement in counts:
+                print(f"SHOR measurement: {measurement}")
+                factors = self._get_factors(number, base, measurement)
 
-                counts = {}
-                for i, v in enumerate(up_qreg_density_mat_diag):
-                    if not v == 0:
-                        counts[bin(int(i))[2:].zfill(2 * n)] = v ** 2
-            else:
-                circuit = self.construct_circuit(N=N, a=a, measurement=True)
-                counts = self._quantum_instance.execute(circuit).get_counts(circuit)
-
-            result.total_counts = len(counts)
-
-            # For each simulation result, print proper info to user
-            # and try to calculate the factors of N
-            for measurement in list(counts.keys()):
-                # Get the x_final value from the final state qubits
-                logger.info("------> Analyzing result %s.", measurement)
-                factors = self._get_factors(N, a, measurement)
-
+                print(f"SHOR factors: {factors}")
+                
                 if factors:
-                    logger.info("Found factors %s from measurement %s.", factors, measurement)
-                    result.successful_counts = result.successful_counts + 1
+                    print("Found factors %s from measurement %s.", factors, measurement)
                     if factors not in result.factors:
                         result.factors.append(factors)
 
