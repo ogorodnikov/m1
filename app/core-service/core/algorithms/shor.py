@@ -4,7 +4,6 @@
 from math import log
 from fractions import Fraction
 
-from qiskit import Aer
 from qiskit import QuantumCircuit
 
 from core.algorithms.qft import build_qft_circuit
