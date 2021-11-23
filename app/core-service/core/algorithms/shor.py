@@ -90,7 +90,7 @@ class Shor:
         inverted_qft_circuit = build_qft_circuit(qubits_count=counting_qubits_count, 
                                                  inverted=True)
                                                  
-        task_log(f'SHOR inverted_qft_circuit: \n{inverted_qft_circuit}')
+        # task_log(f'SHOR inverted_qft_circuit: \n{inverted_qft_circuit}')
             
         circuit.append(inverted_qft_circuit, counting_qubits)
         
@@ -153,7 +153,12 @@ def shor_post_processing(run_data, task_log):
     run_values = run_data.get('Run Values')
     
     counts = run_result.get('Counts')
-    number = run_values.get('number')
+    
+    number_str = run_values.get('number')
+    exponentiation_base_str = run_values.get('exponentiation_base')
+    
+    number = int(number_str)
+    exponentiation_base = int(exponentiation_base_str)
     
     sorted_counts = dict(sorted(counts.items(), key=lambda item: -item[1]))
   
@@ -167,6 +172,7 @@ def shor_post_processing(run_data, task_log):
     task_log(f'SHOR run_values: {run_values}')
 
     task_log(f'SHOR number: {number}')
+    task_log(f'SHOR exponentiation_base: {exponentiation_base}')
     
     task_log(f'SHOR counts: {counts}')
     task_log(f'SHOR sorted_counts: {sorted_counts}')
@@ -195,12 +201,29 @@ def shor_post_processing(run_data, task_log):
     
     task_log(f'SHOR orders: {orders}')
     
+    filtered_orders = list(filter(lambda order: order % 2 == 0, orders))
+
+    task_log(f'SHOR filtered_orders: {filtered_orders}')
+    
     factors = {}
     
-    for order in orders:
+    for order in filtered_orders:
         
-        factor_p = gcd()
+        factor_p_1 = gcd(exponentiation_base ** (order // 2) - 1, number)
+        factor_p_1 = gcd(exponentiation_base ** (order // 2) + 1, number)
         
-        factors.add(gcd())
+        factor_q_1 = number // factor_p_1
+        factor_q_2 = number // factor_p_2
+        
+        task_log(f'SHOR factor_p_1: {factor_p_1}')
+        task_log(f'SHOR factor_p_2: {factor_p_2}')
+        
+        task_log(f'SHOR factor_q_1: {factor_q_1}')
+        task_log(f'SHOR factor_q_2: {factor_q_2}')
+        
+        factors.add(factor_p_1)
+        factors.add(factor_p_2)
+        factors.add(factor_q_1)
+        factors.add(factor_q_2)
         
     return {'Orders': orders}
