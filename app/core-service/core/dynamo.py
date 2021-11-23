@@ -493,7 +493,7 @@ class Dynamo():
                   'wiki_link': 'https://en.wikipedia.org/wiki/Shor%27s_algorithm',
                   'qiskit_link': 'https://qiskit.org/textbook/ch-algorithms/shor.html',
                   'image': b'1010',
-                  'parameters': [{'name': 'number', 'default_value': '330023'},
+                  'parameters': [{'name': 'number', 'default_value': '15'},
                                  {'name': 'exponentiation_base', 'default_value': '7'},
                                  {'name': 'skip_statevector', 'default_value': 'True'}],
                   'color': 'orange',

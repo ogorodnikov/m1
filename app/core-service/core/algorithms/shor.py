@@ -205,12 +205,12 @@ def shor_post_processing(run_data, task_log):
 
     task_log(f'SHOR filtered_orders: {filtered_orders}')
     
-    factors = {}
+    factors = set()
     
     for order in filtered_orders:
         
         factor_p_1 = gcd(exponentiation_base ** (order // 2) - 1, number)
-        factor_p_1 = gcd(exponentiation_base ** (order // 2) + 1, number)
+        factor_p_2 = gcd(exponentiation_base ** (order // 2) + 1, number)
         
         factor_q_1 = number // factor_p_1
         factor_q_2 = number // factor_p_2
@@ -225,5 +225,7 @@ def shor_post_processing(run_data, task_log):
         factors.add(factor_p_2)
         factors.add(factor_q_1)
         factors.add(factor_q_2)
-        
-    return {'Orders': orders}
+
+    task_log(f'SHOR factors: {factors}')
+    
+    return {'Factors': factors}
