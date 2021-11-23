@@ -498,8 +498,8 @@ class Dynamo():
                   'description': 'Transfers quantum state using 2 entangled qubits and 2 classical bits.',
                   'wiki_link': 'https://en.wikipedia.org/wiki/Quantum_teleportation',
                   'image': b'1010',
-                  'parameters': [{'name': 'alpha', 'default_value': '-0.38591-0.11057j'},
-                                 {'name': 'beta', 'default_value': '-0.31966+0.85829j'}],
+                  'parameters': [{'name': 'alpha', 'default_value': 'random'},
+                                 {'name': 'beta', 'default_value': 'random'}],
                   'likes': 824,
                   'enabled': True},
                   

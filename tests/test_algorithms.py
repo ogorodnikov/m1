@@ -11,6 +11,7 @@ from core.algorithms.simon import simon, simon_post_processing
 from core.algorithms.qft import qft
 from core.algorithms.qpe import qpe, qpe_post_processing
 from core.algorithms.shor import shor
+from core.algorithms.teleport import teleport
 
 
 test_data = {
@@ -36,7 +37,9 @@ test_data = {
     qpe: {'angle': '0.25', 'precision': '3'},     
     shor: {'number': '330023'},
     partial(shor): {'number': '11'},
-    partial(shor): {'number': '8'}
+    partial(shor): {'number': '8'},
+    teleport: {'alpha': 'random', 'beta': 'random'},
+    partial(teleport): {'alpha': '1j', 'beta': '0'}
 }
 
 post_processing = {simon: simon_post_processing,

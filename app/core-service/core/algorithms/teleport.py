@@ -50,17 +50,17 @@ def teleport(run_values, task_log):
     
     circuit.barrier()
     
-    # Measure
-    
-    circuit.measure(alice_entangled_qubit, bit_x)
-    circuit.measure(alice_source_qubit, bit_z)
-    
-    circuit.barrier()
-    
     # add Bob gates
     
     circuit.cx(alice_entangled_qubit, bob_entangled_qubit)
     circuit.cz(alice_source_qubit, bob_entangled_qubit)
+
+    circuit.barrier()
+    
+    # Measure
+    
+    circuit.measure(alice_entangled_qubit, bit_x)
+    circuit.measure(alice_source_qubit, bit_z)
     
     
     task_log(f'TELEPORT run_values: {run_values}')
