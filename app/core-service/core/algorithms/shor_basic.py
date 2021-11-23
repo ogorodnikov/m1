@@ -230,42 +230,48 @@ class Shor:
         return circuit.to_instruction()
 
 
-    def construct_circuit(self, N, a, measurement=False):
+    def create_shor_circuit(self, number, base):
 
-        qubit_count = N.bit_length()
+        qubit_count = number.bit_length()
         
         print(f"SHOR qubit_count {qubit_count}")
 
         # quantum register where the sequential QFT is performed
-        up_qreg = QuantumRegister(2 * qubit_count, name="up")
+        qft_register = QuantumRegister(2 * qubit_count, name="qft")
+        
         # quantum register where the multiplications are made
-        down_qreg = QuantumRegister(qubit_count, name="down")
+        multiplication_register = QuantumRegister(qubit_count, name="mul")
+        
         # auxiliary quantum register used in addition and multiplication
-        aux_qreg = QuantumRegister(qubit_count + 2, name="aux")
+        ancilla_register = QuantumRegister(qubit_count + 2, name="anc")
 
         # Create Quantum Circuit
-        circuit = QuantumCircuit(up_qreg, down_qreg, aux_qreg, name=f"Shor(N={N}, a={a})")
+        circuit = QuantumCircuit(qft_register, 
+                                 multiplication_register, 
+                                 ancilla_register, 
+                                 name=f"Shor(N={number}, a={base})")
 
         # Create maximal superposition in top register
-        circuit.h(up_qreg)
+        circuit.h(qft_register)
 
         # Initialize down register to 1
-        circuit.x(down_qreg[0])
+        circuit.x(multiplication_register[0])
 
         # Apply modulo exponentiation
-        modulo_power = self._power_mod_N(qubit_count, N, a)
+        modulo_power = self._power_mod_N(qubit_count, number, base)
         circuit.append(modulo_power, circuit.qubits)
 
         # Apply inverse QFT
-        iqft = QFT(len(up_qreg)).inverse().to_gate()
-        circuit.append(iqft, up_qreg)
+        iqft = QFT(len(qft_register)).inverse().to_gate()
+        circuit.append(iqft, qft_register)
 
-        if measurement:
-            up_cqreg = ClassicalRegister(2 * qubit_count, name="m")
-            circuit.add_register(up_cqreg)
-            circuit.measure(up_qreg, up_cqreg)
+        # Measure
+        
+        up_cqreg = ClassicalRegister(2 * qubit_count, name="mea")
+        circuit.add_register(up_cqreg)
+        circuit.measure(qft_register, up_cqreg)
 
-        logger.info(summarize_circuits(circuit))
+        print(f"SHOR circuit:\n {circuit}")
 
         return circuit
 
@@ -391,7 +397,7 @@ class Shor:
     def factor(self, number, base):
 
         result = set()
-        circuit = self.construct_circuit(N=number, a=base, measurement=True)
+        circuit = self.create_shor_circuit(number=number, base=base)
         
         execution_job = self._quantum_instance.execute(circuit)
         counts = execution_job.get_counts(circuit)
