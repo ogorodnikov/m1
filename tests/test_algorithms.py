@@ -46,18 +46,21 @@ post_processing = {simon: simon_post_processing,
                    qpe: qpe_post_processing}
 
 
-class TestRunResult:
-    def get_counts(self):
-        return {'0': 0, '1': 1}
-
-
 @pytest.mark.parametrize("runner_function, run_values", test_data.items())
-def test_algorithm(runner_function, run_values, stub):
+def test_algorithm(runner_function, run_values, test_run_data, stub):
     
     runner_function(run_values, stub)
     
     if runner_function in post_processing:
         
-        test_run_result = TestRunResult()
         post_processing_function = post_processing[runner_function]
-        post_processing_function(run_result=test_run_result, task_log=stub)
+        post_processing_function(run_data=test_run_data, task_log=stub)
+        
+
+###   Fixtures   ###
+
+@pytest.fixture(scope="module")
+def test_run_data():
+    
+    return {'Result': {'Counts': {'0': 0, '1': 1}}, 
+            'Run Values': {'value_1': 1, 'value_2': 2}}
