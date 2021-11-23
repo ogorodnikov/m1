@@ -2,26 +2,28 @@ from qiskit import QuantumCircuit
 from qiskit import QuantumRegister
 from qiskit import ClassicalRegister
 
+from qiskit.quantum_info import random_statevector
+
 
 def teleport(run_values, task_log):
     
+    alpha = run_values.get('alpha')
+    beta = run_values.get('beta')
     
-    
-    # state = 0, 1
-    # state = -0.38591 - 0.11057j, -0.31966 + 0.85829j
-    
-    state = 2**-0.5, -2**-0.5
+    if 'random' in (alpha, beta):
+        state = random_statevector(dims=2)
+        
+    else:
+        state = complex(alpha), complex(beta)
     
     alice_source_qubit = 0
     alice_entangled_qubit = 1
     bob_entangled_qubit = 2
     
+    quantum_register = QuantumRegister(3, name="q")
+    
     bit_x = 0
     bit_z = 1
-    
-    result = 2
-    
-    quantum_register = QuantumRegister(3, name="q")
     
     classical_register_z = ClassicalRegister(1, name="bit_z")
     classical_register_x = ClassicalRegister(1, name="bit_x")
@@ -48,19 +50,14 @@ def teleport(run_values, task_log):
     
     circuit.barrier()
     
-    # add Bob gates
-    
-    # circuit.x(bob_entangled_qubit).c_if(bit_x, 1)
-    # circuit.z(bob_entangled_qubit).c_if(bit_z, 1)
-    
-
-
-    # measure
+    # Measure
     
     circuit.measure(alice_entangled_qubit, bit_x)
     circuit.measure(alice_source_qubit, bit_z)
     
     circuit.barrier()
+    
+    # add Bob gates
     
     circuit.cx(alice_entangled_qubit, bob_entangled_qubit)
     circuit.cz(alice_source_qubit, bob_entangled_qubit)
@@ -68,6 +65,8 @@ def teleport(run_values, task_log):
     
     task_log(f'TELEPORT run_values: {run_values}')
     
+    task_log(f'TELEPORT alpha: {alpha}')
+    task_log(f'TELEPORT beta: {beta}')
     task_log(f'TELEPORT state: {state}')
     
     task_log(f'TELEPORT alice_source_qubit: {alice_source_qubit}')
