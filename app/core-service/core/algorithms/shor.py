@@ -18,6 +18,12 @@ class Shor:
     
     def shor(self, run_values, task_log):
         
+        ### todo: 
+        # 
+        # Classically determine if N = p^q
+        # for p ≥ 1 and q ≥ 2 and if so return
+        # the factor p (this can be done in polynomial time).
+        
         number_input = run_values.get('number')
         number = int(number_input)
         
@@ -155,7 +161,7 @@ def shor_post_processing(run_result, task_log):
     task_log(f'SHOR top_states: {top_states}')
     task_log(f'SHOR precision: {precision}')
     
-    periods = []
+    orders = []
     
     for state in top_states:
         
@@ -165,16 +171,16 @@ def shor_post_processing(run_result, task_log):
         
         phase_fraction = Fraction(phase).limit_denominator(15)
         
-        period = phase_fraction.denominator
+        order = phase_fraction.denominator
         
-        periods.append(period)
+        orders.append(order)
         
         task_log(f'SHOR state: {state}')
         task_log(f'SHOR state_binary: {state_binary}')
         task_log(f'SHOR phase: {phase}')
         task_log(f'SHOR phase_fraction: {phase_fraction}')
-        task_log(f'SHOR period: {period}')
+        task_log(f'SHOR order: {order}')
     
-    task_log(f'SHOR periods: {periods}')
+    task_log(f'SHOR orders: {orders}')
         
-    return {'Periods': periods}
+    return {'Orders': orders}
