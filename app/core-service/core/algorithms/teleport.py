@@ -10,7 +10,7 @@ def teleport(run_values, task_log):
     # state = 0, 1
     # state = -0.38591 - 0.11057j, -0.31966 + 0.85829j
     
-    state = 2**-0.5, 2**-0.5
+    state = 2**-0.5, -2**-0.5
     
     alice_source_qubit = 0
     alice_entangled_qubit = 1
@@ -18,6 +18,8 @@ def teleport(run_values, task_log):
     
     bit_x = 0
     bit_z = 1
+    
+    result = 2
     
     quantum_register = QuantumRegister(3, name="q")
     
@@ -34,8 +36,8 @@ def teleport(run_values, task_log):
     
     # add Bell pair
     
-    circuit.h(alice_source_qubit)
-    circuit.cx(alice_source_qubit, alice_entangled_qubit)
+    circuit.h(alice_entangled_qubit)
+    circuit.cx(alice_entangled_qubit, bob_entangled_qubit)
     
     circuit.barrier()
     
@@ -46,15 +48,22 @@ def teleport(run_values, task_log):
     
     circuit.barrier()
     
+    # add Bob gates
+    
+    # circuit.x(bob_entangled_qubit).c_if(bit_x, 1)
+    # circuit.z(bob_entangled_qubit).c_if(bit_z, 1)
+    
+
+
     # measure
     
     circuit.measure(alice_entangled_qubit, bit_x)
     circuit.measure(alice_source_qubit, bit_z)
     
-    # add Bob gates
+    circuit.barrier()
     
-    circuit.x(bob_entangled_qubit).c_if(bit_x, 1)
-    circuit.z(bob_entangled_qubit).c_if(bit_z, 1)
+    circuit.cx(alice_entangled_qubit, bob_entangled_qubit)
+    circuit.cz(alice_source_qubit, bob_entangled_qubit)
     
     
     task_log(f'TELEPORT run_values: {run_values}')
