@@ -28,6 +28,10 @@ def run_shor():
         math.gcd(base, number) != 1):
         
         raise ValueError("Incorrect input values")
+        
+    theoretical_qubits_count = 4 * math.ceil(math.log(number, 2)) + 2
+    
+    print(f'SHOR theoretical_qubits_count: {theoretical_qubits_count}')
     
     backend = Aer.get_backend('aer_simulator')
     
@@ -39,12 +43,6 @@ def run_shor():
     
     print(f"SHOR Result: {result}")
     
-    theoretical_qubits_count = 4 * math.ceil(math.log(number, 2)) + 2
-    
-    print(f'SHOR theoretical_qubits_count: {theoretical_qubits_count}')
-
-
-
 
 
 import array
@@ -77,13 +75,22 @@ class Shor:
         
         print(f"SHOR counts: {counts}")
 
-        for measurement in counts:
+        # for measurement in counts:
 
-            factors = self._get_factors(number, base, measurement)
-            result |= set(factors or {})
+        #     factors = self._get_factors(number, base, measurement)
+        #     result |= set(factors or {})
             
-            print(f"SHOR measurement: {measurement}")
-            print(f"SHOR factors: {factors}")
+        #     print(f"SHOR measurement: {measurement}")
+        #     print(f"SHOR factors: {factors}")
+        
+        reversed_counts = {key[::-1]: value for key, value in counts.items()}
+        
+        run_data = {'Result': {'Counts': reversed_counts}, 
+                    'Run Values': {'number': number, 'exponentiation_base': base}}
+        
+        result = self.shor_post_processing(run_data=run_data, task_log=print)
+
+        print(f"SHOR result: {result}")
         
         return result
         
@@ -443,5 +450,95 @@ class Shor:
         print("Numerator:%s \t\t Denominator: %s.", frac.numerator, frac.denominator)
         return frac.denominator
 
+
+
+    def shor_post_processing(self, run_data, task_log):
+    
+        run_result = run_data.get('Result')
+        run_values = run_data.get('Run Values')
+        
+        counts = run_result.get('Counts')
+        
+        number_str = run_values.get('number')
+        exponentiation_base_str = run_values.get('exponentiation_base')
+        
+        number = int(number_str)
+        exponentiation_base = int(exponentiation_base_str)
+        
+        sorted_counts = dict(sorted(counts.items(), key=lambda item: -item[1]))
+      
+        top_states = list(sorted_counts.keys())
+        
+        precision = len(top_states[0])
+        
+    
+        task_log(f'SHOR run_data: {run_data}')
+        task_log(f'SHOR run_result: {run_result}')
+        task_log(f'SHOR run_values: {run_values}')
+    
+        task_log(f'SHOR number: {number}')
+        task_log(f'SHOR exponentiation_base: {exponentiation_base}')
+        
+        task_log(f'SHOR counts: {counts}')
+        task_log(f'SHOR sorted_counts: {sorted_counts}')
+        task_log(f'SHOR top_states: {top_states}')
+        task_log(f'SHOR precision: {precision}')
+        
+        orders = []
+        
+        for state in top_states:
+            
+            state_binary = int(state[::-1], 2)
+            
+            phase = state_binary / 2 ** precision
+            
+            phase_fraction = fractions.Fraction(phase).limit_denominator(15)
+            
+            order = phase_fraction.denominator
+            
+            orders.append(order)
+            
+            task_log(f'SHOR state: {state}')
+            task_log(f'SHOR state_binary: {state_binary}')
+            task_log(f'SHOR phase: {phase}')
+            task_log(f'SHOR phase_fraction: {phase_fraction}')
+            task_log(f'SHOR order: {order}')
+        
+        task_log(f'SHOR orders: {orders}')
+        
+        filtered_orders = list(filter(lambda order: order % 2 == 0, orders))
+    
+        task_log(f'SHOR filtered_orders: {filtered_orders}')
+        
+        factors = set()
+        
+        for order in filtered_orders:
+            
+            factor_p_1 = math.gcd(exponentiation_base ** (order // 2) - 1, number)
+            factor_p_2 = math.gcd(exponentiation_base ** (order // 2) + 1, number)
+            
+            factor_q_1 = number // factor_p_1
+            factor_q_2 = number // factor_p_2
+            
+            task_log(f'SHOR factor_p_1: {factor_p_1}')
+            task_log(f'SHOR factor_p_2: {factor_p_2}')
+            
+            task_log(f'SHOR factor_q_1: {factor_q_1}')
+            task_log(f'SHOR factor_q_2: {factor_q_2}')
+            
+            factors.add(factor_p_1)
+            factors.add(factor_p_2)
+            factors.add(factor_q_1)
+            factors.add(factor_q_2)
+    
+        task_log(f'SHOR factors: {factors}')
+        
+        non_trivial_factors = list(factors - {1, number})
+    
+        task_log(f'SHOR non_trivial_factors: {non_trivial_factors}')
+        
+        return {'Factors': non_trivial_factors}
+        
+        
 
 run_shor()
