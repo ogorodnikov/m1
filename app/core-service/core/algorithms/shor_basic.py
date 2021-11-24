@@ -119,7 +119,7 @@ class Shor:
 
         circuit.measure(qft_register, measure_register)
 
-        print(f"SHOR circuit:\n{circuit}")
+        # print(f"SHOR circuit:\n{circuit}")
 
         return circuit        
 
@@ -175,7 +175,7 @@ class Shor:
             
             modexp_circuit.append(modulo_multiplier, modexp_qubits)
             
-        print(f"SHOR modexp_circuit:\n{modexp_circuit}")
+        # print(f"SHOR modexp_circuit:\n{modexp_circuit}")
         
         return modexp_circuit.to_instruction()
 
@@ -189,7 +189,7 @@ class Shor:
         for i, phase in enumerate(phases):
             phase_adder_circuit.p(phase, i)
             
-        print(f"SHOR phase_adder_circuit:\n{phase_adder_circuit}")
+        # print(f"SHOR phase_adder_circuit:\n{phase_adder_circuit}")
         
         return phase_adder_circuit.to_gate()
         
@@ -219,54 +219,73 @@ class Shor:
             
         phases = angles * np.pi
 
-        print(f"SHOR number: {number}")
-        print(f"SHOR digits: {digits}") 
-        print(f"SHOR phases {phases}")
+        # print(f"SHOR number: {number}")
+        # print(f"SHOR digits: {digits}") 
+        # print(f"SHOR phases {phases}")
         
         return phases
         
-        # [3.14159265 4.71238898 5.49778714 5.89048623 2.94524311]
+       
+    def _controlled_multiple_mod_N(self, n, N, a, c_phi_add_N, iphi_add_N, qft, iqft):
         
-        # SHOR phases [3.141592653589793, 4.71238898038469, 5.497787143782138, 5.890486225480862, 2.945243112740431]
+        ctrl_qreg = QuantumRegister(1, "ctrl")
+        x_qreg = QuantumRegister(n, "x")
+        b_qreg = QuantumRegister(n + 1, "b")
+        flag_qreg = QuantumRegister(1, "flag")
+
+        circuit = QuantumCircuit(ctrl_qreg, x_qreg, b_qreg, flag_qreg, name="cmult_a_mod_N")
         
-        for digit_index, digit in enumerate(digits):
+        angle_params = ParameterVector("angles", length=n + 1)
+        
+        modulo_adder = self._double_controlled_phi_add_mod_N(
+            angle_params, c_phi_add_N, iphi_add_N, qft, iqft
+        )
+
+        def append_adder(adder, constant, idx):
             
-            print(f"digit: {digit}")
-            print(f"digit_index: {digit_index}")
+            partial_constant = (pow(2, idx, N) * constant) % N
             
-            for current_digit_index in range(digit_index + 1):
+            angles = self.get_phases(partial_constant, n + 1)
+            
+            bound = adder.assign_parameters({angle_params: angles})
+            
+            circuit.append(bound, [*ctrl_qreg, x_qreg[idx], *b_qreg, *flag_qreg])
+            
 
-                delta = current_bit - end_bit
-                
-                print(f"    current_bit: {current_bit}")
-                print(f"    delta: {delta}")
-                print(f"    digits[current_bit]: {digits[current_bit]}")
-                
-                if digits[current_bit] == "1":
-                    
-                    phase_fraction = 2 ** delta
-                    angles[end_bit] += phase_fraction
-
-                    print(f"    phase_fraction: {phase_fraction}")                    
-                    print(f"    angles[end_bit]: {angles[end_bit]}")                    
-                    
-        print(f"SHOR angles {angles}")
-        print(f"SHOR angles * np.pi {angles * np.pi}")
+        circuit.append(qft, b_qreg)
         
-        quit()
 
-        return angles * np.pi
+        # perform controlled addition by a on the aux register in Fourier space
+        for i in range(n):
+            append_adder(modulo_adder, a, i)
+
+        circuit.append(iqft, b_qreg)
+        
+
+        # perform controlled subtraction by a in Fourier space on both the aux and down register
+        for i in range(n):
+            circuit.cswap(ctrl_qreg, x_qreg[i], b_qreg[i])
+
+        circuit.append(qft, b_qreg)
+
+        a_inv = self.modinv(a, N)
+        
+        modulo_adder_inv = modulo_adder.inverse()
+        
+        for i in reversed(range(n)):
+            append_adder(modulo_adder_inv, a_inv, i)
+
+        circuit.append(iqft, b_qreg)
+        
+        print(f"SHOR _controlled_multiple_mod_N circuit:\n{circuit}")
+        
+        return circuit.to_instruction()
 
 
-    def _double_controlled_phi_add_mod_N(
-        self,
-        angles: Union[np.ndarray, ParameterVector],
-        c_phi_add_N,
-        iphi_add_N,
-        qft,
-        iqft,
-    ):
+    def _double_controlled_phi_add_mod_N(self, angles, c_phi_add_N, iphi_add_N, qft, iqft):
+        
         """Creates a circuit which implements double-controlled modular addition by a."""
+        
         ctrl_qreg = QuantumRegister(2, "ctrl")
         b_qreg = QuantumRegister(len(angles), "b")
         flag_qreg = QuantumRegister(1, "flag")
@@ -297,74 +316,33 @@ class Shor:
         circuit.append(cc_phi_add_a, [*ctrl_qreg, *b_qreg])
 
         return circuit
-
-    def _controlled_multiple_mod_N(
-        self, n: int, N: int, a: int, c_phi_add_N: Gate, iphi_add_N: Gate, qft: Gate, iqft: Gate
-    ) -> Instruction:
-        """Implements modular multiplication by a as an instruction."""
-        ctrl_qreg = QuantumRegister(1, "ctrl")
-        x_qreg = QuantumRegister(n, "x")
-        b_qreg = QuantumRegister(n + 1, "b")
-        flag_qreg = QuantumRegister(1, "flag")
-
-        circuit = QuantumCircuit(ctrl_qreg, x_qreg, b_qreg, flag_qreg, name="cmult_a_mod_N")
-
-        angle_params = ParameterVector("angles", length=n + 1)
-        modulo_adder = self._double_controlled_phi_add_mod_N(
-            angle_params, c_phi_add_N, iphi_add_N, qft, iqft
-        )
-
-        def append_adder(adder: QuantumCircuit, constant: int, idx: int):
-            partial_constant = (pow(2, idx, N) * constant) % N
-            angles = self.get_phases(partial_constant, n + 1)
-            bound = adder.assign_parameters({angle_params: angles})
-            circuit.append(bound, [*ctrl_qreg, x_qreg[idx], *b_qreg, *flag_qreg])
-
-        circuit.append(qft, b_qreg)
-
-        # perform controlled addition by a on the aux register in Fourier space
-        for i in range(n):
-            append_adder(modulo_adder, a, i)
-
-        circuit.append(iqft, b_qreg)
-
-        # perform controlled subtraction by a in Fourier space on both the aux and down register
-        for i in range(n):
-            circuit.cswap(ctrl_qreg, x_qreg[i], b_qreg[i])
-
-        circuit.append(qft, b_qreg)
-
-        a_inv = pow(a, -1, mod=N) if sys.version_info >= (3, 8) else self.modinv(a, N)
-
-        modulo_adder_inv = modulo_adder.inverse()
-        for i in reversed(range(n)):
-            append_adder(modulo_adder_inv, a_inv, i)
-
-        circuit.append(iqft, b_qreg)
-        
-        # print(f"SHOR _controlled_multiple_mod_N circuit:\n{circuit}")   
-
-        return circuit.to_instruction()
         
 
-    @staticmethod
-    def modinv(a: int, m: int) -> int:
-        """Returns the modular multiplicative inverse of a with respect to the modulus m."""
+    def modinv(self, a, modulus):
+        
+        """Returns the modular multiplicative inverse of a with respect to the modulus."""
+        
+        # pow(a, -1, N) if sys.version_info >= (3, 8) 
 
-        def egcd(a: int, b: int) -> Tuple[int, int, int]:
+        def egcd(a, b):
+            
             if a == 0:
                 return b, 0, 1
+                
             else:
                 g, y, x = egcd(b % a, a)
+                
                 return g, x - (b // a) * y, y
 
-        g, x, _ = egcd(a, m)
+        g, x, _ = egcd(a, modulus)
+        
         if g != 1:
             raise ValueError(
                 "The greatest common divisor of {} and {} is {}, so the "
-                "modular inverse does not exist.".format(a, m, g)
+                "modular inverse does not exist.".format(a, modulus, g)
             )
-        return x % m
+        return x % modulus
+        
 
     def _get_factors(self, N: int, a: int, measurement: str) -> Optional[List[int]]:
         """Apply the continued fractions to find r and the gcd to find the desired factors."""
