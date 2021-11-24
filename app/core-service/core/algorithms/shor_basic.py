@@ -144,7 +144,8 @@ class Shor:
         qft = QFT(basic_qubit_count + 1, do_swaps=False).to_gate()
         iqft = qft.inverse()
         
-        phases = self.get_phases(number, basic_qubit_count + 1)
+        phases_count = basic_qubit_count + 1
+        phases = self.get_phases(number, phases_count)
 
         phase_adder = self.create_phase_adder(phases)
         inverted_phase_adder = phase_adder.inverse()
@@ -181,16 +182,11 @@ class Shor:
 
     def create_phase_adder(self, phases):
         
-        print(f"SHOR phases: {phases}")
-        
         qubits_count = len(phases)
         
         phase_adder_circuit = QuantumCircuit(qubits_count, name="Phase adder")
         
         for i, phase in enumerate(phases):
-            
-            print(f"SHOR phase: {phase}")
-            
             phase_adder_circuit.p(phase, i)
             
         print(f"SHOR phase_adder_circuit:\n{phase_adder_circuit}")
@@ -198,19 +194,52 @@ class Shor:
         return phase_adder_circuit.to_gate()
         
 
-    def get_phases(self, a, n):
-        """Calculates the array of angles to be used in the addition in Fourier Space."""
-        bits_little_endian = (bin(int(a))[2:].zfill(n))[::-1]
+    def get_phases(self, number, phases_count):
+        
+        number_bits = bin(int(number))[2:]
+        number_bits_filled = number_bits.zfill(phases_count)
+        number_bits_reversed = reversed(number_bits_filled)
+        digits = list(map(int, number_bits_reversed))
+        
+        print(f"SHOR number: {number}")
+        print(f"SHOR phases_count: {phases_count}")
+        print(f"SHOR digits: {digits}")
+        
+        angles = np.zeros(phases_count)
+        
+        angles = [sum(digit * 2 ** (j - i) for j, digit 
+                      in enumerate(digits[:i + 1]))
+                  for i, _ in enumerate(digits)]
+        
+        print(f"SHOR angles {angles}")
+                
+        quit()
+        
+        for digit_index, digit in enumerate(digits):
+            
+            print(f"digit: {digit}")
+            print(f"digit_index: {digit_index}")
+            
+            for current_digit_index in range(digit_index + 1):
 
-        angles = np.zeros(n)
-        for i in range(n):
-            for j in range(i + 1):
-                k = i - j
-                if bits_little_endian[j] == "1":
-                    angles[i] += pow(2, -k)
+                delta = current_bit - end_bit
+                
+                print(f"    current_bit: {current_bit}")
+                print(f"    delta: {delta}")
+                print(f"    digits[current_bit]: {digits[current_bit]}")
+                
+                if digits[current_bit] == "1":
                     
-        # print(f"SHOR angles {angles}")
-        # print(f"SHOR angles * np.pi {angles * np.pi}")
+                    phase_fraction = 2 ** delta
+                    angles[end_bit] += phase_fraction
+
+                    print(f"    phase_fraction: {phase_fraction}")                    
+                    print(f"    angles[end_bit]: {angles[end_bit]}")                    
+                    
+        print(f"SHOR angles {angles}")
+        print(f"SHOR angles * np.pi {angles * np.pi}")
+        
+        quit()
 
         return angles * np.pi
 
