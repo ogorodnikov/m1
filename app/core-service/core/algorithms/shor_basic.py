@@ -47,26 +47,22 @@ def run_shor():
 
 
 
-"""Shor's factoring algorithm."""
-
 import array
 import fractions
-import logging
 import math
 import sys
 from typing import Optional, Union, List, Tuple
 
 import numpy as np
 
-from qiskit import ClassicalRegister, QuantumCircuit, QuantumRegister
+
+from qiskit import QuantumCircuit
+from qiskit import QuantumRegister
+from qiskit import ClassicalRegister
+
 from qiskit.circuit import Gate, Instruction, ParameterVector
 from qiskit.circuit.library import QFT
-from qiskit.providers import Backend
-from qiskit.providers import BaseBackend
 from qiskit.utils.quantum_instance import QuantumInstance
-from qiskit.algorithms.exceptions import AlgorithmError
-
-logger = logging.getLogger(__name__)
 
 
 class Shor:
@@ -200,7 +196,7 @@ class Shor:
         return angles * np.pi
 
     @staticmethod
-    def _phi_add_gate(angles: Union[np.ndarray, ParameterVector]) -> Gate:
+    def _phi_add_gate(angles: Union[np.ndarray, ParameterVector]):
         """Gate that performs addition by a in Fourier Space."""
         circuit = QuantumCircuit(len(angles), name="phi_add_a")
         for i, angle in enumerate(angles):
@@ -213,11 +209,11 @@ class Shor:
     def _double_controlled_phi_add_mod_N(
         self,
         angles: Union[np.ndarray, ParameterVector],
-        c_phi_add_N: Gate,
-        iphi_add_N: Gate,
-        qft: Gate,
-        iqft: Gate,
-    ) -> QuantumCircuit:
+        c_phi_add_N,
+        iphi_add_N,
+        qft,
+        iqft,
+    ):
         """Creates a circuit which implements double-controlled modular addition by a."""
         ctrl_qreg = QuantumRegister(2, "ctrl")
         b_qreg = QuantumRegister(len(angles), "b")
@@ -360,7 +356,7 @@ class Shor:
             i += 1
 
             if denominator % 2 == 1:
-                logger.debug("Odd denominator, will try next iteration of continued fractions.")
+                print("Odd denominator, will try next iteration of continued fractions.")
                 continue
 
             # Denominator is even, try to get factors of N
@@ -382,7 +378,7 @@ class Shor:
 
                 # Check if the factors found are trivial factors or are the desired factors
                 if any(factor in {1, N} for factor in (one_factor, other_factor)):
-                    logger.debug("Found just trivial factors, not good enough.")
+                    print("Found just trivial factors, not good enough.")
                     # Check if the number has already been found,
                     # (use i - 1 because i was already incremented)
                     if t[i - 1] == 0:
@@ -392,7 +388,7 @@ class Shor:
                     return sorted((one_factor, other_factor))
 
         # Search for factors failed, write the reason for failure to the debug logs
-        logger.debug(
+        print(
             "Cannot find factors from measurement %s because %s",
             measurement,
             fail_reason or "it took too many attempts.",
@@ -413,8 +409,8 @@ class Shor:
         # Get the denominator from the value obtained
         frac = fractions.Fraction(x_over_T).limit_denominator()
 
-        logger.debug("Approximation number %s of continued fractions:", len(b))
-        logger.debug("Numerator:%s \t\t Denominator: %s.", frac.numerator, frac.denominator)
+        print("Approximation number %s of continued fractions:", len(b))
+        print("Numerator:%s \t\t Denominator: %s.", frac.numerator, frac.denominator)
         return frac.denominator
 
 
