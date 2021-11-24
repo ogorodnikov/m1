@@ -144,11 +144,11 @@ class Shor:
         qft = QFT(basic_qubit_count + 1, do_swaps=False).to_gate()
         iqft = qft.inverse()
         
-        angles = self.get_angles(number, basic_qubit_count + 1)
+        phases = self.get_phases(number, basic_qubit_count + 1)
 
-        phi_adder = self._phi_add_gate(angles)
-        iphi_adder = phi_adder.inverse()
-        controlled_phi_adder = phi_adder.control(1)
+        phase_adder = self.create_phase_adder(phases)
+        inverted_phase_adder = phase_adder.inverse()
+        controlled_phase_adder = phase_adder.control(1)
 
         for i in range(2 * basic_qubit_count):
             
@@ -162,8 +162,8 @@ class Shor:
                 basic_qubit_count, 
                 number, 
                 partial_a,
-                controlled_phi_adder, 
-                iphi_adder, 
+                controlled_phase_adder, 
+                inverted_phase_adder, 
                 qft, 
                 iqft
             )
@@ -177,9 +177,28 @@ class Shor:
         print(f"SHOR modexp_circuit:\n{modexp_circuit}")
         
         return modexp_circuit.to_instruction()
+
+
+    def create_phase_adder(self, phases):
+        
+        print(f"SHOR phases: {phases}")
+        
+        qubits_count = len(phases)
+        
+        phase_adder_circuit = QuantumCircuit(qubits_count, name="Phase adder")
+        
+        for i, phase in enumerate(phases):
+            
+            print(f"SHOR phase: {phase}")
+            
+            phase_adder_circuit.p(phase, i)
+            
+        print(f"SHOR phase_adder_circuit:\n{phase_adder_circuit}")
+        
+        return phase_adder_circuit.to_gate()
         
 
-    def get_angles(self, a, n):
+    def get_phases(self, a, n):
         """Calculates the array of angles to be used in the addition in Fourier Space."""
         bits_little_endian = (bin(int(a))[2:].zfill(n))[::-1]
 
@@ -195,16 +214,6 @@ class Shor:
 
         return angles * np.pi
 
-    @staticmethod
-    def _phi_add_gate(angles: Union[np.ndarray, ParameterVector]):
-        """Gate that performs addition by a in Fourier Space."""
-        circuit = QuantumCircuit(len(angles), name="phi_add_a")
-        for i, angle in enumerate(angles):
-            circuit.p(angle, i)
-            
-        # print(f"SHOR _phi_add_gate circuit:\n{circuit}")
-        
-        return circuit.to_gate()
 
     def _double_controlled_phi_add_mod_N(
         self,
@@ -221,7 +230,7 @@ class Shor:
 
         circuit = QuantumCircuit(ctrl_qreg, b_qreg, flag_qreg, name="ccphi_add_a_mod_N")
 
-        cc_phi_add_a = self._phi_add_gate(angles).control(2)
+        cc_phi_add_a = self.create_phase_adder(angles).control(2)
         cc_iphi_add_a = cc_phi_add_a.inverse()
 
         circuit.append(cc_phi_add_a, [*ctrl_qreg, *b_qreg])
@@ -264,7 +273,7 @@ class Shor:
 
         def append_adder(adder: QuantumCircuit, constant: int, idx: int):
             partial_constant = (pow(2, idx, N) * constant) % N
-            angles = self.get_angles(partial_constant, n + 1)
+            angles = self.get_phases(partial_constant, n + 1)
             bound = adder.assign_parameters({angle_params: angles})
             circuit.append(bound, [*ctrl_qreg, x_qreg[idx], *b_qreg, *flag_qreg])
 
