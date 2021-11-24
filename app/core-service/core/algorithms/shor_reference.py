@@ -111,6 +111,10 @@ class Shor:
                 k = i - j
                 if bits_little_endian[j] == "1":
                     angles[i] += pow(2, -k)
+                    
+        print(angles * np.pi)
+        
+        quit()
 
         return angles * np.pi
 

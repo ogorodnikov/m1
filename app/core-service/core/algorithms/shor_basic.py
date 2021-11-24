@@ -201,19 +201,33 @@ class Shor:
         number_bits_reversed = reversed(number_bits_filled)
         digits = list(map(int, number_bits_reversed))
         
-        print(f"SHOR number: {number}")
-        print(f"SHOR phases_count: {phases_count}")
-        print(f"SHOR digits: {digits}")
-        
+        # phases = [sum(math.pi * digit * 2 ** (j - i) for j, digit in enumerate(digits[:i + 1]))
+        #               for i, _ in enumerate(digits)]
+
         angles = np.zeros(phases_count)
         
-        angles = [sum(digit * 2 ** (j - i) for j, digit 
-                      in enumerate(digits[:i + 1]))
-                  for i, _ in enumerate(digits)]
-        
-        print(f"SHOR angles {angles}")
+        for i in range(len(digits)):
+            
+            angle = 0
+            
+            for j, digit in enumerate(digits[:i + 1]):
                 
-        quit()
+                delta = j - i
+                angle += digit * 2 ** delta
+                
+            angles[i] = angle
+            
+        phases = angles * np.pi
+
+        print(f"SHOR number: {number}")
+        print(f"SHOR digits: {digits}") 
+        print(f"SHOR phases {phases}")
+        
+        return phases
+        
+        # [3.14159265 4.71238898 5.49778714 5.89048623 2.94524311]
+        
+        # SHOR phases [3.141592653589793, 4.71238898038469, 5.497787143782138, 5.890486225480862, 2.945243112740431]
         
         for digit_index, digit in enumerate(digits):
             
