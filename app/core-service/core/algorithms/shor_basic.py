@@ -63,7 +63,6 @@ from qiskit.circuit import Gate, Instruction, ParameterVector
 from qiskit.circuit.library import QFT
 from qiskit.providers import Backend
 from qiskit.providers import BaseBackend
-from qiskit.utils import summarize_circuits
 from qiskit.utils.arithmetic import is_power
 from qiskit.utils.quantum_instance import QuantumInstance
 from qiskit.algorithms.exceptions import AlgorithmError
@@ -190,32 +189,39 @@ class Shor:
         return circuit.to_instruction()
         
 
-    def create_modexp_circuit(self, n, N, a):
-
-        up_qreg = QuantumRegister(2 * n, name="up")
-        down_qreg = QuantumRegister(n, name="down")
-        aux_qreg = QuantumRegister(n + 2, name="aux")
-
-        modexp_circuit = QuantumCircuit(up_qreg, down_qreg, aux_qreg, name=f"{a}^x mod {N}")
-
-        qft = QFT(n + 1, do_swaps=False).to_gate()
+    def create_modexp_circuit(self, number, base):
         
+        basic_qubit_count = number.bit_length()
+        
+        qft_qubits_count = basic_qubit_count * 2
+        mult_qubits_count = basic_qubit_count
+        ancilla_qubits_count = basic_qubit_count + 2
+        
+        qft_register = QuantumRegister(qft_qubits_count, name="qft")
+        mult_register = QuantumRegister(mult_qubits_count, name="mul")
+        ancilla_register = QuantumRegister(ancilla_qubits_count, name="anc")
+
+        modexp_circuit = QuantumCircuit(qft_register, 
+                                        mult_register, 
+                                        ancilla_register,
+                                        name=f"{base}^x mod {number}")
+                                 
+        qft = QFT(basic_qubit_count + 1, do_swaps=False).to_gate()
         iqft = qft.inverse()
-        
 
         # Create gates to perform addition/subtraction by N in Fourier Space
-        phi_add_N = self._phi_add_gate(self._get_angles(N, n + 1))
+        phi_add_N = self._phi_add_gate(self._get_angles(number, basic_qubit_count + 1))
         iphi_add_N = phi_add_N.inverse()
         c_phi_add_N = phi_add_N.control(1)
 
         # Apply the multiplication gates as showed in
         # the report in order to create the exponentiation
-        for i in range(2 * n):
-            partial_a = pow(a, pow(2, i), N)
+        for i in range(2 * basic_qubit_count):
+            partial_a = pow(base, pow(2, i), number)
             modulo_multiplier = self._controlled_multiple_mod_N(
-                n, N, partial_a, c_phi_add_N, iphi_add_N, qft, iqft
+                basic_qubit_count, number, partial_a, c_phi_add_N, iphi_add_N, qft, iqft
             )
-            modexp_circuit.append(modulo_multiplier, [up_qreg[i], *down_qreg, *aux_qreg])
+            modexp_circuit.append(modulo_multiplier, [qft_register[i], *mult_register, *ancilla_register])
             
         print(f"SHOR modexp_circuit:\n{modexp_circuit}")
         
@@ -245,7 +251,7 @@ class Shor:
         circuit.h(qft_register)
         circuit.x(mult_register[0])
 
-        modexp_circuit = self.create_modexp_circuit(basic_qubit_count, number, base)
+        modexp_circuit = self.create_modexp_circuit(number, base)
         circuit.append(modexp_circuit, circuit.qubits)
 
         iqft_circuit = QFT(qft_qubits_count).inverse().to_gate()
@@ -256,6 +262,7 @@ class Shor:
         print(f"SHOR circuit:\n{circuit}")
 
         return circuit
+        
 
     @staticmethod
     def modinv(a: int, m: int) -> int:
@@ -279,13 +286,13 @@ class Shor:
     def _get_factors(self, N: int, a: int, measurement: str) -> Optional[List[int]]:
         """Apply the continued fractions to find r and the gcd to find the desired factors."""
         x_final = int(measurement, 2)
-        logger.info("In decimal, x_final value for this result is: %s.", x_final)
+        print("In decimal, x_final value for this result is: %s.", x_final)
 
         if x_final <= 0:
             fail_reason = "x_final value is <= 0, there are no continued fractions."
         else:
             fail_reason = None
-            logger.debug("Running continued fractions for this case.")
+            print("Running continued fractions for this case.")
 
         # Calculate T and x/T
         T_upper = len(measurement)
