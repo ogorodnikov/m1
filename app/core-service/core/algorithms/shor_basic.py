@@ -4,6 +4,8 @@ from qiskit import Aer
 from qiskit.utils import QuantumInstance
 # from qiskit.algorithms import Shor
 
+from qft import build_qft_circuit
+
 
 """   https://github.com/Qiskit/qiskit-tutorials/blob/0994a317891cf688f55ebed5a06f8a227c8440ac/tutorials/algorithms/08_factorizers.ipynb   """
 """   https://github.com/Qiskit/qiskit-terra/blob/main/qiskit/algorithms/factorizers/shor.py   """
@@ -31,9 +33,9 @@ def run_shor():
     
     quantum_instance = QuantumInstance(backend, shots=1024)
     
-    shor = Shor(quantum_instance=quantum_instance)
+    shor = Shor()
     
-    result = shor.factor(number, base)
+    result = shor.factor(quantum_instance, number, base)
     
     print(f"SHOR Result: {result}")
     
@@ -71,29 +73,6 @@ logger = logging.getLogger(__name__)
 
 class Shor:
 
-    def __init__(self, quantum_instance):
-        """
-        Args:
-            quantum_instance: Quantum Instance or Backend
-        """
-        self._quantum_instance = None
-        if quantum_instance:
-            self.quantum_instance = quantum_instance
-
-    @property
-    def quantum_instance(self) -> Optional[QuantumInstance]:
-        """Returns quantum instance."""
-        return self._quantum_instance
-
-    @quantum_instance.setter
-    def quantum_instance(
-        self, quantum_instance: Union[QuantumInstance, BaseBackend, Backend]
-    ) -> None:
-        """Sets quantum instance."""
-        if isinstance(quantum_instance, (BaseBackend, Backend)):
-            quantum_instance = QuantumInstance(quantum_instance)
-        self._quantum_instance = quantum_instance
-
     @staticmethod
     def _get_angles(a: int, n: int) -> np.ndarray:
         """Calculates the array of angles to be used in the addition in Fourier Space."""
@@ -105,6 +84,9 @@ class Shor:
                 k = i - j
                 if bits_little_endian[j] == "1":
                     angles[i] += pow(2, -k)
+                    
+        # print(f"SHOR angles {angles}")
+        # print(f"SHOR angles * np.pi {angles * np.pi}")
 
         return angles * np.pi
 
@@ -114,6 +96,9 @@ class Shor:
         circuit = QuantumCircuit(len(angles), name="phi_add_a")
         for i, angle in enumerate(angles):
             circuit.p(angle, i)
+            
+        # print(f"SHOR _phi_add_gate circuit:\n{circuit}")
+        
         return circuit.to_gate()
 
     def _double_controlled_phi_add_mod_N(
@@ -199,19 +184,24 @@ class Shor:
             append_adder(modulo_adder_inv, a_inv, i)
 
         circuit.append(iqft, b_qreg)
+        
+        # print(f"SHOR _controlled_multiple_mod_N circuit:\n{circuit}")   
 
         return circuit.to_instruction()
+        
 
-    def _power_mod_N(self, n: int, N: int, a: int) -> Instruction:
-        """Implements modular exponentiation a^x as an instruction."""
+    def create_modexp_circuit(self, n, N, a):
+
         up_qreg = QuantumRegister(2 * n, name="up")
         down_qreg = QuantumRegister(n, name="down")
         aux_qreg = QuantumRegister(n + 2, name="aux")
 
-        circuit = QuantumCircuit(up_qreg, down_qreg, aux_qreg, name=f"{a}^x mod {N}")
+        modexp_circuit = QuantumCircuit(up_qreg, down_qreg, aux_qreg, name=f"{a}^x mod {N}")
 
         qft = QFT(n + 1, do_swaps=False).to_gate()
+        
         iqft = qft.inverse()
+        
 
         # Create gates to perform addition/subtraction by N in Fourier Space
         phi_add_N = self._phi_add_gate(self._get_angles(N, n + 1))
@@ -225,9 +215,11 @@ class Shor:
             modulo_multiplier = self._controlled_multiple_mod_N(
                 n, N, partial_a, c_phi_add_N, iphi_add_N, qft, iqft
             )
-            circuit.append(modulo_multiplier, [up_qreg[i], *down_qreg, *aux_qreg])
-
-        return circuit.to_instruction()
+            modexp_circuit.append(modulo_multiplier, [up_qreg[i], *down_qreg, *aux_qreg])
+            
+        print(f"SHOR modexp_circuit:\n{modexp_circuit}")
+        
+        return modexp_circuit.to_instruction()
 
 
     def create_shor_circuit(self, number, base):
@@ -253,15 +245,15 @@ class Shor:
         circuit.h(qft_register)
         circuit.x(mult_register[0])
 
-        modular_exponentiation_circuit = self._power_mod_N(qubit_count, number, base)
-        circuit.append(modular_exponentiation_circuit, circuit.qubits)
+        modexp_circuit = self.create_modexp_circuit(basic_qubit_count, number, base)
+        circuit.append(modexp_circuit, circuit.qubits)
 
         iqft_circuit = QFT(qft_qubits_count).inverse().to_gate()
         circuit.append(iqft_circuit, qft_register)
 
         circuit.measure(qft_register, measure_register)
 
-        print(f"SHOR circuit:\n {circuit}")
+        print(f"SHOR circuit:\n{circuit}")
 
         return circuit
 
@@ -384,12 +376,12 @@ class Shor:
         return frac.denominator
         
 
-    def factor(self, number, base):
+    def factor(self, quantum_instance, number, base):
 
         result = set()
         circuit = self.create_shor_circuit(number=number, base=base)
         
-        execution_job = self._quantum_instance.execute(circuit)
+        execution_job = quantum_instance.execute(circuit)
         counts = execution_job.get_counts(circuit)
         
         print(f"SHOR counts: {counts}")
