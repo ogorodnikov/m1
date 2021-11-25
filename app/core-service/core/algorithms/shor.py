@@ -22,8 +22,6 @@ class Shor:
     
     def run_shor(self, run_values, task_log):
         
-        run_values = {'number': '15', 'base': '2'}
-        
         number_input = run_values.get('number')
         base_input = run_values.get('base')
         
@@ -142,7 +140,9 @@ class Shor:
             
             modexp_circuit.append(modular_multiplier, modexp_qubits)
             
-        # print(f"SHOR modexp_circuit:\n{modexp_circuit}")
+        print(f"SHOR modexp_circuit:\n{modexp_circuit.decompose()}")
+        
+        quit()
         
         return modexp_circuit.to_instruction()
 
@@ -168,17 +168,12 @@ class Shor:
         number_bits_reversed = reversed(number_bits_filled)
         digits = list(map(int, number_bits_reversed))
         
-        # phases = [sum(math.pi * digit * 2 ** (j - i) for j, digit in enumerate(digits[:i + 1]))
-        #               for i, _ in enumerate(digits)]
-
         angles = np.zeros(phases_count)
         
         for i in range(len(digits)):
-            
             angle = 0
             
             for j, digit in enumerate(digits[:i + 1]):
-                
                 delta = j - i
                 angle += digit * 2 ** delta
                 
@@ -193,26 +188,34 @@ class Shor:
         return phases
         
        
-    def controlled_modular_multiplier(self, n, N, a, c_phi_add_N, iphi_add_N, qft, iqft):
+    def controlled_modular_multiplier(
+            self, 
+            basic_qubit_count, 
+            number, 
+            base, 
+            c_phi_add_N, iphi_add_N, qft, iqft):
         
         ctrl_qreg = QuantumRegister(1, "ctrl")
-        x_qreg = QuantumRegister(n, "x")
-        b_qreg = QuantumRegister(n + 1, "b")
+        x_qreg = QuantumRegister(basic_qubit_count, "x")
+        b_qreg = QuantumRegister(basic_qubit_count + 1, "b")
         flag_qreg = QuantumRegister(1, "flag")
+        
 
-        circuit = QuantumCircuit(ctrl_qreg, x_qreg, b_qreg, flag_qreg, name="cmult_a_mod_N")
+        circuit = QuantumCircuit(
+            ctrl_qreg, x_qreg, b_qreg, flag_qreg, 
+            name="Controlled Modular Multiplier")
         
-        angle_params = ParameterVector("angles", length=n + 1)
+        angle_params = ParameterVector("angles", length=basic_qubit_count + 1)
         
-        modulo_adder = self._double_controlled_phi_add_mod_N(
+        modular_adder = self._double_controlled_phi_add_mod_N(
             angle_params, c_phi_add_N, iphi_add_N, qft, iqft
         )
 
         def append_adder(adder, constant, idx):
             
-            partial_constant = (pow(2, idx, N) * constant) % N
+            partial_constant = (pow(2, idx, number) * constant) % number
             
-            angles = self.get_phases(partial_constant, n + 1)
+            angles = self.get_phases(partial_constant, basic_qubit_count + 1)
             
             bound = adder.assign_parameters({angle_params: angles})
             
@@ -223,24 +226,24 @@ class Shor:
         
 
         # perform controlled addition by a on the aux register in Fourier space
-        for i in range(n):
-            append_adder(modulo_adder, a, i)
+        for i in range(basic_qubit_count):
+            append_adder(modular_adder, base, i)
 
         circuit.append(iqft, b_qreg)
         
 
         # perform controlled subtraction by a in Fourier space on both the aux and down register
-        for i in range(n):
+        for i in range(basic_qubit_count):
             circuit.cswap(ctrl_qreg, x_qreg[i], b_qreg[i])
 
         circuit.append(qft, b_qreg)
 
-        a_inv = self.modular_multiplicative_inverse(a, N)
+        a_inv = self.modular_multiplicative_inverse(base=base, modulus=number)
         
-        modulo_adder_inv = modulo_adder.inverse()
+        modular_adder_inv = modular_adder.inverse()
         
-        for i in reversed(range(n)):
-            append_adder(modulo_adder_inv, a_inv, i)
+        for i in reversed(range(basic_qubit_count)):
+            append_adder(modular_adder_inv, a_inv, i)
 
         circuit.append(iqft, b_qreg)
         
@@ -359,13 +362,16 @@ class Shor:
             factors.add(factor_q1)
             factors.add(factor_q2)
 
-        non_trivial_factors = list(factors - {1, number})
-
+        non_trivial_factors = factors - {1, number}
+        
+        task_log()
         task_log(f'SHOR orders: {orders}')   
         task_log(f'SHOR factors: {factors}')    
         task_log(f'SHOR non_trivial_factors: {non_trivial_factors}')
         
         return {'Factors': non_trivial_factors}
-        
 
-Shor().run_shor({}, print)
+
+run_values = {'number': '15', 'base': '2'}
+
+Shor().run_shor(run_values, print)
