@@ -10,9 +10,11 @@ from core.algorithms.dj import dj
 from core.algorithms.simon import simon, simon_post_processing
 from core.algorithms.qft import qft
 from core.algorithms.qpe import qpe, qpe_post_processing
-from core.algorithms.shor import shor
 from core.algorithms.teleport import teleport
+from core.algorithms.shor import Shor
 
+
+shor = Shor()
 
 test_data = {
     
@@ -34,10 +36,11 @@ test_data = {
     partial(simon): {'period': '0000', 'masquerade': 'True'},
     
     qft: {'number': '101'},
-    qpe: {'angle': '0.25', 'precision': '3'},     
-    shor: {'number': '15'},
+    qpe: {'angle': '0.25', 'precision': '3'},
     teleport: {'alpha': 'random', 'beta': 'random'},
-    partial(teleport): {'alpha': '1j', 'beta': '0'}
+    partial(teleport): {'alpha': '1j', 'beta': '0'},
+    shor.run_shor: {'number': '15'}
+    
 }
 
 post_processing = {simon: simon_post_processing,

@@ -126,7 +126,7 @@ class Shor:
             # print(f"SHOR pow(base, 2**i): {pow(base, 2**i)}")
             # print(f"SHOR partial_a: {partial_a}")
             
-            modulo_multiplier = self._controlled_multiple_mod_N(
+            modular_multiplier = self.controlled_modular_multiplier(
                 basic_qubit_count, 
                 number, 
                 partial_a,
@@ -140,7 +140,7 @@ class Shor:
             
             modexp_qubits = [control_qubit, *mult_register, *ancilla_register]
             
-            modexp_circuit.append(modulo_multiplier, modexp_qubits)
+            modexp_circuit.append(modular_multiplier, modexp_qubits)
             
         # print(f"SHOR modexp_circuit:\n{modexp_circuit}")
         
@@ -193,7 +193,7 @@ class Shor:
         return phases
         
        
-    def _controlled_multiple_mod_N(self, n, N, a, c_phi_add_N, iphi_add_N, qft, iqft):
+    def controlled_modular_multiplier(self, n, N, a, c_phi_add_N, iphi_add_N, qft, iqft):
         
         ctrl_qreg = QuantumRegister(1, "ctrl")
         x_qreg = QuantumRegister(n, "x")
@@ -244,7 +244,7 @@ class Shor:
 
         circuit.append(iqft, b_qreg)
         
-        # print(f"SHOR _controlled_multiple_mod_N circuit:\n{circuit}")
+        # print(f"SHOR controlled_modular_multiplier circuit:\n{circuit}")
         
         return circuit.to_instruction()
 
@@ -368,4 +368,4 @@ class Shor:
         return {'Factors': non_trivial_factors}
         
 
-# Shor().run_shor({}, print)
+Shor().run_shor({}, print)
