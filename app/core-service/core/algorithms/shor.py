@@ -124,7 +124,7 @@ class Shor:
             # print(f"SHOR pow(base, 2**i): {pow(base, 2**i)}")
             # print(f"SHOR partial_a: {partial_a}")
             
-            modular_multiplier = self.controlled_modular_multiplier(
+            controlled_modular_multiplier = self.controlled_modular_multiplier(
                 basic_qubit_count, 
                 number, 
                 partial_a,
@@ -138,11 +138,9 @@ class Shor:
             
             modexp_qubits = [control_qubit, *mult_register, *ancilla_register]
             
-            modexp_circuit.append(modular_multiplier, modexp_qubits)
+            modexp_circuit.append(controlled_modular_multiplier, modexp_qubits)
             
-        print(f"SHOR modexp_circuit:\n{modexp_circuit.decompose()}")
-        
-        quit()
+        print(f"SHOR modexp_circuit:\n{modexp_circuit}")
         
         return modexp_circuit.to_instruction()
 
@@ -193,7 +191,7 @@ class Shor:
             basic_qubit_count, 
             number, 
             base, 
-            c_phi_add_N, iphi_add_N, qft, iqft):
+            controlled_phase_adder, inverted_phase_adder, qft, iqft):
         
         ctrl_qreg = QuantumRegister(1, "ctrl")
         x_qreg = QuantumRegister(basic_qubit_count, "x")
@@ -208,7 +206,7 @@ class Shor:
         angle_params = ParameterVector("angles", length=basic_qubit_count + 1)
         
         modular_adder = self._double_controlled_phi_add_mod_N(
-            angle_params, c_phi_add_N, iphi_add_N, qft, iqft
+            angle_params, controlled_phase_adder, inverted_phase_adder, qft, iqft
         )
 
         def append_adder(adder, constant, idx):
@@ -238,16 +236,18 @@ class Shor:
 
         circuit.append(qft, b_qreg)
 
-        a_inv = self.modular_multiplicative_inverse(base=base, modulus=number)
+        base_inverse = self.modular_multiplicative_inverse(base=base, modulus=number)
         
         modular_adder_inv = modular_adder.inverse()
         
         for i in reversed(range(basic_qubit_count)):
-            append_adder(modular_adder_inv, a_inv, i)
+            append_adder(modular_adder_inv, base_inverse, i)
 
         circuit.append(iqft, b_qreg)
         
-        # print(f"SHOR controlled_modular_multiplier circuit:\n{circuit}")
+        print(f"SHOR controlled_modular_multiplier circuit:\n{circuit}")
+        
+        quit()
         
         return circuit.to_instruction()
 
