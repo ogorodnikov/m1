@@ -3,14 +3,16 @@ import fractions
 import numpy as np
 
 from qiskit import Aer
+from qiskit import execute
 
 from qiskit import QuantumCircuit
 from qiskit import QuantumRegister
 from qiskit import ClassicalRegister
 
-from qiskit.utils import QuantumInstance
 from qiskit.circuit import ParameterVector
 from qiskit.circuit.library import QFT
+
+from qiskit.tools import job_monitor
 
 
 class Shor:
@@ -40,15 +42,17 @@ class Shor:
         
         backend = Aer.get_backend('aer_simulator')
         
-        quantum_instance = QuantumInstance(backend, shots=1024)
-        execution_job = quantum_instance.execute(circuit)
-        counts = execution_job.get_counts(circuit)        
+        job = execute(circuit, backend, shots=1024)
+        
+        job_monitor(job=job, interval=1, line_discipline='\n')
+        
+        counts = job.result().get_counts()        
         
         print(f"SHOR counts: {counts}")
         
-        reversed_counts = {key[::-1]: value for key, value in counts.items()}
+        # reversed_counts = {key[::-1]: value for key, value in counts.items()}
         
-        run_data = {'Result': {'Counts': reversed_counts}, 
+        run_data = {'Result': {'Counts': counts}, 
                     'Run Values': {'number': number, 'base': base}}
         
         result = self.shor_post_processing(run_data=run_data, task_log=print)
@@ -314,27 +318,22 @@ class Shor:
     
     def shor_post_processing(self, run_data, task_log):
     
-        run_result = run_data.get('Result')
-        run_values = run_data.get('Run Values')
-        
-        counts = run_result.get('Counts')
-        
-        number_str = run_values.get('number')
-        base_str = run_values.get('base')
+        number_str = run_data['Run Values']['number']
+        base_str = run_data['Run Values']['base']
+        counts = run_data['Result']['Counts']
         
         number = int(number_str)
         base = int(base_str)
         
         states = list(counts)
         qubits_count = len(states[0])
-        
     
         task_log(f'SHOR run_data: {run_data}')
     
         task_log(f'SHOR number: {number}')
         task_log(f'SHOR base: {base}')
-        
         task_log(f'SHOR counts: {counts}')
+        
         task_log(f'SHOR states: {states}')
         task_log(f'SHOR qubits_count: {qubits_count}')
         
@@ -342,7 +341,7 @@ class Shor:
         
         for state in states:
             
-            state_binary = int(state[::-1], 2)
+            state_binary = int(state, 2)
             
             phase = state_binary / 2 ** qubits_count
             
