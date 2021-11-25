@@ -20,7 +20,7 @@ except ModuleNotFoundError:
 
 class Shor:
     
-    def shor(self, run_values, task_log):
+    def run_shor(self, run_values, task_log):
         
         run_values = {'number': '15', 'base': '2'}
         
@@ -291,17 +291,8 @@ class Shor:
         
         greatest_common_divisor, bezout_s, bezout_t = calculate_egcd(base, modulus)
         
-        print(f"SHOR base, modulus: {base, modulus}")
-        print(f'SHOR greatest_common_divisor: {greatest_common_divisor}')
-        print(f'SHOR bezout_s: {bezout_s}')
-        print(f'SHOR bezout_t: {bezout_t}') 
-        
         if greatest_common_divisor != 1:
-            
-            raise ValueError(
-                f"GCD of {base} and {modulus} is {greatest_common_divisor} - "
-                f"modular inverse does not exist."
-            )
+            raise ValueError(f"Modular inverse does not exist")
                 
         return bezout_s % modulus
 
@@ -341,46 +332,40 @@ class Shor:
             
             orders.append(order)
             
+            task_log()
             task_log(f'SHOR state: {state}')
             task_log(f'SHOR state_binary: {state_binary}')
             task_log(f'SHOR phase: {phase}')
             task_log(f'SHOR phase_fraction: {phase_fraction}')
             task_log(f'SHOR order: {order}')
         
-        filtered_orders = list(filter(lambda order: order % 2 == 0, orders))
-    
         factors = set()
         
-        for order in filtered_orders:
+        for order in orders:
             
-            factor_p_1 = math.gcd(base ** (order // 2) - 1, number)
-            factor_p_2 = math.gcd(base ** (order // 2) + 1, number)
+            factor_p1 = math.gcd(base ** (order // 2) - 1, number)
+            factor_p2 = math.gcd(base ** (order // 2) + 1, number)
             
-            factor_q_1 = number // factor_p_1
-            factor_q_2 = number // factor_p_2
+            factor_q1 = number // factor_p1
+            factor_q2 = number // factor_p2
             
-            task_log(f'SHOR factor_p_1: {factor_p_1}')
-            task_log(f'SHOR factor_p_2: {factor_p_2}')
+            # task_log(f'SHOR factor_p1: {factor_p1}')
+            # task_log(f'SHOR factor_p2: {factor_p2}')
+            # task_log(f'SHOR factor_q1: {factor_q1}')
+            # task_log(f'SHOR factor_q2: {factor_q2}')
             
-            task_log(f'SHOR factor_q_1: {factor_q_1}')
-            task_log(f'SHOR factor_q_2: {factor_q_2}')
-            
-            factors.add(factor_p_1)
-            factors.add(factor_p_2)
-            factors.add(factor_q_1)
-            factors.add(factor_q_2)
+            factors.add(factor_p1)
+            factors.add(factor_p2)
+            factors.add(factor_q1)
+            factors.add(factor_q2)
 
         non_trivial_factors = list(factors - {1, number})
 
         task_log(f'SHOR orders: {orders}')   
-        task_log(f'SHOR filtered_orders: {filtered_orders}')
         task_log(f'SHOR factors: {factors}')    
         task_log(f'SHOR non_trivial_factors: {non_trivial_factors}')
         
         return {'Factors': non_trivial_factors}
         
 
-def shor(run_values, task_log):
-    Shor().shor(run_values, task_log)
-    
-shor_post_processing = Shor().shor_post_processing
+# Shor().run_shor({}, print)

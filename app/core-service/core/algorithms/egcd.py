@@ -24,8 +24,7 @@ def egcd(run_values, task_log):
 
     greatest_common_divisor, bezout_s, bezout_t = calculate_egcd(a, b)
 
-    task_log(f'EGCD Formula:')
-    task_log(f'EGCD a * x + b * y = d')
+    task_log(f'EGCD a * bezout_s + b * bezout_t = greatest_common_divisor')
     task_log(f'EGCD {a} * {bezout_s} + {b} * {bezout_t} = {greatest_common_divisor}')
     
     task_log(f'EGCD a: {a}')

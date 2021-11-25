@@ -27,11 +27,13 @@ from core.algorithms.dj import dj
 from core.algorithms.simon import simon, simon_post_processing
 from core.algorithms.qft import qft
 from core.algorithms.qpe import qpe, qpe_post_processing
-from core.algorithms.shor import shor, shor_post_processing
 from core.algorithms.teleport import teleport
+from core.algorithms.shor import Shor
 
 
 class Runner():
+    
+    shor = Shor()
     
     runner_functions = {'egcd': egcd,
                         'bernvaz': bernvaz,
@@ -41,12 +43,12 @@ class Runner():
                         'simon': simon,
                         'qft': qft,
                         'qpe': qpe,
-                        'shor': shor,
-                        'teleport': teleport}
+                        'teleport': teleport,
+                        'shor': shor.run_shor}
                    
     post_processing = {'simon': simon_post_processing,
                        'qpe': qpe_post_processing,
-                       'shor': shor_post_processing}
+                       'shor': shor.shor_post_processing}
                        
     DEFAULT_TASK_TIMEOUT = 300
 
