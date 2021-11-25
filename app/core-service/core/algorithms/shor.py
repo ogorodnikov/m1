@@ -48,10 +48,6 @@ class Shor:
         
         counts = job.result().get_counts()        
         
-        print(f"SHOR counts: {counts}")
-        
-        # reversed_counts = {key[::-1]: value for key, value in counts.items()}
-        
         run_data = {'Result': {'Counts': counts}, 
                     'Run Values': {'number': number, 'base': base}}
         
@@ -296,17 +292,32 @@ class Shor:
         
         # pow(a, -1, N) if sys.version_info >= (3, 8) 
 
-        def egcd(a, b):
+        # def egcd(a, b):
             
-            if a == 0:
-                return b, 0, 1
+        #     if a == 0:
+        #         return b, 0, 1
                 
-            else:
-                g, y, x = egcd(b % a, a)
+        #     else:
+        #         g, y, x = egcd(b % a, a)
                 
-                return g, x - (b // a) * y, y
+        #         return g, x - (b // a) * y, y
 
-        g, x, _ = egcd(a, modulus)
+        # g, x, y = egcd(a, modulus)
+        
+        # print(f"a, modulus: {a, modulus}")
+        # print(f"g, x, y: {g, x, y}")
+        
+
+        from egcd import calculate_egcd
+        
+        run_values = {'a': a, 'b': modulus}
+        
+        g, x, y = calculate_egcd(a, modulus)
+        
+        print(f"a, modulus: {a, modulus}")
+        print(f"g, x, y: {g, x, y}")
+        
+        quit()
         
         if g != 1:
             raise ValueError(
