@@ -49,7 +49,7 @@ class Shor:
         reversed_counts = {key[::-1]: value for key, value in counts.items()}
         
         run_data = {'Result': {'Counts': reversed_counts}, 
-                    'Run Values': {'number': number, 'exponentiation_base': base}}
+                    'Run Values': {'number': number, 'base': base}}
         
         result = self.shor_post_processing(run_data=run_data, task_log=print)
 
@@ -320,37 +320,31 @@ class Shor:
         counts = run_result.get('Counts')
         
         number_str = run_values.get('number')
-        exponentiation_base_str = run_values.get('exponentiation_base')
+        base_str = run_values.get('base')
         
         number = int(number_str)
-        exponentiation_base = int(exponentiation_base_str)
+        base = int(base_str)
         
-        sorted_counts = dict(sorted(counts.items(), key=lambda item: -item[1]))
-      
-        top_states = list(sorted_counts.keys())
-        
-        precision = len(top_states[0])
+        states = list(counts)
+        qubits_count = len(states[0])
         
     
         task_log(f'SHOR run_data: {run_data}')
-        task_log(f'SHOR run_result: {run_result}')
-        task_log(f'SHOR run_values: {run_values}')
     
         task_log(f'SHOR number: {number}')
-        task_log(f'SHOR exponentiation_base: {exponentiation_base}')
+        task_log(f'SHOR base: {base}')
         
         task_log(f'SHOR counts: {counts}')
-        task_log(f'SHOR sorted_counts: {sorted_counts}')
-        task_log(f'SHOR top_states: {top_states}')
-        task_log(f'SHOR precision: {precision}')
+        task_log(f'SHOR states: {states}')
+        task_log(f'SHOR qubits_count: {qubits_count}')
         
         orders = []
         
-        for state in top_states:
+        for state in states:
             
             state_binary = int(state[::-1], 2)
             
-            phase = state_binary / 2 ** precision
+            phase = state_binary / 2 ** qubits_count
             
             phase_fraction = fractions.Fraction(phase).limit_denominator(15)
             
@@ -364,18 +358,14 @@ class Shor:
             task_log(f'SHOR phase_fraction: {phase_fraction}')
             task_log(f'SHOR order: {order}')
         
-        task_log(f'SHOR orders: {orders}')
-        
         filtered_orders = list(filter(lambda order: order % 2 == 0, orders))
     
-        task_log(f'SHOR filtered_orders: {filtered_orders}')
-        
         factors = set()
         
         for order in filtered_orders:
             
-            factor_p_1 = math.gcd(exponentiation_base ** (order // 2) - 1, number)
-            factor_p_2 = math.gcd(exponentiation_base ** (order // 2) + 1, number)
+            factor_p_1 = math.gcd(base ** (order // 2) - 1, number)
+            factor_p_2 = math.gcd(base ** (order // 2) + 1, number)
             
             factor_q_1 = number // factor_p_1
             factor_q_2 = number // factor_p_2
@@ -390,11 +380,12 @@ class Shor:
             factors.add(factor_p_2)
             factors.add(factor_q_1)
             factors.add(factor_q_2)
-    
-        task_log(f'SHOR factors: {factors}')
-        
+
         non_trivial_factors = list(factors - {1, number})
-    
+
+        task_log(f'SHOR orders: {orders}')   
+        task_log(f'SHOR filtered_orders: {filtered_orders}')
+        task_log(f'SHOR factors: {factors}')    
         task_log(f'SHOR non_trivial_factors: {non_trivial_factors}')
         
         return {'Factors': non_trivial_factors}
