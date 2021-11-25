@@ -1,33 +1,16 @@
 import math
-import numpy as np
-from qiskit import Aer
-from qiskit.utils import QuantumInstance
-# from qiskit.algorithms import Shor
-
-from qft import build_qft_circuit
-
-
-"""   https://github.com/Qiskit/qiskit-tutorials/blob/0994a317891cf688f55ebed5a06f8a227c8440ac/tutorials/algorithms/08_factorizers.ipynb   """
-"""   https://github.com/Qiskit/qiskit-terra/blob/main/qiskit/algorithms/factorizers/shor.py   """
-
-
-
-import array
 import fractions
-import math
-import sys
-from typing import Optional, Union, List, Tuple
-
 import numpy as np
 
+from qiskit import Aer
 
 from qiskit import QuantumCircuit
 from qiskit import QuantumRegister
 from qiskit import ClassicalRegister
 
-from qiskit.circuit import Gate, Instruction, ParameterVector
+from qiskit.utils import QuantumInstance
+from qiskit.circuit import ParameterVector
 from qiskit.circuit.library import QFT
-from qiskit.utils.quantum_instance import QuantumInstance
 
 
 class Shor:
