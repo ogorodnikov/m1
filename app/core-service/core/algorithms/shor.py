@@ -84,7 +84,7 @@ class Shor:
 
         circuit.measure(qft_register, measure_register)
 
-        print(f"SHOR circuit:\n{circuit}")
+        # print(f"SHOR circuit:\n{circuit}")
         
         return circuit        
 
@@ -118,16 +118,16 @@ class Shor:
 
         for i in range(2 * basic_qubit_count):
             
-            partial_a = pow(base, 2**i, number)
+            partial_base = pow(base, 2**i, number)
             
-            # print(f"SHOR i: {i}")
-            # print(f"SHOR pow(base, 2**i): {pow(base, 2**i)}")
-            # print(f"SHOR partial_a: {partial_a}")
+            print(f"SHOR i: {i}")
+            print(f"SHOR number: {number}")
+            print(f"SHOR partial_base = pow(base, 2**i, number): {pow(base, 2**i, number)}")
             
             controlled_modular_multiplier = self.controlled_modular_multiplier(
                 basic_qubit_count, 
                 number, 
-                partial_a,
+                partial_base,
                 controlled_phase_adder, 
                 inverted_phase_adder, 
                 qft, 
@@ -140,7 +140,7 @@ class Shor:
             
             modexp_circuit.append(controlled_modular_multiplier, modexp_qubits)
             
-        print(f"SHOR modexp_circuit:\n{modexp_circuit}")
+        # print(f"SHOR modexp_circuit:\n{modexp_circuit}")
         
         return modexp_circuit.to_instruction()
 
@@ -193,19 +193,20 @@ class Shor:
             base, 
             controlled_phase_adder, inverted_phase_adder, qft, iqft):
         
-        ctrl_qreg = QuantumRegister(1, "ctrl")
+        control_register = QuantumRegister(1, "ctrl")
         x_qreg = QuantumRegister(basic_qubit_count, "x")
         b_qreg = QuantumRegister(basic_qubit_count + 1, "b")
-        flag_qreg = QuantumRegister(1, "flag")
+        flag_register = QuantumRegister(1, "flag")
         
 
         circuit = QuantumCircuit(
-            ctrl_qreg, x_qreg, b_qreg, flag_qreg, 
+            control_register, x_qreg, b_qreg, flag_register, 
             name="Controlled Modular Multiplier")
         
         angle_params = ParameterVector("angles", length=basic_qubit_count + 1)
         
         modular_adder = self._double_controlled_phi_add_mod_N(
+        modular_adder = self.double_controlled_modular_phase_adder(
             angle_params, controlled_phase_adder, inverted_phase_adder, qft, iqft
         )
 
@@ -217,7 +218,9 @@ class Shor:
             
             bound = adder.assign_parameters({angle_params: angles})
             
-            circuit.append(bound, [*ctrl_qreg, x_qreg[idx], *b_qreg, *flag_qreg])
+            adder_qubits = [*control_register, x_qreg[idx], *b_qreg, *flag_register]
+            
+            circuit.append(bound, adder_qubits)
             
 
         circuit.append(qft, b_qreg)
@@ -232,7 +235,7 @@ class Shor:
 
         # perform controlled subtraction by a in Fourier space on both the aux and down register
         for i in range(basic_qubit_count):
-            circuit.cswap(ctrl_qreg, x_qreg[i], b_qreg[i])
+            circuit.cswap(control_register, x_qreg[i], b_qreg[i])
 
         circuit.append(qft, b_qreg)
 
@@ -245,47 +248,49 @@ class Shor:
 
         circuit.append(iqft, b_qreg)
         
-        print(f"SHOR controlled_modular_multiplier circuit:\n{circuit}")
+        # print(f"SHOR controlled_modular_multiplier circuit:\n{circuit}")
         
-        quit()
+        # quit()
         
         return circuit.to_instruction()
 
 
-    def _double_controlled_phi_add_mod_N(self, angles, c_phi_add_N, iphi_add_N, qft, iqft):
+    def double_controlled_modular_phase_adder(self, angles, c_phi_add_N, iphi_add_N, qft, iqft):
         
         """Creates a circuit which implements double-controlled modular addition by a."""
         
-        ctrl_qreg = QuantumRegister(2, "ctrl")
+        control_register = QuantumRegister(2, "ctrl")
         b_qreg = QuantumRegister(len(angles), "b")
-        flag_qreg = QuantumRegister(1, "flag")
+        flag_register = QuantumRegister(1, "flag")
 
-        circuit = QuantumCircuit(ctrl_qreg, b_qreg, flag_qreg, name="ccphi_add_a_mod_N")
+        circuit = QuantumCircuit(
+            control_register, b_qreg, flag_register,
+            name="Double Controlled Modular Phase Adder")
 
         cc_phi_add_a = self.create_phase_adder(angles).control(2)
         cc_iphi_add_a = cc_phi_add_a.inverse()
 
-        circuit.append(cc_phi_add_a, [*ctrl_qreg, *b_qreg])
+        circuit.append(cc_phi_add_a, [*control_register, *b_qreg])
 
         circuit.append(iphi_add_N, b_qreg)
 
         circuit.append(iqft, b_qreg)
-        circuit.cx(b_qreg[-1], flag_qreg[0])
+        circuit.cx(b_qreg[-1], flag_register[0])
         circuit.append(qft, b_qreg)
 
-        circuit.append(c_phi_add_N, [*flag_qreg, *b_qreg])
+        circuit.append(c_phi_add_N, [*flag_register, *b_qreg])
 
-        circuit.append(cc_iphi_add_a, [*ctrl_qreg, *b_qreg])
+        circuit.append(cc_iphi_add_a, [*control_register, *b_qreg])
 
         circuit.append(iqft, b_qreg)
         circuit.x(b_qreg[-1])
-        circuit.cx(b_qreg[-1], flag_qreg[0])
+        circuit.cx(b_qreg[-1], flag_register[0])
         circuit.x(b_qreg[-1])
         circuit.append(qft, b_qreg)
 
-        circuit.append(cc_phi_add_a, [*ctrl_qreg, *b_qreg])
+        circuit.append(cc_phi_add_a, [*control_register, *b_qreg])
         
-        # print(f"SHOR _double_controlled_phi_add_mod_N circuit:\n{circuit}")
+        # print(f"SHOR double_controlled_modular_phase_adder circuit:\n{circuit}")
 
         return circuit
         
