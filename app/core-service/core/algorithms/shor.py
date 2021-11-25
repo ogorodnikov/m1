@@ -12,7 +12,7 @@ from qiskit import ClassicalRegister
 from qiskit.circuit import ParameterVector
 from qiskit.circuit.library import QFT
 
-from qiskit.tools import job_monitor
+from egcd import calculate_egcd
 
 
 class Shor:
@@ -43,8 +43,6 @@ class Shor:
         backend = Aer.get_backend('aer_simulator')
         
         job = execute(circuit, backend, shots=1024)
-        
-        job_monitor(job=job, interval=1, line_discipline='\n')
         
         counts = job.result().get_counts()        
         
@@ -234,7 +232,7 @@ class Shor:
 
         circuit.append(qft, b_qreg)
 
-        a_inv = self.modinv(a, N)
+        a_inv = self.modular_multiplicative_inverse(a, N)
         
         modulo_adder_inv = modulo_adder.inverse()
         
@@ -286,45 +284,23 @@ class Shor:
         return circuit
         
 
-    def modinv(self, a, modulus):
+    def modular_multiplicative_inverse(self, base, modulus):
         
-        """Returns the modular multiplicative inverse of a with respect to the modulus."""
+        greatest_common_divisor, bezout_s, bezout_t = calculate_egcd(base, modulus)
         
-        # pow(a, -1, N) if sys.version_info >= (3, 8) 
-
-        # def egcd(a, b):
+        print(f"SHOR base, modulus: {base, modulus}")
+        print(f'SHOR greatest_common_divisor: {greatest_common_divisor}')
+        print(f'SHOR bezout_s: {bezout_s}')
+        print(f'SHOR bezout_t: {bezout_t}') 
+        
+        if greatest_common_divisor != 1:
             
-        #     if a == 0:
-        #         return b, 0, 1
-                
-        #     else:
-        #         g, y, x = egcd(b % a, a)
-                
-        #         return g, x - (b // a) * y, y
-
-        # g, x, y = egcd(a, modulus)
-        
-        # print(f"a, modulus: {a, modulus}")
-        # print(f"g, x, y: {g, x, y}")
-        
-
-        from egcd import calculate_egcd
-        
-        run_values = {'a': a, 'b': modulus}
-        
-        g, x, y = calculate_egcd(a, modulus)
-        
-        print(f"a, modulus: {a, modulus}")
-        print(f"g, x, y: {g, x, y}")
-        
-        quit()
-        
-        if g != 1:
             raise ValueError(
-                "The greatest common divisor of {} and {} is {}, so the "
-                "modular inverse does not exist.".format(a, modulus, g)
+                f"GCD of {base} and {modulus} is {greatest_common_divisor} - "
+                f"modular inverse does not exist."
             )
-        return x % modulus
+                
+        return bezout_s % modulus
 
     
     def shor_post_processing(self, run_data, task_log):

@@ -10,7 +10,11 @@ def calculate_egcd(a, b):
         old_s, s = s, old_s - quotient * s
         old_t, t = t, old_t - quotient * t
         
-    return old_r, old_s, old_t
+    greatest_common_divisor = old_r
+    bezout_s = old_s
+    bezout_t = old_t
+        
+    return greatest_common_divisor, bezout_s, bezout_t
 
 
 def egcd(run_values, task_log):
@@ -18,15 +22,17 @@ def egcd(run_values, task_log):
     a = int(run_values['a'])
     b = int(run_values['b'])
 
-    old_r, old_s, old_t = calculate_egcd(a, b)
+    greatest_common_divisor, bezout_s, bezout_t = calculate_egcd(a, b)
 
     task_log(f'EGCD Formula:')
     task_log(f'EGCD a * x + b * y = d')
-    task_log(f'EGCD {a} * {old_s} + {b} * {old_t} = {old_r}')
+    task_log(f'EGCD {a} * {old_s} + {b} * {old_t} = {greatest_common_divisor}')
     
     task_log(f'EGCD a: {a}')
     task_log(f'EGCD b: {b}')
-    task_log(f'EGCD GCD (Old remainder): {old_r}')
-    task_log(f'EGCD Bézout coefficients (Old S, Old T): {old_s}, {old_t}')
+    task_log(f'EGCD greatest_common_divisor: {greatest_common_divisor}')
+    task_log(f'EGCD bezout_s: {bezout_s}')
+    task_log(f'EGCD bezout_t: {bezout_t}')
     
-    return {'GCD': old_r, 'Bézout coefficients': (old_s, old_t)}
+    return {'GCD': greatest_common_divisor, 
+            'Bézout coefficients': (bezout_s, bezout_t)}
