@@ -12,7 +12,10 @@ from qiskit import ClassicalRegister
 from qiskit.circuit import ParameterVector
 from qiskit.circuit.library import QFT
 
-from egcd import calculate_egcd
+try:
+    from egcd import calculate_egcd
+except ModuleNotFoundError:
+    from core.algorithms.egcd import calculate_egcd
 
 
 class Shor:
@@ -376,5 +379,8 @@ class Shor:
         
         return {'Factors': non_trivial_factors}
         
-        
-Shor().shor({}, print)
+
+def shor(run_values, task_log):
+    Shor().shor(run_values, task_log)
+    
+shor_post_processing = Shor().shor_post_processing

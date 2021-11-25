@@ -26,7 +26,7 @@ def egcd(run_values, task_log):
 
     task_log(f'EGCD Formula:')
     task_log(f'EGCD a * x + b * y = d')
-    task_log(f'EGCD {a} * {old_s} + {b} * {old_t} = {greatest_common_divisor}')
+    task_log(f'EGCD {a} * {bezout_s} + {b} * {bezout_t} = {greatest_common_divisor}')
     
     task_log(f'EGCD a: {a}')
     task_log(f'EGCD b: {b}')

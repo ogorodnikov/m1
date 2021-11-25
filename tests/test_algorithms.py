@@ -35,9 +35,7 @@ test_data = {
     
     qft: {'number': '101'},
     qpe: {'angle': '0.25', 'precision': '3'},     
-    shor: {'number': '330023'},
-    partial(shor): {'number': '11'},
-    partial(shor): {'number': '8'},
+    shor: {'number': '15'},
     teleport: {'alpha': 'random', 'beta': 'random'},
     partial(teleport): {'alpha': '1j', 'beta': '0'}
 }
