@@ -160,33 +160,50 @@ class Shor:
             qft, iqft
         )
 
-        def append_adder(adder, constant, multiplication_qubit_index):
+        # def append_adder(adder, constant, multiplication_qubit_index):
             
-            partial_constant = (pow(2, multiplication_qubit_index, number) * constant) % number
+        #     partial_constant = (pow(2, multiplication_qubit_index, number) * constant) % number
             
-            phases = self.get_phases(partial_constant, basic_qubit_count + 1)
+        #     phases = self.get_phases(partial_constant, basic_qubit_count + 1)
             
-            bound = adder.assign_parameters({phase_parameters: phases})
+        #     bound = adder.assign_parameters({phase_parameters: phases})
             
-            adder_qubits = [*control_register, multiplication_register[multiplication_qubit_index], *addition_register, *comparison_register]
+        #     adder_qubits = [*control_register, multiplication_register[multiplication_qubit_index], *addition_register, *comparison_register]
             
-            circuit.append(bound, adder_qubits)
-            
+        #     circuit.append(bound, adder_qubits)
+        
+        
+        # compute controlled modular multiplication
 
         circuit.append(qft, addition_register)
         
 
         for multiplication_qubit_index in range(basic_qubit_count):
             
-            append_adder(double_controlled_modular_adder, 
-                         current_base, 
-                         multiplication_qubit_index)
-
+            # append_adder(double_controlled_modular_adder, 
+            #              current_base, 
+            #              multiplication_qubit_index)
+                         
+            partial_constant = (pow(2, multiplication_qubit_index, number) * current_base) % number
+            
+            phases = self.get_phases(partial_constant, basic_qubit_count + 1)
+            
+            adder = double_controlled_modular_adder.assign_parameters({phase_parameters: phases})
+            
+            adder_qubits = [*control_register, 
+                            multiplication_register[multiplication_qubit_index], 
+                            *addition_register, 
+                            *comparison_register]
+            
+            circuit.append(adder, adder_qubits)
+            
         circuit.append(iqft, addition_register)
-        
 
         for i in range(basic_qubit_count):
             circuit.cswap(control_register, multiplication_register[i], addition_register[i])
+            
+            
+        # uncompute controlled modular multiplication
 
         circuit.append(qft, addition_register)
 
@@ -195,9 +212,24 @@ class Shor:
         double_controlled_modular_adder_inverse = double_controlled_modular_adder.inverse()
         
         for multiplication_qubit_index in reversed(range(basic_qubit_count)):
-            append_adder(double_controlled_modular_adder_inverse, 
-                         base_inverse, 
-                         multiplication_qubit_index)
+            
+            # append_adder(double_controlled_modular_adder_inverse, 
+            #              base_inverse, 
+            #              multiplication_qubit_index)
+            
+            partial_constant = (pow(2, multiplication_qubit_index, number) * base_inverse) % number
+            
+            phases = self.get_phases(partial_constant, basic_qubit_count + 1)
+            
+            adder = double_controlled_modular_adder_inverse.assign_parameters({phase_parameters: phases})
+            
+            adder_qubits = [*control_register, 
+                            multiplication_register[multiplication_qubit_index], 
+                            *addition_register, 
+                            *comparison_register]
+            
+            circuit.append(adder, adder_qubits)
+            
 
         circuit.append(iqft, addition_register)
         
@@ -303,9 +335,9 @@ class Shor:
             
         phases = angles * np.pi
 
-        # print(f"SHOR number: {number}")
-        # print(f"SHOR digits: {digits}") 
-        # print(f"SHOR phases {phases}")
+        print(f"SHOR number: {number}")
+        print(f"SHOR digits: {digits}") 
+        print(f"SHOR phases {phases}")
         
         return phases
         
