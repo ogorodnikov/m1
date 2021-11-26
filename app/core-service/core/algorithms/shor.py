@@ -91,9 +91,9 @@ class Shor:
         inverted_phase_adder = phase_adder.inverse()
         controlled_phase_adder = phase_adder.control(1)
 
-        for multipler_uncomputed_index in range(basic_qubit_count * 2):
+        for control_qubit_index in range(basic_qubit_count * 2):
             
-            base_exponent = 2 ** multipler_uncomputed_index
+            base_exponent = 2 ** control_qubit_index
             
             multipler_uncomputed = self.controlled_modular_multiplication_uncomputed(
                 number, 
@@ -103,7 +103,7 @@ class Shor:
                 qft, iqft
             )
             
-            control_qubit = control_register[multipler_uncomputed_index]
+            control_qubit = control_register[control_qubit_index]
             
             multipler_uncomputed_qubits = [control_qubit, 
                                            *multiplication_register, 
