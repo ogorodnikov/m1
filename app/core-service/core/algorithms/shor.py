@@ -160,19 +160,6 @@ class Shor:
             qft, iqft
         )
 
-        # def append_adder(adder, constant, multiplication_qubit_index):
-            
-        #     partial_constant = (pow(2, multiplication_qubit_index, number) * constant) % number
-            
-        #     phases = self.get_phases(partial_constant, basic_qubit_count + 1)
-            
-        #     bound = adder.assign_parameters({phase_parameters: phases})
-            
-        #     adder_qubits = [*control_register, multiplication_register[multiplication_qubit_index], *addition_register, *comparison_register]
-            
-        #     circuit.append(bound, adder_qubits)
-        
-        
         # compute controlled modular multiplication
 
         circuit.append(qft, addition_register)
@@ -180,11 +167,11 @@ class Shor:
 
         for multiplication_qubit_index in range(basic_qubit_count):
             
-            # append_adder(double_controlled_modular_adder, 
-            #              current_base, 
-            #              multiplication_qubit_index)
-                         
-            partial_constant = (pow(2, multiplication_qubit_index, number) * current_base) % number
+            # partial_constant = (pow(2, multiplication_qubit_index, number) * current_base) % number
+            
+            or
+            
+            partial_constant = (current_base * 2 ** multiplication_qubit_index) % number
             
             phases = self.get_phases(partial_constant, basic_qubit_count + 1)
             
@@ -211,13 +198,14 @@ class Shor:
         
         double_controlled_modular_adder_inverse = double_controlled_modular_adder.inverse()
         
+        
         for multiplication_qubit_index in reversed(range(basic_qubit_count)):
             
-            # append_adder(double_controlled_modular_adder_inverse, 
-            #              base_inverse, 
-            #              multiplication_qubit_index)
+            # partial_constant = (pow(2, multiplication_qubit_index, number) * base_inverse) % number
             
-            partial_constant = (pow(2, multiplication_qubit_index, number) * base_inverse) % number
+            or
+            
+            partial_constant = (base_inverse * 2 ** multiplication_qubit_index) % number
             
             phases = self.get_phases(partial_constant, basic_qubit_count + 1)
             
