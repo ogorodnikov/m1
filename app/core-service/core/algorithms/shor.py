@@ -161,30 +161,65 @@ class Shor:
         )
 
         # compute controlled modular multiplication
-
-        circuit.append(qft, addition_register)
         
+        def controlled_modular_multiplication(number, 
+                                              current_base,
+                                              double_controlled_modular_adder,
+                                              qft, iqft):
 
-        for multiplication_qubit_index in range(basic_qubit_count):
+            basic_qubit_count = number.bit_length()
             
-            # partial_constant = (pow(2, multiplication_qubit_index, number) * current_base) % number
+            control_register = QuantumRegister(1, "ctrl")
+            multiplication_register = QuantumRegister(basic_qubit_count, "mult")
+            addition_register = QuantumRegister(basic_qubit_count + 1, "add")
+            comparison_register = QuantumRegister(1, "comp")
             
-            or
+            circuit = QuantumCircuit(
+                control_register, 
+                multiplication_register, 
+                addition_register, 
+                comparison_register, 
+                name="Controlled Modular Multiplication"
+            )
+        
+            circuit.append(qft, addition_register)
+    
+            for multiplication_qubit_index in range(basic_qubit_count):
+                
+                # partial_constant = (pow(2, multiplication_qubit_index, number) * current_base) % number
+                
+                partial_constant = (current_base * 2 ** multiplication_qubit_index) % number
+                
+                phases = self.get_phases(partial_constant, basic_qubit_count + 1)
+                
+                adder = double_controlled_modular_adder.assign_parameters({phase_parameters: phases})
+                
+                adder_qubits = [*control_register, 
+                                multiplication_register[multiplication_qubit_index], 
+                                *addition_register, 
+                                *comparison_register]
+                
+                circuit.append(adder, adder_qubits)
+                
+            circuit.append(iqft, addition_register)
             
-            partial_constant = (current_base * 2 ** multiplication_qubit_index) % number
-            
-            phases = self.get_phases(partial_constant, basic_qubit_count + 1)
-            
-            adder = double_controlled_modular_adder.assign_parameters({phase_parameters: phases})
-            
-            adder_qubits = [*control_register, 
-                            multiplication_register[multiplication_qubit_index], 
-                            *addition_register, 
-                            *comparison_register]
-            
-            circuit.append(adder, adder_qubits)
-            
-        circuit.append(iqft, addition_register)
+            return circuit
+        
+        
+        controlled_modular_multiplier = controlled_modular_multiplication(
+            number, 
+            current_base,
+            double_controlled_modular_adder,
+            qft, iqft
+        )
+        
+        multiplier_qubits = [*control_register, 
+                             *multiplication_register, 
+                             *addition_register, 
+                             *comparison_register]
+        
+        circuit.append(controlled_modular_multiplier, multiplier_qubits)
+        
 
         for i in range(basic_qubit_count):
             circuit.cswap(control_register, multiplication_register[i], addition_register[i])
@@ -203,8 +238,6 @@ class Shor:
             
             # partial_constant = (pow(2, multiplication_qubit_index, number) * base_inverse) % number
             
-            or
-            
             partial_constant = (base_inverse * 2 ** multiplication_qubit_index) % number
             
             phases = self.get_phases(partial_constant, basic_qubit_count + 1)
@@ -221,7 +254,7 @@ class Shor:
 
         circuit.append(iqft, addition_register)
         
-        # print(f"SHOR controlled_modular_exponentiation:\n{circuit}")
+        print(f"SHOR controlled_modular_exponentiation:\n{circuit}")
         
         # quit()
         
