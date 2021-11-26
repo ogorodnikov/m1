@@ -186,14 +186,12 @@ class Shor:
         circuit.append(qft, b_qreg)
         
 
-        # perform controlled addition by a on the aux register
         for i in range(basic_qubit_count):
             append_adder(double_controlled_modular_adder, base, i)
 
         circuit.append(iqft, b_qreg)
         
 
-        # perform controlled subtraction by a on aux and down register
         for i in range(basic_qubit_count):
             circuit.cswap(control_register, x_qreg[i], b_qreg[i])
 
@@ -215,40 +213,41 @@ class Shor:
 
     def double_controlled_modular_adder(self, angles, c_phi_add_N, iphi_add_N, qft, iqft):
         
-        """Creates a circuit which implements double-controlled modular addition by base"""
-        
-        control_register = QuantumRegister(2, "ctrl")
-        b_qreg = QuantumRegister(len(angles), "b")
-        flag_register = QuantumRegister(1, "flag")
+        control_register = QuantumRegister(1, "ctrl")
+        mult_register = QuantumRegister(1, "mult")
+        add_register = QuantumRegister(len(angles), "add")
+        comparison_register = QuantumRegister(1, "comp")
 
         circuit = QuantumCircuit(
-            control_register, b_qreg, flag_register,
+            control_register, mult_register, add_register, comparison_register,
             name="Double Controlled Modular Adder")
 
         cc_phi_add_a = self.create_phase_adder(angles).control(2)
         cc_iphi_add_a = cc_phi_add_a.inverse()
 
-        circuit.append(cc_phi_add_a, [*control_register, *b_qreg])
+        circuit.append(cc_phi_add_a, [*control_register, *mult_register, *add_register])
 
-        circuit.append(iphi_add_N, b_qreg)
+        circuit.append(iphi_add_N, add_register)
 
-        circuit.append(iqft, b_qreg)
-        circuit.cx(b_qreg[-1], flag_register[0])
-        circuit.append(qft, b_qreg)
+        circuit.append(iqft, add_register)
+        circuit.cx(add_register[-1], comparison_register[0])
+        circuit.append(qft, add_register)
 
-        circuit.append(c_phi_add_N, [*flag_register, *b_qreg])
+        circuit.append(c_phi_add_N, [*comparison_register, *add_register])
 
-        circuit.append(cc_iphi_add_a, [*control_register, *b_qreg])
+        circuit.append(cc_iphi_add_a, [*control_register, *mult_register, *add_register])
 
-        circuit.append(iqft, b_qreg)
-        circuit.x(b_qreg[-1])
-        circuit.cx(b_qreg[-1], flag_register[0])
-        circuit.x(b_qreg[-1])
-        circuit.append(qft, b_qreg)
+        circuit.append(iqft, add_register)
+        circuit.x(add_register[-1])
+        circuit.cx(add_register[-1], comparison_register[0])
+        circuit.x(add_register[-1])
+        circuit.append(qft, add_register)
 
-        circuit.append(cc_phi_add_a, [*control_register, *b_qreg])
+        circuit.append(cc_phi_add_a, [*control_register, *mult_register, *add_register])
         
-        # print(f"SHOR double_controlled_modular_adder:\n{circuit}")
+        print(f"SHOR double_controlled_modular_adder:\n{circuit}")
+        
+        # quit()
         
         return circuit
         
