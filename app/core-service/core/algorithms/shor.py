@@ -153,77 +153,7 @@ class Shor:
             name=circuit_name
         )
         
-        def controlled_modular_multiplication(number, 
-                                              current_base,
-                                              controlled_phase_adder, 
-                                              inverted_phase_adder, 
-                                              qft, iqft,
-                                              inverted=False):
-
-            basic_qubit_count = number.bit_length()
-
-            phase_parameters = ParameterVector("phases", length=basic_qubit_count + 1)
-            
-            double_controlled_modular_adder = self.double_controlled_modular_adder(
-                phase_parameters, 
-                controlled_phase_adder, 
-                inverted_phase_adder, 
-                qft, iqft
-            )
-            
-            if inverted:
-                base_inverse = self.modular_multiplicative_inverse(
-                    base=current_base, 
-                    modulus=number)
-                actual_base = base_inverse
-                actual_adder = double_controlled_modular_adder.inverse()
-                
-            else:
-                actual_base = current_base
-                actual_adder = double_controlled_modular_adder
-                
-                
-            
-            control_register = QuantumRegister(1, "ctrl")
-            multiplication_register = QuantumRegister(basic_qubit_count, "mult")
-            addition_register = QuantumRegister(basic_qubit_count + 1, "add")
-            comparison_register = QuantumRegister(1, "comp")
-            
-            circuit_name = "Inverted " * inverted + "Controlled Modular Multiplication"
-            
-            circuit = QuantumCircuit(
-                control_register, 
-                multiplication_register, 
-                addition_register, 
-                comparison_register, 
-                name=circuit_name
-            )
-            
-            circuit.append(qft, addition_register)
-    
-            for multiplication_qubit_index in range(basic_qubit_count):
-                
-                # partial_constant = (pow(2, multiplication_qubit_index, number) * actual_base) % number
-                
-                partial_constant = (actual_base * 2 ** multiplication_qubit_index) % number
-                
-                phases = self.get_phases(partial_constant, basic_qubit_count + 1)
-                
-                adder = actual_adder.assign_parameters({phase_parameters: phases})
-                
-                adder_qubits = [*control_register, 
-                                multiplication_register[multiplication_qubit_index], 
-                                *addition_register, 
-                                *comparison_register]
-                
-                circuit.append(adder, adder_qubits)
-                
-            circuit.append(iqft, addition_register)
-            
-            return circuit
-        
-        
-        controlled_modular_multiplier = controlled_modular_multiplication(
+        controlled_modular_multiplier = self.controlled_modular_multiplication(
             number, 
             current_base,
             controlled_phase_adder, 
@@ -231,7 +161,7 @@ class Shor:
             qft, iqft
         )
 
-        inverted_controlled_modular_multiplier = controlled_modular_multiplication(
+        inverted_controlled_modular_multiplier = self.controlled_modular_multiplication(
             number, 
             current_base,
             controlled_phase_adder, 
@@ -248,7 +178,10 @@ class Shor:
         circuit.append(controlled_modular_multiplier, multiplier_qubits)
 
         for i in range(basic_qubit_count):
-            circuit.cswap(control_register, multiplication_register[i], addition_register[i])
+            
+            circuit.cswap(control_register, 
+                          multiplication_register[i],
+                          addition_register[i])
             
         circuit.append(inverted_controlled_modular_multiplier, multiplier_qubits)
         
@@ -257,6 +190,75 @@ class Shor:
         # quit()
         
         return circuit.to_instruction()
+        
+        
+    def controlled_modular_multiplication(self,
+                                          number, 
+                                          current_base,
+                                          controlled_phase_adder, 
+                                          inverted_phase_adder, 
+                                          qft, iqft,
+                                          inverted=False):
+
+        basic_qubit_count = number.bit_length()
+
+        phase_parameters = ParameterVector("phases", length=basic_qubit_count + 1)
+        
+        double_controlled_modular_adder = self.double_controlled_modular_adder(
+            phase_parameters, 
+            controlled_phase_adder, 
+            inverted_phase_adder, 
+            qft, iqft
+        )
+        
+        if inverted:
+            base_inverse = self.modular_multiplicative_inverse(
+                base=current_base, 
+                modulus=number)
+            actual_base = base_inverse
+            actual_adder = double_controlled_modular_adder.inverse()
+            
+        else:
+            actual_base = current_base
+            actual_adder = double_controlled_modular_adder
+        
+        control_register = QuantumRegister(1, "ctrl")
+        multiplication_register = QuantumRegister(basic_qubit_count, "mult")
+        addition_register = QuantumRegister(basic_qubit_count + 1, "add")
+        comparison_register = QuantumRegister(1, "comp")
+        
+        circuit_name = "Inverted " * inverted + "Controlled Modular Multiplication"
+        
+        circuit = QuantumCircuit(
+            control_register, 
+            multiplication_register, 
+            addition_register, 
+            comparison_register, 
+            name=circuit_name
+        )
+        
+        circuit.append(qft, addition_register)
+
+        for multiplication_qubit_index in range(basic_qubit_count):
+            
+            # partial_constant = (pow(2, multiplication_qubit_index, number) * actual_base) % number
+            
+            partial_constant = (actual_base * 2 ** multiplication_qubit_index) % number
+            
+            phases = self.get_phases(partial_constant, basic_qubit_count + 1)
+            
+            adder = actual_adder.assign_parameters({phase_parameters: phases})
+            
+            adder_qubits = [*control_register, 
+                            multiplication_register[multiplication_qubit_index], 
+                            *addition_register, 
+                            *comparison_register]
+            
+            circuit.append(adder, adder_qubits)
+            
+        circuit.append(iqft, addition_register)
+        
+        return circuit
 
 
     def double_controlled_modular_adder(self, 
