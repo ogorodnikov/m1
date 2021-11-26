@@ -141,30 +141,34 @@ class Shor:
         addition_register = QuantumRegister(basic_qubit_count + 1, "add")
         comparison_register = QuantumRegister(1, "comp")
         
+        modexp_circuit_name = f"{base}^{base_exponent}^x mod {number}"
         
-        # circuit = QuantumCircuit(
-        #     control_register, multiplication_register, addition_register, comparison_register, 
-        #     name="Controlled Modular Multiplier")
-            
         circuit = QuantumCircuit(
-            control_register, multiplication_register, addition_register, comparison_register, 
-            name=f"{base}^{base_exponent}^x mod {number}")
+            control_register, 
+            multiplication_register, 
+            addition_register, 
+            comparison_register, 
+            name=modexp_circuit_name
+        )
         
         phase_parameters = ParameterVector("phases", length=basic_qubit_count + 1)
         
         double_controlled_modular_adder = self.double_controlled_modular_adder(
-            phase_parameters, controlled_phase_adder, inverted_phase_adder, qft, iqft
+            phase_parameters, 
+            controlled_phase_adder, 
+            inverted_phase_adder, 
+            qft, iqft
         )
 
-        def append_adder(adder, constant, idx):
+        def append_adder(adder, constant, multiplication_qubit_index):
             
-            partial_constant = (pow(2, idx, number) * constant) % number
+            partial_constant = (pow(2, multiplication_qubit_index, number) * constant) % number
             
             phases = self.get_phases(partial_constant, basic_qubit_count + 1)
             
             bound = adder.assign_parameters({phase_parameters: phases})
             
-            adder_qubits = [*control_register, multiplication_register[idx], *addition_register, *comparison_register]
+            adder_qubits = [*control_register, multiplication_register[multiplication_qubit_index], *addition_register, *comparison_register]
             
             circuit.append(bound, adder_qubits)
             
@@ -172,8 +176,11 @@ class Shor:
         circuit.append(qft, addition_register)
         
 
-        for i in range(basic_qubit_count):
-            append_adder(double_controlled_modular_adder, current_base, i)
+        for multiplication_qubit_index in range(basic_qubit_count):
+            
+            append_adder(double_controlled_modular_adder, 
+                         current_base, 
+                         multiplication_qubit_index)
 
         circuit.append(iqft, addition_register)
         
@@ -187,8 +194,10 @@ class Shor:
         
         double_controlled_modular_adder_inverse = double_controlled_modular_adder.inverse()
         
-        for i in reversed(range(basic_qubit_count)):
-            append_adder(double_controlled_modular_adder_inverse, base_inverse, i)
+        for multiplication_qubit_index in reversed(range(basic_qubit_count)):
+            append_adder(double_controlled_modular_adder_inverse, 
+                         base_inverse, 
+                         multiplication_qubit_index)
 
         circuit.append(iqft, addition_register)
         
