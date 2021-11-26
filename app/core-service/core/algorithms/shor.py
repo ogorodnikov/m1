@@ -76,27 +76,6 @@ class Shor:
         circuit.h(qft_register)
         circuit.x(mult_register[0])
 
-        # modexp_circuit = self.create_modexp_circuit(number, base)
-        # circuit.append(modexp_circuit, circuit.qubits)
-
-
-    # def create_modexp_circuit(self, number, base):
-        
-    #     basic_qubit_count = number.bit_length()
-        
-    #     qft_qubits_count = basic_qubit_count * 2
-    #     mult_qubits_count = basic_qubit_count
-    #     ancilla_qubits_count = basic_qubit_count + 2
-        
-    #     qft_register = QuantumRegister(qft_qubits_count, name="qft")
-    #     mult_register = QuantumRegister(mult_qubits_count, name="mul")
-    #     ancilla_register = QuantumRegister(ancilla_qubits_count, name="anc")
-
-        modexp_circuit = QuantumCircuit(qft_register, 
-                                        mult_register, 
-                                        ancilla_register,
-                                        name=f"{base}^x mod {number}")
-                                 
         qft = QFT(basic_qubit_count + 1, do_swaps=False).to_gate()
         iqft = qft.inverse()
         
@@ -107,9 +86,11 @@ class Shor:
         inverted_phase_adder = phase_adder.inverse()
         controlled_phase_adder = phase_adder.control(1)
 
-        for i in range(2 * basic_qubit_count):
+        for i in range(basic_qubit_count * 2):
             
-            partial_base = pow(base, 2**i, number)
+            # partial_base = pow(base, 2**i, number)
+            
+            current_base = base ** (2 ** i)
             
             # print(f"SHOR i: {i}")
             # print(f"SHOR number: {number}")
@@ -118,7 +99,8 @@ class Shor:
             controlled_modular_multiplier = self.controlled_modular_multiplier(
                 basic_qubit_count, 
                 number, 
-                partial_base,
+                # partial_base,
+                current_base,
                 controlled_phase_adder, 
                 inverted_phase_adder, 
                 qft, 
@@ -128,8 +110,6 @@ class Shor:
             control_qubit = qft_register[i]
             
             modexp_qubits = [control_qubit, *mult_register, *ancilla_register]
-            
-            # modexp_circuit.append(controlled_modular_multiplier, modexp_qubits)
             
             circuit.append(controlled_modular_multiplier, modexp_qubits)
             
@@ -167,10 +147,20 @@ class Shor:
         b_qreg = QuantumRegister(basic_qubit_count + 1, "b")
         flag_register = QuantumRegister(1, "flag")
         
+        
+        # modexp_circuit = QuantumCircuit(qft_register, 
+        #                                 mult_register, 
+        #                                 ancilla_register,
+        #                                 name=f"{base}^x mod {number}")
+        
 
+        # circuit = QuantumCircuit(
+        #     control_register, x_qreg, b_qreg, flag_register, 
+        #     name="Controlled Modular Multiplier")
+            
         circuit = QuantumCircuit(
             control_register, x_qreg, b_qreg, flag_register, 
-            name="Controlled Modular Multiplier")
+            name=f"{base}^x mod {number}")
         
         phase_parameters = ParameterVector("phases", length=basic_qubit_count + 1)
         
@@ -324,6 +314,12 @@ class Shor:
     def modular_multiplicative_inverse(self, base, modulus):
         
         greatest_common_divisor, bezout_s, bezout_t = calculate_egcd(base, modulus)
+        
+        print(f"SHOR base: {base}")        
+        print(f"SHOR modulus: {modulus}")        
+        print(f"SHOR greatest_common_divisor: {greatest_common_divisor}")        
+        print(f"SHOR bezout_s: {bezout_s}")        
+        print(f"SHOR bezout_t: {bezout_t}")        
         
         if greatest_common_divisor != 1:
             raise ValueError(f"Modular inverse does not exist")
