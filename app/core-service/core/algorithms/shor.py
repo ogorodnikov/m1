@@ -76,7 +76,7 @@ class Shor:
                                  addition_register,
                                  comparison_register,
                                  measure_register,
-                                 name=f"Shor(N={number}, a={base})")
+                                 name=f"Shor Circuit")
 
         circuit.h(control_register)
         circuit.x(multiplication_register[0])
@@ -137,23 +137,17 @@ class Shor:
         basic_qubit_count = number.bit_length()
         
         control_register = QuantumRegister(1, "ctrl")
-        x_qreg = QuantumRegister(basic_qubit_count, "x")
-        b_qreg = QuantumRegister(basic_qubit_count + 1, "b")
-        flag_register = QuantumRegister(1, "flag")
+        multiplication_register = QuantumRegister(basic_qubit_count, "mult")
+        addition_register = QuantumRegister(basic_qubit_count + 1, "add")
+        comparison_register = QuantumRegister(1, "comp")
         
         
-        # modexp_circuit = QuantumCircuit(qft_register, 
-        #                                 mult_register, 
-        #                                 ancilla_register,
-        #                                 name=f"{base}^x mod {number}")
-        
-
         # circuit = QuantumCircuit(
-        #     control_register, x_qreg, b_qreg, flag_register, 
+        #     control_register, multiplication_register, addition_register, comparison_register, 
         #     name="Controlled Modular Multiplier")
             
         circuit = QuantumCircuit(
-            control_register, x_qreg, b_qreg, flag_register, 
+            control_register, multiplication_register, addition_register, comparison_register, 
             name=f"{base}^{base_exponent}^x mod {number}")
         
         phase_parameters = ParameterVector("phases", length=basic_qubit_count + 1)
@@ -170,24 +164,24 @@ class Shor:
             
             bound = adder.assign_parameters({phase_parameters: phases})
             
-            adder_qubits = [*control_register, x_qreg[idx], *b_qreg, *flag_register]
+            adder_qubits = [*control_register, multiplication_register[idx], *addition_register, *comparison_register]
             
             circuit.append(bound, adder_qubits)
             
 
-        circuit.append(qft, b_qreg)
+        circuit.append(qft, addition_register)
         
 
         for i in range(basic_qubit_count):
             append_adder(double_controlled_modular_adder, current_base, i)
 
-        circuit.append(iqft, b_qreg)
+        circuit.append(iqft, addition_register)
         
 
         for i in range(basic_qubit_count):
-            circuit.cswap(control_register, x_qreg[i], b_qreg[i])
+            circuit.cswap(control_register, multiplication_register[i], addition_register[i])
 
-        circuit.append(qft, b_qreg)
+        circuit.append(qft, addition_register)
 
         base_inverse = self.modular_multiplicative_inverse(base=current_base, modulus=number)
         
@@ -196,9 +190,11 @@ class Shor:
         for i in reversed(range(basic_qubit_count)):
             append_adder(double_controlled_modular_adder_inverse, base_inverse, i)
 
-        circuit.append(iqft, b_qreg)
+        circuit.append(iqft, addition_register)
         
         # print(f"SHOR controlled_modular_exponentiation:\n{circuit}")
+        
+        # quit()
         
         return circuit.to_instruction()
 
