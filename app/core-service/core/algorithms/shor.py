@@ -153,22 +153,23 @@ class Shor:
             name=circuit_name
         )
         
-        phase_parameters = ParameterVector("phases", length=basic_qubit_count + 1)
-        
-        double_controlled_modular_adder = self.double_controlled_modular_adder(
-            phase_parameters, 
-            controlled_phase_adder, 
-            inverted_phase_adder, 
-            qft, iqft
-        )
-
         def controlled_modular_multiplication(number, 
                                               current_base,
-                                              double_controlled_modular_adder,
+                                              controlled_phase_adder, 
+                                              inverted_phase_adder, 
                                               qft, iqft,
                                               inverted=False):
 
             basic_qubit_count = number.bit_length()
+
+            phase_parameters = ParameterVector("phases", length=basic_qubit_count + 1)
+            
+            double_controlled_modular_adder = self.double_controlled_modular_adder(
+                phase_parameters, 
+                controlled_phase_adder, 
+                inverted_phase_adder, 
+                qft, iqft
+            )
             
             if inverted:
                 base_inverse = self.modular_multiplicative_inverse(
@@ -197,7 +198,7 @@ class Shor:
                 comparison_register, 
                 name=circuit_name
             )
-        
+            
             circuit.append(qft, addition_register)
     
             for multiplication_qubit_index in range(basic_qubit_count):
@@ -225,14 +226,16 @@ class Shor:
         controlled_modular_multiplier = controlled_modular_multiplication(
             number, 
             current_base,
-            double_controlled_modular_adder,
+            controlled_phase_adder, 
+            inverted_phase_adder, 
             qft, iqft
         )
 
         inverted_controlled_modular_multiplier = controlled_modular_multiplication(
             number, 
             current_base,
-            double_controlled_modular_adder,
+            controlled_phase_adder, 
+            inverted_phase_adder,
             qft, iqft,
             inverted=True
         )
@@ -248,37 +251,6 @@ class Shor:
             circuit.cswap(control_register, multiplication_register[i], addition_register[i])
             
         circuit.append(inverted_controlled_modular_multiplier, multiplier_qubits)
-        
-        
-        
-        # uncompute controlled modular multiplication
-        
-        # circuit.append(qft, addition_register)
-
-        # base_inverse = self.modular_multiplicative_inverse(base=current_base, modulus=number)
-        
-        # double_controlled_modular_adder_inverse = double_controlled_modular_adder.inverse()
-        
-        
-        # for multiplication_qubit_index in reversed(range(basic_qubit_count)):
-            
-        #     # partial_constant = (pow(2, multiplication_qubit_index, number) * base_inverse) % number
-            
-        #     partial_constant = (base_inverse * 2 ** multiplication_qubit_index) % number
-            
-        #     phases = self.get_phases(partial_constant, basic_qubit_count + 1)
-            
-        #     adder = double_controlled_modular_adder_inverse.assign_parameters({phase_parameters: phases})
-            
-        #     adder_qubits = [*control_register, 
-        #                     multiplication_register[multiplication_qubit_index], 
-        #                     *addition_register, 
-        #                     *comparison_register]
-            
-        #     circuit.append(adder, adder_qubits)
-            
-
-        # circuit.append(iqft, addition_register)
         
         print(f"SHOR controlled_modular_multiplication_uncomputed:\n{circuit}")
         
