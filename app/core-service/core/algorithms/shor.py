@@ -91,11 +91,11 @@ class Shor:
         inverted_phase_adder = phase_adder.inverse()
         controlled_phase_adder = phase_adder.control(1)
 
-        for modexp_index in range(basic_qubit_count * 2):
+        for multipler_uncomputed_index in range(basic_qubit_count * 2):
             
-            base_exponent = 2 ** modexp_index
+            base_exponent = 2 ** multipler_uncomputed_index
             
-            controlled_modexp = self.controlled_modular_exponentiation(
+            multipler_uncomputed = self.controlled_modular_multiplication_uncomputed(
                 number, 
                 base, base_exponent,
                 controlled_phase_adder, 
@@ -103,14 +103,14 @@ class Shor:
                 qft, iqft
             )
             
-            control_qubit = control_register[modexp_index]
+            control_qubit = control_register[multipler_uncomputed_index]
             
-            modexp_qubits = [control_qubit, 
-                             *multiplication_register, 
-                             *addition_register,
-                             *comparison_register]
+            multipler_uncomputed_qubits = [control_qubit, 
+                                           *multiplication_register, 
+                                           *addition_register,
+                                           *comparison_register]
             
-            circuit.append(controlled_modexp, modexp_qubits)
+            circuit.append(multipler_uncomputed, multipler_uncomputed_qubits)
             
         
         final_iqft_circuit = QFT(control_qubits_count).inverse().to_gate()
@@ -125,12 +125,14 @@ class Shor:
         return circuit 
         
        
-    def controlled_modular_exponentiation(self,
-                                          number, 
-                                          base, base_exponent,
-                                          controlled_phase_adder, 
-                                          inverted_phase_adder, 
-                                          qft, iqft):
+    def controlled_modular_multiplication_uncomputed(
+            self,
+            number, 
+            base, base_exponent,
+            controlled_phase_adder, 
+            inverted_phase_adder, 
+            qft, iqft
+        ):
 
         current_base = base ** base_exponent
         
@@ -141,7 +143,7 @@ class Shor:
         addition_register = QuantumRegister(basic_qubit_count + 1, "add")
         comparison_register = QuantumRegister(1, "comp")
         
-        modexp_circuit_name = f"{base}^{base_exponent}^x mod {number}"
+        modexp_circuit_name = f"{base}^{base_exponent}*x mod {number}"
         
         circuit = QuantumCircuit(
             control_register, 
