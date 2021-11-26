@@ -86,33 +86,23 @@ class Shor:
         inverted_phase_adder = phase_adder.inverse()
         controlled_phase_adder = phase_adder.control(1)
 
-        for i in range(basic_qubit_count * 2):
+        for modexp_index in range(basic_qubit_count * 2):
             
-            # partial_base = pow(base, 2**i, number)
+            base_exponent = 2 ** modexp_index
             
-            current_base = base ** (2 ** i)
-            
-            # print(f"SHOR i: {i}")
-            # print(f"SHOR number: {number}")
-            # print(f"SHOR partial_base = pow(base, 2**i, number): {pow(base, 2**i, number)}")
-            
-            controlled_modular_multiplier = self.controlled_modular_multiplier(
-                basic_qubit_count, 
+            controlled_modexp = self.controlled_modular_exponentiation(
                 number, 
-                # partial_base,
-                current_base,
+                base, base_exponent,
                 controlled_phase_adder, 
                 inverted_phase_adder, 
-                qft, 
-                iqft
+                qft, iqft
             )
             
-            control_qubit = qft_register[i]
+            control_qubit = qft_register[modexp_index]
             
             modexp_qubits = [control_qubit, *mult_register, *ancilla_register]
             
-            circuit.append(controlled_modular_multiplier, modexp_qubits)
-            
+            circuit.append(controlled_modexp, modexp_qubits)
             
         
         final_iqft_circuit = QFT(qft_qubits_count).inverse().to_gate()
@@ -126,21 +116,17 @@ class Shor:
         
         return circuit 
         
-        
-            
-        # print(f"SHOR modexp_circuit:\n{modexp_circuit}")
-        
-        # quit()
-        
-        # return modexp_circuit.to_instruction()
-        
        
-    def controlled_modular_multiplier(
-            self, 
-            basic_qubit_count, 
-            number, 
-            base, 
-            controlled_phase_adder, inverted_phase_adder, qft, iqft):
+    def controlled_modular_exponentiation(self,
+                                          number, 
+                                          base, base_exponent,
+                                          controlled_phase_adder, 
+                                          inverted_phase_adder, 
+                                          qft, iqft):
+
+        current_base = base ** base_exponent
+        
+        basic_qubit_count = number.bit_length()
         
         control_register = QuantumRegister(1, "ctrl")
         x_qreg = QuantumRegister(basic_qubit_count, "x")
@@ -160,7 +146,7 @@ class Shor:
             
         circuit = QuantumCircuit(
             control_register, x_qreg, b_qreg, flag_register, 
-            name=f"{base}^x mod {number}")
+            name=f"{base}^{base_exponent}^x mod {number}")
         
         phase_parameters = ParameterVector("phases", length=basic_qubit_count + 1)
         
@@ -185,7 +171,7 @@ class Shor:
         
 
         for i in range(basic_qubit_count):
-            append_adder(double_controlled_modular_adder, base, i)
+            append_adder(double_controlled_modular_adder, current_base, i)
 
         circuit.append(iqft, b_qreg)
         
@@ -195,7 +181,7 @@ class Shor:
 
         circuit.append(qft, b_qreg)
 
-        base_inverse = self.modular_multiplicative_inverse(base=base, modulus=number)
+        base_inverse = self.modular_multiplicative_inverse(base=current_base, modulus=number)
         
         double_controlled_modular_adder_inverse = double_controlled_modular_adder.inverse()
         
@@ -204,7 +190,9 @@ class Shor:
 
         circuit.append(iqft, b_qreg)
         
-        # print(f"SHOR controlled_modular_multiplier:\n{circuit}")
+        print(f"SHOR controlled_modular_exponentiation:\n{circuit}")
+        
+        quit()
         
         return circuit.to_instruction()
 
@@ -315,11 +303,11 @@ class Shor:
         
         greatest_common_divisor, bezout_s, bezout_t = calculate_egcd(base, modulus)
         
-        print(f"SHOR base: {base}")        
-        print(f"SHOR modulus: {modulus}")        
-        print(f"SHOR greatest_common_divisor: {greatest_common_divisor}")        
-        print(f"SHOR bezout_s: {bezout_s}")        
-        print(f"SHOR bezout_t: {bezout_t}")        
+        # print(f"SHOR base: {base}")        
+        # print(f"SHOR modulus: {modulus}")        
+        # print(f"SHOR greatest_common_divisor: {greatest_common_divisor}")        
+        # print(f"SHOR bezout_s: {bezout_s}")        
+        # print(f"SHOR bezout_t: {bezout_t}")        
         
         if greatest_common_divisor != 1:
             raise ValueError(f"Modular inverse does not exist")

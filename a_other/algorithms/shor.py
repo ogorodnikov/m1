@@ -25,3 +25,10 @@
     modexp_circuit.decompose().draw(output='mpl', scale=0.5, filename=circuit_figure_path)
     
     # figure.savefig(circuit_figure_path, bbox_inches='tight', style=style)
+    
+    
+    
+    
+    ###   modexp   ###
+    
+    # partial_base = pow(base, 2**i, number)
