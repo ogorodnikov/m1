@@ -221,7 +221,7 @@ class Shor:
         mult_register = QuantumRegister(1, "mult")
         add_register = QuantumRegister(len(phase_parameters), "add")
         comparison_register = QuantumRegister(1, "comp")
-
+        
         circuit = QuantumCircuit(
             control_register, 
             mult_register, 
@@ -234,26 +234,38 @@ class Shor:
         double_controlled_adder = adder_with_parameters.control(2)
         
         inverted_double_controlled_adder = double_controlled_adder.inverse()
+        
+        
+        # compute modular addition
 
-        circuit.append(double_controlled_adder, [*control_register, *mult_register, *add_register])
+        circuit.append(double_controlled_adder, [*control_register, 
+                                                 *mult_register, 
+                                                 *add_register])
 
         circuit.append(inverted_phase_adder, add_register)
-
         circuit.append(iqft, add_register)
+        
         circuit.cx(add_register[-1], comparison_register[0])
+        
         circuit.append(qft, add_register)
+        circuit.append(controlled_phase_adder, [*comparison_register, 
+                                                *add_register])
+        
+        # uncompute modular addition
 
-        circuit.append(controlled_phase_adder, [*comparison_register, *add_register])
-
-        circuit.append(inverted_double_controlled_adder, [*control_register, *mult_register, *add_register])
-
+        circuit.append(inverted_double_controlled_adder, [*control_register, 
+                                                          *mult_register, 
+                                                          *add_register])
         circuit.append(iqft, add_register)
+        
         circuit.x(add_register[-1])
         circuit.cx(add_register[-1], comparison_register[0])
         circuit.x(add_register[-1])
+        
         circuit.append(qft, add_register)
-
-        circuit.append(double_controlled_adder, [*control_register, *mult_register, *add_register])
+        circuit.append(double_controlled_adder, [*control_register, 
+                                                 *mult_register, 
+                                                 *add_register])
         
         print(f"SHOR double_controlled_modular_adder:\n{circuit}")
         
