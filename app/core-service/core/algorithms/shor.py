@@ -57,24 +57,29 @@ class Shor:
 
         basic_qubit_count = number.bit_length()
         
-        qft_qubits_count = basic_qubit_count * 2
-        mult_qubits_count = basic_qubit_count
-        ancilla_qubits_count = basic_qubit_count + 2
+        control_qubits_count = basic_qubit_count * 2
+        multiplication_qubits_count = basic_qubit_count
+        addition_qubits_count = basic_qubit_count + 1
+        comparison_qubits_count = 1
+        
         measure_bits_count = basic_qubit_count * 2
         
-        qft_register = QuantumRegister(qft_qubits_count, name="qft")
-        mult_register = QuantumRegister(mult_qubits_count, name="mul")
-        ancilla_register = QuantumRegister(ancilla_qubits_count, name="anc")
-        measure_register = ClassicalRegister(measure_bits_count, name="mea")
+        control_register = QuantumRegister(control_qubits_count, name="ctrl")
+        multiplication_register = QuantumRegister(multiplication_qubits_count, name="mult")
+        addition_register = QuantumRegister(addition_qubits_count, name="add")
+        comparison_register = QuantumRegister(comparison_qubits_count, name="comp")
+        
+        measure_register = ClassicalRegister(measure_bits_count, name="meas")
 
-        circuit = QuantumCircuit(qft_register, 
-                                 mult_register, 
-                                 ancilla_register,
+        circuit = QuantumCircuit(control_register, 
+                                 multiplication_register, 
+                                 addition_register,
+                                 comparison_register,
                                  measure_register,
                                  name=f"Shor(N={number}, a={base})")
 
-        circuit.h(qft_register)
-        circuit.x(mult_register[0])
+        circuit.h(control_register)
+        circuit.x(multiplication_register[0])
 
         qft = QFT(basic_qubit_count + 1, do_swaps=False).to_gate()
         iqft = qft.inverse()
@@ -98,17 +103,20 @@ class Shor:
                 qft, iqft
             )
             
-            control_qubit = qft_register[modexp_index]
+            control_qubit = control_register[modexp_index]
             
-            modexp_qubits = [control_qubit, *mult_register, *ancilla_register]
+            modexp_qubits = [control_qubit, 
+                             *multiplication_register, 
+                             *addition_register,
+                             *comparison_register]
             
             circuit.append(controlled_modexp, modexp_qubits)
             
         
-        final_iqft_circuit = QFT(qft_qubits_count).inverse().to_gate()
-        circuit.append(final_iqft_circuit, qft_register)
+        final_iqft_circuit = QFT(control_qubits_count).inverse().to_gate()
+        circuit.append(final_iqft_circuit, control_register)
 
-        circuit.measure(qft_register, measure_register)
+        circuit.measure(control_register, measure_register)
 
         print(f"SHOR circuit:\n{circuit}")
         
@@ -190,9 +198,7 @@ class Shor:
 
         circuit.append(iqft, b_qreg)
         
-        print(f"SHOR controlled_modular_exponentiation:\n{circuit}")
-        
-        quit()
+        # print(f"SHOR controlled_modular_exponentiation:\n{circuit}")
         
         return circuit.to_instruction()
 
