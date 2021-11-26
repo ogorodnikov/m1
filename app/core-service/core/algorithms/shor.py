@@ -95,7 +95,7 @@ class Shor:
             
             base_exponent = 2 ** control_qubit_index
             
-            multipler_uncomputed = self.controlled_modular_multiplication_uncomputed(
+            multiplier_uncomputed = self.controlled_modular_multiplication_uncomputed(
                 number, 
                 base, base_exponent,
                 controlled_phase_adder, 
@@ -105,12 +105,12 @@ class Shor:
             
             control_qubit = control_register[control_qubit_index]
             
-            multipler_uncomputed_qubits = [control_qubit, 
+            multiplier_uncomputed_qubits = [control_qubit, 
                                            *multiplication_register, 
                                            *addition_register,
                                            *comparison_register]
             
-            circuit.append(multipler_uncomputed, multipler_uncomputed_qubits)
+            circuit.append(multiplier_uncomputed, multiplier_uncomputed_qubits)
             
         
         final_iqft_circuit = QFT(control_qubits_count).inverse().to_gate()
@@ -118,9 +118,7 @@ class Shor:
 
         circuit.measure(control_register, measure_register)
 
-        print(f"SHOR circuit:\n{circuit}")
-        
-        # quit()
+        # print(f"SHOR circuit:\n{circuit}")
         
         return circuit 
         
@@ -134,6 +132,8 @@ class Shor:
             qft, iqft
         ):
 
+        # variant: current_base = pow(base, 2**base_exponent, number)
+        
         current_base = base ** base_exponent
         
         basic_qubit_count = number.bit_length()
@@ -185,9 +185,7 @@ class Shor:
             
         circuit.append(inverted_controlled_modular_multiplier, multiplier_qubits)
         
-        print(f"SHOR controlled_modular_multiplication_uncomputed:\n{circuit}")
-        
-        # quit()
+        # print(f"SHOR controlled_modular_multiplication_uncomputed:\n{circuit}")
         
         return circuit.to_instruction()
         
@@ -241,11 +239,13 @@ class Shor:
 
         for multiplication_qubit_index in range(basic_qubit_count):
             
-            # partial_constant = (pow(2, multiplication_qubit_index, number) * actual_base) % number
+            # variant: partial_coefficient = 2 ** multiplication_qubit_index
             
-            partial_constant = (actual_base * 2 ** multiplication_qubit_index) % number
+            partial_coefficient = pow(2, multiplication_qubit_index, number)
             
-            phases = self.get_phases(partial_constant, basic_qubit_count + 1)
+            partial_base = (actual_base * partial_coefficient) % number
+            
+            phases = self.get_phases(partial_base, basic_qubit_count + 1)
             
             adder = actual_adder.assign_parameters({phase_parameters: phases})
             
@@ -257,6 +257,8 @@ class Shor:
             circuit.append(adder, adder_qubits)
             
         circuit.append(iqft, addition_register)
+        
+        # print(f"SHOR controlled_modular_multiplication:\n{circuit}")
         
         return circuit
 
@@ -356,9 +358,9 @@ class Shor:
             
         phases = angles * np.pi
 
-        print(f"SHOR number: {number}")
-        print(f"SHOR digits: {digits}") 
-        print(f"SHOR phases {phases}")
+        # print(f"SHOR number: {number}")
+        # print(f"SHOR digits: {digits}") 
+        # print(f"SHOR phases {phases}")
         
         return phases
         
