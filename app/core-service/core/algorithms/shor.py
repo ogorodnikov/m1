@@ -76,30 +76,21 @@ class Shor:
         circuit.h(qft_register)
         circuit.x(mult_register[0])
 
-        modexp_circuit = self.create_modexp_circuit(number, base)
-        circuit.append(modexp_circuit, circuit.qubits)
+        # modexp_circuit = self.create_modexp_circuit(number, base)
+        # circuit.append(modexp_circuit, circuit.qubits)
 
-        iqft_circuit = QFT(qft_qubits_count).inverse().to_gate()
-        circuit.append(iqft_circuit, qft_register)
 
-        circuit.measure(qft_register, measure_register)
-
-        # print(f"SHOR circuit:\n{circuit}")
+    # def create_modexp_circuit(self, number, base):
         
-        return circuit        
-
-
-    def create_modexp_circuit(self, number, base):
+    #     basic_qubit_count = number.bit_length()
         
-        basic_qubit_count = number.bit_length()
+    #     qft_qubits_count = basic_qubit_count * 2
+    #     mult_qubits_count = basic_qubit_count
+    #     ancilla_qubits_count = basic_qubit_count + 2
         
-        qft_qubits_count = basic_qubit_count * 2
-        mult_qubits_count = basic_qubit_count
-        ancilla_qubits_count = basic_qubit_count + 2
-        
-        qft_register = QuantumRegister(qft_qubits_count, name="qft")
-        mult_register = QuantumRegister(mult_qubits_count, name="mul")
-        ancilla_register = QuantumRegister(ancilla_qubits_count, name="anc")
+    #     qft_register = QuantumRegister(qft_qubits_count, name="qft")
+    #     mult_register = QuantumRegister(mult_qubits_count, name="mul")
+    #     ancilla_register = QuantumRegister(ancilla_qubits_count, name="anc")
 
         modexp_circuit = QuantumCircuit(qft_register, 
                                         mult_register, 
@@ -138,13 +129,30 @@ class Shor:
             
             modexp_qubits = [control_qubit, *mult_register, *ancilla_register]
             
-            modexp_circuit.append(controlled_modular_multiplier, modexp_qubits)
+            # modexp_circuit.append(controlled_modular_multiplier, modexp_qubits)
+            
+            circuit.append(controlled_modular_multiplier, modexp_qubits)
+            
+            
+        
+        final_iqft_circuit = QFT(qft_qubits_count).inverse().to_gate()
+        circuit.append(final_iqft_circuit, qft_register)
+
+        circuit.measure(qft_register, measure_register)
+
+        print(f"SHOR circuit:\n{circuit}")
+        
+        # quit()
+        
+        return circuit 
+        
+        
             
         # print(f"SHOR modexp_circuit:\n{modexp_circuit}")
         
         # quit()
         
-        return modexp_circuit.to_instruction()
+        # return modexp_circuit.to_instruction()
         
        
     def controlled_modular_multiplier(
@@ -267,9 +275,7 @@ class Shor:
                                                  *mult_register, 
                                                  *add_register])
         
-        print(f"SHOR double_controlled_modular_adder:\n{circuit}")
-        
-        # quit()
+        # print(f"SHOR double_controlled_modular_adder:\n{circuit}")
         
         return circuit
         
