@@ -81,7 +81,7 @@ class Shor:
         circuit.h(control_register)
         circuit.x(multiplication_register[0])
 
-        qft = QFT(basic_qubit_count + 1, do_swaps=False).to_gate()
+        qft = QFT(basic_qubit_count + 1, do_swaps=False)
         iqft = qft.inverse()
         
         phases_count = basic_qubit_count + 1
@@ -113,12 +113,12 @@ class Shor:
             circuit.append(multiplier_uncomputed, multiplier_uncomputed_qubits)
             
         
-        final_iqft_circuit = QFT(control_qubits_count).inverse().to_gate()
+        final_iqft_circuit = QFT(control_qubits_count).inverse()
         circuit.append(final_iqft_circuit, control_register)
 
         circuit.measure(control_register, measure_register)
 
-        # print(f"SHOR circuit:\n{circuit}")
+        print(f"SHOR circuit:\n{circuit}")
         
         return circuit 
         
@@ -187,7 +187,7 @@ class Shor:
         
         # print(f"SHOR controlled_modular_multiplication_uncomputed:\n{circuit}")
         
-        return circuit.to_instruction()
+        return circuit
         
         
     def controlled_modular_multiplication(self,
@@ -335,7 +335,7 @@ class Shor:
             
         # print(f"SHOR phase_adder_circuit:\n{phase_adder_circuit}")
         
-        return phase_adder_circuit.to_gate()
+        return phase_adder_circuit
         
 
     def get_phases(self, number, phases_count):
