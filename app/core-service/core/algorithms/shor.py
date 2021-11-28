@@ -52,7 +52,7 @@ class Shor:
 
         circuit.h(control_register)
         circuit.x(multiplication_register[0])
-
+        
         qft = create_qft_circuit(basic_qubit_count + 1,
                                  flipped=True,
                                  barriers=False)
@@ -68,11 +68,11 @@ class Shor:
         
         phases_count = basic_qubit_count + 1
         phases = self.get_phases(number, phases_count)
-
+        
         phase_adder = self.create_phase_adder(phases)
         inverted_phase_adder = phase_adder.inverse()
         controlled_phase_adder = phase_adder.control(1)
-
+        
         for control_qubit_index in range(basic_qubit_count * 2):
             
             base_exponent = 2 ** control_qubit_index
@@ -93,7 +93,7 @@ class Shor:
                                            *comparison_register]
             
             circuit.append(multiplier_uncomputed, multiplier_uncomputed_qubits)
-        
+
         circuit.append(final_iqft_circuit, control_register)
         
         circuit.measure(control_register, measurement_bits)
