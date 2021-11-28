@@ -2,6 +2,9 @@ import math
 import fractions
 import numpy as np
 
+from qiskit import Aer
+from qiskit import execute
+
 from qiskit import QuantumCircuit
 from qiskit import QuantumRegister
 from qiskit import ClassicalRegister
@@ -21,9 +24,32 @@ except ModuleNotFoundError:
 
 class Shor:
     
-    def create_shor_circuit(self, number, base, task_log):
+    def run(self, run_values, task_log):
         
-        self.task_log = task_log        
+        number_input = run_values.get('number')
+        base_input = run_values.get('base')
+        
+        number = int(number_input)
+        base = int(base_input)
+        
+        task_log(f'SHOR number: {number}')
+        task_log(f'SHOR base: {base}')
+        
+        circuit = self.create_shor_circuit(number=number, base=base)
+        
+        backend = Aer.get_backend('aer_simulator')
+        
+        job = execute(circuit, backend, shots=1024)
+        
+        counts = job.result().get_counts()        
+        
+        run_data = {'Result': {'Counts': counts}, 
+                    'Run Values': {'number': number, 'base': base}}
+        
+        result = self.shor_post_processing(run_data=run_data, task_log=print)
+
+
+    def create_shor_circuit(self, number, base):
 
         basic_qubit_count = number.bit_length()
         
@@ -43,6 +69,8 @@ class Shor:
         
         measure_register = ClassicalRegister(measure_bits_count, name="meas")
         
+        # measure_bits = 
+
         circuit = QuantumCircuit(control_register, 
                                  multiplication_register, 
                                  addition_register,
@@ -98,7 +126,7 @@ class Shor:
         
         circuit.measure(control_register, measurement_bits)
 
-        self.task_log(f"SHOR circuit:\n{circuit}")
+        print(f"SHOR circuit:\n{circuit}")
         
         return circuit 
         
@@ -433,21 +461,10 @@ class Shor:
         return {'Factors': non_trivial_factors}
 
 
-def shor(run_values, task_log):
-    
-    number_input = run_values.get('number')
-    base_input = run_values.get('base')
-    
-    number = int(number_input)
-    base = int(base_input)
-    
-    task_log(f'SHOR number: {number}')
-    task_log(f'SHOR base: {base}')
-    
-    circuit = Shor().create_shor_circuit(number=number,
-                                         base=base,
-                                         task_log=task_log)
-    return circuit
 
-
-shor_post_processing = Shor().shor_post_processing
+if __name__ == '__main__':
+    
+    # run_values = {'number': '15', 'base': '2'}
+    run_values = {'number': '2', 'base': '2'}
+    
+    Shor().run(run_values, print)

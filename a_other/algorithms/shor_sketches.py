@@ -32,3 +32,14 @@
     ###   modexp   ###
     
     # partial_base = pow(base, 2**i, number)
+    
+    
+    ###   input check   ###
+    
+    if (number < 3 or 
+        number % 2 == 0 or
+        base < 2 or
+        base >= number or
+        math.gcd(base, number) != 1):
+    
+    raise ValueError("Incorrect input values")
