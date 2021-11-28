@@ -39,7 +39,7 @@ test_data = {
     qpe: {'angle': '0.25', 'precision': '3'},
     teleport: {'alpha': 'random', 'beta': 'random'},
     partial(teleport): {'alpha': '1j', 'beta': '0'},
-    shor.run_shor: {'number': '15'}
+    shor.run_shor: {'number': '15', 'base': '2'}
     
 }
 
