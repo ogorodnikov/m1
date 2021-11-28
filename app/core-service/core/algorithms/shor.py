@@ -75,6 +75,8 @@ class Shor:
         comparison_register = QuantumRegister(comparison_qubits_count, name="comp")
         
         measure_register = ClassicalRegister(measure_bits_count, name="meas")
+        
+        # measure_bits = 
 
         circuit = QuantumCircuit(control_register, 
                                  multiplication_register, 
@@ -100,7 +102,7 @@ class Shor:
         alt_qft_flipped = create_qft_circuit(basic_qubit_count + 1, flipped=True, barriers=False)
         alt_iqft_flipped = create_qft_circuit(basic_qubit_count + 1, flipped=True, barriers=False, inverted=True)
         
-        alt_final_iqft_circuit = create_qft_circuit(control_qubits_count, flipped=True, barriers=False, inverted=True)
+        alt_final_iqft_circuit = create_qft_circuit(control_qubits_count, barriers=False, inverted=True)
 
 
         print(f"SHOR alt_qft_flipped:\n{alt_qft_flipped}")
@@ -116,7 +118,7 @@ class Shor:
         
         qft = alt_qft_flipped
         iqft = alt_iqft_flipped
-        
+
         
         phases_count = basic_qubit_count + 1
         phases = self.get_phases(number, phases_count)
@@ -148,9 +150,18 @@ class Shor:
             
         
         final_iqft_circuit = QFT(control_qubits_count).inverse()
+        
+        final_iqft_circuit = alt_final_iqft_circuit
+        
         circuit.append(final_iqft_circuit, control_register)
+        
+        measurement_bits = list(reversed(range(measure_bits_count)))
+        
+        print(f"SHOR measurement_bits: {measurement_bits}")  
+        
+        # quit()
 
-        circuit.measure(control_register, measure_register)
+        circuit.measure(control_register, measurement_bits)
 
         print(f"SHOR circuit:\n{circuit}")
         
