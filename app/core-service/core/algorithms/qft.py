@@ -25,12 +25,12 @@ def create_qft_circuit(qubits_count,
     if not inverted:
         
         pairs = qubit_pairs
-        circuit.name = 'QFT Circuit'
+        circuit.name = 'QFT'
         
     else:
     
         pairs = reversed(tuple(qubit_pairs))
-        circuit.name = 'QFT† Circuit'
+        circuit.name = 'QFT†'
 
     for control_qubit, target_qubit in pairs:
         

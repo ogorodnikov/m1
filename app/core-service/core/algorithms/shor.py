@@ -165,7 +165,7 @@ class Shor:
             
         circuit.append(inverted_controlled_modular_multiplier, multiplier_qubits)
         
-        # print(f"SHOR controlled_modular_multiplication_uncomputed:\n{circuit}")
+        # self.task_log(f"SHOR controlled_modular_multiplication_uncomputed:\n{circuit}")
         
         return circuit
         
@@ -238,7 +238,7 @@ class Shor:
             
         circuit.append(iqft, addition_register)
         
-        # print(f"SHOR controlled_modular_multiplication:\n{circuit}")
+        # self.task_log(f"SHOR controlled_modular_multiplication:\n{circuit}")
         
         return circuit
 
@@ -299,7 +299,7 @@ class Shor:
                                                  *mult_register, 
                                                  *add_register])
         
-        # print(f"SHOR double_controlled_modular_adder:\n{circuit}")
+        # self.task_log(f"SHOR double_controlled_modular_adder:\n{circuit}")
         
         return circuit
         
@@ -313,7 +313,7 @@ class Shor:
         for i, phase in enumerate(phases):
             phase_adder_circuit.p(phase, i)
             
-        # print(f"SHOR phase_adder_circuit:\n{phase_adder_circuit}")
+        # self.task_log(f"SHOR phase_adder_circuit:\n{phase_adder_circuit}")
         
         return phase_adder_circuit
         
@@ -338,9 +338,9 @@ class Shor:
             
         phases = angles * np.pi
 
-        # print(f"SHOR number: {number}")
-        # print(f"SHOR digits: {digits}") 
-        # print(f"SHOR phases {phases}")
+        # self.task_log(f"SHOR number: {number}")
+        # self.task_log(f"SHOR digits: {digits}") 
+        # self.task_log(f"SHOR phases {phases}")
         
         return phases
         
@@ -349,11 +349,11 @@ class Shor:
         
         greatest_common_divisor, bezout_s, bezout_t = calculate_egcd(base, modulus)
         
-        # print(f"SHOR base: {base}")        
-        # print(f"SHOR modulus: {modulus}")        
-        # print(f"SHOR greatest_common_divisor: {greatest_common_divisor}")        
-        # print(f"SHOR bezout_s: {bezout_s}")        
-        # print(f"SHOR bezout_t: {bezout_t}")        
+        # self.task_log(f"SHOR base: {base}")        
+        # self.task_log(f"SHOR modulus: {modulus}")        
+        # self.task_log(f"SHOR greatest_common_divisor: {greatest_common_divisor}")        
+        # self.task_log(f"SHOR bezout_s: {bezout_s}")        
+        # self.task_log(f"SHOR bezout_t: {bezout_t}")        
         
         if greatest_common_divisor != 1:
             raise ValueError(f"Modular inverse does not exist")
@@ -396,7 +396,7 @@ class Shor:
             
             orders.append(order)
             
-            task_log()
+            task_log(f'')
             task_log(f'SHOR state: {state}')
             task_log(f'SHOR state_binary: {state_binary}')
             task_log(f'SHOR phase: {phase}')
@@ -425,12 +425,12 @@ class Shor:
 
         non_trivial_factors = factors - {1, number}
         
-        task_log()
+        task_log(f'')
         task_log(f'SHOR orders: {orders}')   
         task_log(f'SHOR factors: {factors}')    
         task_log(f'SHOR non_trivial_factors: {non_trivial_factors}')
         
-        return {'Factors': non_trivial_factors}
+        return {'Factors': list(non_trivial_factors)}
 
 
 def shor(run_values, task_log):
