@@ -5,7 +5,7 @@ from fractions import Fraction
 
 from qiskit import QuantumCircuit
 
-from core.algorithms.qft import build_qft_circuit
+from core.algorithms.qft import create_qft_circuit
 
 
 class Shor:
@@ -74,8 +74,8 @@ class Shor:
             circuit.append(self.controlled_amod15(exponentiation_base, 2**camod_index),
                            [camod_index] + [*ancilla_qubits])
         
-        inverted_qft_circuit = build_qft_circuit(qubits_count=counting_qubits_count, 
-                                                 inverted=True)
+        inverted_qft_circuit = create_qft_circuit(qubits_count=counting_qubits_count, 
+                                                  inverted=True)
                                                  
         # task_log(f'SHOR inverted_qft_circuit: \n{inverted_qft_circuit}')
             

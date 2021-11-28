@@ -2,7 +2,7 @@ from math import pi
 
 from qiskit import QuantumCircuit, Aer
 
-from core.algorithms.qft import build_qft_circuit
+from core.algorithms.qft import create_qft_circuit
 
 
 def qpe(run_values, task_log):
@@ -39,7 +39,7 @@ def qpe(run_values, task_log):
             circuit.cp(pi * angle_number, counting_qubit, eigenstate_qubit)
             
             
-    qft_dagger_circuit = build_qft_circuit(counting_qubits_count, inverted=True)
+    qft_dagger_circuit = create_qft_circuit(counting_qubits_count, inverted=True)
     
     circuit.append(qft_dagger_circuit, counting_qubits)
     

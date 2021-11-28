@@ -5,7 +5,7 @@ from qiskit import QuantumCircuit
 from qiskit import Aer
 
 
-def build_qft_circuit(qubits_count, inverted=False):
+def create_qft_circuit(qubits_count, inverted=False):
     
     qubits = range(qubits_count)
     
@@ -70,7 +70,7 @@ def qft(run_values, task_log):
             circuit.x(input_qubit)
             
 
-    qft_circuit = build_qft_circuit(qubits_count)
+    qft_circuit = create_qft_circuit(qubits_count)
     
     circuit.append(qft_circuit, qubits)
     

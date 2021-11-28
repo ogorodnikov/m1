@@ -17,6 +17,10 @@ try:
 except ModuleNotFoundError:
     from core.algorithms.egcd import calculate_egcd
 
+try:
+    from qft import create_qft_circuit
+except ModuleNotFoundError:
+    from core.algorithms.qft import create_qft_circuit
 
 class Shor:
     
@@ -81,8 +85,13 @@ class Shor:
         circuit.h(control_register)
         circuit.x(multiplication_register[0])
 
+
         qft = QFT(basic_qubit_count + 1, do_swaps=False)
         iqft = qft.inverse()
+        
+        alt_qft = create_qft_circuit(basic_qubit_count + 1)
+        alt_iqft = create_qft_circuit(basic_qubit_count + 1, inverted=True)
+        
         
         phases_count = basic_qubit_count + 1
         phases = self.get_phases(number, phases_count)
