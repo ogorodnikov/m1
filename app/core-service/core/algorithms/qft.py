@@ -5,14 +5,23 @@ from qiskit import QuantumCircuit
 from qiskit import Aer
 
 
-def create_qft_circuit(qubits_count, inverted=False):
+def create_qft_circuit(qubits_count,
+                       flipped=False,
+                       barriers=True,
+                       inverted=False):
     
-    qubits = range(qubits_count)
+    if not flipped:
+        
+        qubits = range(qubits_count)
+        
+    else:
+        
+        qubits = reversed(range(qubits_count))
     
     qubit_pairs = combinations_with_replacement(qubits, 2)
     
     circuit = QuantumCircuit(qubits_count)
-
+    
     if not inverted:
         
         pairs = qubit_pairs
@@ -26,10 +35,14 @@ def create_qft_circuit(qubits_count, inverted=False):
     for control_qubit, target_qubit in pairs:
         
         if control_qubit == target_qubit:
-            circuit.barrier()
+            
+            if barriers:
+                circuit.barrier()
+                
             circuit.h(control_qubit)
             
         else:
+            
             distance = abs(control_qubit - target_qubit)
             
             if not inverted:

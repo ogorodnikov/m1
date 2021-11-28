@@ -22,6 +22,7 @@ try:
 except ModuleNotFoundError:
     from core.algorithms.qft import create_qft_circuit
 
+
 class Shor:
     
     def run_shor(self, run_values, task_log):
@@ -86,11 +87,35 @@ class Shor:
         circuit.x(multiplication_register[0])
 
 
+
+
         qft = QFT(basic_qubit_count + 1, do_swaps=False)
         iqft = qft.inverse()
         
+        final_iqft_circuit = QFT(control_qubits_count).inverse()
+        
         alt_qft = create_qft_circuit(basic_qubit_count + 1)
         alt_iqft = create_qft_circuit(basic_qubit_count + 1, inverted=True)
+        
+        alt_qft_flipped = create_qft_circuit(basic_qubit_count + 1, flipped=True, barriers=False)
+        alt_iqft_flipped = create_qft_circuit(basic_qubit_count + 1, flipped=True, barriers=False, inverted=True)
+        
+        alt_final_iqft_circuit = create_qft_circuit(control_qubits_count, flipped=True, barriers=False, inverted=True)
+
+
+        print(f"SHOR alt_qft_flipped:\n{alt_qft_flipped}")
+        print(f"SHOR qft:\n{qft.decompose()}")
+        
+        print(f"SHOR alt_iqft_flipped:\n{alt_iqft_flipped}")
+        print(f"SHOR iqft:\n{iqft.decompose()}")
+        
+        print(f"SHOR final_iqft_circuit:\n{final_iqft_circuit.decompose()}")  
+        print(f"SHOR alt_final_iqft_circuit:\n{alt_final_iqft_circuit}")  
+        
+        # quit()
+        
+        qft = alt_qft_flipped
+        iqft = alt_iqft_flipped
         
         
         phases_count = basic_qubit_count + 1
