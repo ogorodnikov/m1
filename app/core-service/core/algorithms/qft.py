@@ -7,8 +7,8 @@ from qiskit import Aer
 
 def create_qft_circuit(qubits_count,
                        flipped=False,
-                       barriers=True,
-                       inverted=False):
+                       inverted=False,
+                       barriers=True):
     
     if not flipped:
         

@@ -10,7 +10,6 @@ from qiskit import QuantumRegister
 from qiskit import ClassicalRegister
 
 from qiskit.circuit import ParameterVector
-from qiskit.circuit.library import QFT
 
 try:
     from egcd import calculate_egcd
@@ -69,6 +68,8 @@ class Shor:
         
         measure_bits_count = basic_qubit_count * 2
         
+        measurement_bits = list(reversed(range(measure_bits_count)))
+        
         control_register = QuantumRegister(control_qubits_count, name="ctrl")
         multiplication_register = QuantumRegister(multiplication_qubits_count, name="mult")
         addition_register = QuantumRegister(addition_qubits_count, name="add")
@@ -88,37 +89,18 @@ class Shor:
         circuit.h(control_register)
         circuit.x(multiplication_register[0])
 
-
-
-
-        qft = QFT(basic_qubit_count + 1, do_swaps=False)
-        iqft = qft.inverse()
+        qft = create_qft_circuit(basic_qubit_count + 1,
+                                 flipped=True,
+                                 barriers=False)
+                                 
+        iqft = create_qft_circuit(basic_qubit_count + 1, 
+                                  flipped=True, 
+                                  inverted=True, 
+                                  barriers=False)
         
-        final_iqft_circuit = QFT(control_qubits_count).inverse()
-        
-        alt_qft = create_qft_circuit(basic_qubit_count + 1)
-        alt_iqft = create_qft_circuit(basic_qubit_count + 1, inverted=True)
-        
-        alt_qft_flipped = create_qft_circuit(basic_qubit_count + 1, flipped=True, barriers=False)
-        alt_iqft_flipped = create_qft_circuit(basic_qubit_count + 1, flipped=True, barriers=False, inverted=True)
-        
-        alt_final_iqft_circuit = create_qft_circuit(control_qubits_count, barriers=False, inverted=True)
-
-
-        print(f"SHOR alt_qft_flipped:\n{alt_qft_flipped}")
-        print(f"SHOR qft:\n{qft.decompose()}")
-        
-        print(f"SHOR alt_iqft_flipped:\n{alt_iqft_flipped}")
-        print(f"SHOR iqft:\n{iqft.decompose()}")
-        
-        print(f"SHOR final_iqft_circuit:\n{final_iqft_circuit.decompose()}")  
-        print(f"SHOR alt_final_iqft_circuit:\n{alt_final_iqft_circuit}")  
-        
-        # quit()
-        
-        qft = alt_qft_flipped
-        iqft = alt_iqft_flipped
-
+        final_iqft_circuit = create_qft_circuit(control_qubits_count,
+                                                inverted=True,
+                                                barriers=False)
         
         phases_count = basic_qubit_count + 1
         phases = self.get_phases(number, phases_count)
@@ -147,20 +129,9 @@ class Shor:
                                            *comparison_register]
             
             circuit.append(multiplier_uncomputed, multiplier_uncomputed_qubits)
-            
-        
-        final_iqft_circuit = QFT(control_qubits_count).inverse()
-        
-        final_iqft_circuit = alt_final_iqft_circuit
         
         circuit.append(final_iqft_circuit, control_register)
         
-        measurement_bits = list(reversed(range(measure_bits_count)))
-        
-        print(f"SHOR measurement_bits: {measurement_bits}")  
-        
-        # quit()
-
         circuit.measure(control_register, measurement_bits)
 
         print(f"SHOR circuit:\n{circuit}")
