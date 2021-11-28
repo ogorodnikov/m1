@@ -14,8 +14,6 @@ from core.algorithms.teleport import teleport
 from core.algorithms.shor import Shor
 
 
-shor = Shor()
-
 test_data = {
     
     egcd: {'a': '345', 'b': '455244237'},
@@ -39,8 +37,7 @@ test_data = {
     qpe: {'angle': '0.25', 'precision': '3'},
     teleport: {'alpha': 'random', 'beta': 'random'},
     partial(teleport): {'alpha': '1j', 'beta': '0'},
-    shor.run: {'number': '15', 'base': '2'}
-    
+
 }
 
 post_processing = {simon: simon_post_processing,
@@ -50,7 +47,7 @@ post_processing = {simon: simon_post_processing,
 @pytest.mark.parametrize("runner_function, run_values", test_data.items())
 def test_algorithm(runner_function, run_values, test_run_data, stub):
     
-    runner_function(run_value=run_values, task_log=stub)
+    runner_function(run_values=run_values, task_log=stub)
     
     if runner_function in post_processing:
         
@@ -58,7 +55,12 @@ def test_algorithm(runner_function, run_values, test_run_data, stub):
         post_processing_function(run_data=test_run_data, task_log=stub)
         
         
-def test_shor_modular_inverse_fail(stub):
+def test_shor(shor, stub):
+    
+    shor.run(run_values={'number': '15', 'base': '2'}, task_log=stub)
+    
+       
+def test_shor_modular_inverse_fail(shor, stub):
     
     no_modular_inverse_run_values = {'number': '2', 'base': '2'}
     
@@ -76,3 +78,7 @@ def test_run_data():
     
     return {'Result': {'Counts': {'0': 0, '1': 1}}, 
             'Run Values': {'value_1': 1, 'value_2': 2}}
+            
+@pytest.fixture
+def shor():
+    return Shor()
