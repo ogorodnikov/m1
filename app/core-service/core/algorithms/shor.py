@@ -24,7 +24,7 @@ except ModuleNotFoundError:
 
 class Shor:
     
-    def run_shor(self, run_values, task_log):
+    def run(self, run_values, task_log):
         
         number_input = run_values.get('number')
         base_input = run_values.get('base')
@@ -35,13 +35,13 @@ class Shor:
         task_log(f'SHOR number: {number}')
         task_log(f'SHOR base: {base}')
         
-        if (number < 3 or 
-            number % 2 == 0 or
-            base < 2 or
-            base >= number or
-            math.gcd(base, number) != 1):
+        # if (number < 3 or 
+        #     number % 2 == 0 or
+        #     base < 2 or
+        #     base >= number or
+        #     math.gcd(base, number) != 1):
             
-            raise ValueError("Incorrect input values")
+        #     raise ValueError("Incorrect input values")
             
         circuit = self.create_shor_circuit(number=number, base=base)
         
@@ -469,6 +469,10 @@ class Shor:
         return {'Factors': non_trivial_factors}
 
 
-run_values = {'number': '15', 'base': '2'}
 
-Shor().run_shor(run_values, print)
+if __name__ == '__main__':
+    
+    # run_values = {'number': '15', 'base': '2'}
+    run_values = {'number': '2', 'base': '2'}
+    
+    Shor().run(run_values, print)

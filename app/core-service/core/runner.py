@@ -44,7 +44,7 @@ class Runner():
                         'qft': qft,
                         'qpe': qpe,
                         'teleport': teleport,
-                        'shor': shor.run_shor}
+                        'shor': shor.run}
                    
     post_processing = {'simon': simon_post_processing,
                        'qpe': qpe_post_processing,
