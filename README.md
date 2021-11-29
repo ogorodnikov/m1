@@ -2,7 +2,7 @@
 
 🌈 Run algorithms on real Quantum Computers:
 
-[![bloch multivector diagram](/app/core-service/core/static/bloch_multivector_diagram.png)](#)
+[![bloch multivector diagram](/app/core-service/core/static/bloch_multivector_diagram.png)](#m1-project)
 
 Up and running free application:
 
