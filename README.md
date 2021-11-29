@@ -107,6 +107,8 @@ Up and running free application:
   [wiki](https://en.wikipedia.org/wiki/Shor%27s_algorithm) |
   [qiskit](https://qiskit.org/textbook/ch-algorithms/shor.html)
 
+  [![bloch multivector diagram](/app/core-service/core/static/shor_diagram.drawio.png)](#shor)
+
 ### Web Application:
 
 - [Flask](https://flask.palletsprojects.com/) framework on [Gunicorn](https://gunicorn.org/) WSGI server
