@@ -88,6 +88,15 @@ Up and running free application:
   [wiki](https://en.wikipedia.org/wiki/Quantum_phase_estimation_algorithm) |
   [qiskit](https://qiskit.org/textbook/ch-algorithms/quantum-phase-estimation.html)
   
+- #### Quantum Teleportation:
+
+  Transfers quantum state using 2 entangled qubits and 2 classical bits.
+
+  [m1](https://m1.ogoro.me/algorithms/teleport) |
+  [code](/app/core-service/core/algorithms/teleport.py) |
+  [wiki](https://en.wikipedia.org/wiki/Quantum_teleportation) |
+  [qiskit](https://qiskit.org/textbook/ch-algorithms/teleportation.html)
+  
 - #### Shor:
 
   Factors integers using quantum spectographer and modular exponentiation.<br>
