@@ -112,7 +112,7 @@ Up and running free application:
 ### Web Application:
 
 - [Flask](https://flask.palletsprojects.com/) framework on [Gunicorn](https://gunicorn.org/) WSGI server
-- Quantum computation on real devices with [IBM Qiskit](https://qiskit.org/)
+- Quantum computation on real devices with IBM [Qiskit](https://qiskit.org/)
 - Telegram bot [@ogoro_bot](https://telegram.me/ogoro_bot) with [pyTelegramBotAPI](https://github.com/eternnoir/pyTelegramBotAPI)
 - Facebook login with [OAuth flow](https://developers.facebook.com/docs/facebook-login/manually-build-a-login-flow)
 - Frontend with [Bootstrap](https://getbootstrap.com/docs/4.6/getting-started/introduction/)
@@ -190,7 +190,7 @@ Up and running free application:
 
 - [telegram.py](app/core-service/core/telegram.py)
 
-  Handles very cool Telegram bot [@ogoro_bot](https://telegram.me/ogoro_bot)!
+  Handles cool Telegram bot [@ogoro_bot](https://telegram.me/ogoro_bot)!
 
 - [cognito.py](app/core-service/core/cognito.py)
 
