@@ -123,7 +123,7 @@ Up and running free application:
 
 ### AWS Infrastructure:
 
-![infrastructure_diagram](/app/core-service/core/static/m1_infrastructure_diagram.drawio.png)
+[![infrastructure_diagram](/app/core-service/core/static/m1_infrastructure_diagram.drawio.png)](#aws-infrastructure)
 
 - Automated infrastructure with [AWS CloudFormation](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/Welcome.html)
 - Docker containers in [AWS ECS](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/Welcome.html) cluster
