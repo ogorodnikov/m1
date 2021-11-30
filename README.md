@@ -132,6 +132,7 @@ Up and running free application:
 - CDN distribution with [AWS CloudFront](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Introduction.html)
 - SSL Certificate from [AWS ACM](https://docs.aws.amazon.com/acm/latest/userguide/acm-overview.html) 
 - User management with [AWS Cognito](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-identity-pools.html)
+- CI/CD with [AWS CodePipeline](https://docs.aws.amazon.com/codepipeline/latest/userguide/welcome.html)
 - Virtual IDE in [AWS Cloud9](https://docs.aws.amazon.com/cloud9/latest/user-guide/welcome.html)
 
 ### Information:
