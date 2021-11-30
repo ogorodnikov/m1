@@ -107,7 +107,7 @@ Up and running free application:
   [wiki](https://en.wikipedia.org/wiki/Shor%27s_algorithm) |
   [qiskit](https://qiskit.org/textbook/ch-algorithms/shor.html)
 
-  [![bloch multivector diagram](/app/core-service/core/static/shor_diagram.drawio.png)](#shor)
+  [![shor diagram](/app/core-service/core/static/shor_diagram.drawio.png)](https://raw.githubusercontent.com/ogorodnikov/m1/main/app/core-service/core/static/shor_diagram.drawio.png)
 
 ### Web Application:
 
