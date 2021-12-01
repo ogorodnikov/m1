@@ -46,9 +46,19 @@ class Routes():
         ###   Routes   ###
 
         @app.route("/")
+        def root():
+            
+            if session.get('username'):
+                redirect_url = url_for('get_algorithms')
+            else:
+                redirect_url = url_for('home')                
+            
+            return redirect(redirect_url)
+            
         @app.route("/home")
         def home():
             return render_template("home.html")
+            
 
         ###   Login   ###
 
