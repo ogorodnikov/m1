@@ -15,12 +15,16 @@
     <div class="lead font-weight-normal text-justify">
       
       <p>
-        M1 Project proposes to run quantum and hybrid algorithms 
+        Quantum computers use properties of quantum states to perform calculations.<br>
+        Quantum information is stored and processed using quantum bits – qubits.<br>
+        Quantum algorithms for certain problems can be significantly faster than classical algorithms.
+      </p>
+      
+      <p>
+        M1 Project proposes to run quantum algorithms 
         on simulator or real quantum computers – kindly provided by IBM&nbsp;Quantum
         and Qiskit Community.
       </p>
-      
-      <br>
       
       <p>
         <b>      
@@ -34,47 +38,49 @@
         <li>Open Algorithm page</li>
         <li>Set parameters</li>
         <li>Run algorithm on Simulator</li>
-        <li>Check task Logs and Result</li>
+        <li>Check task Logs and Results</li>
         <li>Run algorithm on Real Quantum Computer</li>
-        <li>Check task Logs and Result as well</li>
+        <li>Check task Logs and Results as well</li>
       </ol>
 
-   <!--   Buttons   -->
-   
-    <div class="text-center m-4">
-      
-      <a href="{{ url_for('get_algorithms') }}"
-        class="btn btn-lg btn-primary text-nowrap col-lg-2 my-1"
-        target="_blank"
-        rel="noopener noreferrer"
-        role="button">
-        Algorithms
-      </a>    
-      
-      <a href="https://github.com/ogorodnikov/m1#readme"
-        class="btn btn-lg btn-secondary text-nowrap col-lg-5 my-1"
-        role="button"
-        target="_blank"
-        rel="noopener noreferrer">
-        Project description with diagrams
+     <!--   Buttons   -->
+     
+      <div class="my-4 mr-4">
         
-        <span class="badge bg-warning text-dark rounded-pill align-text-bottom">
-          <i class="fas fa-code-branch"></i>
-        </span>
-      </a>
-
-      <a href="{{ url_for('get_tasks') }}"
-        class="btn btn-lg btn-success text-nowrap col-lg-2 my-1"
-        role="button"
-        target="_blank"
-        rel="noopener noreferrer">
-        Tasks
-      </a>
-      
-      
+        <a href="{{ url_for('get_algorithms') }}"
+          class="btn btn-lg btn-primary text-nowrap col-lg-2 my-1"
+          target="_blank"
+          rel="noopener noreferrer"
+          role="button">
+          Algorithms
+        </a>    
+        
+        <a href="https://github.com/ogorodnikov/m1#readme"
+          class="btn btn-lg btn-secondary text-nowrap col-lg-5 my-1"
+          role="button"
+          target="_blank"
+          rel="noopener noreferrer">
+          Project description with diagrams
+          
+          <span class="badge bg-warning text-dark rounded-pill align-text-bottom">
+            <i class="fas fa-code-branch"></i>
+          </span>
+        </a>
+  
+        <a href="{{ url_for('get_tasks') }}"
+          class="btn btn-lg btn-success text-nowrap col-lg-2 my-1"
+          role="button"
+          target="_blank"
+          rel="noopener noreferrer">
+          Tasks
+        </a>
+        
+      </div>
     </div>
     
     <br>
+    
+    <div class="lead font-weight-normal">
 
   <!--   Videos    -->
   
@@ -104,6 +110,44 @@
             https://www.youtube.com/playlist?list=PLOFEBzvs-Vvp2xg9-POLJhQwtVktlYGbY
           </a>
         </li>
+
+        <li>
+          Quantum Algorithms Overview:
+          
+          <a href="https://www.youtube.com/watch?v=XEgBdWQdvfk"
+             target="_blank"
+             rel="noopener noreferrer">
+            https://www.youtube.com/watch?v=XEgBdWQdvfk
+          </a>
+        </li>
+      </ul>
+      
+      <p>
+        <b>      
+          Lectures:
+        </b>
+      </p>
+
+      <ul>
+        <li>
+          Quantum Computing Basics:
+          
+          <a href="https://www.youtube.com/playlist?list=PLfOgkuiMs5qApXtgIMREPicgbYIGjbf8e"
+             target="_blank"
+             rel="noopener noreferrer">
+            https://www.youtube.com/playlist?list=PLfOgkuiMs5qApXtgIMREPicgbYIGjbf8e
+          </a>
+        </li>
+        
+        <li>
+          Quantum Communications:
+          
+          <a href="https://www.youtube.com/playlist?list=PLCTGenrx1-SOC-b98RCC1uEGI-Sc-N3C-"
+             target="_blank"
+             rel="noopener noreferrer">
+            https://www.youtube.com/playlist?list=PLCTGenrx1-SOC-b98RCC1uEGI-Sc-N3C-
+          </a>
+        </li>
         
         <li>
           Linear Algebra:
@@ -112,6 +156,26 @@
              target="_blank"
              rel="noopener noreferrer">
             https://www.youtube.com/playlist?list=PLZHQObOWTQDPD3MizzM2xVFitgF8hE_ab
+          </a>
+        </li>
+        
+        <li>
+          Quantum Machine Learning:
+          
+          <a href="https://www.youtube.com/channel/UCVROlDxzfRrlRexJvvCuQeg"
+             target="_blank"
+             rel="noopener noreferrer">
+            https://www.youtube.com/channel/UCVROlDxzfRrlRexJvvCuQeg
+          </a>
+        </li>
+        
+        <li>
+          Quantum Information Science by Artur Ekert:
+          
+          <a href="https://www.youtube.com/c/ArturEkert/playlists"
+             target="_blank"
+             rel="noopener noreferrer">
+            https://www.youtube.com/c/ArturEkert/playlists
           </a>
         </li>
       </ul>        
@@ -147,10 +211,17 @@
         </li>
       </ul>
       
+      <br>
+      
+      <a href="https://ogoro.me"
+        class="btn btn-lg btn-info text-nowrap col-lg-2 my-1"
+        target="_blank"
+        rel="noopener noreferrer"
+        role="button">
+        About
+      </a> 
+      
     </div>
-    
-    
-
     
   </div>
   
