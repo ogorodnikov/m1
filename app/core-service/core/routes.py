@@ -52,11 +52,9 @@ class Routes():
         def root():
             
             if session.get('username'):
-                redirect_url = url_for('get_algorithms')
-            else:
-                redirect_url = url_for('home')                
+                return redirect(url_for('get_algorithms'))
             
-            return redirect(redirect_url)
+            return render_template("home.html")              
             
         @app.route("/home")
         def home():
