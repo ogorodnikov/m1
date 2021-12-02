@@ -164,7 +164,7 @@ Up and running free application:
 - [runner.py](app/core-service/core/runner.py)
 
   Runs multi-process worker loop.<br>
-  Puts new tasks to queue.<br>
+  Puts new tasks to a queue.<br>
   Polls DynamoDB task queue.<br>
   Runs tasks.<br>
   Uses Qiskit API.<br>
@@ -174,7 +174,7 @@ Up and running free application:
   Monitors execution.<br>
   Writes task statuses and results to DynamoDB.<br>
   Renders Statevector Figures for execution results.<br>
-  Sends Statevector Figures in S3 Bucket.
+  Sends Statevector Figures to S3 Bucket.
 
 - [dynamo.py](app/core-service/core/dynamo.py)
 
