@@ -15,24 +15,40 @@ from core.facebook import Facebook
 
 HOME_PAGE_PHRASE = 'Welcome to M1'
 TUTORIAL_PAGE_PHRASE = 'Tutorial'
+ALGORITHMS_PAGE_PHRASE = 'Algorithms'
 LOGIN_PAGE_PHRASE = 'Please sign in or register'
 TASKS_PAGE_PHRASE = 'Tasks'
 
 
-###   Login   ###
+###   Basic   ###
+
+def test_root(app):
+    root_response = app.get('/', follow_redirects=True)
+    assert HOME_PAGE_PHRASE in root_response.data.decode('utf-8')
+
+def test_root_redirect(app):
+    
+    with app.session_transaction() as session:
+        session['username'] = 'test_username'
+    
+    root_response = app.get('/', follow_redirects=True)
+
+    with app.session_transaction() as session:        
+        session['username'] = None
+        
+    assert ALGORITHMS_PAGE_PHRASE in root_response.data.decode('utf-8')    
 
 def test_home(app):
-    root_response = app.get('/', follow_redirects=True)
     home_response = app.get('/home', follow_redirects=True)
-    
-    assert HOME_PAGE_PHRASE in root_response.data.decode('utf-8')
     assert HOME_PAGE_PHRASE in home_response.data.decode('utf-8')
 
 def test_tutorial(app):
     tutorial_response = app.get('/tutorial')
-    
     assert TUTORIAL_PAGE_PHRASE in tutorial_response.data.decode('utf-8')
-    
+
+
+###   Login   ###
+
 def test_login(app):
     response = app.get('/login')
     assert LOGIN_PAGE_PHRASE in response.data.decode('utf-8')
