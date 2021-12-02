@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block title %}
-  M1 Core Service
+  Welcome to M1
 {% endblock %}
 
 {% block content %}
@@ -13,24 +13,45 @@
     </div>
           
     <div class="lead m-3">
-      Quantum computing uses superposition, interference, and entanglement of quantum states to perform calculations.
-      <br>
       
-      Free web site to run algorithms on simulator and real quantum devices
-    </div>
+      <p>
+        <b>Quantum computers</b> use properties of quantum states 
+                                 to perform calculations.<br>
+      </p>
+      <p>
+        <b>Quantum information</b> is stored and processed using quantum bits – qubits.
+      </p>
+      <p>
+        <b>Quantum algorithms</b> for certain problems 
+                                  can be significantly faster 
+                                  than classical algorithms.
+      </p>
 
-    <div class="lead m-3">
-      Quantum computing is a type of computation that harnesses the collective properties of quantum states, 
-      such as superposition, interference, and entanglement, to perform calculations. 
-      Free web site to run algorithms on simulator and real quantum devices
+      
+
+      
+      <p>
+        Run quantum algorithms on simulator 
+                          or real quantum computers 
+                          kindly provided by
+                          
+        <a href="https://www.ibm.com/quantum-computing/what-is-quantum-computing/">
+          IBM Quantum
+        </a>
+                          and
+
+        <a href="https://qiskit.org/">
+          Qiskit
+        </a> 
+
+      </p>
+      
     </div>
     
     <div class="text-center h1 m-3">
       <a href="{{ url_for('get_algorithms') }}"
         class="btn btn-lg btn-primary"
-        role="button"
-        target="_blank"
-        rel="noopener noreferrer">
+        role="button">
         Get Started
       </a>    
       
@@ -39,7 +60,7 @@
         role="button"
         target="_blank"
         rel="noopener noreferrer">
-        Full description with diagrams
+        Project description with diagrams
         
         <span class="badge bg-warning text-dark rounded-pill align-text-bottom">
           <i class="fas fa-code-branch"></i>
