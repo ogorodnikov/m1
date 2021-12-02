@@ -6,7 +6,7 @@
 
 {% block content %}
 
-  <div class="mx-auto" style="max-width: 1200px;">
+  <div class="container m-3 mx-auto" style="max-width: 1200px;">
           
     <div class="text-center h3 m-3">
       Tutorial
@@ -14,22 +14,31 @@
     
     <div class="lead font-weight-normal text-justify m-3">
       <p>
-        
-        M1 Project proposes to run quantum algorithms on simulator or real quantum computers kindly provided by
-                          
-        <a href="https://www.ibm.com/quantum-computing/what-is-quantum-computing/">
-          IBM Quantum
-        </a>
-        
-        and
-
-        <a href="https://qiskit.org/">
-          Qiskit
-        </a>
-        
-        Community.
-        
+        M1 Project proposes to run quantum and hybrid algorithms 
+        on simulator or real quantum computers – kindly provided by IBM&nbsp;Quantum
+        and Qiskit Community.
       </p>
+      
+      <br>
+      
+      <p>
+        <b>      
+          How to use M1:
+        </b>
+      </p>
+      
+      <ol>
+        <li>Choose Algorithm from the list:</li>
+        <li>Check Wikipedia info, Qiskit explanation and M1 code</li>
+        <li>Open Algorithm page</li>
+        <li>Set parameters</li>
+        <li>Run algorithm on Simulator</li>
+        <li>Check task Logs and Result</li>
+        <li>Run algorithm on Real Quantum Computer</li>
+        <li>Check task Logs and Result as well</li>
+      </ol>
+
+      <br>
       
       <p>
         <b>      
@@ -37,35 +46,39 @@
         </b>
       </p>
 
-      <p>      
-        Qiskit Textbook:
-        
-          <a href="https://qiskit.org/textbook/what-is-quantum.html">
-            https://qiskit.org/textbook/what-is-quantum.html
+      <ol>
+        <li>
+          IBM Quantum:
+          
+          <a href="https://www.ibm.com/quantum-computing/what-is-quantum-computing/">
+            https://www.ibm.com/quantum-computing/what-is-quantum-computing/
           </a>
-      </p>
+        </li>
 
-      <p>      
-        Qiskit Textbook:
+        <li>
+          Qiskit Textbook:
         
           <a href="https://qiskit.org/textbook/what-is-quantum.html">
             https://qiskit.org/textbook/what-is-quantum.html
           </a>
-      </p>
-      
-      
+        </li>
+      </ol>
       
     </div>
     
-    <div class="text-center h1 m-3">
+    
+   <!--   Buttons   -->
+   
+    <div class="text-center m-3">
+      
       <a href="{{ url_for('get_algorithms') }}"
-        class="btn btn-lg btn-primary"
+        class="btn btn-lg btn-primary text-nowrap col-lg-2 my-1"
         role="button">
         Algorithms
       </a>    
       
       <a href="https://github.com/ogorodnikov/m1#readme"
-        class="btn btn-lg btn-secondary"
+        class="btn btn-lg btn-secondary text-nowrap col-lg-5 my-1"
         role="button"
         target="_blank"
         rel="noopener noreferrer">
@@ -74,10 +87,9 @@
         <span class="badge bg-warning text-dark rounded-pill align-text-bottom">
           <i class="fas fa-code-branch"></i>
         </span>
-      </a> 
+      </a>
+      
     </div>
- 
-   <div class="product-device box-shadow"></div>
     
   </div>
   
