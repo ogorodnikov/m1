@@ -8,11 +8,12 @@
 
   <div class="container m-3 mx-auto" style="max-width: 1200px;">
           
-    <div class="text-center h3 m-3">
+    <div class="text-center h3 m-4">
       Tutorial
     </div>
     
-    <div class="lead font-weight-normal text-justify m-3">
+    <div class="lead font-weight-normal text-justify">
+      
       <p>
         M1 Project proposes to run quantum and hybrid algorithms 
         on simulator or real quantum computers – kindly provided by IBM&nbsp;Quantum
@@ -28,7 +29,7 @@
       </p>
       
       <ol>
-        <li>Choose Algorithm from the list:</li>
+        <li>Choose Algorithm from the list</li>
         <li>Check Wikipedia info, Qiskit explanation and M1 code</li>
         <li>Open Algorithm page</li>
         <li>Set parameters</li>
@@ -46,7 +47,7 @@
         </b>
       </p>
 
-      <ol>
+      <ul>
         <li>
           IBM Quantum:
           
@@ -62,17 +63,19 @@
             https://qiskit.org/textbook/what-is-quantum.html
           </a>
         </li>
-      </ol>
+      </ul>
       
     </div>
     
     
    <!--   Buttons   -->
    
-    <div class="text-center m-3">
+    <div class="text-center m-4">
       
       <a href="{{ url_for('get_algorithms') }}"
         class="btn btn-lg btn-primary text-nowrap col-lg-2 my-1"
+        target="_blank"
+        rel="noopener noreferrer"
         role="button">
         Algorithms
       </a>    
@@ -88,6 +91,15 @@
           <i class="fas fa-code-branch"></i>
         </span>
       </a>
+
+      <a href="{{ url_for('get_tasks') }}"
+        class="btn btn-lg btn-success text-nowrap col-lg-2 my-1"
+        role="button"
+        target="_blank"
+        rel="noopener noreferrer">
+        Tasks
+      </a>
+      
       
     </div>
     
