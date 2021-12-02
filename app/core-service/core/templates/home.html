@@ -6,57 +6,44 @@
 
 {% block content %}
 
-  <div class="p-5 mx-auto" style="max-width: 1000px;">
+  <div class="p-5 mx-auto" style="max-width: 970px;">
           
     <div class="text-center h1 m-3">
       Welcome to M1
     </div>
           
-    <div class="lead m-3">
+    <div class="lead text-justify m-4 ml-lg-5">
       
       <p>
         <b>Quantum computers</b> use properties of quantum states 
                                  to perform calculations.<br>
       </p>
+      
       <p>
         <b>Quantum information</b> is stored and processed using quantum bits – qubits.
       </p>
+      
       <p>
         <b>Quantum algorithms</b> for certain problems 
                                   can be significantly faster 
                                   than classical algorithms.
       </p>
 
-      
-
-      
-      <p>
-        Run quantum algorithms on simulator 
-                          or real quantum computers 
-                          kindly provided by
-                          
-        <a href="https://www.ibm.com/quantum-computing/what-is-quantum-computing/">
-          IBM Quantum
-        </a>
-                          and
-
-        <a href="https://qiskit.org/">
-          Qiskit
-        </a> 
-
-      </p>
-      
     </div>
-    
-    <div class="text-center h1 m-3">
+
+
+   <!--   Buttons   -->
+   
+    <div class="text-center m-3">
+      
       <a href="{{ url_for('get_algorithms') }}"
-        class="btn btn-lg btn-primary"
+        class="btn btn-lg btn-primary text-nowrap col-lg-2 my-1"
         role="button">
         Get Started
       </a>    
       
       <a href="https://github.com/ogorodnikov/m1#readme"
-        class="btn btn-lg btn-secondary"
+        class="btn btn-lg btn-secondary text-nowrap col-lg-5 my-1"
         role="button"
         target="_blank"
         rel="noopener noreferrer">
@@ -65,11 +52,10 @@
         <span class="badge bg-warning text-dark rounded-pill align-text-bottom">
           <i class="fas fa-code-branch"></i>
         </span>
-      </a> 
+      </a>
+      
     </div>
- 
-   <div class="product-device box-shadow"></div>
-    
+
   </div>
   
 {% endblock %}
