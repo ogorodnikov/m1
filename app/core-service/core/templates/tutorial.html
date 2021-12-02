@@ -6,7 +6,9 @@
 
 {% block content %}
 
-  <div class="container m-3 mx-auto" style="max-width: 1200px;">
+<div class="container-fluid">
+  
+  <div class="container bg-dark m-3 mx-auto" style="max-width: 1200px;">
           
     <div class="text-center h3 m-4">
       Tutorial
@@ -45,7 +47,7 @@
 
      <!--   Buttons   -->
      
-      <div class="my-4 mr-4">
+      <div class="my-4">
         
         <a href="{{ url_for('get_algorithms') }}"
           class="btn btn-lg btn-primary text-nowrap col-lg-2 my-1"
@@ -80,7 +82,9 @@
     
     <br>
     
-    <div class="lead font-weight-normal">
+  <!--   Links    -->    
+    
+    <div class="lead font-weight-normal overflow-hidden">
 
   <!--   Videos    -->
   
@@ -224,5 +228,7 @@
     </div>
     
   </div>
+  
+</div>
   
 {% endblock %}
