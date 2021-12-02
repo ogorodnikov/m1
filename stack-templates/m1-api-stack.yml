@@ -92,6 +92,98 @@ Resources:
         #         - userpool: !ImportValue m1-cognito-stack:UserPool
         
         paths:
+
+  ###   Basic   ###
+
+          /:
+          
+            get:
+            
+              responses:
+                "200":
+                  description: Default response for CORS method
+                  headers:
+                    Access-Control-Allow-Headers:
+                      type: string
+                    Access-Control-Allow-Methods:
+                      type: string
+                    Access-Control-Allow-Origin:
+                      type: string
+            
+              x-amazon-apigateway-integration:
+                connectionType: VPC_LINK
+                connectionId: !Ref APIGatewayVPCLink
+                httpMethod: GET
+                type: HTTP_PROXY
+                uri: !Sub ['http://${nlb}/', nlb: !ImportValue m1-core-stack:CoreLoadBalancerDNSName]
+                responses: 
+                  default:
+                    statusCode: 200
+                    responseParameters:
+                      method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
+                      method.response.header.Access-Control-Allow-Methods: "'*'"
+                      method.response.header.Access-Control-Allow-Origin: "'*'"
+                      
+          /home:
+          
+            get:
+            
+              responses:
+                "200":
+                  description: Default response for CORS method
+                  headers:
+                    Access-Control-Allow-Headers:
+                      type: string
+                    Access-Control-Allow-Methods:
+                      type: string
+                    Access-Control-Allow-Origin:
+                      type: string
+            
+              x-amazon-apigateway-integration:
+                connectionType: VPC_LINK
+                connectionId: !Ref APIGatewayVPCLink
+                httpMethod: GET
+                type: HTTP_PROXY
+                uri:  !Sub ['http://${nlb}/home', nlb: !ImportValue m1-core-stack:CoreLoadBalancerDNSName]
+                responses: 
+                  default:
+                    statusCode: 200
+                    responseParameters:
+                      method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
+                      method.response.header.Access-Control-Allow-Methods: "'*'"
+                      method.response.header.Access-Control-Allow-Origin: "'*'"
+
+          /tutorial:
+          
+            get:
+            
+              responses:
+                "200":
+                  description: Default response for CORS method
+                  headers:
+                    Access-Control-Allow-Headers:
+                      type: string
+                    Access-Control-Allow-Methods:
+                      type: string
+                    Access-Control-Allow-Origin:
+                      type: string
+            
+              x-amazon-apigateway-integration:
+                connectionType: VPC_LINK
+                connectionId: !Ref APIGatewayVPCLink
+                httpMethod: GET
+                type: HTTP_PROXY
+                uri:  !Sub ['http://${nlb}/tutorial', nlb: !ImportValue m1-core-stack:CoreLoadBalancerDNSName]
+                responses: 
+                  default:
+                    statusCode: 200
+                    responseParameters:
+                      method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
+                      method.response.header.Access-Control-Allow-Methods: "'*'"
+                      method.response.header.Access-Control-Allow-Origin: "'*'"
+                      
+
+  ###   Login   ###
         
           /login:
           
@@ -182,69 +274,11 @@ Resources:
                       method.response.header.Access-Control-Allow-Origin: "'*'"
                       
                 # requestParameters:
-                #   method.request.querystring.next          
+                #   method.request.querystring.next
+                
 
+  ###   Algorithms   ###
 
-###   Algorithms   ###
-
-          /:
-          
-            get:
-            
-              responses:
-                "200":
-                  description: Default response for CORS method
-                  headers:
-                    Access-Control-Allow-Headers:
-                      type: string
-                    Access-Control-Allow-Methods:
-                      type: string
-                    Access-Control-Allow-Origin:
-                      type: string
-            
-              x-amazon-apigateway-integration:
-                connectionType: VPC_LINK
-                connectionId: !Ref APIGatewayVPCLink
-                httpMethod: GET
-                type: HTTP_PROXY
-                uri: !Sub ['http://${nlb}/', nlb: !ImportValue m1-core-stack:CoreLoadBalancerDNSName]
-                responses: 
-                  default:
-                    statusCode: 200
-                    responseParameters:
-                      method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
-                      method.response.header.Access-Control-Allow-Methods: "'*'"
-                      method.response.header.Access-Control-Allow-Origin: "'*'"
-                      
-          /home:
-          
-            get:
-            
-              responses:
-                "200":
-                  description: Default response for CORS method
-                  headers:
-                    Access-Control-Allow-Headers:
-                      type: string
-                    Access-Control-Allow-Methods:
-                      type: string
-                    Access-Control-Allow-Origin:
-                      type: string
-            
-              x-amazon-apigateway-integration:
-                connectionType: VPC_LINK
-                connectionId: !Ref APIGatewayVPCLink
-                httpMethod: GET
-                type: HTTP_PROXY
-                uri:  !Sub ['http://${nlb}/home', nlb: !ImportValue m1-core-stack:CoreLoadBalancerDNSName]
-                responses: 
-                  default:
-                    statusCode: 200
-                    responseParameters:
-                      method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
-                      method.response.header.Access-Control-Allow-Methods: "'*'"
-                      method.response.header.Access-Control-Allow-Origin: "'*'"
-          
           /algorithms:
           
             get:

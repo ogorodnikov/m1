@@ -43,7 +43,10 @@ class Routes():
         facebook = self.facebook
         telegram_bot = self.telegram_bot
         
+        
         ###   Routes   ###
+        
+        ###   Basic   ###
 
         @app.route("/")
         def root():
@@ -58,6 +61,10 @@ class Routes():
         @app.route("/home")
         def home():
             return render_template("home.html")
+
+        @app.route("/tutorial")
+        def tutorial():
+            return render_template("tutorial.html")
             
 
         ###   Login   ###

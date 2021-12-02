@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  Welcome to M1
+{% endblock %}
+
+{% block content %}
+
+  <div class="p-5 mx-auto" style="max-width: 1000px;">
+          
+    <div class="text-center h1 m-3">
+      Welcome to M1
+    </div>
+          
+    <div class="lead m-3">
+      
+      <p>
+        <b>Quantum computers</b> use properties of quantum states 
+                                 to perform calculations.<br>
+      </p>
+      <p>
+        <b>Quantum information</b> is stored and processed using quantum bits – qubits.
+      </p>
+      <p>
+        <b>Quantum algorithms</b> for certain problems 
+                                  can be significantly faster 
+                                  than classical algorithms.
+      </p>
+
+      
+
+      
+      <p>
+        Run quantum algorithms on simulator 
+                          or real quantum computers 
+                          kindly provided by
+                          
+        <a href="https://www.ibm.com/quantum-computing/what-is-quantum-computing/">
+          IBM Quantum
+        </a>
+                          and
+
+        <a href="https://qiskit.org/">
+          Qiskit
+        </a> 
+
+      </p>
+      
+    </div>
+    
+    <div class="text-center h1 m-3">
+      <a href="{{ url_for('get_algorithms') }}"
+        class="btn btn-lg btn-primary"
+        role="button">
+        Get Started
+      </a>    
+      
+      <a href="https://github.com/ogorodnikov/m1#readme"
+        class="btn btn-lg btn-secondary"
+        role="button"
+        target="_blank"
+        rel="noopener noreferrer">
+        Project description with diagrams
+        
+        <span class="badge bg-warning text-dark rounded-pill align-text-bottom">
+          <i class="fas fa-code-branch"></i>
+        </span>
+      </a> 
+    </div>
+ 
+   <div class="product-device box-shadow"></div>
+    
+  </div>
+  
+{% endblock %}
