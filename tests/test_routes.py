@@ -13,7 +13,8 @@ from core.telegram import Bot
 from core.facebook import Facebook
 
 
-HOME_PAGE_PHRASE = 'M1 Core Service'
+HOME_PAGE_PHRASE = 'Welcome to M1'
+TUTORIAL_PAGE_PHRASE = 'Tutorial'
 LOGIN_PAGE_PHRASE = 'Please sign in or register'
 TASKS_PAGE_PHRASE = 'Tasks'
 
@@ -21,13 +22,17 @@ TASKS_PAGE_PHRASE = 'Tasks'
 ###   Login   ###
 
 def test_home(app):
-    root_response = app.get('/')
-    home_response = app.get('/home')
+    root_response = app.get('/', follow_redirects=True)
+    home_response = app.get('/home', follow_redirects=True)
     
     assert HOME_PAGE_PHRASE in root_response.data.decode('utf-8')
     assert HOME_PAGE_PHRASE in home_response.data.decode('utf-8')
-    
 
+def test_tutorial(app):
+    tutorial_response = app.get('/tutorial')
+    
+    assert TUTORIAL_PAGE_PHRASE in tutorial_response.data.decode('utf-8')
+    
 def test_login(app):
     response = app.get('/login')
     assert LOGIN_PAGE_PHRASE in response.data.decode('utf-8')
