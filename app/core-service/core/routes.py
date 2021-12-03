@@ -52,7 +52,7 @@ class Routes():
         def root():
             
             if session.get('username'):
-                return redirect(url_for('get_algorithms'))
+                return redirect(url_for('get_algorithms', _external=True, _scheme='https'))
             
             return render_template("home.html")              
             
