@@ -29,6 +29,9 @@ class Routes():
         self.facebook = facebook
         self.telegram_bot = telegram_bot
         
+        self.domain = os.getenv('DOMAIN')
+        self.aws_nlb = os.getenv('AWS_NLB')
+        
         self.register_routes()
         
         self.logger.info(f"ROUTES initiated: {self}")       
@@ -52,7 +55,11 @@ class Routes():
         def root():
             
             if session.get('username'):
-                return redirect(url_for('get_algorithms', _external=True, _scheme='https'))
+                
+                redirect_url = url_for('get_algorithms')
+                redirect_url_without_proxy = self.replace_proxy(redirect_url)
+                
+                return redirect(redirect_url_without_proxy)
             
             return render_template("home.html")              
             
@@ -412,3 +419,10 @@ class Routes():
             
             exception_message = f"Login did not pass... {exception}"
             flash(exception_message, category='danger')
+            
+    
+    def replace_proxy(self, url):
+        
+        url_without_proxy = url.replace(self.aws_nlb, self.domain)
+        
+        return url_without_proxy
