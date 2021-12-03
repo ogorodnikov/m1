@@ -56,7 +56,9 @@ class Routes():
             
             if session.get('username'):
                 
-                redirect_url = url_for('get_algorithms')
+                redirect_url = url_for('get_algorithms', 
+                                       _external=True, 
+                                       _scheme='https')
                 redirect_url_without_proxy = self.replace_proxy(redirect_url)
                 
                 return redirect(redirect_url_without_proxy)
