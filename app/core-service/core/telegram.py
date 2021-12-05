@@ -82,10 +82,13 @@ class Bot(TeleBot):
         self.log(f'BOT message.text {message.text}')
         self.log(f'BOT message.chat.id {message.chat.id}')
         
+        github_link = (f"https://github.com/ogorodnikov/m1#readme")
+        
         markup = InlineKeyboardMarkup()
         
         markup.add(InlineKeyboardButton("Show algorithms 🔮", 
                                         callback_data="get_algorithms"))
+        markup.add(InlineKeyboardButton("Project description 💠", url=github_link)
         
         self.send_sticker(message.chat.id, Bot.BUBO_CELEBRATE_STICKER_FILE_ID)       
         self.send_message(message.chat.id, f"{bot_name} welcomes you, {user_name}!", 
