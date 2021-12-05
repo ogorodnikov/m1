@@ -81,9 +81,15 @@ class Bot(TeleBot):
         self.log(f'BOT user_name {user_name}')
         self.log(f'BOT message.text {message.text}')
         self.log(f'BOT message.chat.id {message.chat.id}')
-    
-        self.send_message(message.chat.id, f"{bot_name} welcomes you, {user_name}!")
-        self.send_sticker(message.chat.id, Bot.BUBO_CELEBRATE_STICKER_FILE_ID)
+        
+        markup = InlineKeyboardMarkup()
+        
+        markup.add(InlineKeyboardButton("Show algorithms 🔮", 
+                                        callback_data="get_algorithms"))
+        
+        self.send_sticker(message.chat.id, Bot.BUBO_CELEBRATE_STICKER_FILE_ID)       
+        self.send_message(message.chat.id, f"{bot_name} welcomes you, {user_name}!", 
+                          reply_markup=markup)
             
 
     def algorithms_handler(self, message_or_callback):
@@ -218,7 +224,7 @@ class Bot(TeleBot):
                        
             markup.add(InlineKeyboardButton("Run on Simulator 🎲", callback_data=run_on_simulator_callback))
             markup.add(InlineKeyboardButton("Run on Quantum Device 🌈", callback_data=run_on_quantum_device_callback))
-            markup.add(InlineKeyboardButton("Back to Algorithms🌻", callback_data="get_algorithms"))
+            markup.add(InlineKeyboardButton("Back to algorithms🌻", callback_data="get_algorithms"))
 
         if algorithm_type == 'classical':
         
@@ -229,7 +235,7 @@ class Bot(TeleBot):
                        InlineKeyboardButton("Code 💠", url=algorithm_code_link))
 
             markup.add(InlineKeyboardButton("Run 🎸", callback_data=run_classical_callback))
-            markup.add(InlineKeyboardButton("Back to Algorithms🌻", callback_data="get_algorithms"))
+            markup.add(InlineKeyboardButton("Back to algorithms🌻", callback_data="get_algorithms"))
 
         self.send_message(chat_id, f"{text}", reply_markup=markup, 
                           disable_notification=True)
