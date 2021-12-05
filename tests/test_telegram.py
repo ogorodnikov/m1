@@ -216,7 +216,7 @@ def callback(user, chat, message):
 
 test_algorithm_data = {'id': 'test_algorithm_id',
                    'name': 'test_algorithm',
-                   'link': 'https://test.com/test_algorithm',
+                   'wiki_link': 'https://test.com/test_algorithm',
                    'description': 'test_algorithm_description',
                    'parameters': [{'name': 'test_parameter', 
                                    'default_value': 'test_parameter_value'}]
