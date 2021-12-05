@@ -192,6 +192,10 @@ class Bot(TeleBot):
         algorithm_parameters = algorithm.get('parameters')
         algorithm_description = algorithm.get('description')
         
+        algorithm_code_link = (f"https://github.com/ogorodnikov/m1/"
+                               f"tree/main/app/core-service/core/"
+                               f"algorithms/{algorithm_id}.py")
+        
         like_callback = f"like_{algorithm_id}"
         run_classical_callback = f"run_classical_{algorithm_id}"
         run_on_simulator_callback = f"run_on_simulator_{algorithm_id}"
@@ -204,24 +208,28 @@ class Bot(TeleBot):
                 f"{algorithm_description}\n\n"
                 f"<b>Parameters:</b> {parameter_names_string}")
         
-        markup = InlineKeyboardMarkup()
+        markup = InlineKeyboardMarkup(row_width=4)
             
         if algorithm_type == 'quantum':
 
             markup.add(InlineKeyboardButton("Like 👍", callback_data=like_callback),
                        InlineKeyboardButton("Wiki 📖", url=algorithm_wiki_link),
-                       InlineKeyboardButton("Back 🌻", callback_data="get_algorithms"))
+                       InlineKeyboardButton("Code 💠", url=algorithm_code_link))
                        
             markup.add(InlineKeyboardButton("Run on Simulator 🎲", callback_data=run_on_simulator_callback))
             markup.add(InlineKeyboardButton("Run on Quantum Device 🌈", callback_data=run_on_quantum_device_callback))
+            markup.add(InlineKeyboardButton("Back to Algorithms🌻", callback_data="get_algorithms"))
 
         if algorithm_type == 'classical':
         
             markup.row_width = 3
             
-            markup.add(InlineKeyboardButton("Run 🎸", callback_data=run_classical_callback),
-                       InlineKeyboardButton("Like 👍", callback_data=like_callback),
-                       InlineKeyboardButton("Back 🌻", callback_data="get_algorithms"))
+            markup.add(InlineKeyboardButton("Like 👍", callback_data=like_callback),
+                       InlineKeyboardButton("Wiki 📖", url=algorithm_wiki_link),
+                       InlineKeyboardButton("Code 💠", url=algorithm_code_link))
+
+            markup.add(InlineKeyboardButton("Run 🎸", callback_data=run_classical_callback))
+            markup.add(InlineKeyboardButton("Back to Algorithms🌻", callback_data="get_algorithms"))
 
         self.send_message(chat_id, f"{text}", reply_markup=markup, 
                           disable_notification=True)
@@ -316,9 +324,9 @@ class Bot(TeleBot):
         
         markup.row_width = 3
         
-        markup.add(InlineKeyboardButton("Open 🎸", url=task_url),
-                   InlineKeyboardButton("Like 👍", callback_data=like_callback),
-                   InlineKeyboardButton("Back 🌻", callback_data=back_callback))
+        markup.add(InlineKeyboardButton("Show task execution 🔮", url=task_url))
+        markup.add(InlineKeyboardButton("Like 👍", callback_data=like_callback))
+        markup.add(InlineKeyboardButton("Back to algorithm 🌻", callback_data=back_callback))
 
         self.send_message(chat_id, run_message, reply_markup=markup)
     
