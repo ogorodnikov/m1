@@ -1,22 +1,21 @@
-import os
 import logging
 
 from logging.handlers import RotatingFileHandler
 
-from core.app import FlaskApp
-from core.config import Config
-from core.routes import Routes
-from core.dynamo import Dynamo
-from core.runner import Runner
-from core.cognito import Cognito
-from core.telegram import Bot
-from core.facebook import Facebook
+from .app import FlaskApp
+from .config import Config
+from .routes import Routes
+from .dynamo import Dynamo
+from .runner import Runner
+from .cognito import Cognito
+from .telegram import Bot
+from .facebook import Facebook
 
 
 class Main:
 
-    def __init__(self, *args, **kwargs):
-        
+    def __init__(self):
+
         self.config = Config()
         
         self.app = FlaskApp(__name__)
@@ -38,7 +37,6 @@ class Main:
         
         self.routes = Routes(self.db, self.app, self.cognito, self.runner, 
                              self.facebook, self.telegram_bot)
-
             
     def start_logging(self, log_to_file=False, log_file_path=None):
         
