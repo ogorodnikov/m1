@@ -66,8 +66,12 @@ class Bot(TeleBot):
         self.message_handler(content_types=['sticker'])(self.sticker_handler)
         self.message_handler(func=lambda message: True)(self.echo_handler)
 
-        self.callback_query_handler(func=lambda callback: callback.data.startswith("get_algorithms"))(self.algorithms_handler)
-        self.callback_query_handler(func=lambda callback: True)(self.callback_handler)
+        get_algorithms_callback_handler = self.callback_query_handler(func=(lambda callback:
+                                                                            callback.data.startswith("get_algorithms")))
+        get_algorithms_callback_handler(self.algorithms_handler)
+
+        other_callback_handler = self.callback_query_handler(func=lambda callback: True)
+        other_callback_handler(self.callback_handler)
         
         
     def start_handler(self, message):
@@ -82,7 +86,7 @@ class Bot(TeleBot):
         self.log(f'BOT message.text {message.text}')
         self.log(f'BOT message.chat.id {message.chat.id}')
         
-        github_link = (f"https://github.com/ogorodnikov/m1#readme")
+        github_link = f"https://github.com/ogorodnikov/m1#readme"
         
         markup = InlineKeyboardMarkup()
         
@@ -98,7 +102,8 @@ class Bot(TeleBot):
     def algorithms_handler(self, message_or_callback):
         
         self.log(f'BOT /algorithms')
-        
+        message = None
+
         if isinstance(message_or_callback, Message):
             message = message_or_callback
         
@@ -160,6 +165,8 @@ class Bot(TeleBot):
             self.open_algorithm(chat_id, algorithm)
         
         if callback_data.startswith("run_"):
+
+            run_mode = None
             
             if callback_data.startswith("run_classical_"):
                 run_mode = 'classical'
@@ -169,7 +176,7 @@ class Bot(TeleBot):
 
             elif callback_data.startswith("run_on_quantum_device_"):
                 run_mode = 'quantum_device'
-                
+
             algorithm_parameters = algorithm.get('parameters')
 
             self.collect_parameters(parameters=algorithm_parameters,
@@ -346,7 +353,7 @@ class Bot(TeleBot):
         
         self.log(f'BOT sticker_handler file_id: {file_id}')
         self.send_sticker(message.chat.id, file_id, disable_notification=True)
-    	
+
 
     def echo_handler(self, message):
         
