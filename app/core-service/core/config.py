@@ -5,9 +5,9 @@ from dotenv import load_dotenv
 from datetime import timedelta
 
 
-class Config():
+class Config:
     
-    def __init__(self, *args, **kwargs):
+    def __init__(self):
         
         load_dotenv()
         
