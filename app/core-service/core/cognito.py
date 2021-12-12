@@ -2,14 +2,13 @@ import os
 import random
 
 import boto3
-import botocore.exceptions
 
 from logging import getLogger
 
 
 class Cognito:
     
-    def __init__(self, *args, **kwargs):
+    def __init__(self):
         
         self.cognito = boto3.client('cognito-idp')
         self.logger = getLogger(__name__)

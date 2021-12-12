@@ -1,6 +1,5 @@
 import os
 import signal
-import sys
 
 from flask import Flask
 from flask_cors import CORS
@@ -59,6 +58,7 @@ class FlaskApp(Flask):
 
         print(f'APP exit_application')
 
+        # noinspection PyProtectedMember
         os._exit(0) if not test_mode else None
 
 
