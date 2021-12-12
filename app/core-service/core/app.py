@@ -59,8 +59,7 @@ class FlaskApp(Flask):
 
         print(f'APP exit_application')
 
-        # os._exit(0) if not test_mode else None
-        sys.exit(0) if not test_mode else None
+        os._exit(0) if not test_mode else None
 
 
 def create_app():
