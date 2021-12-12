@@ -8,7 +8,7 @@ from decimal import Decimal
 from logging import getLogger
 
 
-class Dynamo():
+class Dynamo:
     
     SERVICE_TASK_RECORD_ID = 0
     GET_QUEUED_TASK_ATTEMPTS = 5
@@ -56,12 +56,12 @@ class Dynamo():
     
         key_conditions = {}
         
-        for filter, value in query_parameters.items():
+        for filter_name, filter_value in query_parameters.items():
             
             # deprecation warning
             
-            key_conditions[filter] = {'AttributeValueList': [value], 
-                                      'ComparisonOperator': "EQ"}
+            key_conditions[filter_name] = {'AttributeValueList': [filter_value],
+                                           'ComparisonOperator': "EQ"}
         
         query_response = self.algorithms.query(IndexName='type-index',
                                                KeyConditions=key_conditions)
@@ -135,7 +135,7 @@ class Dynamo():
             Key={'task_id': self.SERVICE_TASK_RECORD_ID},
             UpdateExpression="SET task_count = if_not_exists(task_count, :zero) + :n",
             ExpressionAttributeValues={':n': 1, ':zero': 0},
-            ReturnValues = 'ALL_NEW'
+            ReturnValues='ALL_NEW'
             
             )
             
@@ -144,10 +144,11 @@ class Dynamo():
         add_queued_task_response = self.tasks.update_item(
 
             Key={'task_id': self.SERVICE_TASK_RECORD_ID},
-            UpdateExpression="SET queued_tasks = list_append(if_not_exists(queued_tasks, :empty_list), :queued_task_id)",
+            UpdateExpression="SET queued_tasks = " +
+                             "list_append(if_not_exists(queued_tasks, :empty_list), :queued_task_id)",
             ExpressionAttributeValues={':empty_list': [],
                                        ':queued_task_id': [new_task_id]},
-            ReturnValues = 'ALL_NEW'
+            ReturnValues='ALL_NEW'
             
             )
         
@@ -167,7 +168,7 @@ class Dynamo():
                                        ':record_type': 'task_record',
                                        ':logs': []},
                                        
-            ReturnValues = 'ALL_NEW'
+            ReturnValues='ALL_NEW'
             )
         
         # self.log(f"DYNAMO add_task {(new_task_id, algorithm_id, run_values)}")
@@ -181,7 +182,7 @@ class Dynamo():
                 Key={'task_id': self.SERVICE_TASK_RECORD_ID},
                 UpdateExpression="REMOVE queued_tasks[0]",
                 # ConditionExpression=f"attribute_exists(queued_tasks)",
-                ReturnValues = 'ALL_OLD'
+                ReturnValues='ALL_OLD'
             )
                 
         service_task_record = queued_task_response.get('Attributes')
@@ -203,7 +204,7 @@ class Dynamo():
             ExpressionAttributeValues={
                 ":new_task_status": 'Running'
             },
-            ReturnValues = 'ALL_NEW'
+            ReturnValues='ALL_NEW'
             
             )
 
@@ -225,7 +226,7 @@ class Dynamo():
                                  f"list_append(if_not_exists({attribute}, "
                                  f":empty_list), :{attribute})")
             expression_attribute_values = {f':{attribute}': [cleaned_value],
-                                          ':empty_list': []}
+                                           ':empty_list': []}
 
         else:
             update_expression = f"SET {attribute} = :{attribute}"
@@ -284,7 +285,7 @@ class Dynamo():
             Key={'task_id': self.SERVICE_TASK_RECORD_ID},
             UpdateExpression="SET status_updates = :empty_list",
             ExpressionAttributeValues={':empty_list': []},
-            ReturnValues = 'ALL_OLD'
+            ReturnValues='ALL_OLD'
             )
             
         status_updates_attributes = status_updates_response.get('Attributes')
@@ -388,7 +389,7 @@ class Dynamo():
                   'likes': 1324,
                   'enabled': True},
                   
-                  {'id': 'egcd',
+                 {'id': 'egcd',
                   'name': 'Extended Euclidean',
                   'type': 'classical',
                   'description': 'Calculates GCD (Greatest common divisor) and Bézout coefficents.',
@@ -400,7 +401,7 @@ class Dynamo():
                   'likes': 768,
                   'enabled': True},
                   
-                  {'id': 'grover',
+                 {'id': 'grover',
                   'name': 'Grover',
                   'type': 'quantum',
                   'description': 'Finds elements which satisfy constraints determined by black-box function.\n' +
@@ -413,7 +414,7 @@ class Dynamo():
                   'likes': 457,
                   'enabled': True},
                   
-                  {'id': 'grover_sudoku',
+                 {'id': 'grover_sudoku',
                   'name': 'Grover Mini Sudoku',
                   'type': 'quantum',
                   'description': 'Finds elements in sudoku-style matrix using Grover quantum search algorithm.\n' +
@@ -434,21 +435,23 @@ class Dynamo():
                   'likes': 315,
                   'enabled': True},
                   
-                  {'id': 'dj',
+                 {'id': 'dj',
                   'name': 'Deutsch Josza',
                   'type': 'quantum',
-                  'description': 'Determines if black-box function is constant (returns all 1 or all 0) or balanced (returns half of 1 and half of 0).\n' +
+                  'description': 'Determines if black-box function is constant (returns all 1 or all 0) or balanced ' +
+                                 '(returns half of 1 and half of 0).\n' +
                                  'Classical algorith complexity is O(2^N) while quantum is O(1).',
                   'wiki_link': 'https://en.wikipedia.org/wiki/Deutsch%E2%80%93Jozsa_algorithm',
                   'qiskit_link': 'https://qiskit.org/textbook/ch-algorithms/deutsch-jozsa.html',
                   'image': b'1010',
                   'image_url_1': 'https://www.ae-info.org/attach/User/Jozsa_Richard/Jozsa_Richard_small.jpg',
-                  'image_url_2': 'https://media.springernature.com/m685/springer-static/image/art%3A10.1038%2F526S16a/MediaObjects/41586_2015_Article_BF526S16a_Figa_HTML.jpg',
+                  'image_url_2': 'https://media.springernature.com/m685/springer-static/image/' +
+                                 'art%3A10.1038%2F526S16a/MediaObjects/41586_2015_Article_BF526S16a_Figa_HTML.jpg',
                   'parameters': [{'name': 'secret', 'default_value': '1010'}],
                   'likes': 459,
                   'enabled': True},
     
-                  {'id': 'simon',
+                 {'id': 'simon',
                   'name': 'Simon',
                   'type': 'quantum',
                   'description': 'Finds period of black-box function.\n' +
@@ -461,7 +464,7 @@ class Dynamo():
                   'likes': 781,
                   'enabled': True},
     
-                  {'id': 'qft',
+                 {'id': 'qft',
                   'name': 'Quantum Fourier Transform',
                   'type': 'quantum',
                   'description': 'Applies discrete Fourier transform to quantum state amplitudes.\n' +
@@ -473,7 +476,7 @@ class Dynamo():
                   'likes': 432,
                   'enabled': True},
     
-                  {'id': 'qpe',
+                 {'id': 'qpe',
                   'name': 'Quantum Phase Estimation',
                   'type': 'quantum',
                   'description': 'Estimates phase for unitary operator.',
@@ -485,7 +488,7 @@ class Dynamo():
                   'likes': 395,
                   'enabled': True},
     
-                  {'id': 'shor',
+                 {'id': 'shor',
                   'name': 'Shor',
                   'type': 'quantum',
                   'description': 'Factors integers using quantum spectographer and modular exponentiation.\n' +
@@ -500,7 +503,7 @@ class Dynamo():
                   'likes': 2045,
                   'enabled': True},
 
-                  {'id': 'teleport',
+                 {'id': 'teleport',
                   'name': 'Quantum Teleportation',
                   'type': 'quantum',
                   'description': 'Transfers quantum state using 2 entangled qubits and 2 classical bits.',
@@ -512,7 +515,7 @@ class Dynamo():
                   'likes': 824,
                   'enabled': True},
                   
-                  ]
+                 ]
         
         with self.algorithms.batch_writer(overwrite_by_pkeys=['id']) as batch:
             for item in items:
