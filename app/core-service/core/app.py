@@ -1,10 +1,11 @@
 import os
 import signal
+import sys
 
 from flask import Flask
 from flask_cors import CORS
 
-from core.gunicorn.app import GunicornApp
+from .gunicorn.app import GunicornApp
 
 
 class FlaskApp(Flask):
@@ -19,14 +20,8 @@ class FlaskApp(Flask):
         CORS(self)
 
 
-    def run_with_gunicorn(self, *args, **kwargs):
-        
-        gunicorn_app = GunicornApp(self)
-        
-        test_mode = kwargs.get('test_mode')
-        
-        gunicorn_app.run(*args, **kwargs)
-
+    def run_with_gunicorn(self):
+        GunicornApp(self).run()
         
     def run_with_development_server(self, *args, **kwargs):
         
@@ -40,8 +35,6 @@ class FlaskApp(Flask):
         
         kwargs.update(**development_server_parameters)
         
-        test_mode = kwargs.get('test_mode')
-
         self.run(*args, **kwargs)
         
     
@@ -55,22 +48,20 @@ class FlaskApp(Flask):
             os.remove(os.path.join(figures_folder, filename))
 
 
-    def termination_handler(self, signal, frame):
+    def termination_handler(self, termination_signal, frame):
       
         self.clear_figures_folder()
         
-        print(f'APP termination_handler signal {signal}, {frame}')
-        
-        
-    def exit_application(self, test_mode=False):
-        
+        print(f'APP termination_handler signal {termination_signal}, {frame}')
+
+    @staticmethod
+    def exit_application(test_mode=False):
+
         print(f'APP exit_application')
-        
-        os._exit(0) if not test_mode else None
-        
+
+        # os._exit(0) if not test_mode else None
+        sys.exit(0) if not test_mode else None
+
 
 def create_app():
-    
-    app = FlaskApp(__name__)
-    
-    return app
+    return FlaskApp(__name__)
