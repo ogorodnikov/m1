@@ -28,7 +28,7 @@ def test_clear_figures_folder(app, monkeypatch, stub):
     
 
 def test_termination_handler(app):
-    app.termination_handler(signal='test_signal', frame='test_frame')
+    app.termination_handler(termination_signal='test_signal', frame='test_frame')
     
 def test_exit_application(app):
     app.exit_application(test_mode=True)
