@@ -8,7 +8,7 @@ from logging import getLogger
 
 class Facebook:
     
-    def __init__(self, *args, **kwargs):
+    def __init__(self):
         
         self.logger = getLogger(__name__)
         
@@ -99,7 +99,7 @@ class Facebook:
         error = me_response_json.get('error')
     
         picture = me_response_json.get('picture')
-        picture_data = picture.get('data') if picture else ""
+        picture_data = picture.get('data') if picture else {}
         picture_url = picture_data.get('url') if picture_data else ""
         
         user_data = {
