@@ -17,21 +17,20 @@ from qiskit import IBMQ
 from qiskit import execute
 from qiskit.providers.ibmq import least_busy
 from qiskit.visualization import plot_bloch_multivector
-from qiskit.tools.monitor import backend_overview, job_monitor
 
-from core.algorithms.egcd import egcd
-from core.algorithms.bernvaz import bernvaz
-from core.algorithms.grover import grover
-from core.algorithms.grover_sudoku import grover_sudoku
-from core.algorithms.dj import dj
-from core.algorithms.simon import simon, simon_post_processing
-from core.algorithms.qft import qft
-from core.algorithms.qpe import qpe, qpe_post_processing
-from core.algorithms.teleport import teleport
-from core.algorithms.shor import shor, shor_post_processing
+from .algorithms.egcd import egcd
+from .algorithms.bernvaz import bernvaz
+from .algorithms.grover import grover
+from .algorithms.grover_sudoku import grover_sudoku
+from .algorithms.dj import dj
+from .algorithms.simon import simon, simon_post_processing
+from .algorithms.qft import qft
+from .algorithms.qpe import qpe, qpe_post_processing
+from .algorithms.teleport import teleport
+from .algorithms.shor import shor, shor_post_processing
 
 
-class Runner():
+class Runner:
     
     runner_functions = {'egcd': egcd,
                         'bernvaz': bernvaz,
@@ -50,12 +49,13 @@ class Runner():
                        
     DEFAULT_TASK_TIMEOUT = 300
 
-    def __init__(self, db, *args, **kwargs):
+    def __init__(self, db):
         
         self.db = db
         
         self.logger = getLogger(__name__)
 
+        self.queue_pool = None
         self.worker_active_flag = Event()
         
         self.qiskit_token = os.environ.get('QISKIT_TOKEN')
@@ -85,8 +85,11 @@ class Runner():
         
         self.queue_pool = ProcessPoolExecutor(max_workers=self.queue_workers_count,
                                               initializer=self.queue_worker_loop)
-                                              
-        self.queue_pool.submit(None)
+
+        dummy_starter_function = None
+
+        # noinspection PyTypeChecker
+        self.queue_pool.submit(dummy_starter_function)
         
         os.environ['RUNNER_STATE'] = 'Running'
         
@@ -206,11 +209,12 @@ class Runner():
         skip_statevector = run_values.get('skip_statevector')
         
         run_values['task_id'] = task_id
+        result = None
         
         runner_function = Runner.runner_functions[algorithm_id]
         
         task_log_callback = partial(self.log, task_id=task_id)
-        
+
         self.log(f'RUNNER run_mode: {run_mode}')
         self.log(f'RUNNER run_values: {run_values}')
         self.log(f'RUNNER runner_function: {runner_function}') 
@@ -360,7 +364,7 @@ class Runner():
     
         backend_filter = lambda backend: (not backend.configuration().simulator 
                                           and backend.configuration().n_qubits >= qubit_count
-                                          and backend.status().operational==True
+                                          and backend.status().operational
                                           and backend.name() not in self.backend_avoid_list)
                                           
         filtered_backends = provider.backends(filters=backend_filter)
