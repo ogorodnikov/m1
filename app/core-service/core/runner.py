@@ -118,7 +118,6 @@ class Runner:
         return task_id
 
         
-    @staticmethod
     def exception_decorator(function):
         
         @wraps(function)
