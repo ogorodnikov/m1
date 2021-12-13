@@ -116,12 +116,12 @@ class Runner:
         self.log(f'RUNNER new_task: {task_id, algorithm_id, run_values}')
         
         return task_id
+
         
-    
+    @staticmethod
     def exception_decorator(function):
         
         @wraps(function)
-        
         def wrapper(self, *args, **kwargs):
 
             try:
