@@ -1,5 +1,4 @@
 import os
-import requests
 
 from flask import flash
 from flask import url_for
@@ -10,13 +9,10 @@ from flask import send_file
 from flask import render_template
 from flask import send_from_directory
 
-import boto3
-import botocore.exceptions
-
 from logging import getLogger
 
 
-class Routes():
+class Routes:
     
     def __init__(self, db, app, cognito, runner, facebook, telegram_bot):
         
@@ -46,9 +42,9 @@ class Routes():
         facebook = self.facebook
         telegram_bot = self.telegram_bot
         
-        
+
         ###   Routes   ###
-        
+
         ###   Basic   ###
 
         @app.route("/")
@@ -85,6 +81,7 @@ class Routes():
             code = request.args.get('code')
             
             login_url = url_for('login', _external=True, _scheme='https')
+            redirect_url = None
             
             if not (flow or code):
                 
@@ -135,9 +132,10 @@ class Routes():
         def get_algorithms():
             
             if request.args:
+                # noinspection PyBroadException
                 try:
                     items = db.query_algorithms(request.args)
-                except:
+                except Exception:
                     flash(f"Filter error)", category='warning')
                     items = db.get_all_algorithms()            
                 
@@ -155,7 +153,7 @@ class Routes():
             return render_template("algorithm.html", algorithm=algorithm)
             
             
-        @app.route("/algorithms/<algorithm_id>/like", methods = ['GET'])
+        @app.route("/algorithms/<algorithm_id>/like", methods=['GET'])
         def like_algorithm(algorithm_id):
             
             db.like_algorithm(algorithm_id)
@@ -163,7 +161,7 @@ class Routes():
             return redirect(request.referrer)
             
         
-        @app.route("/algorithms/<algorithm_id>/run", methods = ['POST'])
+        @app.route("/algorithms/<algorithm_id>/run", methods=['POST'])
         def run_algorithm(algorithm_id):
             
             run_values = request.form
@@ -179,12 +177,12 @@ class Routes():
             task_url = f"/tasks?task_id={task_id}"
             
             run_message = (f"<a href='{task_url}' class='mb-0'"
-                          f"target='_blank' rel='noopener noreferrer'>"
-                          f"Task {task_id}</a>"
-                          f"<hr class='mb-0 mt-1'>"
-                          f"<p class='mb-0'>Algorithm: {algorithm_id}</p>"
-                          f"<p class='mb-0'>Run mode: {run_mode}</p>"
-                          f"<p class='mb-0'>Run values: {run_values_string}</p>")
+                           f"target='_blank' rel='noopener noreferrer'>"
+                           f"Task {task_id}</a>"
+                           f"<hr class='mb-0 mt-1'>"
+                           f"<p class='mb-0'>Algorithm: {algorithm_id}</p>"
+                           f"<p class='mb-0'>Run mode: {run_mode}</p>"
+                           f"<p class='mb-0'>Run values: {run_values_string}</p>")
                            
             flash(run_message, category='warning')
         
