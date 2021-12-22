@@ -15,6 +15,8 @@ except ModuleNotFoundError:
 
 def build_grover_iteration(qubits_count, secrets):
     
+    qubits = range(qubits_count)
+    
     elements_count = 2 ** qubits_count
     
     grover_iteration_circuit = QuantumCircuit(qubits_count)
@@ -23,6 +25,9 @@ def build_grover_iteration(qubits_count, secrets):
                                       elements_count=elements_count)
                                       
     diffuser = build_diffuser(qubits_count=qubits_count)
+    
+    grover_iteration_circuit.append(phase_oracle, qubits)
+    grover_iteration_circuit.append(diffuser, qubits)
 
     print(f'COUNT grover_iteration_circuit:\n{grover_iteration_circuit}')
     
