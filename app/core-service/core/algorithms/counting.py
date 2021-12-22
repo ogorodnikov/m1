@@ -1,8 +1,10 @@
 from qiskit import QuantumCircuit
 
 try:
+    from grover import build_phase_oracle
     from grover import build_diffuser
 except ModuleNotFoundError:
+    from core.algorithms.grover import build_phase_oracle
     from core.algorithms.grover import build_diffuser
 
 try:
@@ -11,6 +13,27 @@ except ModuleNotFoundError:
     from core.algorithms.qft import create_qft_circuit
     
 
-def counting(run_values, task_log):
+def build_grover_iteration(qubits_count, secrets):
+    
+    elements_count = 2 ** qubits_count
+    
+    grover_iteration_circuit = QuantumCircuit(qubits_count)
+    
+    phase_oracle = build_phase_oracle(secrets=secrets, 
+                                      elements_count=elements_count)
+                                      
+    diffuser = build_diffuser(qubits_count=qubits_count)
+
+    print(f'COUNT grover_iteration_circuit:\n{grover_iteration_circuit}')
+    
+
+def quantum_counting(run_values, task_log):
+    
+    secrets = [value for key, value in run_values.items() if 'secret' in key]
+    secret_count = len(secrets)
+    
+    qubits_count = len(max(secrets, key=len))
+    
+    build_grover_iteration(qubits_count, secrets)
     
     task_log(f'COUNT run_values: {run_values}')

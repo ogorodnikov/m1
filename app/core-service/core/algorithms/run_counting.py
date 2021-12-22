@@ -1,14 +1,12 @@
 from qiskit import Aer
 from qiskit import execute
 
-from counting import counting
+from counting import quantum_counting
 
 
-run_values = "test"
+run_values = {'secret_1': '10111', 'secret_2': '10101'}
 
-print(run_values)
-    
-# circuit = counting.counting(run_values=run_values, task_log=print)
+circuit = quantum_counting(run_values=run_values, task_log=print)
 
 # backend = Aer.get_backend('aer_simulator')
 
