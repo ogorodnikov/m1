@@ -50,15 +50,19 @@ def build_grover_iteration(qubits_count, secrets):
     phase_oracle = build_unitary_phase_oracle(secrets=secrets, qubits_count=qubits_count)
     diffuser = build_diffuser(qubits_count=qubits_count)
     
-    phase_oracle_gate = phase_oracle.to_gate()
-    diffuser_gate = diffuser.to_gate()
+    grover_iteration_circuit.append(phase_oracle, [*qubits, ancilla_qubit])
+    grover_iteration_circuit.append(diffuser, qubits)
     
-    grover_iteration_circuit.append(phase_oracle_gate, [*qubits, ancilla_qubit])
-    grover_iteration_circuit.append(diffuser_gate, qubits)
-
+    print(f'COUNT phase_oracle:\n{phase_oracle}')
     print(f'COUNT [*qubits, ancilla_qubit]: {[*qubits, ancilla_qubit]}')
     print(f'COUNT grover_iteration_circuit:\n{grover_iteration_circuit}')
-    print(f'COUNT phase_oracle:\n{phase_oracle}')
+    
+    
+    
+    controlled_phase_oracle = phase_oracle.control()
+    diffuser_gate = diffuser.to_gate()
+    # controlled_diffuser_gate = diffuser_gate.control()
+
     
     return grover_iteration_circuit
     
@@ -72,11 +76,6 @@ def quantum_counting(run_values, task_log):
     
     grover_iteration_circuit = build_grover_iteration(qubits_count, secrets)
     
-    grover_iteration_gate = grover_iteration_circuit.to_gate()
-    # controlled_grover_iteration = grover_iteration_circuit.control()
-    
     task_log(f'COUNT run_values: {run_values}')
     task_log(f'COUNT grover_iteration_circuit:\n{grover_iteration_circuit}')
     
-    task_log(f'COUNT grover_iteration_gate: {grover_iteration_gate}')
-    # task_log(f'COUNT controlled_grover_iteration: {controlled_grover_iteration}')
