@@ -142,6 +142,7 @@ def quantum_counting(run_values, task_log):
     
     circuit.measure(counting_qubits, measurement_bits)
     
+    
     task_log(f'COUNT run_values: {run_values}')
     
     task_log(f'COUNT grover_iteration_circuit:\n{grover_iteration_circuit}')
@@ -160,3 +161,23 @@ def quantum_counting(run_values, task_log):
     task_log(f'COUNT all_qubits:\n{all_qubits}')
     task_log(f'COUNT measurement_bits:\n{measurement_bits}')
     
+    
+    return circuit
+    
+    
+def quantum_counting_post_processing(run_data, task_log):
+    
+    counts = run_data['Result']['Counts']
+    
+    most_probable_result = max(counts, key=counts.get)
+
+    most_probable_result_int = int(most_probable_result, 2)
+    
+    task_log(f'COUNT quantum_counting_post_processing')
+    
+    task_log(f'COUNT run_data: {run_data}')
+    task_log(f'COUNT counts: {counts}')
+    
+    task_log(f'COUNT most_probable_result: {most_probable_result}')
+    task_log(f'COUNT most_probable_result_int: {most_probable_result_int}')
+        
