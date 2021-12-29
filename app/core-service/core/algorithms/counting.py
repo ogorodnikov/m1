@@ -104,12 +104,17 @@ def quantum_counting(run_values, task_log):
     
     counting_qubits_count = 4
     searching_qubits_count = 4
+    total_qubits_count = counting_qubits_count + searching_qubits_count
+    
+    counting_qubits = list(range(counting_qubits_count))
+    searching_qubits = list(range(counting_qubits_count, total_qubits_count))
+    all_qubits = list(range(total_qubits_count))
     
     measurement_bits_count = counting_qubits_count
     
-    circuit = QuantumCircuit(counting_qubits_count + searching_qubits_count,
-                             measurement_bits_count)
+    circuit = QuantumCircuit(total_qubits_count, measurement_bits_count)
     
+    circuit.h(all_qubits)
     
     task_log(f'COUNT run_values: {run_values}')
     
@@ -123,4 +128,8 @@ def quantum_counting(run_values, task_log):
     task_log(f'COUNT example_iqft_gate:\n{example_iqft_gate}')
     
     task_log(f'COUNT circuit:\n{circuit}')
+    
+    task_log(f'COUNT counting_qubits:\n{counting_qubits}')
+    task_log(f'COUNT searching_qubits:\n{searching_qubits}')
+    task_log(f'COUNT all_qubits:\n{all_qubits}')
     
