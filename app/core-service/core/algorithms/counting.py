@@ -97,10 +97,19 @@ def quantum_counting(run_values, task_log):
     
     # IQFT
     
+    # iqft_circuit = create_qft_circuit(4, flipped=True, inverted=True, barriers=False)
+    
     iqft_circuit = create_qft_circuit(4, inverted=True)
     
     example_qft_circuit = example_qft(4)
     example_iqft_gate = example_qft_circuit.to_gate().inverse()
+    
+    # task_log(f'COUNT iqft_circuit:\n{iqft_circuit}')
+    
+    # task_log(f'COUNT example_qft_circuit:\n{example_qft_circuit}')
+    # task_log(f'COUNT example_iqft_gate:\n{example_iqft_gate}')
+    
+    # quit()
     
     
     # Circuit
@@ -137,12 +146,15 @@ def quantum_counting(run_values, task_log):
     
     # Apply IQFT
     
-    circuit.append(example_iqft_gate, counting_qubits)
+    # circuit.append(example_iqft_gate, counting_qubits)
+    
+    circuit.append(iqft_circuit, counting_qubits)
     
     
     # Measure
     
-    circuit.measure(counting_qubits, measurement_bits)
+    circuit.measure(list(reversed(counting_qubits)), measurement_bits)
+    # circuit.measure([3, 2, 1, 0], measurement_bits)
     
     
     task_log(f'COUNT run_values: {run_values}')
