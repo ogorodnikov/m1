@@ -4,7 +4,9 @@ from qiskit import execute
 from counting import quantum_counting, quantum_counting_post_processing
 
 
-run_values = {'secret_1': '10111', 'secret_2': '10101'}
+# run_values = {'secret_1': '10111', 'secret_2': '10101'}
+
+run_values = {'secret_1': '1011', 'secret_2': '1010'}
 
 circuit = quantum_counting(run_values=run_values, task_log=print)
 

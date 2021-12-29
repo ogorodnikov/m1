@@ -1,3 +1,5 @@
+from math import pi
+
 from qiskit import QuantumCircuit
 
 try:
@@ -167,17 +169,31 @@ def quantum_counting(run_values, task_log):
     
 def quantum_counting_post_processing(run_data, task_log):
     
+    run_values = run_data['Run Values']
     counts = run_data['Result']['Counts']
+    
+    max_secret_len = max(map(len, run_values.values()))
+    
+    counting_qubits_count = max_secret_len
     
     most_probable_result = max(counts, key=counts.get)
 
     most_probable_result_int = int(most_probable_result, 2)
     
+    qpe_phi = most_probable_result_int / 2 ** counting_qubits_count
+    theta = qpe_phi * 2 * pi
+    
     task_log(f'COUNT quantum_counting_post_processing')
     
     task_log(f'COUNT run_data: {run_data}')
+    task_log(f'COUNT run_values: {run_values}')
     task_log(f'COUNT counts: {counts}')
+    
+    task_log(f'COUNT counting_qubits_count: {counting_qubits_count}')
     
     task_log(f'COUNT most_probable_result: {most_probable_result}')
     task_log(f'COUNT most_probable_result_int: {most_probable_result_int}')
+    
+    task_log(f'COUNT qpe_phi: {qpe_phi}')
+    task_log(f'COUNT theta: {theta}')
         
