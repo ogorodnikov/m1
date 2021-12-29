@@ -81,6 +81,9 @@ def quantum_counting(run_values, task_log):
     
     qubits_count = len(max(secrets, key=len))
     
+    
+    # CGRIT
+    
     grover_iteration_circuit = example_grover_iteration(qubits_count, secrets)
     
     grover_iteration_gate = grover_iteration_circuit.to_gate()
@@ -88,8 +91,25 @@ def quantum_counting(run_values, task_log):
     
     grover_iteration_gate.label = "Grover Iteration Gate"
     
+    
+    # IQFT
+    
     iqft_circuit = create_qft_circuit(4, inverted=True)
+    
     example_qft_circuit = example_qft(4)
+    example_iqft_gate = example_qft_circuit.to_gate().inverse()
+    
+    
+    # Circuit
+    
+    counting_qubits_count = 4
+    searching_qubits_count = 4
+    
+    measurement_bits_count = counting_qubits_count
+    
+    circuit = QuantumCircuit(counting_qubits_count + searching_qubits_count,
+                             measurement_bits_count)
+    
     
     task_log(f'COUNT run_values: {run_values}')
     
@@ -98,5 +118,9 @@ def quantum_counting(run_values, task_log):
     task_log(f'COUNT controlled_grover_iteration:\n{controlled_grover_iteration}')
     
     task_log(f'COUNT iqft_circuit:\n{iqft_circuit}')
+    
     task_log(f'COUNT example_qft_circuit:\n{example_qft_circuit}')
+    task_log(f'COUNT example_iqft_gate:\n{example_iqft_gate}')
+    
+    task_log(f'COUNT circuit:\n{circuit}')
     
