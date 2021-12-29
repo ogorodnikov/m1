@@ -1,4 +1,4 @@
-from math import pi
+from math import pi, sin
 
 from qiskit import QuantumCircuit
 
@@ -175,6 +175,7 @@ def quantum_counting_post_processing(run_data, task_log):
     max_secret_len = max(map(len, run_values.values()))
     
     counting_qubits_count = max_secret_len
+    searching_qubits_count = max_secret_len
     
     most_probable_result = max(counts, key=counts.get)
 
@@ -182,6 +183,12 @@ def quantum_counting_post_processing(run_data, task_log):
     
     qpe_phi = most_probable_result_int / 2 ** counting_qubits_count
     theta = qpe_phi * 2 * pi
+    
+    total_states_count = 2 ** searching_qubits_count
+    non_solutions_states_count = total_states_count * sin(theta / 2) ** 2
+    
+    solutions_states_count = total_states_count - non_solutions_states_count
+    
     
     task_log(f'COUNT quantum_counting_post_processing')
     
@@ -196,4 +203,8 @@ def quantum_counting_post_processing(run_data, task_log):
     
     task_log(f'COUNT qpe_phi: {qpe_phi}')
     task_log(f'COUNT theta: {theta}')
+    
+    task_log(f'COUNT total_states_count: {total_states_count}')
+    task_log(f'COUNT non_solutions_states_count: {non_solutions_states_count}')
+    task_log(f'COUNT solutions_states_count: {solutions_states_count}')
         
