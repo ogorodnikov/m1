@@ -49,34 +49,6 @@ def example_grover_iteration(qubits_count, secrets):
     return circuit
     
     
-def example_qft(n):
-    
-    circuit = QuantumCircuit(4)
-    
-    def swap_registers(circuit, n):
-        for qubit in range(n//2):
-            circuit.swap(qubit, n-qubit-1)
-        return circuit
-        
-    def qft_rotations(circuit, n):
-        
-        if n == 0:
-            return circuit
-            
-        n -= 1
-        circuit.h(n)
-        
-        for qubit in range(n):
-            circuit.cp(np.pi/2**(n-qubit), qubit, n)
-            
-        qft_rotations(circuit, n)
-    
-    qft_rotations(circuit, n)
-    swap_registers(circuit, n)
-    
-    return circuit
-    
-
 def quantum_counting(run_values, task_log):
     
     secrets = [value for key, value in run_values.items() if 'secret' in key]
@@ -93,23 +65,6 @@ def quantum_counting(run_values, task_log):
     controlled_grover_iteration = grover_iteration_gate.control()
     
     grover_iteration_gate.label = "Grover Iteration Gate"
-    
-    
-    # IQFT
-    
-    # iqft_circuit = create_qft_circuit(4, flipped=True, inverted=True, barriers=False)
-    
-    iqft_circuit = create_qft_circuit(4, inverted=True)
-    
-    example_qft_circuit = example_qft(4)
-    example_iqft_gate = example_qft_circuit.to_gate().inverse()
-    
-    # task_log(f'COUNT iqft_circuit:\n{iqft_circuit}')
-    
-    # task_log(f'COUNT example_qft_circuit:\n{example_qft_circuit}')
-    # task_log(f'COUNT example_iqft_gate:\n{example_iqft_gate}')
-    
-    # quit()
     
     
     # Circuit
@@ -144,9 +99,9 @@ def quantum_counting(run_values, task_log):
             
             circuit.append(controlled_grover_iteration, iteration_qubits)
     
-    # Apply IQFT
+    # IQFT
     
-    # circuit.append(example_iqft_gate, counting_qubits)
+    iqft_circuit = create_qft_circuit(4, inverted=True)
     
     circuit.append(iqft_circuit, counting_qubits)
     
@@ -154,7 +109,6 @@ def quantum_counting(run_values, task_log):
     # Measure
     
     circuit.measure(list(reversed(counting_qubits)), measurement_bits)
-    # circuit.measure([3, 2, 1, 0], measurement_bits)
     
     
     task_log(f'COUNT run_values: {run_values}')
@@ -164,9 +118,6 @@ def quantum_counting(run_values, task_log):
     task_log(f'COUNT controlled_grover_iteration:\n{controlled_grover_iteration}')
     
     task_log(f'COUNT iqft_circuit:\n{iqft_circuit}')
-    
-    task_log(f'COUNT example_qft_circuit:\n{example_qft_circuit}')
-    task_log(f'COUNT example_iqft_gate:\n{example_iqft_gate}')
     
     task_log(f'COUNT circuit:\n{circuit}')
     
@@ -190,7 +141,7 @@ def quantum_counting_post_processing(run_data, task_log):
     searching_qubits_count = max_secret_len
     
     most_probable_result = max(counts, key=counts.get)
-
+    
     most_probable_result_int = int(most_probable_result, 2)
     
     qpe_phi = most_probable_result_int / 2 ** counting_qubits_count
