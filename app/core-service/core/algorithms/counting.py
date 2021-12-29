@@ -116,6 +116,18 @@ def quantum_counting(run_values, task_log):
     
     circuit.h(all_qubits)
     
+    
+    # Apply CGRITs
+    
+    for counting_qubit in counting_qubits:
+        
+        iterations_count = 2 ** counting_qubit
+        
+        for iteration in range(iterations_count):
+            
+            task_log(f'COUNT iteration: {iteration}')  
+        
+    
     task_log(f'COUNT run_values: {run_values}')
     
     task_log(f'COUNT grover_iteration_circuit:\n{grover_iteration_circuit}')
