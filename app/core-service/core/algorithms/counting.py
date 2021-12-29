@@ -125,7 +125,11 @@ def quantum_counting(run_values, task_log):
         
         for iteration in range(iterations_count):
             
-            task_log(f'COUNT iteration: {iteration}')  
+            task_log(f'COUNT iteration: {iteration}')
+            
+            iteration_qubits = [counting_qubit] + searching_qubits
+            
+            circuit.append(controlled_grover_iteration, iteration_qubits)
         
     
     task_log(f'COUNT run_values: {run_values}')
