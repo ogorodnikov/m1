@@ -185,9 +185,15 @@ def quantum_counting_post_processing(run_data, task_log):
     theta = qpe_phi * 2 * pi
     
     total_states_count = 2 ** searching_qubits_count
-    non_solutions_states_count = total_states_count * sin(theta / 2) ** 2
+    non_solutions_count = total_states_count * sin(theta / 2) ** 2
     
-    solutions_states_count = total_states_count - non_solutions_states_count
+    solutions_count = total_states_count - non_solutions_count
+    
+    error_upper_bound = counting_qubits_count - 1
+    
+    error = (((2 * solutions_count * total_states_count) ** 0.5 +
+              total_states_count / 2 ** (error_upper_bound + 1)) * 
+             2 ** -error_upper_bound)
     
     
     task_log(f'COUNT quantum_counting_post_processing')
@@ -205,6 +211,8 @@ def quantum_counting_post_processing(run_data, task_log):
     task_log(f'COUNT theta: {theta}')
     
     task_log(f'COUNT total_states_count: {total_states_count}')
-    task_log(f'COUNT non_solutions_states_count: {non_solutions_states_count}')
-    task_log(f'COUNT solutions_states_count: {solutions_states_count}')
-        
+    task_log(f'COUNT non_solutions_count: {non_solutions_count}')
+    task_log(f'COUNT solutions_count: {solutions_count}')
+    
+    task_log(f'COUNT error_upper_bound: {error_upper_bound}')
+    task_log(f'COUNT error: {error}')
