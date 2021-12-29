@@ -73,6 +73,7 @@ def example_qft(n):
     swap_registers(circuit, n)
     
     return circuit
+    
 
 def quantum_counting(run_values, task_log):
     
@@ -111,6 +112,7 @@ def quantum_counting(run_values, task_log):
     all_qubits = list(range(total_qubits_count))
     
     measurement_bits_count = counting_qubits_count
+    measurement_bits = list(range(measurement_bits_count))
     
     circuit = QuantumCircuit(total_qubits_count, measurement_bits_count)
     
@@ -130,7 +132,15 @@ def quantum_counting(run_values, task_log):
             iteration_qubits = [counting_qubit] + searching_qubits
             
             circuit.append(controlled_grover_iteration, iteration_qubits)
-        
+    
+    # Apply IQFT
+    
+    circuit.append(example_iqft_gate, counting_qubits)
+    
+    
+    # Measure
+    
+    circuit.measure(counting_qubits, measurement_bits)
     
     task_log(f'COUNT run_values: {run_values}')
     
@@ -148,4 +158,5 @@ def quantum_counting(run_values, task_log):
     task_log(f'COUNT counting_qubits:\n{counting_qubits}')
     task_log(f'COUNT searching_qubits:\n{searching_qubits}')
     task_log(f'COUNT all_qubits:\n{all_qubits}')
+    task_log(f'COUNT measurement_bits:\n{measurement_bits}')
     
