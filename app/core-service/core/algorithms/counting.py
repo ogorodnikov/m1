@@ -79,7 +79,7 @@ def grover_iteration(qubits_count, secrets):
     return circuit
     
     
-def quantum_counting(run_values, task_log):
+def counting(run_values, task_log):
     
     # Inputs
     
@@ -168,14 +168,16 @@ def quantum_counting(run_values, task_log):
     return circuit
     
     
-def quantum_counting_post_processing(run_data, task_log):
+def counting_post_processing(run_data, task_log):
     
     run_values = run_data['Run Values']
     counts = run_data['Result']['Counts']
     
     precision = int(run_values['precision'])
     
-    max_secret_len = max(map(len, run_values.values()))
+    input_secrets = [value for key, value in run_values.items() if 'secret' in key]
+    
+    max_secret_len = max(map(len, input_secrets))
     
     counting_qubits_count = precision
     searching_qubits_count = max_secret_len
@@ -211,6 +213,9 @@ def quantum_counting_post_processing(run_data, task_log):
     task_log(f'COUNT run_data: {run_data}')
     task_log(f'COUNT run_values: {run_values}')
     task_log(f'COUNT counts: {counts}')
+    
+    task_log(f'COUNT precision: {precision}')
+    task_log(f'COUNT input_secrets: {input_secrets}')
     
     task_log(f'COUNT counting_qubits_count: {counting_qubits_count}')
     

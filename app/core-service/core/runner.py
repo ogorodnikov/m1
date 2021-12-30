@@ -28,6 +28,7 @@ from .algorithms.qft import qft
 from .algorithms.qpe import qpe, qpe_post_processing
 from .algorithms.teleport import teleport
 from .algorithms.shor import shor, shor_post_processing
+from .algorithms.counting import counting, counting_post_processing
 
 
 class Runner:
@@ -41,11 +42,13 @@ class Runner:
                         'qft': qft,
                         'qpe': qpe,
                         'teleport': teleport,
-                        'shor': shor}
+                        'shor': shor,
+                        'counting': counting,}
                    
     post_processing = {'simon': simon_post_processing,
                        'qpe': qpe_post_processing,
-                       'shor': shor_post_processing}
+                       'shor': shor_post_processing,
+                       'counting': counting_post_processing,}
                        
     DEFAULT_TASK_TIMEOUT = 300
 
