@@ -6,7 +6,7 @@ from counting import quantum_counting, quantum_counting_post_processing
 
 # run_values = {'secret_1': '10111', 'secret_2': '10101'}
 
-run_values = {'secret_1': '1011', 'secret_2': '1010'}
+run_values = {'precision': '4', 'secret_1': '1011', 'secret_2': '1010'}
 
 # run_values = {'secret_1': '1011', 'secret_2': '1010', 'secret_3': '0111', 'secret_4': '0101'}
 

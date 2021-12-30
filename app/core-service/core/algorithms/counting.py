@@ -1,5 +1,4 @@
-from math import pi
-from math import sin
+import math
 
 from qiskit import QuantumCircuit
 
@@ -77,14 +76,14 @@ def grover_iteration(qubits_count, secrets):
     circuit.append(oracle_gate, qubits)
     circuit.append(diffuser_gate, qubits)
 
-    # print(f'COUNT oracle:\n{oracle}')
-    # print(f'COUNT diffuser:\n{diffuser}')
-    # print(f'COUNT circuit:\n{circuit}')
-    
     return circuit
     
     
 def quantum_counting(run_values, task_log):
+    
+    # Inputs
+    
+    precision = int(run_values['precision'])
     
     input_secrets = [value for key, value in run_values.items() if 'secret' in key]
     
@@ -93,23 +92,13 @@ def quantum_counting(run_values, task_log):
         
     secret_count = len(secrets)
     
-    qubits_count = len(max(secrets, key=len))
+    max_secret_len = len(max(secrets, key=len))
     
-    
-    # CGRIT
-    
-    grover_iteration_circuit = grover_iteration(qubits_count, secrets)
-    
-    grover_iteration_gate = grover_iteration_circuit.to_gate()
-    
-    controlled_grover_iteration = grover_iteration_circuit.control()
-    controlled_grover_iteration.name = "CGRIT"
-    
-    
+
     # Circuit
     
-    counting_qubits_count = qubits_count
-    searching_qubits_count = qubits_count
+    counting_qubits_count = precision
+    searching_qubits_count = max_secret_len
     total_qubits_count = counting_qubits_count + searching_qubits_count
     
     counting_qubits = list(range(counting_qubits_count))
@@ -122,6 +111,16 @@ def quantum_counting(run_values, task_log):
     circuit = QuantumCircuit(total_qubits_count, measurement_bits_count)
     
     circuit.h(all_qubits)
+    
+
+    # CGRIT
+    
+    grover_iteration_circuit = grover_iteration(searching_qubits_count, secrets)
+    
+    grover_iteration_gate = grover_iteration_circuit.to_gate()
+    
+    controlled_grover_iteration = grover_iteration_circuit.control()
+    controlled_grover_iteration.name = "CGRIT"
     
     
     # Apply CGRITs
@@ -138,7 +137,7 @@ def quantum_counting(run_values, task_log):
     
     # IQFT
     
-    iqft_circuit = create_qft_circuit(qubits_count, inverted=True)
+    iqft_circuit = create_qft_circuit(counting_qubits_count, inverted=True)
     
     circuit.append(iqft_circuit, counting_qubits)
     
@@ -147,8 +146,13 @@ def quantum_counting(run_values, task_log):
     
     circuit.measure(list(reversed(counting_qubits)), measurement_bits)
     
+
+    # Logs
     
     task_log(f'COUNT run_values: {run_values}')
+    
+    task_log(f'COUNT input_secrets: {input_secrets}')
+    task_log(f'COUNT secrets: {secrets}')
     
     task_log(f'COUNT counting_qubits:\n{counting_qubits}')
     task_log(f'COUNT searching_qubits:\n{searching_qubits}')
@@ -169,9 +173,11 @@ def quantum_counting_post_processing(run_data, task_log):
     run_values = run_data['Run Values']
     counts = run_data['Result']['Counts']
     
+    precision = int(run_values['precision'])
+    
     max_secret_len = max(map(len, run_values.values()))
     
-    counting_qubits_count = max_secret_len
+    counting_qubits_count = precision
     searching_qubits_count = max_secret_len
     
     most_probable_result = max(counts, key=counts.get)
@@ -179,10 +185,13 @@ def quantum_counting_post_processing(run_data, task_log):
     most_probable_result_int = int(most_probable_result, 2)
     
     qpe_phi = most_probable_result_int / 2 ** counting_qubits_count
-    theta = qpe_phi * 2 * pi
+    theta = qpe_phi * 2 * math.pi
+    
+    
+    # Counts
     
     total_states_count = 2 ** searching_qubits_count
-    non_solutions_count = total_states_count * sin(theta / 2) ** 2
+    non_solutions_count = total_states_count * math.sin(theta / 2) ** 2
     
     solutions_count = total_states_count - non_solutions_count
     
@@ -192,6 +201,10 @@ def quantum_counting_post_processing(run_data, task_log):
               total_states_count / 2 ** (error_upper_bound + 1)) * 
              2 ** -error_upper_bound)
     
+    rounded_solutions_count = int(solutions_count + 0.5)
+    
+    
+    # Logs
     
     task_log(f'COUNT quantum_counting_post_processing')
     
@@ -213,3 +226,5 @@ def quantum_counting_post_processing(run_data, task_log):
     
     task_log(f'COUNT error_upper_bound: {error_upper_bound}')
     task_log(f'COUNT error: {error}')
+    
+    task_log(f'COUNT rounded_solutions_count: {rounded_solutions_count}')
