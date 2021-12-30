@@ -3,12 +3,12 @@ from math import sin
 
 from qiskit import QuantumCircuit
 
-try:
-    from grover import build_phase_oracle
-    from grover import build_diffuser
-except ModuleNotFoundError:
-    from core.algorithms.grover import build_phase_oracle
-    from core.algorithms.grover import build_diffuser
+# try:
+#     from grover import build_phase_oracle
+#     from grover import build_diffuser
+# except ModuleNotFoundError:
+#     from core.algorithms.grover import build_phase_oracle
+    # from core.algorithms.grover import build_diffuser
 
 try:
     from qft import create_qft_circuit
@@ -48,74 +48,84 @@ def example_grover_iteration(qubits_count, secrets):
     return circuit
 
 
-# def grover_iteration(qubits_count, secrets):
+def build_diffuser(qubits_count, flipped=False):
+    
+    qubits = range(qubits_count)
+    
+    circuit = QuantumCircuit(qubits_count)
+    
+    for qubit in range(qubits_count):
+        circuit.h(qubit)
 
-#     qubits_count = 4
-#     qubits = range(qubits_count)
+    for qubit in range(qubits_count):
+        circuit.x(qubit)
+        
+    for qubit in range(1, qubits_count):
+        circuit.i(qubit)
 
-#     circuit = QuantumCircuit(qubits_count)
+    circuit.h(0)
+    circuit.mct(list(range(1, qubits_count)), 0)
+    circuit.h(0)
     
-#     # Oracle
-#     circuit.h([2,3])
-#     circuit.ccx(0,1,2)
-#     circuit.h(2)
-#     circuit.x(2)
-#     circuit.ccx(0,2,3)
-#     circuit.x(2)
-#     circuit.h(3)
-#     circuit.x([1,3])
-#     circuit.h(2)
-#     circuit.mct([0,1,3],2)
-#     circuit.x([1,3])
-#     circuit.h(2)
+    for qubit in range(1, qubits_count):
+        circuit.i(qubit)
+
+    for qubit in range(qubits_count):
+        circuit.x(qubit)
+
+    for qubit in range(qubits_count):
+        circuit.h(qubit)
+        
+    return circuit
+        
+
+def grover_iteration(qubits_count, secrets):
+
+    qubits_count = 4
+    qubits = range(qubits_count)
+
+    circuit = QuantumCircuit(qubits_count)
     
-#     # circuit.barrier()
+    # # Oracle
+    # circuit.h([2,3])
+    # circuit.ccx(0,1,2)
+    # circuit.h(2)
+    # circuit.x(2)
+    # circuit.ccx(0,2,3)
+    # circuit.x(2)
+    # circuit.h(3)
+    # circuit.x([1,3])
+    # circuit.h(2)
+    # circuit.mct([0,1,3],2)
+    # circuit.x([1,3])
+    # circuit.h(2)
     
-#     # diffuser = build_diffuser(qubits_count=qubits_count)
+    # circuit.barrier()
+    
+    # Diffuser
+    circuit.h(range(3))
+    circuit.x(range(3))
+    circuit.z(3)
+    circuit.mct([0,1,2],3)
+    circuit.x(range(3))
+    circuit.h(range(3))
+    circuit.z(3)
     
     
-#     circuit.h(qubits)
-#     circuit.x(qubits)
-#     circuit.z(3)
-#     circuit.mct([0,1,2],3)
-#     circuit.x(qubits)
-#     circuit.h(qubits)
-#     circuit.z(3)
+    diffuser = build_diffuser(qubits_count=qubits_count)
+    
+    print(f'COUNT circuit:\n{circuit}')
+    
+    print(f'COUNT diffuser:\n{diffuser}')
+    
+    quit()
+    
 
         
-#     for qubit in range(qubits_count):
-#         circuit.h(qubit)
 
-#     for qubit in range(qubits_count):
-#         circuit.x(qubit)
-        
-#     for qubit in range(1, qubits_count):
-#         circuit.i(qubit)
-
-#     circuit.h(0)
-#     circuit.mct(list(range(1, qubits_count)), 0)
-#     circuit.h(0)
+ 
     
-#     for qubit in range(1, qubits_count):
-#         circuit.i(qubit)
-
-#     for qubit in range(qubits_count):
-#         circuit.x(qubit)
-
-#     for qubit in range(qubits_count):
-#         circuit.h(qubit)
-        
-    
-    
-    
-#     # # diffuser_gate = diffuser.to_gate()
-    
-#     # diffuser_gate = diffuser_circuit.to_gate()
-    
-    
-#     # circuit.append(diffuser_gate, qubits)
-    
-#     return circuit
+    return circuit
     
     
 def quantum_counting(run_values, task_log):
@@ -128,9 +138,9 @@ def quantum_counting(run_values, task_log):
     
     # CGRIT
     
-    grover_iteration_circuit = example_grover_iteration(qubits_count, secrets)
+    # grover_iteration_circuit = example_grover_iteration(qubits_count, secrets)
     
-    # grover_iteration_circuit = grover_iteration(qubits_count, secrets)
+    grover_iteration_circuit = grover_iteration(qubits_count, secrets)
     
     grover_iteration_gate = grover_iteration_circuit.to_gate()
     controlled_grover_iteration = grover_iteration_gate.control()
