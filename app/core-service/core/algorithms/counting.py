@@ -48,7 +48,7 @@ def example_grover_iteration(qubits_count, secrets):
     return circuit
 
 
-def build_diffuser(qubits_count, flipped=False):
+def build_diffuser(qubits_count):
     
     all_qubits = list(range(qubits_count))
     
@@ -72,16 +72,12 @@ def build_diffuser(qubits_count, flipped=False):
     circuit.h(all_qubits)
         
     return circuit
-        
 
-def grover_iteration(qubits_count, secrets):
 
-    qubits_count = 4
-    qubits = range(qubits_count)
-
-    circuit = QuantumCircuit(qubits_count, name="Grover Iteration")
+def build_oracle(qubits_count):
     
-    # Oracle
+    circuit = QuantumCircuit(qubits_count, name="Oracle")
+    
     circuit.h([2,3])
     circuit.ccx(0,1,2)
     circuit.h(2)
@@ -95,16 +91,27 @@ def grover_iteration(qubits_count, secrets):
     circuit.x([1,3])
     circuit.h(2)
     
-    # circuit.barrier()
+    return circuit
     
+
+def grover_iteration(qubits_count, secrets):
+
+    qubits = range(qubits_count)
+
+    circuit = QuantumCircuit(qubits_count, name="Grover Iteration")
+    
+    oracle = build_oracle(qubits_count=qubits_count)
     diffuser = build_diffuser(qubits_count=qubits_count)
+    
+    oracle_gate = oracle.to_gate()
     diffuser_gate = diffuser.to_gate()
 
-    print(f'COUNT diffuser:\n{diffuser}')
-    
+    circuit.append(oracle_gate, qubits)
     circuit.append(diffuser_gate, qubits)
-    
-    # print(f'COUNT circuit:\n{circuit}')
+
+    print(f'COUNT oracle:\n{oracle}')
+    print(f'COUNT diffuser:\n{diffuser}')
+    print(f'COUNT circuit:\n{circuit}')
     
     return circuit
     
@@ -124,7 +131,7 @@ def quantum_counting(run_values, task_log):
     grover_iteration_circuit = grover_iteration(qubits_count, secrets)
     
     grover_iteration_gate = grover_iteration_circuit.to_gate()
-    controlled_grover_iteration = grover_iteration_gate.control(1)
+    controlled_grover_iteration = grover_iteration_gate.control()
     
     grover_iteration_gate.label = "Grover Iteration Gate"
     
