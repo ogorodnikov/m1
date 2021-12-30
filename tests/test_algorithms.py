@@ -12,6 +12,7 @@ from core.algorithms.qft import qft
 from core.algorithms.qpe import qpe, qpe_post_processing
 from core.algorithms.teleport import teleport
 from core.algorithms.shor import shor, shor_post_processing
+from core.algorithms.counting import counting, counting_post_processing
 
 
 test_data = {
@@ -37,13 +38,15 @@ test_data = {
     qpe: {'angle': '0.25', 'precision': '3'},
     teleport: {'alpha': 'random', 'beta': 'random'},
     partial(teleport): {'alpha': '1j', 'beta': '0'},
-    shor: {'number': '15', 'base': '2'}
+    shor: {'number': '15', 'base': '2'},
+    counting: {'precision': '4', 'secret_1': '1011', 'secret_2': '1010'},
     
 }
 
 post_processing = {simon: simon_post_processing,
                    qpe: qpe_post_processing,
-                   shor: shor_post_processing}
+                   shor: shor_post_processing,
+                   counting: counting_post_processing,}
 
 
 @pytest.mark.parametrize("runner_function, run_values", test_data.items())
@@ -74,4 +77,5 @@ def test_shor_modular_inverse_fail(stub):
 def test_run_data():
     
     return {'Result': {'Counts': {'0': 0, '1': 1}}, 
-            'Run Values': {'value_1': 1, 'value_2': 2, 'number': 15, 'base': 2}}
+            'Run Values': {'value_1': 1, 'value_2': 2, 'number': 15, 'base': 2, 
+                           'precision': '4', 'secret_1': '1011', 'secret_2': '1010'}}

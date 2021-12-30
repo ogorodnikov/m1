@@ -27,7 +27,7 @@ def run_tests():
     
     # pytest.main([test_path + '/integration/', '-v', '-x', '--durations=0'])
     
-    pytest.main([test_path, '-v', '-x', '--ignore-glob=**/integration/*', '--durations=0'])
+    pytest.main([test_path, '-v', '-x', '--ff', '--ignore-glob=**/integration/*', '--durations=0'])
 
     
     # pytest.main([test_path + '/test_algorithms.py', '-v', '-x'])
