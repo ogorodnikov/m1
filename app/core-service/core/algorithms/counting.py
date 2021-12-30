@@ -16,38 +16,6 @@ except ModuleNotFoundError:
     from core.algorithms.qft import create_qft_circuit
     
     
-def example_grover_iteration(qubits_count, secrets):
-
-    circuit = QuantumCircuit(4)
-    
-    # Oracle
-    circuit.h([2,3])
-    circuit.ccx(0,1,2)
-    circuit.h(2)
-    circuit.x(2)
-    circuit.ccx(0,2,3)
-    circuit.x(2)
-    circuit.h(3)
-    circuit.x([1,3])
-    circuit.h(2)
-    circuit.mct([0,1,3],2)
-    circuit.x([1,3])
-    circuit.h(2)
-    
-    # circuit.barrier()
-    
-    # Diffuser
-    circuit.h(range(3))
-    circuit.x(range(3))
-    circuit.z(3)
-    circuit.mct([0,1,2],3)
-    circuit.x(range(3))
-    circuit.h(range(3))
-    circuit.z(3)
-    
-    return circuit
-
-
 def build_diffuser(qubits_count):
     
     all_qubits = list(range(qubits_count))
@@ -98,7 +66,7 @@ def grover_iteration(qubits_count, secrets):
 
     qubits = range(qubits_count)
 
-    circuit = QuantumCircuit(qubits_count, name="Grover Iteration")
+    circuit = QuantumCircuit(qubits_count)
     
     oracle = build_oracle(qubits_count=qubits_count)
     diffuser = build_diffuser(qubits_count=qubits_count)
@@ -126,20 +94,18 @@ def quantum_counting(run_values, task_log):
     
     # CGRIT
     
-    # grover_iteration_circuit = example_grover_iteration(qubits_count, secrets)
-    
     grover_iteration_circuit = grover_iteration(qubits_count, secrets)
     
     grover_iteration_gate = grover_iteration_circuit.to_gate()
-    controlled_grover_iteration = grover_iteration_gate.control()
     
-    grover_iteration_gate.label = "Grover Iteration Gate"
+    controlled_grover_iteration = grover_iteration_circuit.control()
+    controlled_grover_iteration.name = "Controlled Grover Iteration"
     
     
     # Circuit
     
-    counting_qubits_count = 4
-    searching_qubits_count = 4
+    counting_qubits_count = qubits_count
+    searching_qubits_count = qubits_count
     total_qubits_count = counting_qubits_count + searching_qubits_count
     
     counting_qubits = list(range(counting_qubits_count))
