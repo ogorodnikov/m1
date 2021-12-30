@@ -514,6 +514,18 @@ class Dynamo:
                                  {'name': 'beta', 'default_value': 'random'}],
                   'likes': 824,
                   'enabled': True},
+
+                 {'id': 'counting',
+                  'name': 'Quantum Counting',
+                  'type': 'quantum',
+                  'description': 'Uses Grover`s algorithm and QPE to count the number of solutions for given search problem.',
+                  'wiki_link': 'https://en.wikipedia.org/wiki/Quantum_counting_algorithm',
+                  'qiskit_link': 'https://learn.qiskit.org/course/ch-algorithms/quantum-counting',
+                  'image': b'1010',
+                  'parameters': [{'name': 'secret_1', 'default_value': '1011'},
+                                 {'name': 'secret_2', 'default_value': '1010'}],
+                  'likes': 974,
+                  'enabled': True},
                   
                  ]
         
