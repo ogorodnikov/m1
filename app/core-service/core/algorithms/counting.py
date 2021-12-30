@@ -5,44 +5,15 @@ from qiskit import QuantumCircuit
 
 from qiskit.circuit.library import Diagonal
 
-# try:
-#     from grover import build_phase_oracle
-#     from grover import build_diffuser
-# except ModuleNotFoundError:
-#     from core.algorithms.grover import build_phase_oracle
-    # from core.algorithms.grover import build_diffuser
-
 try:
     from qft import create_qft_circuit
 except ModuleNotFoundError:
     from core.algorithms.qft import create_qft_circuit
 
 
-# def build_oracle(qubits_count):
+def build_oracle(qubits_count, secrets):
     
-#     circuit = QuantumCircuit(qubits_count, name="Oracle")
-    
-#     circuit.h([2,3])
-#     circuit.ccx(0,1,2)
-#     circuit.h(2)
-#     circuit.x(2)
-#     circuit.ccx(0,2,3)
-#     circuit.x(2)
-#     circuit.h(3)
-#     circuit.x([1,3])
-#     circuit.h(2)
-#     circuit.mct([0,1,3],2)
-#     circuit.x([1,3])
-#     circuit.h(2)
-    
-#     return circuit
-    
-
-def build_oracle(secrets):
-    
-    max_secret_len = max(map(len, secrets))
-    
-    elements_count = 2  ** max_secret_len
+    elements_count = 2 ** qubits_count
     
     diagonal_elements = [1] * elements_count
     
@@ -54,15 +25,13 @@ def build_oracle(secrets):
     phase_oracle = Diagonal(diagonal_elements)
     phase_oracle.name = 'Phase Oracle'
     
+    print(f'COUNT qubits_count: {qubits_count}')
     print(f'COUNT secrets: {secrets}')
-    print(f'COUNT max_secret_len: {max_secret_len}')
     print(f'COUNT elements_count: {elements_count}')
     print(f'COUNT diagonal_elements: {diagonal_elements}')
     
     print(f'COUNT phase_oracle:\n{phase_oracle}')
     
-    # quit()
-
     return phase_oracle
     
     
@@ -98,8 +67,8 @@ def grover_iteration(qubits_count, secrets):
 
     circuit = QuantumCircuit(qubits_count)
     
-    oracle = build_oracle(secrets=secrets)
-    diffuser = build_diffuser(qubits_count=qubits_count)
+    oracle = build_oracle(qubits_count, secrets)
+    diffuser = build_diffuser(qubits_count)
     
     oracle_gate = oracle.to_gate()
     diffuser_gate = diffuser.to_gate()
@@ -164,7 +133,7 @@ def quantum_counting(run_values, task_log):
     
     # IQFT
     
-    iqft_circuit = create_qft_circuit(4, inverted=True)
+    iqft_circuit = create_qft_circuit(qubits_count, inverted=True)
     
     circuit.append(iqft_circuit, counting_qubits)
     
