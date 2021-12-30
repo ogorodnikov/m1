@@ -238,4 +238,4 @@ def counting_post_processing(run_data, task_log):
     task_log(f'COUNT rounded_solutions_count: {rounded_solutions_count}')
     
     
-    return {'Solutions Count': rounded_solutions_count, 'Error': rounded_error}
+    return {'Solutions Count': rounded_solutions_count}
