@@ -3,6 +3,8 @@ from math import sin
 
 from qiskit import QuantumCircuit
 
+from qiskit.circuit.library import Diagonal
+
 # try:
 #     from grover import build_phase_oracle
 #     from grover import build_diffuser
@@ -14,6 +16,54 @@ try:
     from qft import create_qft_circuit
 except ModuleNotFoundError:
     from core.algorithms.qft import create_qft_circuit
+
+
+# def build_oracle(qubits_count):
+    
+#     circuit = QuantumCircuit(qubits_count, name="Oracle")
+    
+#     circuit.h([2,3])
+#     circuit.ccx(0,1,2)
+#     circuit.h(2)
+#     circuit.x(2)
+#     circuit.ccx(0,2,3)
+#     circuit.x(2)
+#     circuit.h(3)
+#     circuit.x([1,3])
+#     circuit.h(2)
+#     circuit.mct([0,1,3],2)
+#     circuit.x([1,3])
+#     circuit.h(2)
+    
+#     return circuit
+    
+
+def build_oracle(secrets):
+    
+    max_secret_len = max(map(len, secrets))
+    
+    elements_count = 2  ** max_secret_len
+    
+    diagonal_elements = [1] * elements_count
+    
+    for secret in secrets:
+        secret_string = ''.join('1' if letter == '1' else '0' for letter in secret)
+        secret_index = int(secret_string, 2)
+        diagonal_elements[secret_index] = -1
+
+    phase_oracle = Diagonal(diagonal_elements)
+    phase_oracle.name = 'Phase Oracle'
+    
+    print(f'COUNT secrets: {secrets}')
+    print(f'COUNT max_secret_len: {max_secret_len}')
+    print(f'COUNT elements_count: {elements_count}')
+    print(f'COUNT diagonal_elements: {diagonal_elements}')
+    
+    print(f'COUNT phase_oracle:\n{phase_oracle}')
+    
+    # quit()
+
+    return phase_oracle
     
     
 def build_diffuser(qubits_count):
@@ -41,34 +91,14 @@ def build_diffuser(qubits_count):
         
     return circuit
 
-
-def build_oracle(qubits_count):
     
-    circuit = QuantumCircuit(qubits_count, name="Oracle")
-    
-    circuit.h([2,3])
-    circuit.ccx(0,1,2)
-    circuit.h(2)
-    circuit.x(2)
-    circuit.ccx(0,2,3)
-    circuit.x(2)
-    circuit.h(3)
-    circuit.x([1,3])
-    circuit.h(2)
-    circuit.mct([0,1,3],2)
-    circuit.x([1,3])
-    circuit.h(2)
-    
-    return circuit
-    
-
 def grover_iteration(qubits_count, secrets):
 
     qubits = range(qubits_count)
 
     circuit = QuantumCircuit(qubits_count)
     
-    oracle = build_oracle(qubits_count=qubits_count)
+    oracle = build_oracle(secrets=secrets)
     diffuser = build_diffuser(qubits_count=qubits_count)
     
     oracle_gate = oracle.to_gate()
@@ -127,8 +157,6 @@ def quantum_counting(run_values, task_log):
         iterations_count = 2 ** counting_qubit
         
         for iteration in range(iterations_count):
-            
-            task_log(f'COUNT iteration: {iteration}')
             
             iteration_qubits = [counting_qubit] + searching_qubits
             
