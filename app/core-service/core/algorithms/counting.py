@@ -18,8 +18,7 @@ def build_oracle(qubits_count, secrets):
     diagonal_elements = [1] * elements_count
     
     for secret in secrets:
-        secret_string = ''.join('1' if letter == '1' else '0' for letter in secret)
-        secret_index = int(secret_string, 2)
+        secret_index = int(secret, 2)
         diagonal_elements[secret_index] = -1
 
     phase_oracle = Diagonal(diagonal_elements)
@@ -57,6 +56,8 @@ def build_diffuser(qubits_count):
 
     circuit.x(all_qubits)
     circuit.h(all_qubits)
+    
+    print(f'COUNT diffuser circuit:\n{circuit}')
         
     return circuit
 
@@ -76,16 +77,20 @@ def grover_iteration(qubits_count, secrets):
     circuit.append(oracle_gate, qubits)
     circuit.append(diffuser_gate, qubits)
 
-    print(f'COUNT oracle:\n{oracle}')
-    print(f'COUNT diffuser:\n{diffuser}')
-    print(f'COUNT circuit:\n{circuit}')
+    # print(f'COUNT oracle:\n{oracle}')
+    # print(f'COUNT diffuser:\n{diffuser}')
+    # print(f'COUNT circuit:\n{circuit}')
     
     return circuit
     
     
 def quantum_counting(run_values, task_log):
     
-    secrets = [value for key, value in run_values.items() if 'secret' in key]
+    input_secrets = [value for key, value in run_values.items() if 'secret' in key]
+    
+    secrets = [''.join('1' if letter == '1' else '0' for letter in input_secret)
+               for input_secret in input_secrets]
+        
     secret_count = len(secrets)
     
     qubits_count = len(max(secrets, key=len))
@@ -98,7 +103,7 @@ def quantum_counting(run_values, task_log):
     grover_iteration_gate = grover_iteration_circuit.to_gate()
     
     controlled_grover_iteration = grover_iteration_circuit.control()
-    controlled_grover_iteration.name = "Controlled Grover Iteration"
+    controlled_grover_iteration.name = "CGRIT"
     
     
     # Circuit
@@ -145,19 +150,16 @@ def quantum_counting(run_values, task_log):
     
     task_log(f'COUNT run_values: {run_values}')
     
-    task_log(f'COUNT grover_iteration_circuit:\n{grover_iteration_circuit}')
-    task_log(f'COUNT grover_iteration_gate:\n{grover_iteration_gate}')
-    task_log(f'COUNT controlled_grover_iteration:\n{controlled_grover_iteration}')
-    
-    task_log(f'COUNT iqft_circuit:\n{iqft_circuit}')
-    
-    task_log(f'COUNT circuit:\n{circuit}')
-    
     task_log(f'COUNT counting_qubits:\n{counting_qubits}')
     task_log(f'COUNT searching_qubits:\n{searching_qubits}')
     task_log(f'COUNT all_qubits:\n{all_qubits}')
     task_log(f'COUNT measurement_bits:\n{measurement_bits}')
     
+    task_log(f'COUNT grover_iteration_circuit:\n{grover_iteration_circuit}')
+    
+    task_log(f'COUNT iqft_circuit:\n{iqft_circuit}')
+    
+    task_log(f'COUNT quantum_counting circuit:\n{circuit}')
     
     return circuit
     
