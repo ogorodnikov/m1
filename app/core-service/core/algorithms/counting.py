@@ -202,6 +202,8 @@ def counting_post_processing(run_data, task_log):
     error = (((2 * solutions_count * total_states_count) ** 0.5 +
               total_states_count / 2 ** (error_upper_bound + 1)) * 
              2 ** -error_upper_bound)
+             
+    rounded_error = f'{error:.2f}'
     
     rounded_solutions_count = int(solutions_count + 0.5)
     
@@ -231,5 +233,9 @@ def counting_post_processing(run_data, task_log):
     
     task_log(f'COUNT error_upper_bound: {error_upper_bound}')
     task_log(f'COUNT error: {error}')
+    task_log(f'COUNT rounded_error: {rounded_error}')
     
     task_log(f'COUNT rounded_solutions_count: {rounded_solutions_count}')
+    
+    
+    return {'Solutions Count': rounded_solutions_count, 'Error': rounded_error}

@@ -6,9 +6,9 @@ from counting import counting, counting_post_processing
 
 # run_values = {'secret_1': '10111', 'secret_2': '10101'}
 
-# run_values = {'precision': '4', 'secret_1': '1011', 'secret_2': '1010'}
+run_values = {'precision': '4', 'secret_1': '1011', 'secret_2': '1010'}
 
-run_values = {'precision': '2', 'secret_1': '10', 'secret_2': '11'}
+# run_values = {'precision': '2', 'secret_1': '10', 'secret_2': '11'}
 
 # run_values = {'precision': '3', 'secret_1': '101', 'secret_2': '110'}
 
