@@ -50,31 +50,26 @@ def example_grover_iteration(qubits_count, secrets):
 
 def build_diffuser(qubits_count, flipped=False):
     
-    qubits = range(qubits_count)
+    all_qubits = list(range(qubits_count))
+    
+    controlled_qubit = all_qubits[-1]
+    controlling_qubits = all_qubits[:-1]
     
     circuit = QuantumCircuit(qubits_count)
     
-    for qubit in range(qubits_count):
-        circuit.h(qubit)
-
-    for qubit in range(qubits_count):
-        circuit.x(qubit)
+    circuit.h(all_qubits)
+    circuit.x(all_qubits)
         
-    for qubit in range(1, qubits_count):
-        circuit.i(qubit)
+    circuit.i(controlling_qubits)
 
-    circuit.h(0)
-    circuit.mct(list(range(1, qubits_count)), 0)
-    circuit.h(0)
+    circuit.h(controlled_qubit)
+    circuit.mct(controlling_qubits, controlled_qubit)
+    circuit.h(controlled_qubit)
     
-    for qubit in range(1, qubits_count):
-        circuit.i(qubit)
+    circuit.i(controlling_qubits)
 
-    for qubit in range(qubits_count):
-        circuit.x(qubit)
-
-    for qubit in range(qubits_count):
-        circuit.h(qubit)
+    circuit.x(all_qubits)
+    circuit.h(all_qubits)
         
     return circuit
         
