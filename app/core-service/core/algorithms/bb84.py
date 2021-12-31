@@ -26,6 +26,19 @@ def bb84(run_values, task_log):
         
         qubits.append(qubit)
         
+        
+    # Bob side
+    
+    bob_bases = "XZZZ"    
+    
+    for base in bob_bases:
+        
+        if base == 'X':
+            
+            pass
+            
+            
+
     
         
     
