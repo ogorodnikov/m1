@@ -13,6 +13,16 @@ def bb84(run_values, task_log):
     eve_bases = run_values['eve_bases']
     bob_bases = run_values['bob_bases']
     
+    bob_bases = run_values['bob_bases']
+
+    sample_indices_input = run_values['sample_indices'].split(',')
+    sample_indices = list(map(int, map(str.strip, sample_indices_input)))
+    
+    print(sample_indices)
+    
+    quit()
+    
+    sample_len = len(sample_indices)    
     
     # Alice side
     
@@ -82,8 +92,6 @@ def bb84(run_values, task_log):
         
         bob_bits.append(bob_bit)
         
-        
-        
             
     # Filter bits
     
@@ -106,10 +114,6 @@ def bb84(run_values, task_log):
             
     
     # Sample comparison
-    
-    sample_indices = [0, 2]
-    
-    sample_len = len(sample_indices)
     
     alice_sample = []
     bob_sample = []
