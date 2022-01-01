@@ -1,5 +1,9 @@
 from qiskit import QuantumCircuit
 
+from qiskit import Aer, assemble
+
+
+
 
 def bb84(run_values, task_log):
     
@@ -12,14 +16,14 @@ def bb84(run_values, task_log):
     
     qubits = []
     
-    for bit, base in zip(alice_bits, alice_bases):
+    for alice_bit, alice_base in zip(alice_bits, alice_bases):
         
         qubit = QuantumCircuit(1, 1)
         
-        if bit == '1':
+        if alice_bit == '1':
             qubit.x(0)
             
-        if base == 'X':
+        if alice_base == 'X':
             qubit.h(0)
             
         qubit.barrier()
@@ -29,13 +33,27 @@ def bb84(run_values, task_log):
         
     # Bob side
     
-    bob_bases = "XZZZ"    
+    bob_bases = "XZZZ"
     
-    for base in bob_bases:
+    bob_bits = []
+    
+    for qubit, bob_base in zip(qubits, bob_bases):
         
-        if base == 'X':
+        if bob_base == 'X':
             
-            pass
+            qubit.h(0)
+            
+        qubit.measure(0, 0)
+        
+        simulator = Aer.get_backend('aer_simulator')
+        
+        qobj = assemble(qubit, shots=1, memory=True)
+        
+        result = simulator.run(qobj).result()
+        
+        bob_bit = int(result.get_memory()[0])
+        
+        bob_bits.append(bob_bit)
             
             
 
@@ -45,3 +63,9 @@ def bb84(run_values, task_log):
     # Logs
     
     task_log(f'BB84 run_values: {run_values}')
+    
+    task_log(f'BB84 alice_bits: {alice_bits}')
+    task_log(f'BB84 alice_bases: {alice_bases}')
+    
+    task_log(f'BB84 bob_bases: {bob_bases}')
+    task_log(f'BB84 bob_bits: {bob_bits}')
