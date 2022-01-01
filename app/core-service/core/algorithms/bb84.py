@@ -31,7 +31,7 @@ def bb84(run_values, task_log):
 
     # Eve's side
     
-    eve_bases = "XZXZXZ"
+    eve_bases = "XZZZXZ"
     
     eve_bits = []
 
@@ -42,6 +42,10 @@ def bb84(run_values, task_log):
             qubit.h(0)
             
         qubit.measure(0, 0)
+        
+        if eve_base == 'X':
+            
+            qubit.h(0)
         
         simulator = Aer.get_backend('aer_simulator')
         
@@ -127,6 +131,9 @@ def bb84(run_values, task_log):
     task_log(f'BB84 alice_bits: {alice_bits}')
     task_log(f'BB84 alice_bases: {alice_bases}')
     
+    task_log(f'BB84 eve_bases: {eve_bases}')
+    task_log(f'BB84 eve_bits: {eve_bits}')
+    
     task_log(f'BB84 bob_bases: {bob_bases}')
     task_log(f'BB84 bob_bits: {bob_bits}')
     
@@ -138,3 +145,5 @@ def bb84(run_values, task_log):
     
     task_log(f'BB84 samples_fit: {samples_fit}')
     task_log(f'BB84 key_length: {key_length}')
+    
+    task_log(f'BB84 qubits:\n{[print(qubit) for qubit in qubits]}')
