@@ -58,22 +58,22 @@ def bb84(run_values, task_log):
             
     # Filter bits
     
-    alice_filtered_bits = []
+    alice_key = []
     
     for alice_base, bob_base, alice_bit in zip(alice_bases, bob_bases, alice_bits):
         
         if alice_base == bob_base:
             
-            alice_filtered_bits.append(alice_bit)
+            alice_key.append(alice_bit)
             
     
-    bob_filtered_bits = []
+    bob_key = []
     
     for alice_base, bob_base, bob_bit in zip(alice_bases, bob_bases, bob_bits):
         
         if alice_base == bob_base:
             
-            bob_filtered_bits.append(bob_bit)
+            bob_key.append(bob_bit)
             
     
     # Smaple comparison
@@ -85,10 +85,12 @@ def bb84(run_values, task_log):
     
     for sample_index in sample_indices:
         
-        alice_sample.append(alice_bits[sample_index])
-        bob_sample.append(bob_bits[sample_index])
+        alice_sample.append(alice_key[sample_index])
+        bob_sample.append(bob_key[sample_index])
     
+    samples_fit = alice_sample == bob_sample
     
+    key_length = len(alice_key)
 
             
 
@@ -103,8 +105,11 @@ def bb84(run_values, task_log):
     task_log(f'BB84 bob_bases: {bob_bases}')
     task_log(f'BB84 bob_bits: {bob_bits}')
     
-    task_log(f'BB84 alice_filtered_bits: {alice_filtered_bits}')
-    task_log(f'BB84 bob_filtered_bits: {bob_filtered_bits}')
+    task_log(f'BB84 alice_key: {alice_key}')
+    task_log(f'BB84 bob_key: {bob_key}')
     
     task_log(f'BB84 alice_sample: {alice_sample}')
     task_log(f'BB84 bob_sample: {bob_sample}')
+    
+    task_log(f'BB84 samples_fit: {samples_fit}')
+    task_log(f'BB84 key_length: {key_length}')
