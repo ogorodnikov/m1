@@ -56,9 +56,29 @@ def bb84(run_values, task_log):
         bob_bits.append(bob_bit)
             
             
-
+    # Filter bits
     
+    alice_filtered_bits = []
+    
+    for alice_base, bob_base, alice_bit in zip(alice_bases, bob_bases, alice_bits):
         
+        if alice_base == bob_base:
+            
+            alice_filtered_bits.append(alice_bit)
+            
+    
+    bob_filtered_bits = []
+    
+    for alice_base, bob_base, bob_bit in zip(alice_bases, bob_bases, bob_bits):
+        
+        if alice_base == bob_base:
+            
+            bob_filtered_bits.append(bob_bit)
+            
+    
+
+            
+
     
     # Logs
     
@@ -69,3 +89,6 @@ def bb84(run_values, task_log):
     
     task_log(f'BB84 bob_bases: {bob_bases}')
     task_log(f'BB84 bob_bits: {bob_bits}')
+    
+    task_log(f'BB84 alice_filtered_bits: {alice_filtered_bits}')
+    task_log(f'BB84 bob_filtered_bits: {bob_filtered_bits}')
