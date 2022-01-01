@@ -105,9 +105,11 @@ def bb84(run_values, task_log):
             bob_key.append(bob_bit)
             
     
-    # Smaple comparison
+    # Sample comparison
     
     sample_indices = [0, 2]
+    
+    sample_len = len(sample_indices)
     
     alice_sample = []
     bob_sample = []
@@ -120,8 +122,25 @@ def bb84(run_values, task_log):
     samples_fit = alice_sample == bob_sample
     
     key_length = len(alice_key)
-
-            
+    
+    
+    # Reliability calculation
+    
+    bases_count = max(map(len, map(set, (alice_bases, eve_bases, bob_bases))))
+    
+    basis_match_probability = 1 / bases_count
+    
+    states = [0, 1]
+    
+    states_count = len(set(states))
+    
+    state_match_probability = 1 / states_count
+    
+    single_qubit_evesdropping_detected_probability = basis_match_probability * state_match_probability
+    single_qubit_evesdropping_undetected_probability = 1 - single_qubit_evesdropping_detected_probability
+    
+    total_evesdropping_undetected_probability = single_qubit_evesdropping_undetected_probability ** sample_len
+    total_evesdropping_detected_probability = 1 - total_evesdropping_undetected_probability
 
     
     # Logs
@@ -147,3 +166,10 @@ def bb84(run_values, task_log):
     task_log(f'BB84 key_length: {key_length}')
     
     task_log(f'BB84 qubits:\n{[print(qubit) for qubit in qubits]}')
+ 
+    task_log(f'BB84 single_qubit_evesdropping_undetected_probability: {single_qubit_evesdropping_undetected_probability}')  
+    task_log(f'BB84 single_qubit_evesdropping_detected_probability: {single_qubit_evesdropping_detected_probability}')  
+    
+    task_log(f'BB84 total_evesdropping_undetected_probability: {total_evesdropping_undetected_probability}')  
+    task_log(f'BB84 total_evesdropping_detected_probability: {total_evesdropping_detected_probability}')  
+    
