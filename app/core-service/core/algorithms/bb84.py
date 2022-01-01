@@ -5,12 +5,16 @@ from qiskit import Aer, assemble
 
 def bb84(run_values, task_log):
     
+    # Inputs
+    
+    alice_bits = run_values['alice_bits']
+    
+    alice_bases = run_values['alice_bases']
+    eve_bases = run_values['eve_bases']
+    bob_bases = run_values['bob_bases']
+    
     
     # Alice side
-    
-    alice_bits = '101010'
-    
-    alice_bases = 'XXXZXX'
     
     qubits = []
     
@@ -30,8 +34,6 @@ def bb84(run_values, task_log):
         
 
     # Eve's side
-    
-    eve_bases = "XZZZXZ"
     
     eve_bits = []
 
@@ -59,8 +61,6 @@ def bb84(run_values, task_log):
         
         
     # Bob side
-    
-    bob_bases = "XXXZZZ"
     
     bob_bits = []
     

@@ -9,6 +9,9 @@ from qiskit import execute
 from bb84 import bb84
 
 
-run_values = {'secret': '1010'}
+run_values = {'alice_bits': '101010',
+              'alice_bases': 'XXXZXX',
+              'eve_bases': 'XZZZXZ',
+              'bob_bases': 'XXXZZZ'}
 
 circuit = bb84(run_values=run_values, task_log=print)
