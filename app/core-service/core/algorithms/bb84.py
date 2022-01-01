@@ -18,81 +18,83 @@ def bb84(run_values, task_log):
     sample_indices_input = run_values['sample_indices'].split(',')
     sample_indices = list(map(int, map(str.strip, sample_indices_input)))
     
-    print(sample_indices)
+    sample_len = len(sample_indices)
     
-    quit()
+    message_len = len(alice_bits)
     
-    sample_len = len(sample_indices)    
     
     # Alice side
     
-    qubits = []
+    qubits = QuantumCircuit(message_len, message_len * 2)
     
-    for alice_bit, alice_base in zip(alice_bits, alice_bases):
-        
-        qubit = QuantumCircuit(1, 1)
+    for qubit_index, (alice_bit, alice_base) in enumerate(zip(alice_bits, alice_bases)):
         
         if alice_bit == '1':
-            qubit.x(0)
+            qubits.x(qubit_index)
             
         if alice_base == 'X':
-            qubit.h(0)
+            qubits.h(qubit_index)
             
-        qubit.barrier()
+    qubits.barrier()
+    
         
-        qubits.append(qubit)
-        
-
     # Eve's side
     
-    eve_bits = []
+    for qubit_index, eve_base in enumerate(eve_bases):
+        
+        if eve_base == 'X':
+            qubits.h(qubit_index)
+            
+        qubits.measure(qubit_index, qubit_index)
+        
+        if eve_base == 'X':
+            qubits.h(qubit_index)
+            
+        qubits.barrier()
+            
+    simulator = Aer.get_backend('aer_simulator')
+    
+    qobj = assemble(qubits, shots=1, memory=True)
+    
+    result = simulator.run(qobj).result()
+    
+    all_bits = result.get_memory()[0]
+    eve_bits = list(reversed(all_bits[-message_len:]))
 
-    for qubit, eve_base in zip(qubits, eve_bases):
-        
-        if eve_base == 'X':
-            
-            qubit.h(0)
-            
-        qubit.measure(0, 0)
-        
-        if eve_base == 'X':
-            
-            qubit.h(0)
-        
-        simulator = Aer.get_backend('aer_simulator')
-        
-        qobj = assemble(qubit, shots=1, memory=True)
-        
-        result = simulator.run(qobj).result()
-        
-        eve_bit = result.get_memory()[0]
-        
-        eve_bits.append(eve_bit)    
-        
-        
+    # print(result.get_memory())
+    # print(result.get_counts())
+    # print(eve_bits)
+    
+    # quit()
+    
+
     # Bob side
     
-    bob_bits = []
-    
-    for qubit, bob_base in zip(qubits, bob_bases):
+    for qubit_index, bob_base in enumerate(bob_bases):
         
         if bob_base == 'X':
+            qubits.h(qubit_index)
             
-            qubit.h(0)
+        qubits.measure(qubit_index, message_len + qubit_index)
             
-        qubit.measure(0, 0)
-        
-        simulator = Aer.get_backend('aer_simulator')
-        
-        qobj = assemble(qubit, shots=1, memory=True)
-        
-        result = simulator.run(qobj).result()
-        
-        bob_bit = result.get_memory()[0]
-        
-        bob_bits.append(bob_bit)
-        
+        qubits.barrier()
             
+    simulator = Aer.get_backend('aer_simulator')
+    
+    qobj = assemble(qubits, shots=1, memory=True)
+    
+    result = simulator.run(qobj).result()
+    
+    all_bits = result.get_memory()[0]
+    bob_bits = list(reversed(all_bits[:message_len]))
+    
+    # print(result.get_memory())
+    # print(result.get_counts())
+    # print(bob_bits)
+    
+    # quit()
+    
+
     # Filter bits
     
     alice_key = []
@@ -169,7 +171,8 @@ def bb84(run_values, task_log):
     task_log(f'BB84 samples_fit: {samples_fit}')
     task_log(f'BB84 key_length: {key_length}')
     
-    task_log(f'BB84 qubits:\n{[print(qubit) for qubit in qubits]}')
+    # task_log(f'BB84 qubits:\n{[print(qubit) for qubit in qubits]}')
+    task_log(f'BB84 qubits:\n{qubits}')
  
     task_log(f'BB84 single_qubit_evesdropping_undetected_probability: {single_qubit_evesdropping_undetected_probability}')  
     task_log(f'BB84 single_qubit_evesdropping_detected_probability: {single_qubit_evesdropping_detected_probability}')  
