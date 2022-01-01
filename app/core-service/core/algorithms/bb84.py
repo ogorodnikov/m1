@@ -3,8 +3,6 @@ from qiskit import QuantumCircuit
 from qiskit import Aer, assemble
 
 
-
-
 def bb84(run_values, task_log):
     
     
@@ -30,6 +28,31 @@ def bb84(run_values, task_log):
         
         qubits.append(qubit)
         
+
+    # Eve's side
+    
+    eve_bases = "XZXZXZ"
+    
+    eve_bits = []
+
+    for qubit, eve_base in zip(qubits, eve_bases):
+        
+        if eve_base == 'X':
+            
+            qubit.h(0)
+            
+        qubit.measure(0, 0)
+        
+        simulator = Aer.get_backend('aer_simulator')
+        
+        qobj = assemble(qubit, shots=1, memory=True)
+        
+        result = simulator.run(qobj).result()
+        
+        eve_bit = result.get_memory()[0]
+        
+        eve_bits.append(eve_bit)    
+        
         
     # Bob side
     
@@ -54,7 +77,9 @@ def bb84(run_values, task_log):
         bob_bit = result.get_memory()[0]
         
         bob_bits.append(bob_bit)
-            
+        
+        
+        
             
     # Filter bits
     
