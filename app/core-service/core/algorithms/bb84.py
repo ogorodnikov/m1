@@ -10,9 +10,9 @@ def bb84(run_values, task_log):
     
     # Alice side
     
-    alice_bits = '1010'
+    alice_bits = '101010'
     
-    alice_bases = 'XZXX'
+    alice_bases = 'XXXZXX'
     
     qubits = []
     
@@ -33,7 +33,7 @@ def bb84(run_values, task_log):
         
     # Bob side
     
-    bob_bases = "XZZZ"
+    bob_bases = "XXXZZZ"
     
     bob_bits = []
     
@@ -51,7 +51,7 @@ def bb84(run_values, task_log):
         
         result = simulator.run(qobj).result()
         
-        bob_bit = int(result.get_memory()[0])
+        bob_bit = result.get_memory()[0]
         
         bob_bits.append(bob_bit)
             
@@ -76,6 +76,19 @@ def bb84(run_values, task_log):
             bob_filtered_bits.append(bob_bit)
             
     
+    # Smaple comparison
+    
+    sample_indices = [0, 2]
+    
+    alice_sample = []
+    bob_sample = []
+    
+    for sample_index in sample_indices:
+        
+        alice_sample.append(alice_bits[sample_index])
+        bob_sample.append(bob_bits[sample_index])
+    
+    
 
             
 
@@ -92,3 +105,6 @@ def bb84(run_values, task_log):
     
     task_log(f'BB84 alice_filtered_bits: {alice_filtered_bits}')
     task_log(f'BB84 bob_filtered_bits: {bob_filtered_bits}')
+    
+    task_log(f'BB84 alice_sample: {alice_sample}')
+    task_log(f'BB84 bob_sample: {bob_sample}')
