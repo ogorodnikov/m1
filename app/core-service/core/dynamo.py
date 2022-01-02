@@ -528,19 +528,21 @@ class Dynamo:
                   'likes': 974,
                   'enabled': True},
 
-                #  {'id': 'bb84',
-                #   'name': 'BB84 Quantum Key Distribution',
-                #   'type': 'quantum',
-                #   'description': 'Securely communicates a private key from one party to another.\n' +
-                #                  'Uses quantum channel andauthenticated public classical channel.',
-                #   'wiki_link': 'https://en.wikipedia.org/wiki/BB84',
-                #   'qiskit_link': 'https://qiskit.org/textbook/ch-algorithms/quantum-key-distribution.html',
-                #   'image': b'1010',
-                #   'parameters': [{'name': 'secret', 'default_value': '1010'},
-                #                 #  {'name': 'secret_1', 'default_value': '1011'},
-                #                 #  {'name': 'secret_2', 'default_value': '1010'}],
-                #   'likes': 1028,
-                #   'enabled': True},
+                 {'id': 'bb84',
+                  'name': 'BB84 Quantum Key Distribution',
+                  'type': 'quantum',
+                  'description': 'Securely communicates a private key from one party to another.\n' +
+                                 'Uses quantum channel and authenticated public classical channel.',
+                  'wiki_link': 'https://en.wikipedia.org/wiki/BB84',
+                  'qiskit_link': 'https://qiskit.org/textbook/ch-algorithms/quantum-key-distribution.html',
+                  'image': b'1010',
+                  'parameters': [{'name': 'alice_bits', 'default_value': '10101'},
+                                 {'name': 'alice_bases', 'default_value': 'XXXZX'},
+                                 {'name': 'eve_bases', 'default_value': 'XZZZX'},
+                                 {'name': 'bob_bases', 'default_value': 'XXXZZ'},
+                                 {'name': 'sample_indices', 'default_value': '0, 2'}],
+                  'likes': 1028,
+                  'enabled': True},
                   
                  ]
         
