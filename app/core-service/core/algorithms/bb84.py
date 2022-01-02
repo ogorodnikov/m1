@@ -205,5 +205,6 @@ def bb84_post_processing(run_data, task_log):
     
     task_log(f'BB84 total_evesdropping_undetected_probability: {total_evesdropping_undetected_probability}')  
     task_log(f'BB84 total_evesdropping_detected_probability: {total_evesdropping_detected_probability}')
+    task_log(f'')
     
     return result
