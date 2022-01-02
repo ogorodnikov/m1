@@ -1,7 +1,5 @@
 from qiskit import QuantumCircuit
 
-from qiskit import Aer, assemble
-
 
 def bb84(run_values, task_log):
     
@@ -64,6 +62,8 @@ def bb84(run_values, task_log):
             
     # Logs
     
+    task_log(f'\nBB84 Circuit Composition:\n')
+    
     task_log(f'BB84 run_values: {run_values}')
     
     task_log(f'BB84 alice_bits: {alice_bits}')
@@ -75,7 +75,7 @@ def bb84(run_values, task_log):
     task_log(f'BB84 sample_indices_input: {sample_indices_input}')
     task_log(f'BB84 message_len: {message_len}')
     
-    task_log(f'BB84 circuit:\n{circuit}')
+    task_log(f'\nBB84 circuit:\n{circuit}')
     
     return circuit
 
@@ -128,7 +128,9 @@ def bb84_post_processing(run_data, task_log):
         if alice_base == bob_base:
             
             bob_key += bob_bit
-            
+    
+    key_length = len(alice_key)
+    
     
     # Sample comparison
     
@@ -142,18 +144,20 @@ def bb84_post_processing(run_data, task_log):
 
     samples_match = alice_sample == bob_sample
     
-    key_length = len(alice_key)
+    evesdropping_detected = not samples_match
+    
+    result = {'Evesdropping Detected:': evesdropping_detected}
     
     
-    # Reliability calculation
+    # Reliability Calculation
     
     bases_count = max(map(len, map(set, (alice_bases, eve_bases, bob_bases))))
     
     basis_match_probability = 1 / bases_count
     
-    states = [0, 1]
+    possible_states = [0, 1]
     
-    states_count = len(set(states))
+    states_count = len(set(possible_states))
     
     state_match_probability = 1 / states_count
     
@@ -165,6 +169,8 @@ def bb84_post_processing(run_data, task_log):
 
     
     # Logs
+    
+    task_log(f'\nBB84 Post Processing:\n')
     
     task_log(f'BB84 counts: {counts}')
     task_log(f'BB84 max_state: {max_state}')
@@ -182,15 +188,22 @@ def bb84_post_processing(run_data, task_log):
     
     task_log(f'BB84 alice_key: {alice_key}')
     task_log(f'BB84 bob_key: {bob_key}')
+    task_log(f'BB84 key_length: {key_length}')
     
     task_log(f'BB84 alice_sample: {alice_sample}')
     task_log(f'BB84 bob_sample: {bob_sample}')
     
     task_log(f'BB84 samples_match: {samples_match}')
-    task_log(f'BB84 key_length: {key_length}')
+    task_log(f'BB84 evesdropping_detected: {evesdropping_detected}')
+
+    task_log(f'BB84 result: {result}')
+
+    task_log(f'\nBB84 Reliability Calculation:\n')
     
     task_log(f'BB84 single_qubit_evesdropping_undetected_probability: {single_qubit_evesdropping_undetected_probability}')  
     task_log(f'BB84 single_qubit_evesdropping_detected_probability: {single_qubit_evesdropping_detected_probability}')  
     
     task_log(f'BB84 total_evesdropping_undetected_probability: {total_evesdropping_undetected_probability}')  
     task_log(f'BB84 total_evesdropping_detected_probability: {total_evesdropping_detected_probability}')
+    
+    return result

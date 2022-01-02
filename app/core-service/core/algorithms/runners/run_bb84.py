@@ -15,12 +15,18 @@ from bb84 import bb84, bb84_post_processing
 #               'bob_bases': 'XXXZZZXX',
 #               'sample_indices': '0, 2, 3, 4'}
 
-run_values = {'alice_bits': '101010',
-              'alice_bases': 'XXXZXX',
-              'eve_bases': 'XZZZXZ',
-              'bob_bases': 'XXXZZZ',
-              'sample_indices': '0, 2'}
+# run_values = {'alice_bits': '101010',
+#               'alice_bases': 'XXXZXX',
+#               'eve_bases': 'XZZZXZ',
+#               'bob_bases': 'XXXZZZ',
+#               'sample_indices': '0, 2'}
 
+run_values = {'alice_bits': '10101',
+              'alice_bases': 'XXXZX',
+              'eve_bases': 'XZZZX',
+              'bob_bases': 'XXXZZ',
+              'sample_indices': '0, 2'}
+              
 
 circuit = bb84(run_values=run_values, task_log=print)
 
