@@ -29,6 +29,7 @@ from .algorithms.qpe import qpe, qpe_post_processing
 from .algorithms.teleport import teleport
 from .algorithms.shor import shor, shor_post_processing
 from .algorithms.counting import counting, counting_post_processing
+from .algorithms.bb84 import bb84, bb84_post_processing
 
 
 class Runner:
@@ -43,12 +44,14 @@ class Runner:
                         'qpe': qpe,
                         'teleport': teleport,
                         'shor': shor,
-                        'counting': counting,}
+                        'counting': counting,
+                        'bb84': bb84,}
                    
     post_processing = {'simon': simon_post_processing,
                        'qpe': qpe_post_processing,
                        'shor': shor_post_processing,
-                       'counting': counting_post_processing,}
+                       'counting': counting_post_processing,
+                       'bb84': bb84,}
                        
     DEFAULT_TASK_TIMEOUT = 300
 
