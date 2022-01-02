@@ -146,7 +146,7 @@ def bb84_post_processing(run_data, task_log):
     
     evesdropping_detected = not samples_match
     
-    result = {'Evesdropping Detected:': evesdropping_detected}
+    result = {'Evesdropping Detected': evesdropping_detected}
     
     
     # Reliability Calculation
