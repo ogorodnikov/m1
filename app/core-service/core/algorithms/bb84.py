@@ -25,17 +25,17 @@ def bb84(run_values, task_log):
     
     # Alice side
     
-    qubits = QuantumCircuit(message_len, message_len * 2)
+    circuit = QuantumCircuit(message_len, message_len * 2)
     
     for qubit_index, (alice_bit, alice_base) in enumerate(zip(alice_bits, alice_bases)):
         
         if alice_bit == '1':
-            qubits.x(qubit_index)
+            circuit.x(qubit_index)
             
         if alice_base == 'X':
-            qubits.h(qubit_index)
+            circuit.h(qubit_index)
             
-    qubits.barrier()
+    circuit.barrier()
     
         
     # Eve's side
@@ -43,45 +43,30 @@ def bb84(run_values, task_log):
     for qubit_index, eve_base in enumerate(eve_bases):
         
         if eve_base == 'X':
-            qubits.h(qubit_index)
+            circuit.h(qubit_index)
             
-        qubits.measure(qubit_index, qubit_index)
+        circuit.measure(qubit_index, qubit_index)
         
         if eve_base == 'X':
-            qubits.h(qubit_index)
+            circuit.h(qubit_index)
             
-        qubits.barrier()
+        circuit.barrier()
             
-    simulator = Aer.get_backend('aer_simulator')
-    
-    qobj = assemble(qubits, shots=1, memory=True)
-    
-    result = simulator.run(qobj).result()
-    
-    all_bits = result.get_memory()[0]
-    eve_bits = list(reversed(all_bits[-message_len:]))
-
-    # print(result.get_memory())
-    # print(result.get_counts())
-    # print(eve_bits)
-    
-    # quit()
-    
 
     # Bob side
     
     for qubit_index, bob_base in enumerate(bob_bases):
         
         if bob_base == 'X':
-            qubits.h(qubit_index)
+            circuit.h(qubit_index)
             
-        qubits.measure(qubit_index, message_len + qubit_index)
+        circuit.measure(qubit_index, message_len + qubit_index)
             
-        qubits.barrier()
+        circuit.barrier()
             
     simulator = Aer.get_backend('aer_simulator')
     
-    qobj = assemble(qubits, shots=1, memory=True)
+    qobj = assemble(circuit, shots=1, memory=True)
     
     result = simulator.run(qobj).result()
     
@@ -91,6 +76,14 @@ def bb84(run_values, task_log):
     # print(result.get_memory())
     # print(result.get_counts())
     # print(bob_bits)
+    
+    # quit()
+    
+    eve_bits = list(reversed(all_bits[-message_len:]))
+
+    # print(result.get_memory())
+    # print(result.get_counts())
+    # print(eve_bits)
     
     # quit()
     
@@ -171,12 +164,26 @@ def bb84(run_values, task_log):
     task_log(f'BB84 samples_fit: {samples_fit}')
     task_log(f'BB84 key_length: {key_length}')
     
-    # task_log(f'BB84 qubits:\n{[print(qubit) for qubit in qubits]}')
-    task_log(f'BB84 qubits:\n{qubits}')
+    task_log(f'BB84 circuit:\n{circuit}')
  
     task_log(f'BB84 single_qubit_evesdropping_undetected_probability: {single_qubit_evesdropping_undetected_probability}')  
     task_log(f'BB84 single_qubit_evesdropping_detected_probability: {single_qubit_evesdropping_detected_probability}')  
     
     task_log(f'BB84 total_evesdropping_undetected_probability: {total_evesdropping_undetected_probability}')  
-    task_log(f'BB84 total_evesdropping_detected_probability: {total_evesdropping_detected_probability}')  
+    task_log(f'BB84 total_evesdropping_detected_probability: {total_evesdropping_detected_probability}')
     
+    return circuit
+
+
+def bb84_post_processing(run_data, task_log):
+    
+    run_values = run_data['Run Values']
+    counts = run_data['Result']['Counts']
+    
+    task_log(f'BB84 counts: {counts}')
+    
+    # precision = int(run_values['precision'])
+    
+    # input_secrets = [value for key, value in run_values.items() if 'secret' in key]
+    
+    # max_secret_len = max(map(len, input_secrets))
