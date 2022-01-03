@@ -6,7 +6,7 @@ sys.path.append('/home/ec2-user/environment/m1/app/core-service/core/algorithms'
 from qiskit import Aer
 from qiskit import execute
 
-from walk import walk, walk_post_processing
+from walk import walk
 
 
 # run_values = {'alice_bits': '10101',
