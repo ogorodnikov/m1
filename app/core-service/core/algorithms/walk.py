@@ -45,6 +45,9 @@ def walk(run_values, task_log):
         circuit.append(phase_oracle_gate, phase_oracle_qubits)
         circuit.append(phase_estimation_gate, phase_estimation_qubits)
         
+    # Measure
+    
+    circuit.measure(node_register, measure_register)
     
     # Logs
     
@@ -52,3 +55,7 @@ def walk(run_values, task_log):
     
     # task_log(f'WALK phase_oracle_qubits: {phase_oracle_qubits}')
     # task_log(f'WALK phase_estimation_qubits: {phase_estimation_qubits}')
+    
+    task_log(f'WALK circuit:\n{circuit}')
+    
+    return circuit
