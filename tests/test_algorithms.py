@@ -48,8 +48,6 @@ test_data = {
 }
 
 
-
-
 post_processing = {simon: simon_post_processing,
                    qpe: qpe_post_processing,
                    shor: shor_post_processing,
