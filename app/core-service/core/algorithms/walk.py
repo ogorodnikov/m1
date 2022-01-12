@@ -31,18 +31,11 @@ def build_phase_oracle(qubits):
 def build_phase_estimation_circuit(theta_register, node_register,
                                    coin_register, theta_flag_register):
 
-    qubits = [*theta_register, 
-              *node_register,
-              *coin_register,
-              *theta_flag_register]
-              
     theta_qubits = theta_register
     theta_flag_qubit = theta_flag_register
     mark_theta_qubits = [*theta_register, *theta_flag_register]
                                
-    qubits_count = len(qubits)
-    
-    mark_theta_flag_circuit = QuantumCircuit(mark_theta_qubits, 
+    mark_theta_flag_circuit = QuantumCircuit(theta_register, theta_flag_register,
                                              name="Mark Theta Flag")
     
     mark_theta_flag_circuit.x(mark_theta_qubits)
@@ -51,12 +44,43 @@ def build_phase_estimation_circuit(theta_register, node_register,
     mark_theta_flag_circuit.mct(theta_qubits, theta_flag_qubit)
     mark_theta_flag_circuit.x(mark_theta_qubits)
     
-    print(f'WALK mark_theta_flag_circuit:\n{mark_theta_flag_circuit}')
-        
-    quit()
-        
+    # mark_theta_flag_gate = mark_theta_flag_circuit.to_instruction()
     
-    circuit = QuantumCircuit(qubits_count, name="Phase Estimation")
+    # print(f'WALK mark_theta_flag_circuit:\n{mark_theta_flag_circuit}')
+        
+    # circuit = QuantumCircuit(11, name="Phase Estimation")
+    
+    # circuit.append(mark_theta_flag_gate, [0, 1, 2, 3, 10])
+    
+    # print(f'WALK phase_estimation_circuit:\n{circuit}')
+    
+    
+    # mark_theta_flag_circuit = QuantumCircuit(5, 
+    #                                          name="Mark Theta Flag")
+                                             
+    # mark_theta_flag_circuit.x([0,1,2,3,4])
+    # mark_theta_flag_circuit.mct([0,1,2,3], 4)
+    # mark_theta_flag_circuit.z(4)
+    # mark_theta_flag_circuit.mct([0,1,2,3], 4)
+    # mark_theta_flag_circuit.x([0,1,2,3,4])
+    
+    print(f'WALK mark_theta_flag_circuit:\n{mark_theta_flag_circuit}')
+    
+    # Phase estimation
+    
+    
+    circuit = QuantumCircuit(theta_register, node_register,
+                                   coin_register, theta_flag_register, name=' phase estimation ')
+                                   
+    
+    circuit.append(mark_theta_flag_circuit, [*theta_register, 
+                                             *theta_flag_register])
+    
+    
+    print(f'WALK phase_estimation_circuit:\n{circuit}')
+    
+
+    # quit()
     
     return circuit
     
@@ -89,6 +113,11 @@ def walk(run_values, task_log):
                              
     phase_oracle_qubits = [*node_register, *coin_register]
     
+    phase_estimation_qubits = [*theta_register, 
+                               *node_register,
+                               *coin_register,
+                               *theta_flag_register]
+    
     circuit.h(phase_oracle_qubits)
     
     phase_oracle = build_phase_oracle(phase_oracle_qubits)
@@ -96,7 +125,7 @@ def walk(run_values, task_log):
                                                       node_register,
                                                       coin_register,
                                                       theta_flag_register)
-    
+
     for iteration in range(iterations_count):
         
         circuit.append(phase_oracle, phase_oracle_qubits)
