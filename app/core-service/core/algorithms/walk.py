@@ -36,17 +36,20 @@ def build_phase_estimation_circuit(theta_register, node_register,
               *coin_register,
               *theta_flag_register]
               
-    theta_qubits = [*theta_register, *theta_flag_register]
+    theta_qubits = theta_register
+    theta_flag_qubit = theta_flag_register
+    mark_theta_qubits = [*theta_register, *theta_flag_register]
                                
     qubits_count = len(qubits)
     
-    mark_theta_flag_circuit = QuantumCircuit(theta_qubits, name="Mark Theta Flag")
+    mark_theta_flag_circuit = QuantumCircuit(mark_theta_qubits, 
+                                             name="Mark Theta Flag")
     
-    mark_theta_flag_circuit.x(theta_qubits)
-    mark_theta_flag_circuit.mct([0,1,2,3], 4)
-    mark_theta_flag_circuit.z(4)
-    mark_theta_flag_circuit.mct([0,1,2,3], 4)
-    mark_theta_flag_circuit.x(theta_qubits)
+    mark_theta_flag_circuit.x(mark_theta_qubits)
+    mark_theta_flag_circuit.mct(theta_qubits, theta_flag_qubit)
+    mark_theta_flag_circuit.z(theta_flag_qubit)
+    mark_theta_flag_circuit.mct(theta_qubits, theta_flag_qubit)
+    mark_theta_flag_circuit.x(mark_theta_qubits)
     
     print(f'WALK mark_theta_flag_circuit:\n{mark_theta_flag_circuit}')
         
