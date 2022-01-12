@@ -3,8 +3,20 @@ from qiskit import QuantumRegister
 from qiskit import ClassicalRegister
 
 
+def build_phase_oracle(qubits):
+    
+    qubits_count = len(qubits)
+    
+    circuit = QuantumCircuit(qubits_count)
+    
+    print(f'WALK build_phase_oracle circuit:\n{circuit}')
+    
+    return circuit
+    
+
 def walk(run_values, task_log):
     
+    ''' https://qiskit.org/textbook/ch-algorithms/quantum-walk-search-algorithm.html '''
     
     # Inputs
     
@@ -37,7 +49,7 @@ def walk(run_values, task_log):
     
     circuit.h(phase_oracle_qubits)
     
-    phase_oracle_gate = QuantumCircuit(6)
+    phase_oracle_gate = build_phase_oracle(phase_oracle_qubits)
     phase_estimation_gate = QuantumCircuit(11)
     
     for iteration in range(iterations_count):
@@ -53,7 +65,7 @@ def walk(run_values, task_log):
     
     task_log(f'WALK run_values: {run_values}')
     
-    # task_log(f'WALK phase_oracle_qubits: {phase_oracle_qubits}')
+    task_log(f'WALK phase_oracle_qubits: {phase_oracle_qubits}')
     # task_log(f'WALK phase_estimation_qubits: {phase_estimation_qubits}')
     
     task_log(f'WALK circuit:\n{circuit}')
