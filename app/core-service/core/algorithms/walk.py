@@ -7,7 +7,7 @@ def build_phase_oracle(qubits):
     
     qubits_count = len(qubits)
     
-    circuit = QuantumCircuit(qubits_count)
+    circuit = QuantumCircuit(qubits_count, name="Phase Oracle")
     
     # Example nodes
     
@@ -32,7 +32,9 @@ def build_phase_estimation_circuit(qubits):
     
     qubits_count = len(qubits)
     
-    circuit = QuantumCircuit(qubits_count)
+    mark_theta_flag_circuit = QuantumCircuit(5, name="Mark Theta Flag")
+    
+    circuit = QuantumCircuit(qubits_count, name="Phase Estimation")
     
     return circuit
     
@@ -50,7 +52,7 @@ def walk(run_values, task_log):
     theta_register = QuantumRegister(4, 'theta')
     node_register = QuantumRegister(4, 'node')
     coin_register = QuantumRegister(2, 'coin')
-    auxilary_register = QuantumRegister(1, 'auxilary')
+    theta_flag_register = QuantumRegister(1, 'theta_flag')
     
     measure_register = ClassicalRegister(4, 'measure')
     
@@ -60,7 +62,7 @@ def walk(run_values, task_log):
     circuit = QuantumCircuit(theta_register,
                              node_register,
                              coin_register,
-                             auxilary_register,
+                             theta_flag_register,
                              measure_register)
                              
     phase_oracle_qubits = [*node_register, *coin_register]
@@ -68,7 +70,7 @@ def walk(run_values, task_log):
     phase_estimation_qubits = [*theta_register, 
                                *node_register,
                                *coin_register,
-                               *auxilary_register]
+                               *theta_flag_register]
     
     circuit.h(phase_oracle_qubits)
     
