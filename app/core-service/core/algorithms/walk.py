@@ -9,6 +9,22 @@ def build_phase_oracle(qubits):
     
     circuit = QuantumCircuit(qubits_count)
     
+    # Example nodes
+    
+    # Node 1011
+    
+    circuit.x(2)
+    circuit.h(3)
+    circuit.mct([0,1,2], 3)
+    circuit.h(3)
+    circuit.x(2)
+    
+    # Node 1111
+    
+    circuit.h(3)
+    circuit.mct([0,1,2],3)
+    circuit.h(3)
+    
     print(f'WALK build_phase_oracle circuit:\n{circuit}')
     
     return circuit
