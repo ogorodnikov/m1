@@ -25,7 +25,14 @@ def build_phase_oracle(qubits):
     circuit.mct([0,1,2],3)
     circuit.h(3)
     
-    print(f'WALK build_phase_oracle circuit:\n{circuit}')
+    return circuit
+    
+
+def build_phase_estimation_circuit(qubits):
+    
+    qubits_count = len(qubits)
+    
+    circuit = QuantumCircuit(qubits_count)
     
     return circuit
     
@@ -65,13 +72,13 @@ def walk(run_values, task_log):
     
     circuit.h(phase_oracle_qubits)
     
-    phase_oracle_gate = build_phase_oracle(phase_oracle_qubits)
-    phase_estimation_gate = QuantumCircuit(11)
+    phase_oracle = build_phase_oracle(phase_oracle_qubits)
+    phase_estimation = build_phase_estimation_circuit(phase_estimation_qubits)
     
     for iteration in range(iterations_count):
         
-        circuit.append(phase_oracle_gate, phase_oracle_qubits)
-        circuit.append(phase_estimation_gate, phase_estimation_qubits)
+        circuit.append(phase_oracle, phase_oracle_qubits)
+        circuit.append(phase_estimation, phase_estimation_qubits)
         
     # Measure
     
@@ -82,7 +89,10 @@ def walk(run_values, task_log):
     task_log(f'WALK run_values: {run_values}')
     
     task_log(f'WALK phase_oracle_qubits: {phase_oracle_qubits}')
-    # task_log(f'WALK phase_estimation_qubits: {phase_estimation_qubits}')
+    task_log(f'WALK phase_oracle:\n{phase_oracle}')
+    
+    task_log(f'WALK phase_estimation_qubits: {phase_estimation_qubits}')
+    task_log(f'WALK phase_estimation:\n{phase_estimation}')
     
     task_log(f'WALK circuit:\n{circuit}')
     
