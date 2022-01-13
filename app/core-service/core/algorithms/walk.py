@@ -30,6 +30,8 @@ def build_phase_oracle(qubits):
 
 def build_phase_estimation_circuit(theta_register, node_register,
                                    coin_register, theta_flag_register):
+                                       
+    # Mark Theta Flag
 
     theta_qubits = theta_register
     theta_flag_qubit = theta_flag_register
@@ -44,44 +46,23 @@ def build_phase_estimation_circuit(theta_register, node_register,
     mark_theta_flag_circuit.mct(theta_qubits, theta_flag_qubit)
     mark_theta_flag_circuit.x(mark_theta_qubits)
     
-    # mark_theta_flag_gate = mark_theta_flag_circuit.to_instruction()
+    # Step
     
-    # print(f'WALK mark_theta_flag_circuit:\n{mark_theta_flag_circuit}')
-        
-    # circuit = QuantumCircuit(11, name="Phase Estimation")
+    step_circuit = QuantumCircuit(node_register, coin_register, name='Step')
     
-    # circuit.append(mark_theta_flag_gate, [0, 1, 2, 3, 10])
-    
-    # print(f'WALK phase_estimation_circuit:\n{circuit}')
-    
-    
-    # mark_theta_flag_circuit = QuantumCircuit(5, 
-    #                                          name="Mark Theta Flag")
-                                             
-    # mark_theta_flag_circuit.x([0,1,2,3,4])
-    # mark_theta_flag_circuit.mct([0,1,2,3], 4)
-    # mark_theta_flag_circuit.z(4)
-    # mark_theta_flag_circuit.mct([0,1,2,3], 4)
-    # mark_theta_flag_circuit.x([0,1,2,3,4])
-    
-    print(f'WALK mark_theta_flag_circuit:\n{mark_theta_flag_circuit}')
-    
-    # Phase estimation
-    
-    
-    circuit = QuantumCircuit(theta_register, node_register,
-                                   coin_register, theta_flag_register, name=' phase estimation ')
-                                   
+    # Phase Estimation
+
+    circuit = QuantumCircuit(theta_register,
+                             node_register,
+                             coin_register, 
+                             theta_flag_register, 
+                             name='Phase Estimation')
     
     circuit.append(mark_theta_flag_circuit, [*theta_register, 
                                              *theta_flag_register])
-    
-    
-    print(f'WALK phase_estimation_circuit:\n{circuit}')
-    
 
-    # quit()
-    
+    # print(f'WALK mark_theta_flag_circuit:\n{mark_theta_flag_circuit}')
+
     return circuit
     
 
