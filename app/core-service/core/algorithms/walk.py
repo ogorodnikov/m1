@@ -55,19 +55,49 @@ def build_phase_estimation_circuit(theta_register, node_register,
     
     step_circuit = QuantumCircuit(node_register, coin_register, name='Step')
     
-    step_qubits_count = len(coin_register)
+    coin_qubits_count = len(coin_register)
     
-    grover_diffuser = build_diffuser(qubits_count=step_qubits_count)
+    grover_diffuser = build_diffuser(qubits_count=coin_qubits_count)
     
-    step_circuit.h(coin_register)
-    step_circuit.z(coin_register)
-    step_circuit.cz(coin_register[0], coin_register[-1])
-    step_circuit.h(coin_register)
+    # step_circuit.h(coin_register)
+    # step_circuit.z(coin_register)
+    # step_circuit.cz(coin_register[0], coin_register[-1])
+    # step_circuit.h(coin_register)
     
     # step_circuit.append(grover_diffuser, coin_register)
     
-    print(f'WALK grover_diffuser:\n{grover_diffuser}')    
-    print(f'WALK step_circuit:\n{step_circuit}')    
+    print(f'WALK grover_diffuser:\n{grover_diffuser}')
+    
+    
+    # Shift
+    
+
+    qubit_states = '0' * coin_qubits_count
+    
+    print(f'WALK qubit_states:\n{qubit_states}')
+    
+    
+    previous_state_bits = '0' * coin_qubits_count
+    
+    for state in range(2 ** coin_qubits_count):
+
+        state_bits = bin(int(state))[2:]
+        state_bits_filled = state_bits.zfill(coin_qubits_count)
+        
+        state_difference = ''.join('1' if state_bit != previous_state_bit else '0'
+                                   for state_bit, previous_state_bit
+                                   in zip(state_bits_filled, previous_state_bits))
+        
+        previous_state_bits = state_bits_filled
+    
+        print(f'WALK state_bits: {state_bits}')
+        print(f'WALK state_bits_filled: {state_bits_filled}')
+        print(f'WALK state_difference: {state_difference}')
+        print(f'WALK previous_state_bits: {previous_state_bits}')
+    
+    
+    
+    # print(f'WALK step_circuit:\n{step_circuit}')    
     
     quit()
     
