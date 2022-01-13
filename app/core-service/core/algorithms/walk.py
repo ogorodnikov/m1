@@ -2,6 +2,11 @@ from qiskit import QuantumCircuit
 from qiskit import QuantumRegister
 from qiskit import ClassicalRegister
 
+try:
+    from grover import build_diffuser
+except ModuleNotFoundError:
+    from core.algorithms.grover import build_diffuser
+
 
 def build_phase_oracle(qubits):
     
@@ -49,6 +54,17 @@ def build_phase_estimation_circuit(theta_register, node_register,
     # Step
     
     step_circuit = QuantumCircuit(node_register, coin_register, name='Step')
+    
+    step_qubits_count = len(coin_register)
+    
+    grover_diffuser = build_diffuser(qubits_count=step_qubits_count)
+    
+    step_circuit.append(grover_diffuser, coin_register)
+    
+    print(f'WALK grover_diffuser:\n{grover_diffuser}')    
+    print(f'WALK step_circuit:\n{step_circuit}')    
+    
+    # quit()
     
     # Phase Estimation
 
