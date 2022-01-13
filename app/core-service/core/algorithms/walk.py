@@ -59,12 +59,17 @@ def build_phase_estimation_circuit(theta_register, node_register,
     
     grover_diffuser = build_diffuser(qubits_count=step_qubits_count)
     
-    step_circuit.append(grover_diffuser, coin_register)
+    step_circuit.h(coin_register)
+    step_circuit.z(coin_register)
+    step_circuit.cz(coin_register[0], coin_register[-1])
+    step_circuit.h(coin_register)
+    
+    # step_circuit.append(grover_diffuser, coin_register)
     
     print(f'WALK grover_diffuser:\n{grover_diffuser}')    
     print(f'WALK step_circuit:\n{step_circuit}')    
     
-    # quit()
+    quit()
     
     # Phase Estimation
 
