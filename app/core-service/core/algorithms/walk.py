@@ -85,6 +85,12 @@ def build_phase_estimation_circuit(theta_register, node_register,
                                   in zip(node_bits_filled, previous_node_bits))
         
         previous_node_bits = node_bits_filled
+        
+        for node_qubit in node_difference:
+            
+            pass
+        
+        step_circuit.ccx(*coin_register, node)
     
         print(f'WALK node_bits: {node_bits}')
         print(f'WALK node_bits_filled: {node_bits_filled}')
@@ -93,7 +99,7 @@ def build_phase_estimation_circuit(theta_register, node_register,
     
     
     
-    # print(f'WALK step_circuit:\n{step_circuit}')    
+    print(f'WALK step_circuit:\n{step_circuit}')    
     
     quit()
     
