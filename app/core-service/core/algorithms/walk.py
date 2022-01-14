@@ -3,6 +3,11 @@ from qiskit import QuantumRegister
 from qiskit import ClassicalRegister
 
 try:
+    from qft import create_qft_circuit
+except ModuleNotFoundError:
+    from core.algorithms.qft import create_qft_circuit
+
+try:
     from grover import build_diffuser
 except ModuleNotFoundError:
     from core.algorithms.grover import build_diffuser
@@ -50,6 +55,9 @@ def build_phase_estimation_circuit(theta_register, node_register,
     mark_theta_flag_circuit.z(theta_flag_qubit)
     mark_theta_flag_circuit.mct(theta_qubits, theta_flag_qubit)
     mark_theta_flag_circuit.x(mark_theta_qubits)
+
+    print(f'WALK mark_theta_flag_circuit:\n{mark_theta_flag_circuit}')
+    
     
     # Step
     
@@ -59,16 +67,16 @@ def build_phase_estimation_circuit(theta_register, node_register,
     
     grover_diffuser = build_diffuser(qubits_count=coin_qubits_count)
     
+    print(f'WALK grover_diffuser:\n{grover_diffuser}')
+    
     # step_circuit.h(coin_register)
     # step_circuit.z(coin_register)
     # step_circuit.cz(coin_register[0], coin_register[-1])
     # step_circuit.h(coin_register)
     
-    # step_circuit.append(grover_diffuser, coin_register)
+    step_circuit.append(grover_diffuser, coin_register)
     
-    print(f'WALK grover_diffuser:\n{grover_diffuser}')
-    
-    
+
     # Shift
     
     node_qubits_count = len(node_register)
@@ -104,26 +112,23 @@ def build_phase_estimation_circuit(theta_register, node_register,
         print(f'WALK node_differences: {node_differences}')
         print(f'WALK previous_node_bits: {previous_node_bits}')
     
+    print(f'WALK step_circuit:\n{step_circuit}')
     
-    
-    print(f'WALK step_circuit:\n{step_circuit}')    
-    
-    quit()
     
     # Phase Estimation
 
-    circuit = QuantumCircuit(theta_register,
-                             node_register,
-                             coin_register, 
-                             theta_flag_register, 
-                             name='Phase Estimation')
+    phase_estimation_circuit = QuantumCircuit(theta_register,
+                                              node_register,
+                                              coin_register, 
+                                              theta_flag_register, 
+                                              name='Phase Estimation')
     
-    circuit.append(mark_theta_flag_circuit, [*theta_register, 
-                                             *theta_flag_register])
+    phase_estimation_circuit.append(mark_theta_flag_circuit, 
+                                    [*theta_register, *theta_flag_register])
 
-    # print(f'WALK mark_theta_flag_circuit:\n{mark_theta_flag_circuit}')
 
-    return circuit
+
+    return phase_estimation_circuit
     
 
 def walk(run_values, task_log):
