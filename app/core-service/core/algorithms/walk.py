@@ -143,6 +143,7 @@ def build_phase_estimation_circuit(theta_register, node_register,
             controlled_steps_circuit.append(controlled_step_circuit, iteration_qubits)
             
     inverted_controlled_steps_circuit = controlled_steps_circuit.inverse()
+    inverted_controlled_steps_circuit.name = 'ICSteps'
 
     print(f'WALK controlled_steps_circuit:\n{controlled_steps_circuit}')
     print(f'WALK inverted_controlled_steps_circuit:\n{inverted_controlled_steps_circuit}')
@@ -167,9 +168,10 @@ def build_phase_estimation_circuit(theta_register, node_register,
 
     phase_estimation_circuit.h(theta_register)
     
-    
-
-    
+    phase_estimation_circuit.append(controlled_steps_circuit,
+                                    [*theta_register,
+                                     *node_register,
+                                     *coin_register])
     
     phase_estimation_circuit.append(iqft_circuit, theta_register)
     
@@ -177,6 +179,13 @@ def build_phase_estimation_circuit(theta_register, node_register,
                                     [*theta_register, *theta_flag_register])
 
     phase_estimation_circuit.append(qft_circuit, theta_register)
+
+    phase_estimation_circuit.append(inverted_controlled_steps_circuit,
+                                    [*theta_register,
+                                     *node_register,
+                                     *coin_register])
+
+    phase_estimation_circuit.h(theta_register)
     
     return phase_estimation_circuit
     
