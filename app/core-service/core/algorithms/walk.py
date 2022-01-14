@@ -8,9 +8,9 @@ except ModuleNotFoundError:
     from core.algorithms.qft import create_qft_circuit
 
 try:
-    from grover import build_diffuser
+    from counting import build_diffuser
 except ModuleNotFoundError:
-    from core.algorithms.grover import build_diffuser
+    from core.algorithms.counting import build_diffuser
 
 
 def build_phase_oracle(qubits):
@@ -62,10 +62,15 @@ def build_phase_estimation_circuit(theta_register, node_register,
     # Step
     
     step_circuit = QuantumCircuit(node_register, coin_register, name='Step')
-    
+
+    node_qubits_count = len(node_register)    
     coin_qubits_count = len(coin_register)
     
+    
+    # Step Diffuser
+    
     grover_diffuser = build_diffuser(qubits_count=coin_qubits_count)
+    grover_diffuser_gate = grover_diffuser.to_gate()
     
     print(f'WALK grover_diffuser:\n{grover_diffuser}')
     
@@ -74,12 +79,10 @@ def build_phase_estimation_circuit(theta_register, node_register,
     # step_circuit.cz(coin_register[0], coin_register[-1])
     # step_circuit.h(coin_register)
     
-    step_circuit.append(grover_diffuser, coin_register)
+    step_circuit.append(grover_diffuser_gate, coin_register)
     
 
-    # Shift
-    
-    node_qubits_count = len(node_register)
+    # Step Shift
     
     previous_node_bits = '0' * coin_qubits_count
     
@@ -115,6 +118,11 @@ def build_phase_estimation_circuit(theta_register, node_register,
     print(f'WALK step_circuit:\n{step_circuit}')
     
     
+    # Controlled Step
+    
+    controlled_step_circuit = step_circuit.control()
+    
+    
     # Phase Estimation
 
     phase_estimation_circuit = QuantumCircuit(theta_register,
@@ -122,6 +130,29 @@ def build_phase_estimation_circuit(theta_register, node_register,
                                               coin_register, 
                                               theta_flag_register, 
                                               name='Phase Estimation')
+
+    phase_estimation_circuit.h(theta_register)
+    
+    
+    # Phase Estimation - Steps
+    
+    for theta_qubit in theta_register:
+        
+        iterations_count = 2 ** theta_qubit
+        
+        for iteration in range(iterations_count):
+            
+            iteration_qubits = [theta_qubit] + node_register + coin_register
+            
+            phase_estimation_circuit.append(controlled_step_circuit, iteration_qubits)
+    
+    # # IQFT
+    
+    # iqft_circuit = create_qft_circuit(counting_qubits_count, inverted=True)
+    
+    # circuit.append(iqft_circuit, counting_qubits)
+    
+    
     
     phase_estimation_circuit.append(mark_theta_flag_circuit, 
                                     [*theta_register, *theta_flag_register])
