@@ -7,6 +7,7 @@ from qiskit import Aer
 from qiskit import execute
 
 from walk import walk
+from walk import walk_reference
 
 
 # run_values = {'alice_bits': '10101',
@@ -18,14 +19,19 @@ from walk import walk
 run_values = {}
               
 
-circuit = walk(run_values=run_values, task_log=print)
+# circuit = walk(run_values=run_values, task_log=print)
+
+circuit = walk_reference()
 
 
-# backend = Aer.get_backend('aer_simulator')
+backend = Aer.get_backend('aer_simulator')
 
-# job = execute(circuit, backend, shots=1024)
+job = execute(circuit, backend, shots=1024)
 
-# counts = job.result().get_counts()
+counts = job.result().get_counts()
+
+print(f'WALK circuit:\n{circuit}')
+print(f'WALK counts: {counts}')
 
 
 # run_data = {'Result': {'Counts': counts}, 
