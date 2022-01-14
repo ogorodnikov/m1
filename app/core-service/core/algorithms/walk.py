@@ -41,6 +41,11 @@ def build_phase_oracle(qubits):
 def build_phase_estimation_circuit(theta_register, node_register,
                                    coin_register, theta_flag_register):
                                        
+    theta_qubits_count = len(theta_register)    
+    node_qubits_count = len(node_register)    
+    coin_qubits_count = len(coin_register)
+    
+                                       
     # Mark Theta Flag
 
     theta_qubits = theta_register
@@ -63,10 +68,6 @@ def build_phase_estimation_circuit(theta_register, node_register,
     
     step_circuit = QuantumCircuit(node_register, coin_register, name='Step')
 
-    node_qubits_count = len(node_register)    
-    coin_qubits_count = len(coin_register)
-    
-    
     # Step Diffuser
     
     grover_diffuser = build_diffuser(qubits_count=coin_qubits_count)
@@ -123,6 +124,16 @@ def build_phase_estimation_circuit(theta_register, node_register,
     controlled_step_circuit = step_circuit.control()
     controlled_step_circuit.name = 'CStep'
     
+
+    # QFT
+    
+    qft_circuit = create_qft_circuit(theta_qubits_count, inverted=False)
+    iqft_circuit = create_qft_circuit(theta_qubits_count, inverted=True)
+
+    print(f'WALK qft_circuit:\n{qft_circuit}')
+    print(f'WALK iqft_circuit:\n{iqft_circuit}')
+    
+    
     # Phase Estimation
 
     phase_estimation_circuit = QuantumCircuit(theta_register,
@@ -145,20 +156,15 @@ def build_phase_estimation_circuit(theta_register, node_register,
             iteration_qubits = [theta_qubit, *node_register, *coin_register]
             
             phase_estimation_circuit.append(controlled_step_circuit, iteration_qubits)
+
     
-    # # IQFT
-    
-    # iqft_circuit = create_qft_circuit(counting_qubits_count, inverted=True)
-    
-    # circuit.append(iqft_circuit, counting_qubits)
-    
-    
+    phase_estimation_circuit.append(iqft_circuit, theta_register)
     
     phase_estimation_circuit.append(mark_theta_flag_circuit, 
                                     [*theta_register, *theta_flag_register])
 
-
-
+    phase_estimation_circuit.append(qft_circuit, theta_register)
+    
     return phase_estimation_circuit
     
 
