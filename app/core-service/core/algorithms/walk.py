@@ -125,6 +125,29 @@ def build_phase_estimation_circuit(theta_register, node_register,
     controlled_step_circuit.name = 'CStep'
     
 
+    # Controlled Steps
+    
+    controlled_steps_circuit = QuantumCircuit(theta_register,
+                                              node_register,
+                                              coin_register, 
+                                              name='CSteps')
+    
+    for theta_qubit_index, theta_qubit in enumerate(theta_register):
+        
+        iterations_count = 2 ** theta_qubit_index
+        
+        for iteration in range(iterations_count):
+            
+            iteration_qubits = [theta_qubit, *node_register, *coin_register]
+            
+            controlled_steps_circuit.append(controlled_step_circuit, iteration_qubits)
+            
+    inverted_controlled_steps_circuit = controlled_steps_circuit.inverse()
+
+    print(f'WALK controlled_steps_circuit:\n{controlled_steps_circuit}')
+    print(f'WALK inverted_controlled_steps_circuit:\n{inverted_controlled_steps_circuit}')
+  
+
     # QFT
     
     qft_circuit = create_qft_circuit(theta_qubits_count, inverted=False)
@@ -145,18 +168,8 @@ def build_phase_estimation_circuit(theta_register, node_register,
     phase_estimation_circuit.h(theta_register)
     
     
-    # Phase Estimation - Controlled Steps
-    
-    for theta_qubit_index, theta_qubit in enumerate(theta_register):
-        
-        iterations_count = 2 ** theta_qubit_index
-        
-        for iteration in range(iterations_count):
-            
-            iteration_qubits = [theta_qubit, *node_register, *coin_register]
-            
-            phase_estimation_circuit.append(controlled_step_circuit, iteration_qubits)
 
+    
     
     phase_estimation_circuit.append(iqft_circuit, theta_register)
     
