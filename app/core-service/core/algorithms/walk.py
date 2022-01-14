@@ -67,20 +67,25 @@ def build_phase_estimation_circuit(theta_register, node_register,
     # Step
     
     step_circuit = QuantumCircuit(node_register, coin_register, name='Step')
+    
 
     # Step Diffuser
     
-    grover_diffuser = build_diffuser(qubits_count=coin_qubits_count)
-    grover_diffuser_gate = grover_diffuser.to_gate()
+    step_circuit.h(coin_register)
+    step_circuit.z(coin_register)
+    step_circuit.cz(coin_register[0], coin_register[-1])
+    step_circuit.h(coin_register)
     
-    print(f'WALK grover_diffuser:\n{grover_diffuser}')
+    step_circuit.x(coin_register)
     
-    # step_circuit.h(coin_register)
-    # step_circuit.z(coin_register)
-    # step_circuit.cz(coin_register[0], coin_register[-1])
-    # step_circuit.h(coin_register)
+    # TODO: Imported Grover Diffuser
+
+    # grover_diffuser = build_diffuser(qubits_count=coin_qubits_count)
+    # grover_diffuser_gate = grover_diffuser.to_gate()
     
-    step_circuit.append(grover_diffuser_gate, coin_register)
+    # print(f'WALK grover_diffuser:\n{grover_diffuser}')
+    
+    # step_circuit.append(grover_diffuser_gate, coin_register)
     
 
     # Step Shift

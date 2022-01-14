@@ -19,9 +19,9 @@ from walk import walk_reference
 run_values = {}
               
 
-# circuit = walk(run_values=run_values, task_log=print)
+circuit = walk(run_values=run_values, task_log=print)
 
-circuit = walk_reference()
+# circuit = walk_reference()
 
 
 backend = Aer.get_backend('aer_simulator')
