@@ -121,7 +121,7 @@ def build_phase_estimation_circuit(theta_register, node_register,
     # Controlled Step
     
     controlled_step_circuit = step_circuit.control()
-    
+    controlled_step_circuit.name = 'CStep'
     
     # Phase Estimation
 
@@ -134,15 +134,15 @@ def build_phase_estimation_circuit(theta_register, node_register,
     phase_estimation_circuit.h(theta_register)
     
     
-    # Phase Estimation - Steps
+    # Phase Estimation - Controlled Steps
     
-    for theta_qubit in theta_register:
+    for theta_qubit_index, theta_qubit in enumerate(theta_register):
         
-        iterations_count = 2 ** theta_qubit
+        iterations_count = 2 ** theta_qubit_index
         
         for iteration in range(iterations_count):
             
-            iteration_qubits = [theta_qubit] + node_register + coin_register
+            iteration_qubits = [theta_qubit, *node_register, *coin_register]
             
             phase_estimation_circuit.append(controlled_step_circuit, iteration_qubits)
     
