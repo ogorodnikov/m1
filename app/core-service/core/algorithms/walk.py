@@ -79,22 +79,29 @@ def build_phase_estimation_circuit(theta_register, node_register,
 
         node_bits = bin(int(node))[2:]
         node_bits_filled = node_bits.zfill(coin_qubits_count)
+        node_bits_reversed = ''.join(reversed(node_bits_filled))
         
-        node_difference = ''.join('1' if node_bit != previous_node_bit else '0'
-                                  for node_bit, previous_node_bit
-                                  in zip(node_bits_filled, previous_node_bits))
+        node_differences = ''.join('1' if node_bit != previous_node_bit else '0'
+                                   for node_bit, previous_node_bit
+                                   in zip(node_bits_reversed, previous_node_bits))
         
-        previous_node_bits = node_bits_filled
+        previous_node_bits = node_bits_reversed
         
-        for node_qubit in node_difference:
+        for coin_qubit_index, node_difference in enumerate(node_differences):
             
-            pass
+            if node_difference == '1':
+                
+                coin_qubit = coin_register[coin_qubit_index]
+                
+                step_circuit.x(coin_qubit)
         
         step_circuit.ccx(*coin_register, node)
     
         print(f'WALK node_bits: {node_bits}')
         print(f'WALK node_bits_filled: {node_bits_filled}')
-        print(f'WALK node_difference: {node_difference}')
+        print(f'WALK node_bits_reversed: {node_bits_reversed}')
+        
+        print(f'WALK node_differences: {node_differences}')
         print(f'WALK previous_node_bits: {previous_node_bits}')
     
     
