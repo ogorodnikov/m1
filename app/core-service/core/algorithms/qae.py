@@ -16,10 +16,12 @@ def qae(run_values, task_log):
     # Circuits
     
     bernoulli_a = QuantumCircuit(1)
+    bernoulli_q = QuantumCircuit(1)
     
     theta_p = 2 * asin(probability ** 0.5)
     
     bernoulli_a.ry(theta_p, 0)
+    bernoulli_q.ry(2 * theta_p, 0)
     
     # Logs
     
@@ -28,3 +30,6 @@ def qae(run_values, task_log):
     task_log(f'QAE probability: {probability}')
     
     task_log(f'QAE theta_p: {theta_p}')
+    
+    task_log(f'QAE bernoulli_a:\n{bernoulli_a}')
+    task_log(f'QAE bernoulli_q:\n{bernoulli_q}')
