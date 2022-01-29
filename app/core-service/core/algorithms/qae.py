@@ -23,16 +23,8 @@ def qae(run_values, task_log):
     bernoulli_a.ry(theta_p, 0)
     bernoulli_q.ry(2 * theta_p, 0)
     
+    
     # Reference Estimation
-    
-    from qiskit.algorithms import EstimationProblem
-
-    problem = EstimationProblem(
-        state_preparation=bernoulli_a,
-        grover_operator=bernoulli_q,
-        objective_qubits=[0]
-    )
-    
     
     class Task:
         
@@ -55,6 +47,8 @@ def qae(run_values, task_log):
     
     
     from qiskit.algorithms import AmplitudeEstimation
+    
+    from amplitude_estimation import AmplitudeEstimation
 
     ae = AmplitudeEstimation(
         num_eval_qubits=5,
