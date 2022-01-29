@@ -53,6 +53,10 @@ def qae(run_values, task_log):
     result = ae_result.estimation
     samples = ae_result.samples
     
+    
+    maximum_likelihood_estimator = ae_result.mle
+    
+    
     # Logs
     
     task_log(f'QAE run_values: {run_values}')
@@ -66,3 +70,4 @@ def qae(run_values, task_log):
     
     task_log(f'QAE result: {result}')
     task_log(f'QAE samples: {samples}')
+    task_log(f'QAE maximum_likelihood_estimator: {maximum_likelihood_estimator}')
