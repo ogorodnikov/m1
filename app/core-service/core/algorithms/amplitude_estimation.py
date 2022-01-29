@@ -9,7 +9,6 @@ from scipy.optimize import bisect
 from qiskit import QuantumCircuit, ClassicalRegister
 from qiskit.providers import BaseBackend, Backend
 from qiskit.utils import QuantumInstance
-from ae_utils import pdf_a, derivative_log_pdf_a, bisect_max
 
 
 class AmplitudeEstimation():
@@ -202,65 +201,6 @@ class AmplitudeEstimation():
 
         return samples, measurements
 
-    @staticmethod
-    def compute_mle(
-        result: "AmplitudeEstimationResult", apply_post_processing: bool = False
-    ) -> float:
-        """Compute the Maximum Likelihood Estimator (MLE).
-
-        Args:
-            result: An amplitude estimation result object.
-            apply_post_processing: If True, apply the post processing to the MLE before returning
-                it.
-
-        Returns:
-            The MLE for the provided result object.
-        """
-        m = result.num_evaluation_qubits
-        M = 2 ** m  # pylint: disable=invalid-name
-        qae = result.estimation
-
-        # likelihood function
-        a_i = np.asarray(list(result.samples.keys()))
-        p_i = np.asarray(list(result.samples.values()))
-
-        def loglikelihood(a):
-            return np.sum(result.shots * p_i * np.log(pdf_a(a_i, a, m)))
-
-        # y is pretty much an integer, but to map 1.9999 to 2 we must first
-        # use round and then int conversion
-        y = int(np.round(M * np.arcsin(np.sqrt(qae)) / np.pi))
-
-        # Compute the two intervals in which are candidates for containing
-        # the maximum of the log-likelihood function: the two bubbles next to
-        # the QAE estimate
-        if y == 0:
-            right_of_qae = np.sin(np.pi * (y + 1) / M) ** 2
-            bubbles = [qae, right_of_qae]
-
-        elif y == int(M / 2):  # remember, M = 2^m is a power of 2
-            left_of_qae = np.sin(np.pi * (y - 1) / M) ** 2
-            bubbles = [left_of_qae, qae]
-
-        else:
-            left_of_qae = np.sin(np.pi * (y - 1) / M) ** 2
-            right_of_qae = np.sin(np.pi * (y + 1) / M) ** 2
-            bubbles = [left_of_qae, qae, right_of_qae]
-
-        # Find global maximum amongst the two local maxima
-        a_opt = qae
-        loglik_opt = loglikelihood(a_opt)
-        for a, b in zip(bubbles[:-1], bubbles[1:]):
-            locmax, val = bisect_max(loglikelihood, a, b, retval=True)
-            if val > loglik_opt:
-                a_opt = locmax
-                loglik_opt = val
-
-        if apply_post_processing:
-            return result.post_processing(a_opt)
-
-        return a_opt
-
 
     def estimate(self, estimation_problem) -> "AmplitudeEstimationResult":
         """Run the amplitude estimation algorithm on provided estimation problem.
@@ -325,52 +265,9 @@ class AmplitudeEstimation():
         # store the number of oracle queries
         result.num_oracle_queries = result.shots * (self._M - 1)
 
-        # run the MLE post processing
-        mle = self.compute_mle(result)
-        result.mle = mle
-        result.mle_processed = estimation_problem.post_processing(mle)
-
-        result.confidence_interval = self.compute_confidence_interval(result)
-        result.confidence_interval_processed = tuple(
-            estimation_problem.post_processing(value) for value in result.confidence_interval
-        )
-
         return result
 
 
-    @staticmethod
-    def compute_confidence_interval(
-        result: "AmplitudeEstimationResult", alpha: float = 0.05, kind: str = "likelihood_ratio"
-    ) -> Tuple[float, float]:
-        """Compute the (1 - alpha) confidence interval.
-
-        Args:
-            result: An amplitude estimation result for which to compute the confidence interval.
-            alpha: Confidence level: compute the (1 - alpha) confidence interval.
-            kind: The method to compute the confidence interval, can be 'fisher', 'observed_fisher'
-                or 'likelihood_ratio' (default)
-
-        Returns:
-            The (1 - alpha) confidence interval of the specified kind.
-
-        Raises:
-            AquaError: If 'mle' is not in self._ret.keys() (i.e. `run` was not called yet).
-            NotImplementedError: If the confidence interval method `kind` is not implemented.
-        """
-        # if statevector simulator the estimate is exact
-        if isinstance(result.circuit_results, (list, np.ndarray)):
-            return (result.mle, result.mle)
-
-        if kind in ["likelihood_ratio", "lr"]:
-            return _likelihood_ratio_confint(result, alpha)
-
-        if kind in ["fisher", "fi"]:
-            return _fisher_confint(result, alpha, observed=False)
-
-        if kind in ["observed_fisher", "observed_information", "oi"]:
-            return _fisher_confint(result, alpha, observed=True)
-
-        raise NotImplementedError(f"CI `{kind}` is not implemented.")
 
 
 
