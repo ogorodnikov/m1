@@ -44,15 +44,18 @@ def qae(run_values, task_log):
     from qiskit.algorithms import AmplitudeEstimation
 
     ae = AmplitudeEstimation(
-        num_eval_qubits=3,
+        num_eval_qubits=5,
         quantum_instance=quantum_instance
     )
     
     ae_result = ae.estimate(problem)
     
-    result = ae_result.estimation
+    simple_result = ae_result.estimation
     samples = ae_result.samples
     
+    
+    
+    # MLE
     
     maximum_likelihood_estimator = ae_result.mle
     
@@ -68,6 +71,6 @@ def qae(run_values, task_log):
     task_log(f'QAE bernoulli_a:\n{bernoulli_a}')
     task_log(f'QAE bernoulli_q:\n{bernoulli_q}')
     
-    task_log(f'QAE result: {result}')
+    task_log(f'QAE simple_result: {simple_result}')
     task_log(f'QAE samples: {samples}')
     task_log(f'QAE maximum_likelihood_estimator: {maximum_likelihood_estimator}')
