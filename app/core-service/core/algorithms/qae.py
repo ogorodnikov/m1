@@ -1,4 +1,4 @@
-def walk(run_values, task_log):
+def qae(run_values, task_log):
     
     ''' https://qiskit.org/documentation/finance/tutorials/00_amplitude_estimation.html '''
     
