@@ -9,12 +9,10 @@ from scipy.optimize import bisect
 from qiskit import QuantumCircuit, ClassicalRegister
 from qiskit.providers import BaseBackend, Backend
 from qiskit.utils import QuantumInstance
-from .amplitude_estimator import AmplitudeEstimator, AmplitudeEstimatorResult
-from .ae_utils import pdf_a, derivative_log_pdf_a, bisect_max
-from .estimation_problem import EstimationProblem
+from ae_utils import pdf_a, derivative_log_pdf_a, bisect_max
 
 
-class AmplitudeEstimation(AmplitudeEstimator):
+class AmplitudeEstimation():
     r"""The Quantum Phase Estimation-based Amplitude Estimation algorithm.
 
     This class implements the original Quantum Amplitude Estimation (QAE) algorithm, introduced by
@@ -99,7 +97,7 @@ class AmplitudeEstimation(AmplitudeEstimator):
         self._quantum_instance = quantum_instance
 
     def construct_circuit(
-        self, estimation_problem: EstimationProblem, measurement: bool = False
+        self, estimation_problem, measurement: bool = False
     ) -> QuantumCircuit:
         """Construct the Amplitude Estimation quantum circuit.
 
@@ -264,7 +262,7 @@ class AmplitudeEstimation(AmplitudeEstimator):
         return a_opt
 
 
-    def estimate(self, estimation_problem: EstimationProblem) -> "AmplitudeEstimationResult":
+    def estimate(self, estimation_problem) -> "AmplitudeEstimationResult":
         """Run the amplitude estimation algorithm on provided estimation problem.
 
         Args:
@@ -376,7 +374,7 @@ class AmplitudeEstimation(AmplitudeEstimator):
 
 
 
-class AmplitudeEstimationResult(AmplitudeEstimatorResult):
+class AmplitudeEstimationResult():
     """The ``AmplitudeEstimation`` result object."""
 
     def __init__(self) -> None:

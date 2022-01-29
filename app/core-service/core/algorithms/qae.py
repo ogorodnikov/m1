@@ -46,7 +46,7 @@ def qae(run_values, task_log):
     quantum_instance = QuantumInstance(backend)
     
     
-    from qiskit.algorithms import AmplitudeEstimation
+    # from qiskit.algorithms import AmplitudeEstimation
     
     from amplitude_estimation import AmplitudeEstimation
 
