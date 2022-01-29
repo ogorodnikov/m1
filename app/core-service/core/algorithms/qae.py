@@ -34,6 +34,19 @@ def qae(run_values, task_log):
     )
     
     
+    class Task:
+        
+        def __init__(self):
+            
+            self.state_preparation = bernoulli_a
+            self.grover_operator = bernoulli_q
+            self.objective_qubits = [0]
+            self.post_processing = lambda x: x
+            
+    task = Task()        
+            
+    
+    
     from qiskit import BasicAer
     from qiskit.utils import QuantumInstance
     
@@ -48,7 +61,7 @@ def qae(run_values, task_log):
         quantum_instance=quantum_instance
     )
     
-    ae_result = ae.estimate(problem)
+    ae_result = ae.estimate(task)
     
     simple_result = ae_result.estimation
     samples = ae_result.samples
