@@ -3,8 +3,6 @@
 from typing import Optional, Union, List, Tuple, Dict
 from collections import OrderedDict
 import numpy as np
-from scipy.stats import chi2, norm
-from scipy.optimize import bisect
 
 from qiskit import QuantumCircuit, ClassicalRegister
 from qiskit.providers import BaseBackend, Backend
@@ -12,31 +10,6 @@ from qiskit.utils import QuantumInstance
 
 
 class AmplitudeEstimation():
-    r"""The Quantum Phase Estimation-based Amplitude Estimation algorithm.
-
-    This class implements the original Quantum Amplitude Estimation (QAE) algorithm, introduced by
-    [1]. This canonical version uses quantum phase estimation along with a set of :math:`m`
-    additional evaluation qubits to find an estimate :math:`\tilde{a}`, that is restricted to the
-    grid
-
-    .. math::
-
-        \tilde{a} \in \{\sin^2(\pi  y / 2^m) : y = 0, ..., 2^{m-1}\}
-
-    More evaluation qubits produce a finer sampling grid, therefore the accuracy of the algorithm
-    increases with :math:`m`.
-
-    Using a maximum likelihood post processing, this grid constraint can be circumvented.
-    This improved estimator is implemented as well, see [2] Appendix A for more detail.
-
-    References:
-        [1]: Brassard, G., Hoyer, P., Mosca, M., & Tapp, A. (2000).
-             Quantum Amplitude Amplification and Estimation.
-             `arXiv:quant-ph/0005055 <http://arxiv.org/abs/quant-ph/0005055>`_.
-        [2]: Grinko, D., Gacon, J., Zoufal, C., & Woerner, S. (2019).
-             Iterative Quantum Amplitude Estimation.
-             `arXiv:1912.05559 <https://arxiv.org/abs/1912.05559>`_.
-    """
 
     def __init__(
         self,
@@ -44,20 +17,8 @@ class AmplitudeEstimation():
         phase_estimation_circuit: Optional[QuantumCircuit] = None,
         iqft: Optional[QuantumCircuit] = None,
         quantum_instance: Optional[Union[QuantumInstance, BaseBackend, Backend]] = None,
-    ) -> None:
-        r"""
-        Args:
-            num_eval_qubits: The number of evaluation qubits.
-            phase_estimation_circuit: The phase estimation circuit used to run the algorithm.
-                Defaults to the standard phase estimation circuit from the circuit library,
-                `qiskit.circuit.library.PhaseEstimation` when None.
-            iqft: The inverse quantum Fourier transform component, defaults to using a standard
-                implementation from `qiskit.circuit.library.QFT` when None.
-            quantum_instance: The backend (or `QuantumInstance`) to execute the circuits on.
-
-        Raises:
-            ValueError: If the number of evaluation qubits is smaller than 1.
-        """
+    ):
+        
         if num_eval_qubits < 1:
             raise ValueError("The number of evaluation qubits must at least be 1.")
 
@@ -97,16 +58,8 @@ class AmplitudeEstimation():
 
     def construct_circuit(
         self, estimation_problem, measurement: bool = False
-    ) -> QuantumCircuit:
-        """Construct the Amplitude Estimation quantum circuit.
-
-        Args:
-            estimation_problem: The estimation problem for which to construct the QAE circuit.
-            measurement: Boolean flag to indicate if measurements should be included in the circuit.
-
-        Returns:
-            The QuantumCircuit object for the constructed circuit.
-        """
+    ):
+        
         # use custom Phase Estimation circuit if provided
         if self._pec is not None:
             pec = self._pec
@@ -202,28 +155,8 @@ class AmplitudeEstimation():
         return samples, measurements
 
 
-    def estimate(self, estimation_problem) -> "AmplitudeEstimationResult":
-        """Run the amplitude estimation algorithm on provided estimation problem.
-
-        Args:
-            estimation_problem: The estimation problem.
-
-        Returns:
-            An amplitude estimation results object.
-
-        Raises:
-            ValueError: If `state_preparation` or `objective_qubits` are not set in the
-                `estimation_problem`.
-        """
-        # check if A factory or state_preparation has been set
-        if estimation_problem.state_preparation is None:
-            raise ValueError(
-                "The state_preparation property of the estimation problem must be set."
-            )
-
-        if estimation_problem.objective_qubits is None:
-            raise ValueError("The objective_qubits property of the estimation problem must be set.")
-
+    def estimate(self, estimation_problem):
+        
         result = AmplitudeEstimationResult()
         result.num_evaluation_qubits = self._m
         result.post_processing = estimation_problem.post_processing

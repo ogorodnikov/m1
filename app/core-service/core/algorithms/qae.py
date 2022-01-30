@@ -46,8 +46,6 @@ def qae(run_values, task_log):
     quantum_instance = QuantumInstance(backend)
     
     
-    # from qiskit.algorithms import AmplitudeEstimation
-    
     from amplitude_estimation import AmplitudeEstimation
 
     ae = AmplitudeEstimation(
@@ -62,6 +60,34 @@ def qae(run_values, task_log):
     
     
     
+    # Circuit
+    
+    num_eval_qubits = 5
+    state_preparation = bernoulli_a
+    iqft = None
+    
+    from qiskit import ClassicalRegister
+    from qiskit.circuit.library import PhaseEstimation
+
+    pec = PhaseEstimation(num_eval_qubits, bernoulli_q, iqft=iqft)
+
+
+    circuit = QuantumCircuit(*pec.qregs)
+    
+    circuit.compose(
+        state_preparation,
+        list(range(num_eval_qubits, circuit.num_qubits)),
+        inplace=True,
+    )
+    circuit.compose(pec, inplace=True)
+
+    # Measurements
+    
+    cr = ClassicalRegister(num_eval_qubits)
+    circuit.add_register(cr)
+    circuit.measure(list(range(num_eval_qubits)), list(range(num_eval_qubits)))
+
+
     # Logs
     
     task_log(f'QAE run_values: {run_values}')
@@ -75,3 +101,5 @@ def qae(run_values, task_log):
     
     task_log(f'QAE simple_result: {simple_result}')
     task_log(f'QAE samples: {samples}')
+    
+    task_log(f'QAE circuit: {circuit}')
