@@ -2,6 +2,7 @@ import sys
 
 sys.path.append('/home/ec2-user/environment/m1/app/core-service/core/algorithms')
 
+from math import pi, sin
 
 from qiskit import Aer
 from qiskit import execute
@@ -25,40 +26,31 @@ counts = job.result().get_counts()
 
 # Post-processing
 
-num_eval_qubits = 5
 
-circuit_results = counts
+qubits_count = 5
+
 shots = sum(counts.values())
 
+shots = 1024
 
 
-def evaluate_count_results(counts):
+measurements = dict()
+samples = dict()
+
+for state, count in counts.items():
     
-    from math import sin, pi
-
-    measurements = dict()
-    samples = dict()
+    y = int(state.replace(" ", "")[:qubits_count][::-1], 2)
     
-    shots = 1024
-
-    for state, count in counts.items():
+    probability = count / shots
+    
+    measurements[y] = probability
+    
+    amplitude = sin(y * pi / 2 ** qubits_count) ** 2
+    
+    rounded_amplitude = round(amplitude, ndigits=7)
+    
+    samples[rounded_amplitude] = samples.get(rounded_amplitude, 0.0) + probability
         
-        y = int(state.replace(" ", "")[:num_eval_qubits][::-1], 2)
-        
-        probability = count / shots
-        
-        measurements[y] = probability
-        
-        amplitude = sin(y * pi / 2 ** num_eval_qubits) ** 2
-        
-        rounded_amplitude = round(amplitude, ndigits=7)
-        
-        samples[amplitude] = samples.get(amplitude, 0.0) + probability
-        
-    return samples, measurements
-
-
-samples, measurements = evaluate_count_results(circuit_results)
 
 threshold = 1e-6
 
