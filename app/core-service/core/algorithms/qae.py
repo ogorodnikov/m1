@@ -41,16 +41,12 @@ def qae(run_values, task_log):
     counting_qubits_count = precision
     counting_qubits = range(counting_qubits_count)
     
-    # node_register = QuantumRegister(4, 'node')
+    estimation_register = QuantumRegister(precision, 'estimation')
+    eigenstate_register = QuantumRegister(1, 'eigenstate')
     
     eigenstate_qubit = max(counting_qubits) + 1
     qubits_count = counting_qubits_count + 1
     
-    measure_bits_count = counting_qubits_count
-    measure_bits = range(measure_bits_count)
-    
-    qubits_measurement_list = list(reversed(counting_qubits))
-
     qpe_circuit = QuantumCircuit(qubits_count)
     qpe_circuit.name = 'QPE'
     
