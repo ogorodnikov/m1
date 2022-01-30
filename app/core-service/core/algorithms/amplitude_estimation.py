@@ -166,6 +166,8 @@ class AmplitudeEstimation():
             # run circuit on statevector simulator
             statevector = self._quantum_instance.execute(circuit).get_statevector()
             result.circuit_results = statevector
+            
+            print(f'QAE REF statevector: {statevector}')
 
             # store number of shots: convention is 1 shot for statevector,
             # needed so that MLE works!
@@ -175,7 +177,7 @@ class AmplitudeEstimation():
             circuit = self.construct_circuit(estimation_problem, measurement=True)
             counts = self._quantum_instance.execute(circuit).get_counts()
             result.circuit_results = counts
-
+            
             # store shots
             result.shots = sum(counts.values())
 

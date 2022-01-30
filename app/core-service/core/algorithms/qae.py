@@ -39,10 +39,12 @@ def qae(run_values, task_log):
             
     
     
+    from qiskit import Aer
     from qiskit import BasicAer
     from qiskit.utils import QuantumInstance
     
-    backend = BasicAer.get_backend("statevector_simulator")
+    # backend = BasicAer.get_backend("statevector_simulator")
+    backend = Aer.get_backend("aer_simulator")
     quantum_instance = QuantumInstance(backend)
     
     
