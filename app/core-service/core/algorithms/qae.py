@@ -56,11 +56,13 @@ def qae(run_values, task_log):
     controlled_bernoulli_q.name = 'CB'
     
     
-    for repetitions, counting_qubit in enumerate(counting_qubits):
+    for estimation_qubit_index, estimation_qubit in enumerate(estimation_register):
+    
+        iterations_count = 2 ** estimation_qubit_index
         
-        for i in range(2 ** repetitions):
+        for iteration in range(iterations_count):
         
-            iteration_qubits = [counting_qubit, eigenstate_qubit]
+            iteration_qubits = [estimation_qubit, *eigenstate_register]
             
             qpe_circuit.append(controlled_bernoulli_q, iteration_qubits)
     
