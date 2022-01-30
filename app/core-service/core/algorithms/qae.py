@@ -69,7 +69,8 @@ def qae(run_values, task_log):
     estimation = ae_result.estimation
     estimation_processed = ae_result.estimation_processed
     
-    # Circuit
+    
+    # Custom Circuit
     
     num_eval_qubits = 5
     state_preparation = bernoulli_a
@@ -79,6 +80,70 @@ def qae(run_values, task_log):
     from qiskit.circuit.library import PhaseEstimation
 
     pec = PhaseEstimation(num_eval_qubits, bernoulli_q, iqft=iqft)
+    
+    task_log(f'QAE pec: {pec.decompose()}')
+
+    
+    # Custom QPE
+    
+    counting_qubits_count = num_eval_qubits
+    counting_qubits = range(counting_qubits_count)
+    
+    # node_register = QuantumRegister(4, 'node')
+    
+    eigenstate_qubit = max(counting_qubits) + 1
+    qubits_count = counting_qubits_count + 1
+    
+    measure_bits_count = counting_qubits_count
+    measure_bits = range(measure_bits_count)
+    
+    qubits_measurement_list = list(reversed(counting_qubits))
+
+    phase_estimation_circuit = QuantumCircuit(qubits_count, measure_bits_count)
+    phase_estimation_circuit.name = 'Cust QPE'
+    
+    for counting_qubit in counting_qubits:
+        phase_estimation_circuit.h(counting_qubit)
+        
+    # phase_estimation_circuit.x(eigenstate_qubit)
+    
+    controlled_bernoulli_q = bernoulli_q.control()
+    controlled_bernoulli_q.name = 'CB'
+    
+    
+    for repetitions, counting_qubit in enumerate(counting_qubits):
+        
+        for i in range(2 ** repetitions):
+        
+            # circuit.cp(pi * angle_number, counting_qubit, eigenstate_qubit)
+            
+            iteration_qubits = [counting_qubit, eigenstate_qubit]
+            
+            phase_estimation_circuit.append(controlled_bernoulli_q, iteration_qubits)
+    
+    task_log(f'QAE phase_estimation_circuit: \n{phase_estimation_circuit}')
+    
+    quit()
+    
+            
+    qft_dagger_circuit = create_qft_circuit(counting_qubits_count, inverted=True)
+    
+    circuit.append(qft_dagger_circuit, counting_qubits)
+    
+    circuit.barrier()
+    
+    circuit.measure(qubits_measurement_list, measure_bits)
+    
+    
+    task_log(f'QAE angle: \n{angle}')
+    task_log(f'QAE precision: \n{precision}')
+    
+    task_log(f'QAE qft_dagger_circuit: \n{qft_dagger_circuit}')
+    task_log(f'QAE circuit: \n{circuit}')
+
+    quit()
+    
+    
 
 
     circuit = QuantumCircuit(*pec.qregs)
