@@ -77,6 +77,8 @@ def qae(run_values, task_log):
     iqft = None
     
     from qiskit import ClassicalRegister
+    from qiskit import QuantumRegister
+    
     from qiskit.circuit.library import PhaseEstimation
 
     pec = PhaseEstimation(num_eval_qubits, bernoulli_q, iqft=iqft)
@@ -99,7 +101,10 @@ def qae(run_values, task_log):
     
     qubits_measurement_list = list(reversed(counting_qubits))
 
-    phase_estimation_circuit = QuantumCircuit(qubits_count, measure_bits_count)
+    # phase_estimation_circuit = QuantumCircuit(qubits_count, measure_bits_count)
+    
+    phase_estimation_circuit = QuantumCircuit(qubits_count)
+    
     phase_estimation_circuit.name = 'Cust QPE'
     
     for counting_qubit in counting_qubits:
@@ -136,10 +141,27 @@ def qae(run_values, task_log):
     task_log(f'QAE qft_dagger_circuit: \n{qft_dagger_circuit}')
     task_log(f'QAE phase_estimation_circuit: \n{phase_estimation_circuit}')
 
-    # quit()
+
+    counting_register = QuantumRegister(counting_qubits_count)
+    eigenstate_register = QuantumRegister(1)
+
+    measure_register = ClassicalRegister(counting_qubits_count)
     
+    amplitude_estimation_circuit = QuantumCircuit(counting_register, eigenstate_register, measure_register)
+    
+    amplitude_estimation_circuit.append(bernoulli_a, [eigenstate_qubit])
+    amplitude_estimation_circuit.append(phase_estimation_circuit, [*counting_qubits, eigenstate_qubit])
+
+    # Measure
+    
+    amplitude_estimation_circuit.measure(counting_register, measure_register)
+    
+    
+    task_log(f'QAE amplitude_estimation_circuit:\n{amplitude_estimation_circuit}')
     
 
+    
+    
 
     circuit = QuantumCircuit(*pec.qregs)
     
@@ -169,6 +191,9 @@ def qae(run_values, task_log):
     task_log(f'QAE bernoulli_q:\n{bernoulli_q}')
     
     task_log(f'QAE circuit: {circuit}')
+    task_log(f'QAE amplitude_estimation_circuit: {amplitude_estimation_circuit}')
+    
+    # quit()
     
     task_log(f'')
     task_log(f'QAE samples: {samples}')
@@ -177,7 +202,9 @@ def qae(run_values, task_log):
     task_log(f'QAE estimation: {estimation}')
     task_log(f'QAE estimation_processed: {estimation_processed}')
     
-    return circuit
+    # return circuit
+    
+    return amplitude_estimation_circuit
 
 
 
