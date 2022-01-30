@@ -121,27 +121,22 @@ def qae(run_values, task_log):
             
             phase_estimation_circuit.append(controlled_bernoulli_q, iteration_qubits)
     
-    task_log(f'QAE phase_estimation_circuit: \n{phase_estimation_circuit}')
+    # IQFT
     
-    quit()
+    from qft import create_qft_circuit
     
-            
     qft_dagger_circuit = create_qft_circuit(counting_qubits_count, inverted=True)
     
-    circuit.append(qft_dagger_circuit, counting_qubits)
+    phase_estimation_circuit.append(qft_dagger_circuit, counting_qubits)
     
-    circuit.barrier()
+    # phase_estimation_circuit.barrier()
     
-    circuit.measure(qubits_measurement_list, measure_bits)
-    
-    
-    task_log(f'QAE angle: \n{angle}')
-    task_log(f'QAE precision: \n{precision}')
+    # phase_estimation_circuit.measure(qubits_measurement_list, measure_bits)
     
     task_log(f'QAE qft_dagger_circuit: \n{qft_dagger_circuit}')
-    task_log(f'QAE circuit: \n{circuit}')
+    task_log(f'QAE phase_estimation_circuit: \n{phase_estimation_circuit}')
 
-    quit()
+    # quit()
     
     
 
