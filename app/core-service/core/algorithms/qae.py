@@ -1,6 +1,14 @@
 from math import pi, sin, asin
 
 from qiskit import QuantumCircuit
+from qiskit import QuantumRegister
+from qiskit import ClassicalRegister
+
+try:
+    from qft import create_qft_circuit
+except ModuleNotFoundError:
+    from core.algorithms.qft import create_qft_circuit
+    
 
 AMPLITUDE_DIGITS_COUNT = 7
     
@@ -27,63 +35,10 @@ def qae(run_values, task_log):
     bernoulli_q.ry(2 * theta_p, 0)
     
     
-    # Reference Estimation
-    
-    class Task:
-        
-        def __init__(self):
-            
-            self.state_preparation = bernoulli_a
-            self.grover_operator = bernoulli_q
-            self.objective_qubits = [0]
-            self.post_processing = lambda x: x
-            
-    task = Task()        
-            
-    
-    
-    from qiskit import Aer
-    from qiskit import BasicAer
-    from qiskit.utils import QuantumInstance
-    
-    # backend = BasicAer.get_backend("statevector_simulator")
-    backend = Aer.get_backend("aer_simulator")
-    quantum_instance = QuantumInstance(backend)
-    
-    
-    from amplitude_estimation import AmplitudeEstimation
-
-    ae = AmplitudeEstimation(
-        num_eval_qubits=5,
-        quantum_instance=quantum_instance
-    )
-    
-    ae_result = ae.estimate(task)
-    
-    estimation = ae_result.estimation
-    samples = ae_result.samples
-    
-    measurements = ae_result.measurements
-    
-    max_probability = ae_result.max_probability 
-    estimation = ae_result.estimation
-    estimation_processed = ae_result.estimation_processed
-    
-    
-    # Custom Circuit
     
     num_eval_qubits = 5
     state_preparation = bernoulli_a
     iqft = None
-    
-    from qiskit import ClassicalRegister
-    from qiskit import QuantumRegister
-    
-    from qiskit.circuit.library import PhaseEstimation
-
-    pec = PhaseEstimation(num_eval_qubits, bernoulli_q, iqft=iqft)
-    
-    task_log(f'QAE pec: {pec.decompose()}')
 
     
     # Custom QPE
@@ -101,17 +56,12 @@ def qae(run_values, task_log):
     
     qubits_measurement_list = list(reversed(counting_qubits))
 
-    # phase_estimation_circuit = QuantumCircuit(qubits_count, measure_bits_count)
-    
-    phase_estimation_circuit = QuantumCircuit(qubits_count)
-    
-    phase_estimation_circuit.name = 'Cust QPE'
+    qpe_circuit = QuantumCircuit(qubits_count)
+    qpe_circuit.name = 'QPE'
     
     for counting_qubit in counting_qubits:
-        phase_estimation_circuit.h(counting_qubit)
+        qpe_circuit.h(counting_qubit)
         
-    # phase_estimation_circuit.x(eigenstate_qubit)
-    
     controlled_bernoulli_q = bernoulli_q.control()
     controlled_bernoulli_q.name = 'CB'
     
@@ -120,26 +70,22 @@ def qae(run_values, task_log):
         
         for i in range(2 ** repetitions):
         
-            # circuit.cp(pi * angle_number, counting_qubit, eigenstate_qubit)
-            
             iteration_qubits = [counting_qubit, eigenstate_qubit]
             
-            phase_estimation_circuit.append(controlled_bernoulli_q, iteration_qubits)
+            qpe_circuit.append(controlled_bernoulli_q, iteration_qubits)
     
     # IQFT
     
-    from qft import create_qft_circuit
+    iqft_circuit = create_qft_circuit(counting_qubits_count, inverted=True)
     
-    qft_dagger_circuit = create_qft_circuit(counting_qubits_count, inverted=True)
+    qpe_circuit.append(iqft_circuit, counting_qubits)
     
-    phase_estimation_circuit.append(qft_dagger_circuit, counting_qubits)
+    # qpe_circuit.barrier()
     
-    # phase_estimation_circuit.barrier()
+    # qpe_circuit.measure(qubits_measurement_list, measure_bits)
     
-    # phase_estimation_circuit.measure(qubits_measurement_list, measure_bits)
-    
-    task_log(f'QAE qft_dagger_circuit: \n{qft_dagger_circuit}')
-    task_log(f'QAE phase_estimation_circuit: \n{phase_estimation_circuit}')
+    task_log(f'QAE iqft_circuit: \n{iqft_circuit}')
+    task_log(f'QAE qpe_circuit: \n{qpe_circuit}')
 
 
     counting_register = QuantumRegister(counting_qubits_count)
@@ -147,37 +93,17 @@ def qae(run_values, task_log):
 
     measure_register = ClassicalRegister(counting_qubits_count)
     
-    amplitude_estimation_circuit = QuantumCircuit(counting_register, eigenstate_register, measure_register)
+    qae_circuit = QuantumCircuit(counting_register, eigenstate_register, measure_register)
     
-    amplitude_estimation_circuit.append(bernoulli_a, [eigenstate_qubit])
-    amplitude_estimation_circuit.append(phase_estimation_circuit, [*counting_qubits, eigenstate_qubit])
+    qae_circuit.append(bernoulli_a, [eigenstate_qubit])
+    qae_circuit.append(qpe_circuit, [*counting_qubits, eigenstate_qubit])
 
     # Measure
     
-    amplitude_estimation_circuit.measure(counting_register, measure_register)
+    qae_circuit.measure(counting_register, measure_register)
     
     
-    task_log(f'QAE amplitude_estimation_circuit:\n{amplitude_estimation_circuit}')
-    
-
-    
-    
-
-    circuit = QuantumCircuit(*pec.qregs)
-    
-    circuit.compose(
-        state_preparation,
-        list(range(num_eval_qubits, circuit.num_qubits)),
-        inplace=True,
-    )
-    circuit.compose(pec, inplace=True)
-
-    # Measurements
-    
-    cr = ClassicalRegister(num_eval_qubits)
-    circuit.add_register(cr)
-    circuit.measure(list(range(num_eval_qubits)), list(range(num_eval_qubits)))
-
+    task_log(f'QAE qae_circuit:\n{qae_circuit}')
 
     # Logs
     
@@ -190,21 +116,9 @@ def qae(run_values, task_log):
     task_log(f'QAE bernoulli_a:\n{bernoulli_a}')
     task_log(f'QAE bernoulli_q:\n{bernoulli_q}')
     
-    task_log(f'QAE circuit: {circuit}')
-    task_log(f'QAE amplitude_estimation_circuit: {amplitude_estimation_circuit}')
+    task_log(f'QAE qae_circuit: {qae_circuit}')
     
-    # quit()
-    
-    task_log(f'')
-    task_log(f'QAE samples: {samples}')
-    task_log(f'QAE measurements: {measurements}')
-    task_log(f'QAE max_probability: {max_probability}')
-    task_log(f'QAE estimation: {estimation}')
-    task_log(f'QAE estimation_processed: {estimation_processed}')
-    
-    # return circuit
-    
-    return amplitude_estimation_circuit
+    return qae_circuit
 
 
 
