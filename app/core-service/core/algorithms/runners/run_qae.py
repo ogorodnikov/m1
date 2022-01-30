@@ -29,26 +29,40 @@ counts = job.result().get_counts()
 
 qubits_count = 5
 
-shots = sum(counts.values())
+counts_total = sum(counts.values())
 
 
 measurements = dict()
 samples = dict()
 
-for state, count in counts.items():
+for state_binary, count in counts.items():
     
-    y = int(state.replace(" ", "")[:qubits_count][::-1], 2)
+    # print(f'{state}: {count}')
     
-    probability = count / shots
+    # y = int(state.replace(" ", "")[:qubits_count][::-1], 2)
     
-    measurements[y] = probability
+    # print(f'y: {y}')
     
-    amplitude = sin(y * pi / 2 ** qubits_count) ** 2
+    reversed_state = state_binary[::-1]
+
+    state_decimal = int(reversed_state, 2)
+    
+    # print(f'count_decimal: {count_decimal}')    
+    
+    probability = count / counts_total
+    
+    measurements[state_decimal] = probability
+    
+    amplitude = sin(state_decimal * pi / 2 ** qubits_count) ** 2
     
     rounded_amplitude = round(amplitude, ndigits=7)
     
     samples[rounded_amplitude] = samples.get(rounded_amplitude, 0.0) + probability
-        
+
+
+
+
+# Estimation
 
 max_probability = 0
 
