@@ -28,14 +28,16 @@ def qae(run_values, task_log):
     
     # Circuits
     
-    bernoulli_a = QuantumCircuit(1)
-    bernoulli_q = QuantumCircuit(1)
-    
     theta_p = 2 * asin(probability ** 0.5)
     
-    bernoulli_a.ry(theta_p, 0)
-    bernoulli_q.ry(2 * theta_p, 0)
+    bernoulli_operator = QuantumCircuit(1)
+    bernoulli_operator.ry(theta_p, 0)
     
+    bernoulli_diffuser = QuantumCircuit(1)
+    bernoulli_diffuser.ry(2 * theta_p, 0)
+    
+    controlled_bernoulli_diffuser = bernoulli_diffuser.control()
+
     # QPE
     
     counting_qubits_count = precision
@@ -52,9 +54,10 @@ def qae(run_values, task_log):
     
     qpe_circuit.h(estimation_register)
         
-    controlled_bernoulli_q = bernoulli_q.control()
-    controlled_bernoulli_q.name = 'CB'
+
     
+    
+    # Iterations
     
     for estimation_qubit_index, estimation_qubit in enumerate(estimation_register):
     
@@ -64,13 +67,13 @@ def qae(run_values, task_log):
         
             iteration_qubits = [estimation_qubit, *eigenstate_register]
             
-            qpe_circuit.append(controlled_bernoulli_q, iteration_qubits)
+            qpe_circuit.append(controlled_bernoulli_diffuser, iteration_qubits)
     
     # IQFT
     
-    iqft_circuit = create_qft_circuit(counting_qubits_count, inverted=True)
+    iqft_circuit = create_qft_circuit(precision, inverted=True)
     
-    qpe_circuit.append(iqft_circuit, counting_qubits)
+    qpe_circuit.append(iqft_circuit, estimation_register)
     
     # qpe_circuit.barrier()
     
@@ -87,7 +90,7 @@ def qae(run_values, task_log):
     
     qae_circuit = QuantumCircuit(counting_register, eigenstate_register, measure_register)
     
-    qae_circuit.append(bernoulli_a, [eigenstate_qubit])
+    qae_circuit.append(bernoulli_operator, [eigenstate_qubit])
     qae_circuit.append(qpe_circuit, [*counting_qubits, eigenstate_qubit])
 
     # Measure
@@ -105,8 +108,8 @@ def qae(run_values, task_log):
     
     task_log(f'QAE theta_p: {theta_p}')
     
-    task_log(f'QAE bernoulli_a:\n{bernoulli_a}')
-    task_log(f'QAE bernoulli_q:\n{bernoulli_q}')
+    task_log(f'QAE bernoulli_operator:\n{bernoulli_operator}')
+    task_log(f'QAE bernoulli_diffuser:\n{bernoulli_diffuser}')
     
     task_log(f'QAE qae_circuit: {qae_circuit}')
     
