@@ -47,11 +47,10 @@ def qae(run_values, task_log):
     eigenstate_qubit = max(counting_qubits) + 1
     qubits_count = counting_qubits_count + 1
     
-    qpe_circuit = QuantumCircuit(qubits_count)
+    qpe_circuit = QuantumCircuit(estimation_register, eigenstate_register)
     qpe_circuit.name = 'QPE'
     
-    for counting_qubit in counting_qubits:
-        qpe_circuit.h(counting_qubit)
+    qpe_circuit.h(estimation_register)
         
     controlled_bernoulli_q = bernoulli_q.control()
     controlled_bernoulli_q.name = 'CB'
