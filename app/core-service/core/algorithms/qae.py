@@ -21,8 +21,10 @@ def qae(run_values, task_log):
     # Input
     
     input_probability = run_values.get('bernoulli_probability')
-    probability = float(input_probability)
+    input_precision = run_values.get('precision')
     
+    probability = float(input_probability)
+    precision = int(input_precision)
     
     # Circuits
     
@@ -34,16 +36,9 @@ def qae(run_values, task_log):
     bernoulli_a.ry(theta_p, 0)
     bernoulli_q.ry(2 * theta_p, 0)
     
+    # QPE
     
-    
-    num_eval_qubits = 5
-    state_preparation = bernoulli_a
-    iqft = None
-
-    
-    # Custom QPE
-    
-    counting_qubits_count = num_eval_qubits
+    counting_qubits_count = precision
     counting_qubits = range(counting_qubits_count)
     
     # node_register = QuantumRegister(4, 'node')
