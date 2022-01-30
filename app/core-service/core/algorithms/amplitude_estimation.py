@@ -144,7 +144,9 @@ class AmplitudeEstimation():
         measurements = OrderedDict()
         samples = OrderedDict()
         shots = self._quantum_instance._run_config.shots
-
+        
+        print(f'QAE REF shots: {shots}')
+        
         for state, count in counts.items():
             y = int(state.replace(" ", "")[: self._m][::-1], 2)
             probability = count / shots
@@ -152,6 +154,9 @@ class AmplitudeEstimation():
             a = np.round(np.power(np.sin(y * np.pi / 2 ** self._m), 2), decimals=7)
             samples[a] = samples.get(a, 0.0) + probability
 
+        print(f'QAE REF samples: {samples}')
+        print(f'QAE REF measurements: {measurements}')
+        
         return samples, measurements
 
 
@@ -167,8 +172,6 @@ class AmplitudeEstimation():
             statevector = self._quantum_instance.execute(circuit).get_statevector()
             result.circuit_results = statevector
             
-            print(f'QAE REF statevector: {statevector}')
-
             # store number of shots: convention is 1 shot for statevector,
             # needed so that MLE works!
             result.shots = 1
@@ -178,12 +181,15 @@ class AmplitudeEstimation():
             counts = self._quantum_instance.execute(circuit).get_counts()
             result.circuit_results = counts
             
+            print(f'QAE REF counts: {counts}')
+            
             # store shots
             result.shots = sum(counts.values())
 
         samples, measurements = self.evaluate_measurements(result.circuit_results)
 
         result.samples = samples
+        
         result.samples_processed = {
             estimation_problem.post_processing(a): p for a, p in samples.items()
         }

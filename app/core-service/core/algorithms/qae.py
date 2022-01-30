@@ -57,10 +57,14 @@ def qae(run_values, task_log):
     
     ae_result = ae.estimate(task)
     
-    simple_result = ae_result.estimation
+    estimation = ae_result.estimation
     samples = ae_result.samples
     
+    measurements = ae_result.measurements
     
+    max_probability = ae_result.max_probability 
+    estimation = ae_result.estimation
+    estimation_processed = ae_result.estimation_processed
     
     # Circuit
     
@@ -101,9 +105,15 @@ def qae(run_values, task_log):
     task_log(f'QAE bernoulli_a:\n{bernoulli_a}')
     task_log(f'QAE bernoulli_q:\n{bernoulli_q}')
     
-    task_log(f'QAE simple_result: {simple_result}')
+    task_log(f'QAE circuit: {circuit}')
+    
+    task_log(f'QAE estimation: {estimation}')
     task_log(f'QAE samples: {samples}')
     
-    task_log(f'QAE circuit: {circuit}')
+    task_log(f'QAE samples: {samples}')
+    task_log(f'QAE measurements: {measurements}')
+    task_log(f'QAE max_probability: {max_probability}')
+    task_log(f'QAE estimation: {estimation}')
+    task_log(f'QAE estimation_processed: {estimation_processed}')
     
     return circuit
