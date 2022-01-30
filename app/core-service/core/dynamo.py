@@ -543,6 +543,18 @@ class Dynamo:
                                  {'name': 'sample_indices', 'default_value': '0, 2'}],
                   'likes': 1028,
                   'enabled': True},
+
+                 {'id': 'qae',
+                  'name': 'Quantum Amplitude Estimation',
+                  'type': 'quantum',
+                  'description': 'Estimates amplitude of quantum state.',
+                  'wiki_link': 'https://qiskit.org/documentation/finance/tutorials/00_amplitude_estimation.html',
+                  'qiskit_link': 'https://qiskit.org/documentation/finance/tutorials/00_amplitude_estimation.html',
+                  'image': b'1010',
+                  'parameters': [{'name': 'bernoulli_probability', 'default_value': '0.2'},
+                                 {'name': 'precision', 'default_value': '5'}],
+                  'likes': 1028,
+                  'enabled': True},
                   
                  ]
         
