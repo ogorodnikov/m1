@@ -121,21 +121,22 @@ def qae(run_values, task_log):
 
 def qae_post_processing(run_data, task_log):
     
+    # Inputs
+    
     run_result = run_data.get('Result')
     counts = run_result.get('Counts')
     
-    
+    # Precision
     
     first_state = next(iter(counts))
-    
     precision = len(first_state)
-
-    qubits_count = 5
+    
+    qubits_count = precision
     
     
+    # Amplitude probabilities
     
     counts_total = sum(counts.values())
-    
     
     state_probabilities = dict()
     amplitude_probabilities = dict()
