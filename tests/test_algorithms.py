@@ -14,6 +14,7 @@ from core.algorithms.teleport import teleport
 from core.algorithms.shor import shor, shor_post_processing
 from core.algorithms.counting import counting, counting_post_processing
 from core.algorithms.bb84 import bb84, bb84_post_processing
+from core.algorithms.qae import qae, qae_post_processing
 
 
 test_data = {
@@ -44,6 +45,8 @@ test_data = {
     bb84: {'alice_bits': '10101', 'alice_bases': 'XXXZX', 
            'eve_bases': 'XZZZX', 'bob_bases': 'XXXZZ', 
            'sample_indices': '0, 2'},
+           
+    qae: {'bernoulli_probability': '0.2', 'precision': '5'},
     
 }
 
@@ -52,7 +55,8 @@ post_processing = {simon: simon_post_processing,
                    qpe: qpe_post_processing,
                    shor: shor_post_processing,
                    counting: counting_post_processing,
-                   bb84: bb84_post_processing}
+                   bb84: bb84_post_processing,
+                   qae: qae_post_processing}
 
 
 @pytest.mark.parametrize("runner_function, run_values", test_data.items())
