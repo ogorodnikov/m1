@@ -107,9 +107,7 @@ def qae(run_values, task_log):
     
     task_log(f'QAE circuit: {circuit}')
     
-    task_log(f'QAE estimation: {estimation}')
-    task_log(f'QAE samples: {samples}')
-    
+    task_log(f'')
     task_log(f'QAE samples: {samples}')
     task_log(f'QAE measurements: {measurements}')
     task_log(f'QAE max_probability: {max_probability}')

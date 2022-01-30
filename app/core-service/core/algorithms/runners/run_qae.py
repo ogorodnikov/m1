@@ -59,17 +59,9 @@ samples = {a: p for a, p in samples.items() if p > threshold}
 measurements = {y: p for y, p in measurements.items() if p > threshold}
  
 
-post_processing = lambda x: x
-
-samples_processed = {
-    post_processing(a): p for a, p in samples.items()
-}
-
-# determine the most likely estimate
-
 max_probability = 0
 
-for amplitude, (mapped, prob) in zip(samples.keys(), samples_processed.items()):
+for amplitude, (mapped, prob) in zip(samples.keys(), samples.items()):
     if prob > max_probability:
         max_probability = prob
         estimation = amplitude
@@ -81,6 +73,7 @@ for amplitude, (mapped, prob) in zip(samples.keys(), samples_processed.items()):
 # print(f'QAE CUST circuit:\n{circuit}')
 # print(f'QAE CUST counts: {counts}')
 
+print(f'')
 print(f'QAE CUST samples: {samples}')
 print(f'QAE CUST measurements: {measurements}')
 print(f'QAE CUST max_probability: {max_probability}')
