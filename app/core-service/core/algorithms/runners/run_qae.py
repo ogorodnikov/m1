@@ -32,45 +32,43 @@ qubits_count = 5
 counts_total = sum(counts.values())
 
 
-measurements = dict()
-samples = dict()
+state_probabilities = dict()
+amplitude_probabilities = dict()
 
 for state_binary, count in counts.items():
     
-    # print(f'{state}: {count}')
-    
-    # y = int(state.replace(" ", "")[:qubits_count][::-1], 2)
-    
-    # print(f'y: {y}')
-    
     reversed_state = state_binary[::-1]
-
     state_decimal = int(reversed_state, 2)
     
-    # print(f'count_decimal: {count_decimal}')    
+    # State probability
+
+    state_probability = count / counts_total
+    state_probabilities[state_decimal] = state_probability
     
-    probability = count / counts_total
-    
-    measurements[state_decimal] = probability
+    # Amplitude
     
     amplitude = sin(state_decimal * pi / 2 ** qubits_count) ** 2
-    
     rounded_amplitude = round(amplitude, ndigits=7)
     
-    samples[rounded_amplitude] = samples.get(rounded_amplitude, 0.0) + probability
+    amplitude_probability = amplitude_probabilities.get(rounded_amplitude, 0.0)
+    
+    amplitude_probabilities[rounded_amplitude] = amplitude_probability + state_probability
 
 
 
 
 # Estimation
 
-max_probability = 0
+# max_probability = 0
 
-for amplitude, (mapped, prob) in zip(samples.keys(), samples.items()):
-    if prob > max_probability:
-        max_probability = prob
-        estimation = amplitude
-        estimation_processed = mapped
+estimated_amplitude, estimated_amplitude_probability = max(amplitude_probabilities.items(), 
+                                                           key=lambda item: item[1])
+
+# for amplitude, (mapped, prob) in zip(amplitude_probabilities.keys(), amplitude_probabilities.items()):
+#     if prob > max_probability:
+#         max_probability = prob
+#         estimation = amplitude
+#         estimation_processed = mapped
 
 
 # Printouts
@@ -79,11 +77,14 @@ for amplitude, (mapped, prob) in zip(samples.keys(), samples.items()):
 # print(f'QAE CUST counts: {counts}')
 
 print(f'')
-print(f'QAE CUST samples: {samples}')
-print(f'QAE CUST measurements: {measurements}')
+print(f'QAE CUST state_probabilities: {state_probabilities}')
+print(f'QAE CUST amplitude_probabilities: {amplitude_probabilities}')
 print(f'QAE CUST max_probability: {max_probability}')
 print(f'QAE CUST estimation: {estimation}')
 print(f'QAE CUST estimation_processed: {estimation_processed}')
+
+print(f'QAE CUST estimated_amplitude: {estimated_amplitude}')
+print(f'QAE CUST estimated_amplitude_probability: {estimated_amplitude_probability}')
 
 
 
