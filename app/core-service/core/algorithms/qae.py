@@ -20,15 +20,16 @@ def qae(run_values, task_log):
     
     # Input
     
-    input_probability = run_values.get('bernoulli_probability')
+    input_bernoulli_probability = run_values.get('bernoulli_probability')
     input_precision = run_values.get('precision')
     
-    probability = float(input_probability)
+    bernoulli_probability = float(input_bernoulli_probability)
     precision = int(input_precision)
     
-    # Circuits
     
-    theta_p = 2 * asin(probability ** 0.5)
+    # Bernoulli Circuits
+    
+    theta_p = 2 * asin(bernoulli_probability ** 0.5)
     
     bernoulli_operator = QuantumCircuit(1)
     bernoulli_operator.ry(theta_p, 0)
@@ -37,8 +38,9 @@ def qae(run_values, task_log):
     bernoulli_diffuser.ry(2 * theta_p, 0)
     
     controlled_bernoulli_diffuser = bernoulli_diffuser.control()
+    
 
-    # QPE
+    # QPE Circuit
     
     counting_qubits_count = precision
     counting_qubits = range(counting_qubits_count)
@@ -53,11 +55,8 @@ def qae(run_values, task_log):
     qpe_circuit.name = 'QPE'
     
     qpe_circuit.h(estimation_register)
-        
-
     
-    
-    # Iterations
+    # QPE Iterations
     
     for estimation_qubit_index, estimation_qubit in enumerate(estimation_register):
     
@@ -75,43 +74,35 @@ def qae(run_values, task_log):
     
     qpe_circuit.append(iqft_circuit, estimation_register)
     
-    # qpe_circuit.barrier()
     
-    # qpe_circuit.measure(qubits_measurement_list, measure_bits)
+    # QAE Circuit
+
+    measure_register = ClassicalRegister(precision)
     
-    task_log(f'QAE iqft_circuit: \n{iqft_circuit}')
-    task_log(f'QAE qpe_circuit: \n{qpe_circuit}')
-
-
-    counting_register = QuantumRegister(counting_qubits_count)
-    eigenstate_register = QuantumRegister(1)
-
-    measure_register = ClassicalRegister(counting_qubits_count)
-    
-    qae_circuit = QuantumCircuit(counting_register, eigenstate_register, measure_register)
+    qae_circuit = QuantumCircuit(estimation_register, eigenstate_register, measure_register)
     
     qae_circuit.append(bernoulli_operator, [eigenstate_qubit])
     qae_circuit.append(qpe_circuit, [*counting_qubits, eigenstate_qubit])
 
-    # Measure
+    qae_circuit.measure(estimation_register, measure_register)
     
-    qae_circuit.measure(counting_register, measure_register)
-    
-    
-    task_log(f'QAE qae_circuit:\n{qae_circuit}')
 
     # Logs
     
     task_log(f'QAE run_values: {run_values}')
     
-    task_log(f'QAE probability: {probability}')
+    task_log(f'QAE bernoulli_probability: {bernoulli_probability}')
+    task_log(f'QAE precision: {precision}')
     
     task_log(f'QAE theta_p: {theta_p}')
     
     task_log(f'QAE bernoulli_operator:\n{bernoulli_operator}')
     task_log(f'QAE bernoulli_diffuser:\n{bernoulli_diffuser}')
     
-    task_log(f'QAE qae_circuit: {qae_circuit}')
+    task_log(f'QAE iqft_circuit: \n{iqft_circuit}')
+    task_log(f'QAE qpe_circuit: \n{qpe_circuit}')
+    task_log(f'QAE qae_circuit:\n{qae_circuit}')
+    
     
     return qae_circuit
 
