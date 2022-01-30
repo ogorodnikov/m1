@@ -34,7 +34,7 @@ shots = sum(counts.values())
 
 def evaluate_count_results(counts):
     
-    import numpy as np
+    from math import sin, pi
 
     measurements = dict()
     samples = dict()
@@ -42,11 +42,18 @@ def evaluate_count_results(counts):
     shots = 1024
 
     for state, count in counts.items():
+        
         y = int(state.replace(" ", "")[:num_eval_qubits][::-1], 2)
+        
         probability = count / shots
+        
         measurements[y] = probability
-        a = np.round(np.power(np.sin(y * np.pi / 2 ** num_eval_qubits), 2), decimals=7)
-        samples[a] = samples.get(a, 0.0) + probability
+        
+        amplitude = sin(y * pi / 2 ** num_eval_qubits) ** 2
+        
+        rounded_amplitude = round(amplitude, ndigits=7)
+        
+        samples[amplitude] = samples.get(amplitude, 0.0) + probability
         
     return samples, measurements
 
