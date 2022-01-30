@@ -1,4 +1,4 @@
-from math import asin
+from math import pi, sin, asin
 
 from qiskit import QuantumCircuit
 
@@ -115,3 +115,68 @@ def qae(run_values, task_log):
     task_log(f'QAE estimation_processed: {estimation_processed}')
     
     return circuit
+
+
+
+
+def qae_post_processing(run_data, task_log):
+    
+    run_result = run_data.get('Result')
+    counts = run_result.get('Counts')
+    
+    
+    
+    first_state = next(iter(counts))
+    
+    precision = len(first_state)
+
+    qubits_count = 5
+    
+    
+    
+    counts_total = sum(counts.values())
+    
+    
+    state_probabilities = dict()
+    amplitude_probabilities = dict()
+    
+    for state_binary, count in counts.items():
+        
+        reversed_state = state_binary[::-1]
+        state_decimal = int(reversed_state, 2)
+        
+        # State probability
+    
+        state_probability = count / counts_total
+        state_probabilities[state_decimal] = state_probability
+        
+        # Amplitude
+        
+        amplitude = sin(state_decimal * pi / 2 ** qubits_count) ** 2
+        rounded_amplitude = round(amplitude, ndigits=7)
+        
+        amplitude_probability = amplitude_probabilities.get(rounded_amplitude, 0.0)
+        
+        amplitude_probabilities[rounded_amplitude] = amplitude_probability + state_probability
+        
+    
+    # Estimation
+    
+    estimated_amplitude, estimated_amplitude_probability = max(amplitude_probabilities.items(), 
+                                                               key=lambda item: item[1])
+    
+    # Printouts
+    
+    task_log(f'QAE qae_post_processing')
+    
+    # task_log(f'QAE circuit:\n{circuit}')
+    # task_log(f'QAE counts: {counts}')
+    
+    task_log(f'QAE state_probabilities: {state_probabilities}')
+    task_log(f'QAE amplitude_probabilities: {amplitude_probabilities}')
+    
+    task_log(f'QAE estimated_amplitude: {estimated_amplitude}')
+    task_log(f'QAE estimated_amplitude_probability: {estimated_amplitude_probability}')
+    
+
+    return {'Amplitude': estimated_amplitude}
