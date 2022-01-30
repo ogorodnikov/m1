@@ -103,3 +103,5 @@ def qae(run_values, task_log):
     task_log(f'QAE samples: {samples}')
     
     task_log(f'QAE circuit: {circuit}')
+    
+    return circuit
