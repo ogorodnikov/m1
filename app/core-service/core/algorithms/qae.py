@@ -2,6 +2,9 @@ from math import pi, sin, asin
 
 from qiskit import QuantumCircuit
 
+AMPLITUDE_DIGITS_COUNT = 7
+    
+
 
 def qae(run_values, task_log):
     
@@ -133,7 +136,7 @@ def qae_post_processing(run_data, task_log):
     
     qubits_count = precision
     
-    
+
     # Amplitude probabilities
     
     counts_total = sum(counts.values())
@@ -154,7 +157,7 @@ def qae_post_processing(run_data, task_log):
         # Amplitude
         
         amplitude = sin(state_decimal * pi / 2 ** qubits_count) ** 2
-        rounded_amplitude = round(amplitude, ndigits=7)
+        rounded_amplitude = round(amplitude, ndigits=AMPLITUDE_DIGITS_COUNT)
         
         amplitude_probability = amplitude_probabilities.get(rounded_amplitude, 0.0)
         
