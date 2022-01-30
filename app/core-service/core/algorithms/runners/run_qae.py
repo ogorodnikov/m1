@@ -31,8 +31,6 @@ qubits_count = 5
 
 shots = sum(counts.values())
 
-shots = 1024
-
 
 measurements = dict()
 samples = dict()
@@ -51,12 +49,6 @@ for state, count in counts.items():
     
     samples[rounded_amplitude] = samples.get(rounded_amplitude, 0.0) + probability
         
-
-threshold = 1e-6
-
-samples = {a: p for a, p in samples.items() if p > threshold}
-measurements = {y: p for y, p in measurements.items() if p > threshold}
- 
 
 max_probability = 0
 
