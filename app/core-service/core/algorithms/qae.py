@@ -8,15 +8,18 @@ try:
     from qft import create_qft_circuit
 except ModuleNotFoundError:
     from core.algorithms.qft import create_qft_circuit
-    
 
 AMPLITUDE_DIGITS_COUNT = 7
-    
 
 
 def qae(run_values, task_log):
     
-    ''' https://qiskit.org/documentation/finance/tutorials/00_amplitude_estimation.html '''
+    """
+    Create Canonical Quantum Amplitude Estimation (QAE) circuit
+    
+    https://qiskit.org/documentation/finance/tutorials/00_amplitude_estimation.html
+    
+    """
     
     # Input
     
@@ -38,18 +41,17 @@ def qae(run_values, task_log):
     bernoulli_diffuser.ry(2 * theta_p, 0)
     
     controlled_bernoulli_diffuser = bernoulli_diffuser.control()
+    controlled_bernoulli_diffuser.name = 'Controlled Bernoulli Diffuser'
+    
+    bernoulli_operator.name = 'Bernoulli Operator'
+    bernoulli_diffuser.name = 'Bernoulli Diffuser'
+    controlled_bernoulli_diffuser.name = 'CBD'
     
 
     # QPE Circuit
     
-    counting_qubits_count = precision
-    counting_qubits = range(counting_qubits_count)
-    
     estimation_register = QuantumRegister(precision, 'estimation')
     eigenstate_register = QuantumRegister(1, 'eigenstate')
-    
-    eigenstate_qubit = max(counting_qubits) + 1
-    qubits_count = counting_qubits_count + 1
     
     qpe_circuit = QuantumCircuit(estimation_register, eigenstate_register)
     qpe_circuit.name = 'QPE'
@@ -77,36 +79,36 @@ def qae(run_values, task_log):
     
     # QAE Circuit
 
-    measure_register = ClassicalRegister(precision)
+    measure_register = ClassicalRegister(precision, 'measurement')
     
-    qae_circuit = QuantumCircuit(estimation_register, eigenstate_register, measure_register)
+    qae_circuit = QuantumCircuit(estimation_register, 
+                                 eigenstate_register, 
+                                 measure_register)
     
-    qae_circuit.append(bernoulli_operator, [eigenstate_qubit])
-    qae_circuit.append(qpe_circuit, [*counting_qubits, eigenstate_qubit])
+    qae_circuit.append(bernoulli_operator, eigenstate_register)
+    qae_circuit.append(qpe_circuit, [*estimation_register,
+                                     *eigenstate_register])
 
     qae_circuit.measure(estimation_register, measure_register)
     
 
     # Logs
     
-    task_log(f'QAE run_values: {run_values}')
+    task_log(f'QAE run_values: {run_values}\n')
     
     task_log(f'QAE bernoulli_probability: {bernoulli_probability}')
-    task_log(f'QAE precision: {precision}')
+    task_log(f'QAE precision: {precision}\n')
     
-    task_log(f'QAE theta_p: {theta_p}')
+    task_log(f'QAE theta_p: {theta_p}\n')
     
-    task_log(f'QAE bernoulli_operator:\n{bernoulli_operator}')
-    task_log(f'QAE bernoulli_diffuser:\n{bernoulli_diffuser}')
+    task_log(f'QAE bernoulli_operator:\n{bernoulli_operator}\n')
+    task_log(f'QAE bernoulli_diffuser:\n{bernoulli_diffuser}\n')
     
-    task_log(f'QAE iqft_circuit: \n{iqft_circuit}')
-    task_log(f'QAE qpe_circuit: \n{qpe_circuit}')
-    task_log(f'QAE qae_circuit:\n{qae_circuit}')
-    
+    task_log(f'QAE iqft_circuit: \n{iqft_circuit}\n')
+    task_log(f'QAE qpe_circuit: \n{qpe_circuit}\n')
+    task_log(f'QAE qae_circuit:\n{qae_circuit}\n')
     
     return qae_circuit
-
-
 
 
 def qae_post_processing(run_data, task_log):
@@ -156,18 +158,18 @@ def qae_post_processing(run_data, task_log):
     estimated_amplitude, estimated_amplitude_probability = max(amplitude_probabilities.items(), 
                                                                key=lambda item: item[1])
     
-    # Printouts
+    # Logs
     
-    task_log(f'QAE qae_post_processing')
+    task_log(f'QAE qae_post_processing:\n')
+
+    task_log(f'QAE counts: {counts}\n')
     
-    # task_log(f'QAE circuit:\n{circuit}')
-    # task_log(f'QAE counts: {counts}')
     
-    task_log(f'QAE state_probabilities: {state_probabilities}')
-    task_log(f'QAE amplitude_probabilities: {amplitude_probabilities}')
+    task_log(f'QAE state_probabilities: {state_probabilities}\n')
+    task_log(f'QAE amplitude_probabilities: {amplitude_probabilities}\n')
     
     task_log(f'QAE estimated_amplitude: {estimated_amplitude}')
     task_log(f'QAE estimated_amplitude_probability: {estimated_amplitude_probability}')
     
 
-    return {'Amplitude': estimated_amplitude}
+    return {'Estimated Amplitude': estimated_amplitude}
