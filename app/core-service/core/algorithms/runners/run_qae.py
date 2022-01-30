@@ -35,11 +35,9 @@ shots = sum(counts.values())
 def evaluate_count_results(counts):
     
     import numpy as np
-    from collections import OrderedDict
-    
-    # construct probabilities
-    measurements = OrderedDict()
-    samples = OrderedDict()
+
+    measurements = dict()
+    samples = dict()
     
     shots = 1024
 
@@ -50,24 +48,16 @@ def evaluate_count_results(counts):
         a = np.round(np.power(np.sin(y * np.pi / 2 ** num_eval_qubits), 2), decimals=7)
         samples[a] = samples.get(a, 0.0) + probability
         
-    print(f'QAE CUST samples: {samples}')
-    print(f'QAE CUST measurements: {measurements}')
-
     return samples, measurements
 
 
-def evaluate_measurements(circuit_results, threshold: float = 1e-6):
+samples, measurements = evaluate_count_results(circuit_results)
 
-    samples, measurements = evaluate_count_results(circuit_results)
+threshold = 1e-6
 
-    # cutoff probabilities below the threshold
-    samples = {a: p for a, p in samples.items() if p > threshold}
-    measurements = {y: p for y, p in measurements.items() if p > threshold}
-
-    return samples, measurements
-
-
-samples, measurements = evaluate_measurements(circuit_results)
+samples = {a: p for a, p in samples.items() if p > threshold}
+measurements = {y: p for y, p in measurements.items() if p > threshold}
+ 
 
 post_processing = lambda x: x
 
@@ -85,14 +75,11 @@ for amplitude, (mapped, prob) in zip(samples.keys(), samples_processed.items()):
         estimation = amplitude
         estimation_processed = mapped
 
-# store the number of oracle queries
-num_oracle_queries = shots * (num_eval_qubits - 1)
-
 
 # Printouts
 
-print(f'QAE CUST circuit:\n{circuit}')
-print(f'QAE CUST counts: {counts}')
+# print(f'QAE CUST circuit:\n{circuit}')
+# print(f'QAE CUST counts: {counts}')
 
 print(f'QAE CUST samples: {samples}')
 print(f'QAE CUST measurements: {measurements}')
