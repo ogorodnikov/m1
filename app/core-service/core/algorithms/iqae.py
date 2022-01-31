@@ -60,15 +60,15 @@ def iqae(run_values, task_log):
 
 
     
-    from qiskit import BasicAer
+    from qiskit import Aer
     from qiskit.utils import QuantumInstance
     
-    backend = BasicAer.get_backend("statevector_simulator")
+    backend = Aer.get_backend("aer_simulator")
     quantum_instance = QuantumInstance(backend)
 
 
     
-    from qiskit.algorithms import IterativeAmplitudeEstimation
+    from iqae_reference import IterativeAmplitudeEstimation
 
     iae = IterativeAmplitudeEstimation(
         epsilon_target=0.01,  # target accuracy
