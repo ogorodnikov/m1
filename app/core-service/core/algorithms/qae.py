@@ -164,7 +164,6 @@ def qae_post_processing(run_data, task_log):
 
     task_log(f'QAE counts: {counts}\n')
     
-    
     task_log(f'QAE state_probabilities: {state_probabilities}\n')
     task_log(f'QAE amplitude_probabilities: {amplitude_probabilities}\n')
     
