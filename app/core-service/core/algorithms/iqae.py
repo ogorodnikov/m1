@@ -15,7 +15,7 @@ AMPLITUDE_DIGITS_COUNT = 7
 def iqae(run_values, task_log):
     
     """
-    Create Canonical Quantum Amplitude Estimation (QAE) circuit
+    Create Iterative Quantum Amplitude Estimation (IQAE) circuit
     
     https://qiskit.org/documentation/finance/tutorials/00_amplitude_estimation.html
     
@@ -46,6 +46,44 @@ def iqae(run_values, task_log):
     bernoulli_operator.name = 'Bernoulli Operator'
     bernoulli_diffuser.name = 'Bernoulli Diffuser'
     controlled_bernoulli_diffuser.name = 'CBD'
+    
+    
+    # Reference IQAE
+    
+    from qiskit.algorithms import EstimationProblem
+
+    problem = EstimationProblem(
+        state_preparation=bernoulli_operator,
+        grover_operator=bernoulli_diffuser,
+        objective_qubits=[0],
+    )
+
+
+    
+    from qiskit import BasicAer
+    from qiskit.utils import QuantumInstance
+    
+    backend = BasicAer.get_backend("statevector_simulator")
+    quantum_instance = QuantumInstance(backend)
+
+
+    
+    from qiskit.algorithms import IterativeAmplitudeEstimation
+
+    iae = IterativeAmplitudeEstimation(
+        epsilon_target=0.01,  # target accuracy
+        alpha=0.05,  # width of the confidence interval
+        quantum_instance=quantum_instance,
+    )
+    iae_result = iae.estimate(problem)
+    
+    print("Estimate:", iae_result.estimation)
+    
+    iae_circuit = iae.construct_circuit(problem, k=3)
+    iae_circuit.draw("mpl", style="iqx")
+    
+    
+    quit()
     
 
     # QPE Circuit
