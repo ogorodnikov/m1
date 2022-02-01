@@ -131,46 +131,28 @@ def iqae(run_values, task_log):
     iae.estimate(problem)
     
     
-    quit()
 
     # Custom IQAE
     
-    def __init__(
-        self,
-        epsilon_target: float,
-        alpha: float,
-        confint_method: str = "beta",
-        min_ratio: float = 2,
-        quantum_instance: Optional[Union[QuantumInstance, BaseBackend, Backend]] = None,
-    ) -> None:
-        r"""
-        The output of the algorithm is an estimate for the amplitude `a`, that with at least
-        probability 1 - alpha has an error of epsilon. The number of A operator calls scales
-        linearly in 1/epsilon (up to a logarithmic factor).
+    state_preparation=bernoulli_operator
+    grover_operator=bernoulli_diffuser
+    objective_qubits=[0]
     
-        Args:
-            epsilon_target: Target precision for estimation target `a`, has values between 0 and 0.5
-            alpha: Confidence level, the target probability is 1 - alpha, has values between 0 and 1
-            confint_method: Statistical method used to estimate the confidence intervals in
-                each iteration, can be 'chernoff' for the Chernoff intervals or 'beta' for the
-                Clopper-Pearson intervals (default)
-            min_ratio: Minimal q-ratio (:math:`K_{i+1} / K_i`) for FindNextK
-            quantum_instance: Quantum Instance or Backend
+    confint_method = "beta"
+    min_ratio = 2
     
-        """
-        
-        self.quantum_instance = quantum_instance
+    accuracy = 0.01
+    width_of_cofidence_interval = 0.05
+
+    epsilon = epsilon_target = accuracy
+    alpha = width_of_cofidence_interval
     
-        # store parameters
-        self._epsilon = epsilon_target
-        self._alpha = alpha
-        self._min_ratio = min_ratio
-        self._confint_method = confint_method
+    backend = Aer.get_backend("aer_simulator")
+    quantum_instance = QuantumInstance(backend)
     
-    
+
     
     def _find_next_k(
-        self,
         k: int,
         upper_half_circle: bool,
         theta_interval: Tuple[float, float],
@@ -222,7 +204,7 @@ def iqae(run_values, task_log):
         return int(k), upper_half_circle
     
     def construct_circuit(
-        self, estimation_problem, k: int = 0, measurement: bool = False
+        estimation_problem, k: int = 0, measurement: bool = False
     ) -> QuantumCircuit:
         r"""Construct the circuit :math:`\mathcal{Q}^k \mathcal{A} |0\rangle`.
     
@@ -267,7 +249,6 @@ def iqae(run_values, task_log):
     
     
     def _good_state_probability(
-        self,
         problem,
         counts_or_statevector: Union[Dict[str, int], np.ndarray],
         num_state_qubits: int,
@@ -308,7 +289,7 @@ def iqae(run_values, task_log):
             return prob
     
     
-    def estimate(self, estimation_problem):
+    def estimate(estimation_problem):
         
         # initialize memory variables
         powers = [0]  # list of powers k: Q^k, (called 'k' in paper)
@@ -321,25 +302,25 @@ def iqae(run_values, task_log):
         # maximum number of rounds
         
         max_rounds = (
-            int(np.log(self._min_ratio * np.pi / 8 / self._epsilon) / np.log(self._min_ratio)) + 1
+            int(np.log(min_ratio * np.pi / 8 / epsilon) / np.log(min_ratio)) + 1
         )
         upper_half_circle = True  # initially theta is in the upper half-circle
     
        
     
         num_iterations = 0  # keep track of the number of iterations
-        shots = self._quantum_instance._run_config.shots  # number of shots per iteration
+        shots = quantum_instance._run_config.shots  # number of shots per iteration
     
         # do while loop, keep in mind that we scaled theta mod 2pi such that it lies in [0,1]
-        while theta_intervals[-1][1] - theta_intervals[-1][0] > self._epsilon / np.pi:
+        while theta_intervals[-1][1] - theta_intervals[-1][0] > epsilon / np.pi:
             num_iterations += 1
     
             # get the next k
-            k, upper_half_circle = self._find_next_k(
+            k, upper_half_circle = _find_next_k(
                 powers[-1],
                 upper_half_circle,
                 theta_intervals[-1],  # type: ignore
-                min_ratio=self._min_ratio,
+                min_ratio=min_ratio,
             )
     
             # store the variables
@@ -347,8 +328,8 @@ def iqae(run_values, task_log):
             ratios.append((2 * powers[-1] + 1) / (2 * powers[-2] + 1))
     
             # run measurements for Q^k A|0> circuit
-            circuit = self.construct_circuit(estimation_problem, k, measurement=True)
-            ret = self._quantum_instance.execute(circuit)
+            circuit = construct_circuit(estimation_problem, k, measurement=True)
+            ret = quantum_instance.execute(circuit)
             
             print(f'QAE circuit:\n{circuit}\n')  
     
@@ -358,7 +339,7 @@ def iqae(run_values, task_log):
             # calculate the probability of measuring '1', 'prob' is a_i in the paper
             num_qubits = circuit.num_qubits - circuit.num_ancillas
             # type: ignore
-            one_counts, prob = self._good_state_probability(
+            one_counts, prob = _good_state_probability(
                 estimation_problem, counts, num_qubits
             )
     
@@ -381,12 +362,12 @@ def iqae(run_values, task_log):
                     round_one_counts += num_one_shots[-j]
     
             # compute a_min_i, a_max_i
-            if self._confint_method == "chernoff":
-                a_i_min, a_i_max = chernoff_confidence_interval(prob, round_shots, max_rounds, self._alpha)
+            if confint_method == "chernoff":
+                a_i_min, a_i_max = chernoff_confidence_interval(prob, round_shots, max_rounds, alpha)
                 
             else:  # 'beta'
                 a_i_min, a_i_max = clopper_pearson_confidence_interval(
-                    round_one_counts, round_shots, self._alpha / max_rounds
+                    round_one_counts, round_shots, alpha / max_rounds
                 )
     
             # compute theta_min_i, theta_max_i
@@ -416,7 +397,6 @@ def iqae(run_values, task_log):
         # the final estimate is the mean of the confidence interval
         estimation = np.mean(confidence_interval)
     
-        alpha = self._alpha
         epsilon_estimated = (confidence_interval[1] - confidence_interval[0]) / 2
         
         print(f'QAE alpha: {alpha}')
@@ -433,3 +413,4 @@ def iqae(run_values, task_log):
         print(f'QAE ratios: {ratios}')
         
     
+    estimate(problem)
