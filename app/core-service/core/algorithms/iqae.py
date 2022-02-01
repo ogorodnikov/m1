@@ -269,7 +269,8 @@ def iqae(run_values, task_log):
                                                                    round_shots,
                                                                    alpha_confidence_level)
 
-        # compute theta_min_i, theta_max_i
+        # Theta
+        
         if upper_half_circle:
             theta_min_i = acos(1 - 2 * a_i_min) / 2 / pi
             theta_max_i = acos(1 - 2 * a_i_max) / 2 / pi
@@ -277,8 +278,8 @@ def iqae(run_values, task_log):
             theta_min_i = 1 - acos(1 - 2 * a_i_max) / 2 / pi
             theta_max_i = 1 - acos(1 - 2 * a_i_min) / 2 / pi
 
-        # compute theta_u, theta_l of this iteration
-        scaling = 4 * k + 2  # current K_i factor
+        scaling = 4 * k + 2
+        
         theta_u = (int(scaling * theta_intervals[-1][1]) + theta_max_i) / scaling
         theta_l = (int(scaling * theta_intervals[-1][0]) + theta_min_i) / scaling
 
@@ -288,15 +289,18 @@ def iqae(run_values, task_log):
         
         theta_intervals.append(theta_interval)
 
-        # compute a_u_i, a_l_i
-        a_u = sin(2 * pi * theta_u) ** 2
-        a_l = sin(2 * pi * theta_l) ** 2
-        a_intervals.append([a_l, a_u])
+        # Amplitude
+        
+        a_upper = sin(2 * pi * theta_u) ** 2
+        a_lower = sin(2 * pi * theta_l) ** 2
+        
+        a_interval = [a_lower, a_upper]
+        a_intervals.append(a_interval)
         
         task_log(f'QAE iqae_circuit:\n{iqae_circuit}\n')
 
 
-    confidence_interval = a_intervals[-1]
+    confidence_interval = a_interval
     
     confidence_interval_lower, confidence_interval_upper = confidence_interval
 
