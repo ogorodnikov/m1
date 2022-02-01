@@ -185,31 +185,31 @@ def iqae(run_values, task_log):
     
     powers = [0]
     multiplication_factors = []
-    theta_intervals = [[0, 1 / 4]]  # a priori knowledge of theta / 2 / pi
-    a_intervals = [[0.0, 1.0]]  # a priori knowledge of the confidence interval of the estimate
+    theta_intervals = [[0, 1 / 4]]
+    a_intervals = [[0.0, 1.0]]
     oracle_queries_count = 0
     one_shots_counts = []
     upper_half_circle = True
 
-    num_iterations = 0
+    iteration_number = 0
     
     max_rounds = int(log(min_ratio * pi / 8 / epsilon) / log(min_ratio)) + 1
     
     
-    last_theta_interval = theta_intervals[-1]
+    theta_interval = theta_intervals[-1]
     
-    theta_lower = last_theta_interval[0]
-    theta_upper = last_theta_interval[1]
+    theta_lower, theta_upper = theta_interval
+    
     theta_delta = theta_upper - theta_lower
     
     while theta_delta > epsilon / pi:
         
-        num_iterations += 1
+        iteration_number += 1
 
         k, upper_half_circle = find_next_k(
             powers[-1],
             upper_half_circle,
-            theta_intervals[-1],
+            theta_interval,
             min_ratio=min_ratio,
         )
 
@@ -250,10 +250,10 @@ def iqae(run_values, task_log):
         j = 1  # number of times we stayed fixed at the same K
         round_shots = shots
         round_one_counts = one_counts
-        if num_iterations > 1:
+        if iteration_number > 1:
             while (
-                powers[num_iterations - j] == powers[num_iterations]
-                and num_iterations >= j + 1
+                powers[iteration_number - j] == powers[iteration_number]
+                and iteration_number >= j + 1
             ):
                 j = j + 1
                 round_shots += shots
@@ -280,9 +280,12 @@ def iqae(run_values, task_log):
         scaling = 4 * k + 2  # current K_i factor
         theta_u = (int(scaling * theta_intervals[-1][1]) + theta_max_i) / scaling
         theta_l = (int(scaling * theta_intervals[-1][0]) + theta_min_i) / scaling
-        theta_intervals.append([theta_l, theta_u])
-        
+
         theta_delta = theta_u - theta_l
+        
+        theta_interval = [theta_l, theta_u]
+        
+        theta_intervals.append(theta_interval)
 
         # compute a_u_i, a_l_i
         a_u = sin(2 * pi * theta_u) ** 2
@@ -305,6 +308,7 @@ def iqae(run_values, task_log):
     
     task_log(f'QAE oracle_queries_count: {oracle_queries_count}')
     task_log(f'QAE one_shots_counts: {one_shots_counts}')
+    task_log(f'QAE iteration_number: {iteration_number}')
     
     task_log(f'QAE confidence_interval: {confidence_interval}')
     task_log(f'QAE a_intervals: {a_intervals}')
