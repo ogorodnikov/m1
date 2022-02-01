@@ -199,6 +199,7 @@ class IterativeAmplitudeEstimation():
 
 
     def estimate(self, estimation_problem):
+        
         # initialize memory variables
         powers = [0]  # list of powers k: Q^k, (called 'k' in paper)
         ratios = []  # list of multiplication factors (called 'q' in paper)
@@ -208,6 +209,7 @@ class IterativeAmplitudeEstimation():
         num_one_shots = []
 
         # maximum number of rounds
+        
         max_rounds = (
             int(np.log(self._min_ratio * np.pi / 8 / self._epsilon) / np.log(self._min_ratio)) + 1
         )
