@@ -55,7 +55,7 @@ def clopper_pearson_confidence_interval(positive_counts, shots, alpha_confidence
     return clopper_pearson_confidence_interval
 
 
-def _find_next_k(k, upper_half_circle, theta_interval, min_ratio):
+def find_next_k(k, upper_half_circle, theta_interval, min_ratio):
     
     # initialize variables
     theta_l, theta_u = theta_interval
@@ -86,6 +86,41 @@ def _find_next_k(k, upper_half_circle, theta_interval, min_ratio):
     # if we do not find a feasible k, return the old one
     return int(k), upper_half_circle
 
+
+def build_iqae_circuit(state_preparation,
+                       grover_operator,
+                       objective_qubits,
+                       k=0,
+                       measurement=False):
+    
+    num_qubits = max(
+        state_preparation.num_qubits,
+        grover_operator.num_qubits,
+    )
+    circuit = QuantumCircuit(num_qubits, name="circuit")
+
+    # add classical register if needed
+    if measurement:
+        c = ClassicalRegister(len(objective_qubits))
+        circuit.add_register(c)
+
+    # add A operator
+    circuit.compose(state_preparation, inplace=True)
+
+    # add Q^k
+    if k != 0:
+        circuit.compose(grover_operator.power(k), inplace=True)
+
+        # add optional measurement
+    if measurement:
+        # real hardware can currently not handle operations after measurements, which might
+        # happen if the circuit gets transpiled, hence we're adding a safeguard-barrier
+        circuit.barrier()
+        circuit.measure(objective_qubits, c[:])
+
+    return circuit
+    
+    
 
 def iqae(run_values, task_log):
     
@@ -150,34 +185,7 @@ def iqae(run_values, task_log):
 
         
     
-    def construct_circuit(k=0, measurement=False):
-        
-        num_qubits = max(
-            state_preparation.num_qubits,
-            grover_operator.num_qubits,
-        )
-        circuit = QuantumCircuit(num_qubits, name="circuit")
-    
-        # add classical register if needed
-        if measurement:
-            c = ClassicalRegister(len(objective_qubits))
-            circuit.add_register(c)
-    
-        # add A operator
-        circuit.compose(state_preparation, inplace=True)
-    
-        # add Q^k
-        if k != 0:
-            circuit.compose(grover_operator.power(k), inplace=True)
-    
-            # add optional measurement
-        if measurement:
-            # real hardware can currently not handle operations after measurements, which might
-            # happen if the circuit gets transpiled, hence we're adding a safeguard-barrier
-            circuit.barrier()
-            circuit.measure(objective_qubits, c[:])
-    
-        return circuit
+
     
     
     def estimate():
@@ -201,11 +209,10 @@ def iqae(run_values, task_log):
         while theta_intervals[-1][1] - theta_intervals[-1][0] > epsilon / pi:
             num_iterations += 1
     
-            # get the next k
-            k, upper_half_circle = _find_next_k(
+            k, upper_half_circle = find_next_k(
                 powers[-1],
                 upper_half_circle,
-                theta_intervals[-1],  # type: ignore
+                theta_intervals[-1],
                 min_ratio=min_ratio,
             )
     
@@ -214,7 +221,13 @@ def iqae(run_values, task_log):
             multiplication_factors.append((2 * powers[-1] + 1) / (2 * powers[-2] + 1))
     
             # run measurements for Q^k A|0> circuit
-            circuit = construct_circuit(k, measurement=True)
+            
+            circuit = build_iqae_circuit(state_preparation,
+                                         grover_operator,
+                                         objective_qubits,
+                                         k,
+                                         measurement=True)
+                                         
             ret = quantum_instance.execute(circuit)
             
             print(f'QAE circuit:\n{circuit}\n')  

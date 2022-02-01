@@ -8,7 +8,7 @@ from qiskit import execute
 from iqae import iqae
 
 
-RUN_VALUES = {'bernoulli_probability': '0.2', 
+RUN_VALUES = {'bernoulli_probability': '0.3', 
               'precision': '5'}
 
 
