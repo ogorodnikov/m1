@@ -100,44 +100,22 @@ def build_iqae_circuit(state_preparation,
     
     iqae_register = QuantumRegister(all_qubits_count, 'iqae')
                      
-    circuit = QuantumCircuit(iqae_register, name="IQAE")
+    iqae_circuit = QuantumCircuit(iqae_register, name="IQAE")
     
-    # circuit = QuantumCircuit(qubits_count, name="IQAE")
-    
-    
-    circuit.append(state_preparation, iqae_register)
+    iqae_circuit.append(state_preparation, iqae_register)
 
     if k != 0:
-        
-        # circuit.compose(grover_operator.power(k), inplace=True)
-        
-        circuit.append(grover_operator.power(k), iqae_register)
-        
+        iqae_circuit.append(grover_operator.power(k), iqae_register)
         
     if measurement:
         
         measurement_register = ClassicalRegister(measurement_bits_count, 'measure')
+        iqae_circuit.add_register(measurement_register)
         
-        # c = ClassicalRegister(measurement_bits_count)
-        # circuit.add_register(c)
-        
-        circuit.add_register(measurement_register)
-        
-        circuit.barrier()
-        
-        circuit.measure(iqae_register, measurement_register)        
+        iqae_circuit.barrier()
+        iqae_circuit.measure(iqae_register, measurement_register)
 
-    # # add A operator
-    # circuit.compose(state_preparation, inplace=True)
-    
-
-
-    # if measurement:
-        
-    #     circuit.barrier()
-    #     circuit.measure(iqae_register, measurement_register)
-
-    return circuit
+    return iqae_circuit
     
     
 
