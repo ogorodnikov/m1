@@ -1,4 +1,4 @@
-from math import pi, sin, asin
+from math import pi, sin, asin, acos
 
 from qiskit import QuantumCircuit
 from qiskit import QuantumRegister
@@ -280,8 +280,8 @@ def iqae(run_values, task_log):
         multiplication_factors = []
         theta_intervals = [[0, 1 / 4]]  # a priori knowledge of theta / 2 / pi
         a_intervals = [[0.0, 1.0]]  # a priori knowledge of the confidence interval of the estimate
-        num_oracle_queries = 0
-        num_one_shots = []
+        oracle_queries_count = 0
+        one_shots_counts = []
     
         # maximum number of rounds
         
@@ -325,10 +325,10 @@ def iqae(run_values, task_log):
             # type: ignore
             one_counts, prob = _good_state_probability(counts, num_qubits)
     
-            num_one_shots.append(one_counts)
+            one_shots_counts.append(one_counts)
     
             # track number of Q-oracle calls
-            num_oracle_queries += shots * k
+            oracle_queries_count += shots * k
     
             # if on the previous iterations we have K_{i-1} == K_i, we sum these samples up
             j = 1  # number of times we stayed fixed at the same K
@@ -341,7 +341,7 @@ def iqae(run_values, task_log):
                 ):
                     j = j + 1
                     round_shots += shots
-                    round_one_counts += num_one_shots[-j]
+                    round_one_counts += one_shots_counts[-j]
     
             # compute a_min_i, a_max_i
             if confint_method == "chernoff":
@@ -354,11 +354,11 @@ def iqae(run_values, task_log):
     
             # compute theta_min_i, theta_max_i
             if upper_half_circle:
-                theta_min_i = np.arccos(1 - 2 * a_i_min) / 2 / np.pi
-                theta_max_i = np.arccos(1 - 2 * a_i_max) / 2 / np.pi
+                theta_min_i = acos(1 - 2 * a_i_min) / 2 / pi
+                theta_max_i = acos(1 - 2 * a_i_max) / 2 / pi
             else:
-                theta_min_i = 1 - np.arccos(1 - 2 * a_i_max) / 2 / np.pi
-                theta_max_i = 1 - np.arccos(1 - 2 * a_i_min) / 2 / np.pi
+                theta_min_i = 1 - acos(1 - 2 * a_i_max) / 2 / pi
+                theta_max_i = 1 - acos(1 - 2 * a_i_min) / 2 / pi
     
             # compute theta_u, theta_l of this iteration
             scaling = 4 * k + 2  # current K_i factor
@@ -367,8 +367,8 @@ def iqae(run_values, task_log):
             theta_intervals.append([theta_l, theta_u])
     
             # compute a_u_i, a_l_i
-            a_u = np.sin(2 * np.pi * theta_u) ** 2
-            a_l = np.sin(2 * np.pi * theta_l) ** 2
+            a_u = sin(2 * pi * theta_u) ** 2
+            a_l = sin(2 * pi * theta_l) ** 2
             a_u = cast(float, a_u)
             a_l = cast(float, a_l)
             a_intervals.append([a_l, a_u])
@@ -382,9 +382,9 @@ def iqae(run_values, task_log):
         epsilon_estimated = (confidence_interval[1] - confidence_interval[0]) / 2
         
         print(f'QAE alpha: {alpha}')
-        print(f'QAE num_oracle_queries: {num_oracle_queries}')
         
-
+        print(f'QAE oracle_queries_count: {oracle_queries_count}')
+        print(f'QAE one_shots_counts: {one_shots_counts}')
         
         print(f'QAE confidence_interval: {confidence_interval}')
         print(f'QAE a_intervals: {a_intervals}')
