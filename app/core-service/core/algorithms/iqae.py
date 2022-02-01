@@ -137,6 +137,8 @@ def iqae(run_values, task_log):
     objective_qubits = [0]
     is_good_state = lambda x: all(bit == "1" for bit in x)
     
+    # Parameters
+    
     confint_method = "beta"
     min_ratio = 2
     
@@ -146,17 +148,14 @@ def iqae(run_values, task_log):
     epsilon = epsilon_target = accuracy
     alpha = width_of_cofidence_interval
     
+    
     backend = Aer.get_backend("aer_simulator")
     quantum_instance = QuantumInstance(backend)
     
 
     
-    def _find_next_k(
-        k: int,
-        upper_half_circle: bool,
-        theta_interval: Tuple[float, float],
-        min_ratio: float = 2.0,
-    ) -> Tuple[int, bool]:
+    def _find_next_k(k, upper_half_circle, theta_interval, min_ratio):
+        
         """Find the largest integer k_next, such that the interval (4 * k_next + 2)*theta_interval
         lies completely in [0, pi] or [pi, 2pi], for theta_interval = (theta_lower, theta_upper).
     
@@ -275,9 +274,10 @@ def iqae(run_values, task_log):
     
     def estimate():
         
-        # initialize memory variables
-        powers = [0]  # list of powers k: Q^k, (called 'k' in paper)
-        ratios = []  # list of multiplication factors (called 'q' in paper)
+        # Initialization
+        
+        powers = [0]
+        multiplication_factors = []
         theta_intervals = [[0, 1 / 4]]  # a priori knowledge of theta / 2 / pi
         a_intervals = [[0.0, 1.0]]  # a priori knowledge of the confidence interval of the estimate
         num_oracle_queries = 0
@@ -309,7 +309,7 @@ def iqae(run_values, task_log):
     
             # store the variables
             powers.append(k)
-            ratios.append((2 * powers[-1] + 1) / (2 * powers[-2] + 1))
+            multiplication_factors.append((2 * powers[-1] + 1) / (2 * powers[-2] + 1))
     
             # run measurements for Q^k A|0> circuit
             circuit = construct_circuit(k, measurement=True)
@@ -384,15 +384,17 @@ def iqae(run_values, task_log):
         print(f'QAE alpha: {alpha}')
         print(f'QAE num_oracle_queries: {num_oracle_queries}')
         
-        print(f'QAE estimation: {estimation}')
-        print(f'QAE epsilon_estimated: {epsilon_estimated}')
+
         
         print(f'QAE confidence_interval: {confidence_interval}')
         print(f'QAE a_intervals: {a_intervals}')
         print(f'QAE theta_intervals: {theta_intervals}')
         
         print(f'QAE powers: {powers}')
-        print(f'QAE ratios: {ratios}')
+        print(f'QAE multiplication_factors: {multiplication_factors}')
+
+        print(f'QAE epsilon_estimated: {epsilon_estimated}')
+        print(f'QAE estimation: {estimation}')
         
     
     estimate()

@@ -312,15 +312,15 @@ class IterativeAmplitudeEstimation():
         print(f'QAE alpha: {alpha}')
         print(f'QAE num_oracle_queries: {num_oracle_queries}')
         
-        print(f'QAE estimation: {estimation}')
-        print(f'QAE epsilon_estimated: {epsilon_estimated}')
-        
         print(f'QAE confidence_interval: {confidence_interval}')
         print(f'QAE a_intervals: {a_intervals}')
         print(f'QAE theta_intervals: {theta_intervals}')
         
         print(f'QAE powers: {powers}')
         print(f'QAE ratios: {ratios}')
+        
+        print(f'QAE epsilon_estimated: {epsilon_estimated}')        
+        print(f'QAE estimation: {estimation}')
  
 
 from math import sqrt, log
