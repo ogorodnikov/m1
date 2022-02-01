@@ -8,6 +8,8 @@ from qiskit import QuantumCircuit
 from qiskit import QuantumRegister
 from qiskit import ClassicalRegister
 
+from qiskit import Aer
+
 from qiskit.providers import BaseBackend, Backend
 from qiskit.utils import QuantumInstance
 
@@ -92,39 +94,6 @@ def iqae(run_values, task_log):
     bernoulli_diffuser.name = 'Bernoulli Diffuser'
     controlled_bernoulli_diffuser.name = 'CBD'
     
-    
-    # Reference IQAE
-    
-    from qiskit.algorithms import EstimationProblem
-
-    iqae_problem = EstimationProblem(
-        state_preparation=bernoulli_operator,
-        grover_operator=bernoulli_diffuser,
-        objective_qubits=[0],
-    )
-    
-    from qiskit import Aer
-    from qiskit.utils import QuantumInstance
-    
-    backend = Aer.get_backend("aer_simulator")
-    quantum_instance = QuantumInstance(backend)
-    
-    from iqae_reference import IterativeAmplitudeEstimation
-    
-    accuracy = 0.01
-    width_of_cofidence_interval = 0.05
-
-    iae = IterativeAmplitudeEstimation(
-        epsilon_target=accuracy,
-        alpha=width_of_cofidence_interval,
-        quantum_instance=quantum_instance,
-    )
-    
-    iae.estimate(iqae_problem)
-    
-    
-
-    # Custom IQAE
     
     # Problem
     
