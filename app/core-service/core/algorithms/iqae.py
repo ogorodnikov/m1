@@ -106,16 +106,12 @@ def iqae(run_values, task_log):
         grover_operator=bernoulli_diffuser,
         objective_qubits=[0],
     )
-
-
     
     from qiskit import Aer
     from qiskit.utils import QuantumInstance
     
     backend = Aer.get_backend("aer_simulator")
     quantum_instance = QuantumInstance(backend)
-
-
     
     from iqae_reference import IterativeAmplitudeEstimation
     
@@ -202,48 +198,34 @@ def iqae(run_values, task_log):
     
         # if we do not find a feasible k, return the old one
         return int(k), upper_half_circle
+        
     
-    def construct_circuit(
-        estimation_problem, k: int = 0, measurement: bool = False
-    ) -> QuantumCircuit:
-        r"""Construct the circuit :math:`\mathcal{Q}^k \mathcal{A} |0\rangle`.
-    
-        The A operator is the unitary specifying the QAE problem and Q the associated Grover
-        operator.
-    
-        Args:
-            estimation_problem: The estimation problem for which to construct the QAE circuit.
-            k: The power of the Q operator.
-            measurement: Boolean flag to indicate if measurements should be included in the
-                circuits.
-    
-        Returns:
-            The circuit implementing :math:`\mathcal{Q}^k \mathcal{A} |0\rangle`.
-        """
+    def construct_circuit(k=0, measurement=False):
+        
         num_qubits = max(
-            estimation_problem.state_preparation.num_qubits,
-            estimation_problem.grover_operator.num_qubits,
+            state_preparation.num_qubits,
+            grover_operator.num_qubits,
         )
         circuit = QuantumCircuit(num_qubits, name="circuit")
     
         # add classical register if needed
         if measurement:
-            c = ClassicalRegister(len(estimation_problem.objective_qubits))
+            c = ClassicalRegister(len(objective_qubits))
             circuit.add_register(c)
     
         # add A operator
-        circuit.compose(estimation_problem.state_preparation, inplace=True)
+        circuit.compose(state_preparation, inplace=True)
     
         # add Q^k
         if k != 0:
-            circuit.compose(estimation_problem.grover_operator.power(k), inplace=True)
+            circuit.compose(grover_operator.power(k), inplace=True)
     
             # add optional measurement
         if measurement:
             # real hardware can currently not handle operations after measurements, which might
             # happen if the circuit gets transpiled, hence we're adding a safeguard-barrier
             circuit.barrier()
-            circuit.measure(estimation_problem.objective_qubits, c[:])
+            circuit.measure(objective_qubits, c[:])
     
         return circuit
     
@@ -328,7 +310,7 @@ def iqae(run_values, task_log):
             ratios.append((2 * powers[-1] + 1) / (2 * powers[-2] + 1))
     
             # run measurements for Q^k A|0> circuit
-            circuit = construct_circuit(estimation_problem, k, measurement=True)
+            circuit = construct_circuit(k, measurement=True)
             ret = quantum_instance.execute(circuit)
             
             print(f'QAE circuit:\n{circuit}\n')  
