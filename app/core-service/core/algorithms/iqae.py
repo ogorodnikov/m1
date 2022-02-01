@@ -78,14 +78,10 @@ def iqae(run_values, task_log):
         alpha=width_of_cofidence_interval,
         quantum_instance=quantum_instance,
     )
+    
     iae_result = iae.estimate(problem)
     
-    print("Estimate:", iae_result.estimation)
-    
-    iae_circuit = iae.construct_circuit(problem, k=3)
-    iae_circuit.draw("mpl", style="iqx")
-    
-    
+
     quit()
     
 
