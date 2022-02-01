@@ -195,27 +195,28 @@ def iqae(run_values, task_log):
     
     max_rounds = int(log(min_ratio * pi / 8 / epsilon) / log(min_ratio)) + 1
     
-    
     theta_interval = theta_intervals[-1]
-    
     theta_lower, theta_upper = theta_interval
-    
     theta_delta = theta_upper - theta_lower
     
     while theta_delta > epsilon / pi:
         
         iteration_number += 1
+        
+        last_k = powers[-1]
 
         k, upper_half_circle = find_next_k(
-            powers[-1],
+            last_k,
             upper_half_circle,
             theta_interval,
             min_ratio=min_ratio,
         )
 
-        # store the variables
         powers.append(k)
-        multiplication_factors.append((2 * powers[-1] + 1) / (2 * powers[-2] + 1))
+        
+        multiplication_factor = (2 * k + 1) / (2 * last_k + 1)
+        
+        multiplication_factors.append(multiplication_factor)
 
         # run measurements for Q^k A|0> circuit
         
