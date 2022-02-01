@@ -218,28 +218,22 @@ def iqae(run_values, task_log):
         
         multiplication_factors.append(multiplication_factor)
 
-        # run measurements for Q^k A|0> circuit
-        
-        circuit = build_iqae_circuit(state_preparation,
-                                     grover_operator,
-                                     objective_qubits,
-                                     k,
-                                     measurement=True)
+        iqae_circuit = build_iqae_circuit(state_preparation,
+                                          grover_operator,
+                                          objective_qubits,
+                                          k,
+                                          measurement=True)
                                      
-        ret = quantum_instance.execute(circuit)
+        result = quantum_instance.execute(iqae_circuit)
         
-        print(f'QAE circuit:\n{circuit}\n')  
+        counts = result.get_counts()
 
-        # get the counts and store them
-        counts = ret.get_counts(circuit)
-
-        # calculate the probability of measuring '1', 'prob' is a_i in the paper
-        num_qubits = circuit.num_qubits - circuit.num_ancillas
-        
         one_counts = sum(state_counts for state, state_counts in counts.items()
                          if is_good_state(state))
+                         
+        counts_total = sum(counts.values())
         
-        prob = one_counts / sum(counts.values())
+        probability_of_measuring_one = one_counts / counts_total
         
 
         one_shots_counts.append(one_counts)
@@ -262,7 +256,7 @@ def iqae(run_values, task_log):
 
         # compute a_min_i, a_max_i
         if confint_method == "chernoff":
-            a_i_min, a_i_max = chernoff_confidence_interval(prob, round_shots, max_rounds, alpha)
+            a_i_min, a_i_max = chernoff_confidence_interval(probability_of_measuring_one, round_shots, max_rounds, alpha)
             
         else:  # 'beta'
             a_i_min, a_i_max = clopper_pearson_confidence_interval(
@@ -292,6 +286,8 @@ def iqae(run_values, task_log):
         a_u = sin(2 * pi * theta_u) ** 2
         a_l = sin(2 * pi * theta_l) ** 2
         a_intervals.append([a_l, a_u])
+        
+        task_log(f'QAE iqae_circuit:\n{iqae_circuit}\n')
 
 
     confidence_interval = a_intervals[-1]
