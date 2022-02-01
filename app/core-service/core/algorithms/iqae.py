@@ -167,7 +167,7 @@ def iqae(run_values, task_log):
     
     # Parameters
     
-    confint_method = "beta"
+    confint_method = "clopper_pearson"
     min_ratio = 2
     
     accuracy = 0.01
@@ -238,7 +238,6 @@ def iqae(run_values, task_log):
 
         one_shots_counts.append(one_counts)
 
-        # track number of Q-oracle calls
         oracle_queries_count += shots * k
 
         # if on the previous iterations we have K_{i-1} == K_i, we sum these samples up
@@ -254,14 +253,21 @@ def iqae(run_values, task_log):
                 round_shots += shots
                 round_one_counts += one_shots_counts[-j]
 
-        # compute a_min_i, a_max_i
+        # Ai
+
         if confint_method == "chernoff":
-            a_i_min, a_i_max = chernoff_confidence_interval(probability_of_measuring_one, round_shots, max_rounds, alpha)
+            a_i_min, a_i_max = chernoff_confidence_interval(probability_of_measuring_one,
+                                                            round_shots,
+                                                            max_rounds,
+                                                            alpha)
             
-        else:  # 'beta'
-            a_i_min, a_i_max = clopper_pearson_confidence_interval(
-                round_one_counts, round_shots, alpha / max_rounds
-            )
+        elif confint_method == "clopper_pearson":
+            
+            alpha_confidence_level = alpha / max_rounds
+            
+            a_i_min, a_i_max = clopper_pearson_confidence_interval(round_one_counts, 
+                                                                   round_shots,
+                                                                   alpha_confidence_level)
 
         # compute theta_min_i, theta_max_i
         if upper_half_circle:
