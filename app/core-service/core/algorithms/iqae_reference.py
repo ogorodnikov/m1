@@ -292,7 +292,7 @@ class IterativeAmplitudeEstimation():
                 a_i_min, a_i_max = chernoff_confidence_interval(prob, round_shots, max_rounds, self._alpha)
                 
             else:  # 'beta'
-                a_i_min, a_i_max = _clopper_pearson_confint(
+                a_i_min, a_i_max = clopper_pearson_confidence_interval(
                     round_one_counts, round_shots, self._alpha / max_rounds
                 )
 
@@ -356,25 +356,28 @@ def chernoff_confidence_interval(current_estimate, shots_count, max_rounds, alph
     return chernoff_confidence_interval
 
 
-def _clopper_pearson_confint(counts: int, shots: int, alpha: float) -> Tuple[float, float]:
-    """Compute the Clopper-Pearson confidence interval for `shots` i.i.d. Bernoulli trials.
-
-    Args:
-        counts: The number of positive counts.
-        shots: The number of shots.
-        alpha: The confidence level for the confidence interval.
-
-    Returns:
-        The Clopper-Pearson confidence interval.
-    """
+def clopper_pearson_confidence_interval(positive_counts, shots, alpha_confidence_level):
+    
     lower, upper = 0, 1
 
     # if counts == 0, the beta quantile returns nan
-    if counts != 0:
-        lower = beta.ppf(alpha / 2, counts, shots - counts + 1)
+    
+    if positive_counts != 0:
+        
+        lower = beta.ppf(q=alpha_confidence_level / 2,
+                         a=positive_counts, 
+                         b=shots - positive_counts + 1)
 
     # if counts == shots, the beta quantile returns nan
-    if counts != shots:
-        upper = beta.ppf(1 - alpha / 2, counts + 1, shots - counts)
+    
+    if positive_counts != shots:
+        
+        upper = beta.ppf(q=1 - alpha_confidence_level / 2,
+                         a=positive_counts + 1,
+                         b=shots - positive_counts)
+        
+    clopper_pearson_confidence_interval = (lower, upper)
 
-    return lower, upper
+    print(f'QAE clopper_pearson_confidence_interval: {clopper_pearson_confidence_interval}')  
+    
+    return clopper_pearson_confidence_interval
