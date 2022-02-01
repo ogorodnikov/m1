@@ -69,10 +69,13 @@ def iqae(run_values, task_log):
 
     
     from iqae_reference import IterativeAmplitudeEstimation
+    
+    accuracy = 0.01
+    width_of_cofidence_interval = 0.05
 
     iae = IterativeAmplitudeEstimation(
-        epsilon_target=0.01,  # target accuracy
-        alpha=0.05,  # width of the confidence interval
+        epsilon_target=accuracy,
+        alpha=width_of_cofidence_interval,
         quantum_instance=quantum_instance,
     )
     iae_result = iae.estimate(problem)

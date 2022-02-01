@@ -50,27 +50,8 @@ class IterativeAmplitudeEstimation():
             min_ratio: Minimal q-ratio (:math:`K_{i+1} / K_i`) for FindNextK
             quantum_instance: Quantum Instance or Backend
 
-        Raises:
-            AlgorithmError: if the method to compute the confidence intervals is not supported
-            ValueError: If the target epsilon is not in (0, 0.5]
-            ValueError: If alpha is not in (0, 1)
-            ValueError: If confint_method is not supported
         """
-        # validate ranges of input arguments
-        if not 0 < epsilon_target <= 0.5:
-            raise ValueError(f"The target epsilon must be in (0, 0.5], but is {epsilon_target}.")
-
-        if not 0 < alpha < 1:
-            raise ValueError(f"The confidence level alpha must be in (0, 1), but is {alpha}")
-
-        if confint_method not in {"chernoff", "beta"}:
-            raise ValueError(
-                f"The confidence interval method must be chernoff or beta, but is {confint_method}."
-            )
-
-        super().__init__()
-
-        # set quantum instance
+        
         self.quantum_instance = quantum_instance
 
         # store parameters
@@ -81,42 +62,20 @@ class IterativeAmplitudeEstimation():
 
     @property
     def quantum_instance(self) -> Optional[QuantumInstance]:
-        """Get the quantum instance.
-
-        Returns:
-            The quantum instance used to run this algorithm.
-        """
         return self._quantum_instance
 
     @quantum_instance.setter
     def quantum_instance(
         self, quantum_instance: Union[QuantumInstance, BaseBackend, Backend]
     ) -> None:
-        """Set quantum instance.
-
-        Args:
-            quantum_instance: The quantum instance used to run this algorithm.
-        """
-        if isinstance(quantum_instance, (BaseBackend, Backend)):
-            quantum_instance = QuantumInstance(quantum_instance)
         self._quantum_instance = quantum_instance
 
     @property
     def epsilon_target(self) -> float:
-        """Returns the target precision ``epsilon_target`` of the algorithm.
-
-        Returns:
-            The target precision (which is half the width of the confidence interval).
-        """
         return self._epsilon
 
     @epsilon_target.setter
     def epsilon_target(self, epsilon: float) -> None:
-        """Set the target precision of the algorithm.
-
-        Args:
-            epsilon: Target precision for estimation target `a`.
-        """
         self._epsilon = epsilon
 
     def _find_next_k(
@@ -140,11 +99,7 @@ class IterativeAmplitudeEstimation():
         Returns:
             The next power k, and boolean flag for the extrapolated interval.
 
-        Raises:
-            AlgorithmError: if min_ratio is smaller or equal to 1
         """
-        if min_ratio <= 1:
-            raise UserWarning("min_ratio must be larger than 1 to ensure convergence")
 
         # initialize variables
         theta_l, theta_u = theta_interval
