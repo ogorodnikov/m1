@@ -195,9 +195,15 @@ def iqae(run_values, task_log):
     
     max_rounds = int(log(min_ratio * pi / 8 / epsilon) / log(min_ratio)) + 1
     
-
-    # do while loop, keep in mind that we scaled theta mod 2pi such that it lies in [0,1]
-    while theta_intervals[-1][1] - theta_intervals[-1][0] > epsilon / pi:
+    
+    last_theta_interval = theta_intervals[-1]
+    
+    theta_lower = last_theta_interval[0]
+    theta_upper = last_theta_interval[1]
+    theta_delta = theta_upper - theta_lower
+    
+    while theta_delta > epsilon / pi:
+        
         num_iterations += 1
 
         k, upper_half_circle = find_next_k(
@@ -275,6 +281,8 @@ def iqae(run_values, task_log):
         theta_u = (int(scaling * theta_intervals[-1][1]) + theta_max_i) / scaling
         theta_l = (int(scaling * theta_intervals[-1][0]) + theta_min_i) / scaling
         theta_intervals.append([theta_l, theta_u])
+        
+        theta_delta = theta_u - theta_l
 
         # compute a_u_i, a_l_i
         a_u = sin(2 * pi * theta_u) ** 2
