@@ -179,143 +179,131 @@ def iqae(run_values, task_log):
     shots = 1024
     backend = Aer.get_backend("aer_simulator")
     quantum_instance = QuantumInstance(backend)
-    
-
-    
 
         
+    # Initialization
+    
+    powers = [0]
+    multiplication_factors = []
+    theta_intervals = [[0, 1 / 4]]  # a priori knowledge of theta / 2 / pi
+    a_intervals = [[0.0, 1.0]]  # a priori knowledge of the confidence interval of the estimate
+    oracle_queries_count = 0
+    one_shots_counts = []
+    upper_half_circle = True
+
+    num_iterations = 0
+    
+    max_rounds = int(log(min_ratio * pi / 8 / epsilon) / log(min_ratio)) + 1
     
 
-    
-    
-    def estimate():
+    # do while loop, keep in mind that we scaled theta mod 2pi such that it lies in [0,1]
+    while theta_intervals[-1][1] - theta_intervals[-1][0] > epsilon / pi:
+        num_iterations += 1
+
+        k, upper_half_circle = find_next_k(
+            powers[-1],
+            upper_half_circle,
+            theta_intervals[-1],
+            min_ratio=min_ratio,
+        )
+
+        # store the variables
+        powers.append(k)
+        multiplication_factors.append((2 * powers[-1] + 1) / (2 * powers[-2] + 1))
+
+        # run measurements for Q^k A|0> circuit
         
-        # Initialization
+        circuit = build_iqae_circuit(state_preparation,
+                                     grover_operator,
+                                     objective_qubits,
+                                     k,
+                                     measurement=True)
+                                     
+        ret = quantum_instance.execute(circuit)
         
-        powers = [0]
-        multiplication_factors = []
-        theta_intervals = [[0, 1 / 4]]  # a priori knowledge of theta / 2 / pi
-        a_intervals = [[0.0, 1.0]]  # a priori knowledge of the confidence interval of the estimate
-        oracle_queries_count = 0
-        one_shots_counts = []
-        upper_half_circle = True
-    
-        num_iterations = 0
+        print(f'QAE circuit:\n{circuit}\n')  
+
+        # get the counts and store them
+        counts = ret.get_counts(circuit)
+
+        # calculate the probability of measuring '1', 'prob' is a_i in the paper
+        num_qubits = circuit.num_qubits - circuit.num_ancillas
         
-        max_rounds = int(log(min_ratio * pi / 8 / epsilon) / log(min_ratio)) + 1
+        one_counts = sum(state_counts for state, state_counts in counts.items()
+                         if is_good_state(state))
         
-    
-        # do while loop, keep in mind that we scaled theta mod 2pi such that it lies in [0,1]
-        while theta_intervals[-1][1] - theta_intervals[-1][0] > epsilon / pi:
-            num_iterations += 1
-    
-            k, upper_half_circle = find_next_k(
-                powers[-1],
-                upper_half_circle,
-                theta_intervals[-1],
-                min_ratio=min_ratio,
+        prob = one_counts / sum(counts.values())
+        
+
+        one_shots_counts.append(one_counts)
+
+        # track number of Q-oracle calls
+        oracle_queries_count += shots * k
+
+        # if on the previous iterations we have K_{i-1} == K_i, we sum these samples up
+        j = 1  # number of times we stayed fixed at the same K
+        round_shots = shots
+        round_one_counts = one_counts
+        if num_iterations > 1:
+            while (
+                powers[num_iterations - j] == powers[num_iterations]
+                and num_iterations >= j + 1
+            ):
+                j = j + 1
+                round_shots += shots
+                round_one_counts += one_shots_counts[-j]
+
+        # compute a_min_i, a_max_i
+        if confint_method == "chernoff":
+            a_i_min, a_i_max = chernoff_confidence_interval(prob, round_shots, max_rounds, alpha)
+            
+        else:  # 'beta'
+            a_i_min, a_i_max = clopper_pearson_confidence_interval(
+                round_one_counts, round_shots, alpha / max_rounds
             )
-    
-            # store the variables
-            powers.append(k)
-            multiplication_factors.append((2 * powers[-1] + 1) / (2 * powers[-2] + 1))
-    
-            # run measurements for Q^k A|0> circuit
-            
-            circuit = build_iqae_circuit(state_preparation,
-                                         grover_operator,
-                                         objective_qubits,
-                                         k,
-                                         measurement=True)
-                                         
-            ret = quantum_instance.execute(circuit)
-            
-            print(f'QAE circuit:\n{circuit}\n')  
-    
-            # get the counts and store them
-            counts = ret.get_counts(circuit)
-    
-            # calculate the probability of measuring '1', 'prob' is a_i in the paper
-            num_qubits = circuit.num_qubits - circuit.num_ancillas
-            
-            one_counts = sum(state_counts for state, state_counts in counts.items()
-                             if is_good_state(state))
-            
-            prob = one_counts / sum(counts.values())
-            
-    
-            one_shots_counts.append(one_counts)
-    
-            # track number of Q-oracle calls
-            oracle_queries_count += shots * k
-    
-            # if on the previous iterations we have K_{i-1} == K_i, we sum these samples up
-            j = 1  # number of times we stayed fixed at the same K
-            round_shots = shots
-            round_one_counts = one_counts
-            if num_iterations > 1:
-                while (
-                    powers[num_iterations - j] == powers[num_iterations]
-                    and num_iterations >= j + 1
-                ):
-                    j = j + 1
-                    round_shots += shots
-                    round_one_counts += one_shots_counts[-j]
-    
-            # compute a_min_i, a_max_i
-            if confint_method == "chernoff":
-                a_i_min, a_i_max = chernoff_confidence_interval(prob, round_shots, max_rounds, alpha)
-                
-            else:  # 'beta'
-                a_i_min, a_i_max = clopper_pearson_confidence_interval(
-                    round_one_counts, round_shots, alpha / max_rounds
-                )
-    
-            # compute theta_min_i, theta_max_i
-            if upper_half_circle:
-                theta_min_i = acos(1 - 2 * a_i_min) / 2 / pi
-                theta_max_i = acos(1 - 2 * a_i_max) / 2 / pi
-            else:
-                theta_min_i = 1 - acos(1 - 2 * a_i_max) / 2 / pi
-                theta_max_i = 1 - acos(1 - 2 * a_i_min) / 2 / pi
-    
-            # compute theta_u, theta_l of this iteration
-            scaling = 4 * k + 2  # current K_i factor
-            theta_u = (int(scaling * theta_intervals[-1][1]) + theta_max_i) / scaling
-            theta_l = (int(scaling * theta_intervals[-1][0]) + theta_min_i) / scaling
-            theta_intervals.append([theta_l, theta_u])
-    
-            # compute a_u_i, a_l_i
-            a_u = sin(2 * pi * theta_u) ** 2
-            a_l = sin(2 * pi * theta_l) ** 2
-            a_intervals.append([a_l, a_u])
-    
 
-        confidence_interval = a_intervals[-1]
-        
-        confidence_interval_lower, confidence_interval_upper = confidence_interval
-    
-        estimation = sum(confidence_interval) / 2
+        # compute theta_min_i, theta_max_i
+        if upper_half_circle:
+            theta_min_i = acos(1 - 2 * a_i_min) / 2 / pi
+            theta_max_i = acos(1 - 2 * a_i_max) / 2 / pi
+        else:
+            theta_min_i = 1 - acos(1 - 2 * a_i_max) / 2 / pi
+            theta_max_i = 1 - acos(1 - 2 * a_i_min) / 2 / pi
 
-        epsilon_estimated = (confidence_interval_upper - confidence_interval_lower) / 2
-        
-        
-        # Logs
-        
-        task_log(f'QAE alpha: {alpha}')
-        
-        task_log(f'QAE oracle_queries_count: {oracle_queries_count}')
-        task_log(f'QAE one_shots_counts: {one_shots_counts}')
-        
-        task_log(f'QAE confidence_interval: {confidence_interval}')
-        task_log(f'QAE a_intervals: {a_intervals}')
-        task_log(f'QAE theta_intervals: {theta_intervals}')
-        
-        task_log(f'QAE powers: {powers}')
-        task_log(f'QAE multiplication_factors: {multiplication_factors}')
+        # compute theta_u, theta_l of this iteration
+        scaling = 4 * k + 2  # current K_i factor
+        theta_u = (int(scaling * theta_intervals[-1][1]) + theta_max_i) / scaling
+        theta_l = (int(scaling * theta_intervals[-1][0]) + theta_min_i) / scaling
+        theta_intervals.append([theta_l, theta_u])
 
-        task_log(f'QAE epsilon_estimated: {epsilon_estimated}')
-        task_log(f'QAE estimation: {estimation}')
-        
+        # compute a_u_i, a_l_i
+        a_u = sin(2 * pi * theta_u) ** 2
+        a_l = sin(2 * pi * theta_l) ** 2
+        a_intervals.append([a_l, a_u])
+
+
+    confidence_interval = a_intervals[-1]
     
-    estimate()
+    confidence_interval_lower, confidence_interval_upper = confidence_interval
+
+    estimation = sum(confidence_interval) / 2
+
+    epsilon_estimated = (confidence_interval_upper - confidence_interval_lower) / 2
+    
+    
+    # Logs
+    
+    task_log(f'QAE alpha: {alpha}')
+    
+    task_log(f'QAE oracle_queries_count: {oracle_queries_count}')
+    task_log(f'QAE one_shots_counts: {one_shots_counts}')
+    
+    task_log(f'QAE confidence_interval: {confidence_interval}')
+    task_log(f'QAE a_intervals: {a_intervals}')
+    task_log(f'QAE theta_intervals: {theta_intervals}')
+    
+    task_log(f'QAE powers: {powers}')
+    task_log(f'QAE multiplication_factors: {multiplication_factors}')
+
+    task_log(f'QAE epsilon_estimated: {epsilon_estimated}')
+    task_log(f'QAE estimation: {estimation}')
