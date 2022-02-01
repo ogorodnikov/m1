@@ -101,7 +101,7 @@ def iqae(run_values, task_log):
     
     from qiskit.algorithms import EstimationProblem
 
-    problem = EstimationProblem(
+    iqae_problem = EstimationProblem(
         state_preparation=bernoulli_operator,
         grover_operator=bernoulli_diffuser,
         objective_qubits=[0],
@@ -124,15 +124,18 @@ def iqae(run_values, task_log):
         quantum_instance=quantum_instance,
     )
     
-    iae.estimate(problem)
+    iae.estimate(iqae_problem)
     
     
 
     # Custom IQAE
     
-    state_preparation=bernoulli_operator
-    grover_operator=bernoulli_diffuser
-    objective_qubits=[0]
+    # Problem
+    
+    state_preparation = bernoulli_operator
+    grover_operator = bernoulli_diffuser
+    objective_qubits = [0]
+    is_good_state = lambda x: all(bit == "1" for bit in x)
     
     confint_method = "beta"
     min_ratio = 2
@@ -231,10 +234,9 @@ def iqae(run_values, task_log):
     
     
     def _good_state_probability(
-        problem,
         counts_or_statevector: Union[Dict[str, int], np.ndarray],
         num_state_qubits: int,
-    ) -> Union[Tuple[int, float], float]:
+    ):
         """Get the probability to measure '1' in the last qubit.
     
         Args:
@@ -251,7 +253,7 @@ def iqae(run_values, task_log):
         if isinstance(counts_or_statevector, dict):
             one_counts = 0
             for state, counts in counts_or_statevector.items():
-                if problem.is_good_state(state):
+                if is_good_state(state):
                     one_counts += counts
     
             return int(one_counts), one_counts / sum(counts_or_statevector.values())
@@ -264,14 +266,14 @@ def iqae(run_values, task_log):
             for i, amplitude in enumerate(statevector):
                 # consider only state qubits and revert bit order
                 bitstr = bin(i)[2:].zfill(num_qubits)[-num_state_qubits:][::-1]
-                objectives = [bitstr[index] for index in problem.objective_qubits]
-                if problem.is_good_state(objectives):
+                objectives = [bitstr[index] for index in objective_qubits]
+                if is_good_state(objectives):
                     prob = prob + np.abs(amplitude) ** 2
     
             return prob
     
     
-    def estimate(estimation_problem):
+    def estimate():
         
         # initialize memory variables
         powers = [0]  # list of powers k: Q^k, (called 'k' in paper)
@@ -321,9 +323,7 @@ def iqae(run_values, task_log):
             # calculate the probability of measuring '1', 'prob' is a_i in the paper
             num_qubits = circuit.num_qubits - circuit.num_ancillas
             # type: ignore
-            one_counts, prob = _good_state_probability(
-                estimation_problem, counts, num_qubits
-            )
+            one_counts, prob = _good_state_probability(counts, num_qubits)
     
             num_one_shots.append(one_counts)
     
@@ -395,4 +395,4 @@ def iqae(run_values, task_log):
         print(f'QAE ratios: {ratios}')
         
     
-    estimate(problem)
+    estimate()
