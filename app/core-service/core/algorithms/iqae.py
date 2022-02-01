@@ -369,32 +369,34 @@ def iqae(run_values, task_log):
             # compute a_u_i, a_l_i
             a_u = sin(2 * pi * theta_u) ** 2
             a_l = sin(2 * pi * theta_l) ** 2
-            a_u = cast(float, a_u)
-            a_l = cast(float, a_l)
             a_intervals.append([a_l, a_u])
     
-        # get the latest confidence interval for the estimate of a
-        confidence_interval = tuple(a_intervals[-1])
-    
-        # the final estimate is the mean of the confidence interval
-        estimation = np.mean(confidence_interval)
-    
-        epsilon_estimated = (confidence_interval[1] - confidence_interval[0]) / 2
-        
-        print(f'QAE alpha: {alpha}')
-        
-        print(f'QAE oracle_queries_count: {oracle_queries_count}')
-        print(f'QAE one_shots_counts: {one_shots_counts}')
-        
-        print(f'QAE confidence_interval: {confidence_interval}')
-        print(f'QAE a_intervals: {a_intervals}')
-        print(f'QAE theta_intervals: {theta_intervals}')
-        
-        print(f'QAE powers: {powers}')
-        print(f'QAE multiplication_factors: {multiplication_factors}')
 
-        print(f'QAE epsilon_estimated: {epsilon_estimated}')
-        print(f'QAE estimation: {estimation}')
+        confidence_interval = a_intervals[-1]
+        
+        confidence_interval_lower, confidence_interval_upper = confidence_interval
+    
+        estimation = sum(confidence_interval) / 2
+
+        epsilon_estimated = (confidence_interval_upper - confidence_interval_lower) / 2
+        
+        
+        # Logs
+        
+        task_log(f'QAE alpha: {alpha}')
+        
+        task_log(f'QAE oracle_queries_count: {oracle_queries_count}')
+        task_log(f'QAE one_shots_counts: {one_shots_counts}')
+        
+        task_log(f'QAE confidence_interval: {confidence_interval}')
+        task_log(f'QAE a_intervals: {a_intervals}')
+        task_log(f'QAE theta_intervals: {theta_intervals}')
+        
+        task_log(f'QAE powers: {powers}')
+        task_log(f'QAE multiplication_factors: {multiplication_factors}')
+
+        task_log(f'QAE epsilon_estimated: {epsilon_estimated}')
+        task_log(f'QAE estimation: {estimation}')
         
     
     estimate()
