@@ -1,12 +1,16 @@
-from math import pi, sin, asin, acos, log, log2, sqrt
-
-from scipy.stats import beta
-
-from typing import Optional, Union, List, Tuple, Dict, cast
+from math import pi, sin, asin, acos
 
 from qiskit import QuantumCircuit
 from qiskit import QuantumRegister
 from qiskit import ClassicalRegister
+
+
+from math import sqrt, log
+from scipy.stats import beta
+
+import numpy as np
+
+from typing import Optional, Union, List, Tuple, Dict, cast
 
 from qiskit.providers import BaseBackend, Backend
 from qiskit.utils import QuantumInstance
@@ -228,6 +232,46 @@ def iqae(run_values, task_log):
         return circuit
     
     
+    def _good_state_probability(
+        counts_or_statevector: Union[Dict[str, int], np.ndarray],
+        num_state_qubits: int,
+    ):
+        """Get the probability to measure '1' in the last qubit.
+    
+        Args:
+            problem: The estimation problem, used to obtain the number of objective qubits and
+                the ``is_good_state`` function.
+            counts_or_statevector: Either a counts-dictionary (with one measured qubit only!) or
+                the statevector returned from the statevector_simulator.
+            num_state_qubits: The number of state qubits.
+    
+        Returns:
+            If a dict is given, return (#one-counts, #one-counts/#all-counts),
+            otherwise Pr(measure '1' in the last qubit).
+        """
+        if isinstance(counts_or_statevector, dict):
+            one_counts = 0
+            for state, counts in counts_or_statevector.items():
+                if is_good_state(state):
+                    one_counts += counts
+    
+            return int(one_counts), one_counts / sum(counts_or_statevector.values())
+        else:
+            statevector = counts_or_statevector
+            num_qubits = int(np.log2(len(statevector)))  # the total number of qubits
+    
+            # sum over all amplitudes where the objective qubit is 1
+            prob = 0
+            for i, amplitude in enumerate(statevector):
+                # consider only state qubits and revert bit order
+                bitstr = bin(i)[2:].zfill(num_qubits)[-num_state_qubits:][::-1]
+                objectives = [bitstr[index] for index in objective_qubits]
+                if is_good_state(objectives):
+                    prob = prob + np.abs(amplitude) ** 2
+    
+            return prob
+    
+    
     def estimate():
         
         # Initialization
@@ -246,7 +290,7 @@ def iqae(run_values, task_log):
         
     
         # do while loop, keep in mind that we scaled theta mod 2pi such that it lies in [0,1]
-        while theta_intervals[-1][1] - theta_intervals[-1][0] > epsilon / pi:
+        while theta_intervals[-1][1] - theta_intervals[-1][0] > epsilon / np.pi:
             num_iterations += 1
     
             # get the next k
@@ -272,12 +316,8 @@ def iqae(run_values, task_log):
     
             # calculate the probability of measuring '1', 'prob' is a_i in the paper
             num_qubits = circuit.num_qubits - circuit.num_ancillas
-            
-            one_counts = sum(state_counts for state, state_counts in counts.items()
-                             if is_good_state(state))
-            
-            prob = one_counts / sum(counts.values())
-            
+            # type: ignore
+            one_counts, prob = _good_state_probability(counts, num_qubits)
     
             one_shots_counts.append(one_counts)
     
