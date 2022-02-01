@@ -2,8 +2,6 @@ from math import pi, sin, asin, acos, log, log2, sqrt
 
 from scipy.stats import beta
 
-from typing import Optional, Union, List, Tuple, Dict, cast
-
 from qiskit import QuantumCircuit
 from qiskit import QuantumRegister
 from qiskit import ClassicalRegister
@@ -57,6 +55,36 @@ def clopper_pearson_confidence_interval(positive_counts, shots, alpha_confidence
     return clopper_pearson_confidence_interval
 
 
+def _find_next_k(k, upper_half_circle, theta_interval, min_ratio):
+    
+    # initialize variables
+    theta_l, theta_u = theta_interval
+    old_scaling = 4 * k + 2  # current scaling factor, called K := (4k + 2)
+
+    # the largest feasible scaling factor K cannot be larger than K_max,
+    # which is bounded by the length of the current confidence interval
+    max_scaling = int(1 / (2 * (theta_u - theta_l)))
+    scaling = max_scaling - (max_scaling - 2) % 4  # bring into the form 4 * k_max + 2
+
+    # find the largest feasible scaling factor K_next, and thus k_next
+    while scaling >= min_ratio * old_scaling:
+        theta_min = scaling * theta_l - int(scaling * theta_l)
+        theta_max = scaling * theta_u - int(scaling * theta_u)
+
+        if theta_min <= theta_max <= 0.5 and theta_min <= 0.5:
+            # the extrapolated theta interval is in the upper half-circle
+            upper_half_circle = True
+            return int((scaling - 2) / 4), upper_half_circle
+
+        elif theta_max >= 0.5 and theta_max >= theta_min >= 0.5:
+            # the extrapolated theta interval is in the upper half-circle
+            upper_half_circle = False
+            return int((scaling - 2) / 4), upper_half_circle
+
+        scaling -= 4
+
+    # if we do not find a feasible k, return the old one
+    return int(k), upper_half_circle
 
 
 def iqae(run_values, task_log):
@@ -119,52 +147,7 @@ def iqae(run_values, task_log):
     
 
     
-    def _find_next_k(k, upper_half_circle, theta_interval, min_ratio):
-        
-        """Find the largest integer k_next, such that the interval (4 * k_next + 2)*theta_interval
-        lies completely in [0, pi] or [pi, 2pi], for theta_interval = (theta_lower, theta_upper).
-    
-        Args:
-            k: The current power of the Q operator.
-            upper_half_circle: Boolean flag of whether theta_interval lies in the
-                upper half-circle [0, pi] or in the lower one [pi, 2pi].
-            theta_interval: The current confidence interval for the angle theta,
-                i.e. (theta_lower, theta_upper).
-            min_ratio: Minimal ratio K/K_next allowed in the algorithm.
-    
-        Returns:
-            The next power k, and boolean flag for the extrapolated interval.
-    
-        """
-    
-        # initialize variables
-        theta_l, theta_u = theta_interval
-        old_scaling = 4 * k + 2  # current scaling factor, called K := (4k + 2)
-    
-        # the largest feasible scaling factor K cannot be larger than K_max,
-        # which is bounded by the length of the current confidence interval
-        max_scaling = int(1 / (2 * (theta_u - theta_l)))
-        scaling = max_scaling - (max_scaling - 2) % 4  # bring into the form 4 * k_max + 2
-    
-        # find the largest feasible scaling factor K_next, and thus k_next
-        while scaling >= min_ratio * old_scaling:
-            theta_min = scaling * theta_l - int(scaling * theta_l)
-            theta_max = scaling * theta_u - int(scaling * theta_u)
-    
-            if theta_min <= theta_max <= 0.5 and theta_min <= 0.5:
-                # the extrapolated theta interval is in the upper half-circle
-                upper_half_circle = True
-                return int((scaling - 2) / 4), upper_half_circle
-    
-            elif theta_max >= 0.5 and theta_max >= theta_min >= 0.5:
-                # the extrapolated theta interval is in the upper half-circle
-                upper_half_circle = False
-                return int((scaling - 2) / 4), upper_half_circle
-    
-            scaling -= 4
-    
-        # if we do not find a feasible k, return the old one
-        return int(k), upper_half_circle
+
         
     
     def construct_circuit(k=0, measurement=False):
