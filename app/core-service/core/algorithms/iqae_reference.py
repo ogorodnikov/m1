@@ -289,7 +289,8 @@ class IterativeAmplitudeEstimation():
 
             # compute a_min_i, a_max_i
             if self._confint_method == "chernoff":
-                a_i_min, a_i_max = _chernoff_confint(prob, round_shots, max_rounds, self._alpha)
+                a_i_min, a_i_max = chernoff_confidence_interval(prob, round_shots, max_rounds, self._alpha)
+                
             else:  # 'beta'
                 a_i_min, a_i_max = _clopper_pearson_confint(
                     round_one_counts, round_shots, self._alpha / max_rounds
@@ -339,31 +340,20 @@ class IterativeAmplitudeEstimation():
         print(f'QAE ratios: {ratios}')
  
 
+from math import sqrt, log
 
-def _chernoff_confint(
-    value: float, shots: int, max_rounds: int, alpha: float
-) -> Tuple[float, float]:
-    """Compute the Chernoff confidence interval for `shots` i.i.d. Bernoulli trials.
+def chernoff_confidence_interval(current_estimate, shots_count, max_rounds, alpha_confidence_level):
+    
+    epsilon = sqrt(3 * log(2 * max_rounds / alpha_confidence_level) / shots_count)
+    
+    lower = max(0, current_estimate - epsilon)
+    upper = min(1, current_estimate + epsilon)
+    
+    chernoff_confidence_interval = (lower, upper)
 
-    The confidence interval is
-
-        [value - eps, value + eps], where eps = sqrt(3 * log(2 * max_rounds/ alpha) / shots)
-
-    but at most [0, 1].
-
-    Args:
-        value: The current estimate.
-        shots: The number of shots.
-        max_rounds: The maximum number of rounds, used to compute epsilon_a.
-        alpha: The confidence level, used to compute epsilon_a.
-
-    Returns:
-        The Chernoff confidence interval.
-    """
-    eps = np.sqrt(3 * np.log(2 * max_rounds / alpha) / shots)
-    lower = np.maximum(0, value - eps)
-    upper = np.minimum(1, value + eps)
-    return lower, upper
+    print(f'QAE chernoff_confidence_interval: {chernoff_confidence_interval}')   
+    
+    return chernoff_confidence_interval
 
 
 def _clopper_pearson_confint(counts: int, shots: int, alpha: float) -> Tuple[float, float]:
