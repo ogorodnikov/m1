@@ -93,16 +93,26 @@ def build_iqae_circuit(state_preparation,
                        k=0,
                        measurement=False):
     
-    num_qubits = max(
-        state_preparation.num_qubits,
-        grover_operator.num_qubits,
-    )
-    circuit = QuantumCircuit(num_qubits, name="circuit")
+    all_qubits_count = max(state_preparation.num_qubits,
+                           grover_operator.num_qubits)
+                           
+    measurement_bits_count = len(objective_qubits)
+    
+    iqae_register = QuantumRegister(all_qubits_count, 'iqae')
+                     
+    circuit = QuantumCircuit(iqae_register, name="IQAE")
+    
+    # circuit = QuantumCircuit(qubits_count, name="IQAE")
 
     # add classical register if needed
     if measurement:
-        c = ClassicalRegister(len(objective_qubits))
-        circuit.add_register(c)
+        
+        measurement_register = ClassicalRegister(measurement_bits_count, 'measure')
+        
+        # c = ClassicalRegister(measurement_bits_count)
+        # circuit.add_register(c)
+        
+        circuit.add_register(measurement_register)
 
     # add A operator
     circuit.compose(state_preparation, inplace=True)
@@ -116,7 +126,7 @@ def build_iqae_circuit(state_preparation,
         # real hardware can currently not handle operations after measurements, which might
         # happen if the circuit gets transpiled, hence we're adding a safeguard-barrier
         circuit.barrier()
-        circuit.measure(objective_qubits, c[:])
+        circuit.measure(objective_qubits, measurement_register[:])
 
     return circuit
     
@@ -299,6 +309,8 @@ def iqae(run_values, task_log):
         
         task_log(f'QAE iqae_circuit:\n{iqae_circuit}\n')
 
+
+    # Estimate
 
     confidence_interval = a_interval
     
