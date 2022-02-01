@@ -148,7 +148,7 @@ def iqae(run_values, task_log):
     epsilon = epsilon_target = accuracy
     alpha = width_of_cofidence_interval
     
-    
+    shots = 1024
     backend = Aer.get_backend("aer_simulator")
     quantum_instance = QuantumInstance(backend)
     
@@ -282,18 +282,12 @@ def iqae(run_values, task_log):
         a_intervals = [[0.0, 1.0]]  # a priori knowledge of the confidence interval of the estimate
         oracle_queries_count = 0
         one_shots_counts = []
+        upper_half_circle = True
     
-        # maximum number of rounds
+        num_iterations = 0
         
-        max_rounds = (
-            int(np.log(min_ratio * np.pi / 8 / epsilon) / np.log(min_ratio)) + 1
-        )
-        upper_half_circle = True  # initially theta is in the upper half-circle
-    
-       
-    
-        num_iterations = 0  # keep track of the number of iterations
-        shots = quantum_instance._run_config.shots  # number of shots per iteration
+        max_rounds = int(log(min_ratio * pi / 8 / epsilon) / log(min_ratio)) + 1
+        
     
         # do while loop, keep in mind that we scaled theta mod 2pi such that it lies in [0,1]
         while theta_intervals[-1][1] - theta_intervals[-1][0] > epsilon / np.pi:
