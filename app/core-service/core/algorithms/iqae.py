@@ -114,17 +114,19 @@ def build_iqae_circuit(state_preparation,
         
         circuit.add_register(measurement_register)
 
-    # add A operator
-    circuit.compose(state_preparation, inplace=True)
+    # # add A operator
+    # circuit.compose(state_preparation, inplace=True)
+    
+    circuit.append(state_preparation, iqae_register)
 
-    # add Q^k
     if k != 0:
-        circuit.compose(grover_operator.power(k), inplace=True)
+        
+        # circuit.compose(grover_operator.power(k), inplace=True)
+        
+        circuit.append(grover_operator.power(k), iqae_register)
 
-        # add optional measurement
     if measurement:
-        # real hardware can currently not handle operations after measurements, which might
-        # happen if the circuit gets transpiled, hence we're adding a safeguard-barrier
+        
         circuit.barrier()
         circuit.measure(objective_qubits, measurement_register[:])
 
