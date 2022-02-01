@@ -216,9 +216,8 @@ class IterativeAmplitudeEstimation():
 
             return prob
 
-    def estimate(
-        self, estimation_problem
-    ) -> "IterativeAmplitudeEstimationResult":
+
+    def estimate(self, estimation_problem):
         # initialize memory variables
         powers = [0]  # list of powers k: Q^k, (called 'k' in paper)
         ratios = []  # list of multiplication factors (called 'q' in paper)
