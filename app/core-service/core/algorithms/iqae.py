@@ -23,7 +23,7 @@ def chernoff_confidence_interval(current_estimate, shots_count, max_rounds, alph
     
     chernoff_confidence_interval = (lower, upper)
 
-    # print(f'QAE chernoff_confidence_interval: {chernoff_confidence_interval}')   
+    # print(f'IQAE chernoff_confidence_interval: {chernoff_confidence_interval}')   
     
     return chernoff_confidence_interval
 
@@ -50,7 +50,7 @@ def clopper_pearson_confidence_interval(positive_counts, shots, alpha_confidence
         
     clopper_pearson_confidence_interval = (lower, upper)
 
-    # print(f'QAE clopper_pearson_confidence_interval: {clopper_pearson_confidence_interval}')  
+    # print(f'IQAE clopper_pearson_confidence_interval: {clopper_pearson_confidence_interval}')  
     
     return clopper_pearson_confidence_interval
 
@@ -320,7 +320,7 @@ def iqae_post_processing(run_data, task_log):
         amplitude_interval = [amplitude_lower, amplitude_upper]
         amplitude_intervals.append(amplitude_interval)
         
-        # task_log(f'QAE iqae_circuit:\n{iqae_circuit}\n')
+        # task_log(f'IQAE iqae_circuit:\n{iqae_circuit}\n')
 
 
     # Estimate
@@ -335,28 +335,28 @@ def iqae_post_processing(run_data, task_log):
     
     # Logs
     
-    task_log(f'\nQAE IQAE Circuit:\n{iqae_circuit}\n')    
+    task_log(f'\nIQAE Circuit:\n{iqae_circuit}\n')    
     
-    task_log(f'QAE Input data:\n')
-    task_log(f'QAE epsilon: {epsilon}')
-    task_log(f'QAE alpha: {alpha}')
-    task_log(f'QAE confidence_interval_method: {confidence_interval_method}')
-    task_log(f'QAE min_power_increase_ratio: {min_power_increase_ratio}\n')
+    task_log(f'IQAE Input data:\n')
+    task_log(f'IQAE epsilon: {epsilon}')
+    task_log(f'IQAE alpha: {alpha}')
+    task_log(f'IQAE confidence_interval_method: {confidence_interval_method}')
+    task_log(f'IQAE min_power_increase_ratio: {min_power_increase_ratio}\n')
 
-    task_log(f'QAE Processing:\n')    
-    task_log(f'QAE iteration_number: {iteration_number}')    
-    task_log(f'QAE oracle_queries_count: {oracle_queries_count}')
-    task_log(f'QAE one_shots_counts: {one_shots_counts}')
-    task_log(f'QAE multiplication_factors: {multiplication_factors}')
-    task_log(f'QAE powers: {powers}\n')
-    
-    task_log(f'QAE theta_intervals: {theta_intervals}')    
-    task_log(f'QAE amplitude_intervals: {amplitude_intervals}')
-    task_log(f'QAE confidence_interval: {confidence_interval}\n')
+    task_log(f'IQAE Processing:\n')    
+    task_log(f'IQAE iteration_number: {iteration_number}')    
+    task_log(f'IQAE oracle_queries_count: {oracle_queries_count}')
+    task_log(f'IQAE one_shots_counts: {one_shots_counts}')
+    task_log(f'IQAE multiplication_factors: {multiplication_factors}')
+    task_log(f'IQAE powers: {powers}\n')
 
-    task_log(f'QAE Results:\n') 
-    task_log(f'QAE epsilon_estimated: {epsilon_estimated}')
-    task_log(f'QAE amplitude_estimated: {amplitude_estimated}')
+    task_log(f'IQAE theta_intervals: {theta_intervals}')    
+    task_log(f'IQAE amplitude_intervals: {amplitude_intervals}')
+    task_log(f'IQAE confidence_interval: {confidence_interval}\n')
+
+    task_log(f'IQAE Results:\n') 
+    task_log(f'IQAE epsilon_estimated: {epsilon_estimated}')
+    task_log(f'IQAE amplitude_estimated: {amplitude_estimated}')
     
     
     return {'Estimated Amplitude': amplitude_estimated}
