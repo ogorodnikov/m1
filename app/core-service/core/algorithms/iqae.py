@@ -160,13 +160,18 @@ def iqae(run_values, task_log):
     
     """
     
-    # Input
+    # Input data
     
     input_bernoulli_probability = run_values.get('bernoulli_probability')
-    input_precision = run_values.get('precision')
+    input_epsilon = run_values.get('epsilon')
+    input_alpha = run_values.get('alpha')
+    confidence_interval_method = run_values.get('confidence_interval_method')
     
     bernoulli_probability = float(input_bernoulli_probability)
-    precision = int(input_precision)
+    epsilon = float(input_epsilon)
+    alpha = float(input_alpha)
+
+    min_power_increase_ratio = 2
     
     
     # Bernoulli Circuits
@@ -178,26 +183,6 @@ def iqae(run_values, task_log):
     controlled_bernoulli_diffuser.name = 'Controlled Bernoulli Diffuser'
     
 
-    # Problem
-    
-    # state_preparation = bernoulli_operator
-    # grover_operator = bernoulli_diffuser
-    # objective_qubits = [0]
-    # good_qubits = [0]
-    # is_good_state = lambda x: all(bit == "1" for bit in x)
-    
-    # Parameters
-    
-    confint_method = "clopper_pearson"
-    min_power_increase_ratio = 2
-    
-    epsilon = 0.01
-    alpha = 0.05
-
-    # epsilon = epsilon_target = accuracy
-    # alpha = width_of_cofidence_interval
-    
-    
     # Simulator
     
     shots = 1024
@@ -275,14 +260,14 @@ def iqae(run_values, task_log):
 
         # Amplitude range
 
-        if confint_method == "chernoff":
+        if confidence_interval_method == "chernoff":
             
             amplitude_range = chernoff_confidence_interval(probability_of_measuring_one,
                                                            shots,
                                                            max_rounds,
                                                            alpha)
             
-        elif confint_method == "clopper_pearson":
+        elif confidence_interval_method == "clopper_pearson":
             
             alpha_confidence_level = alpha / max_rounds
             
@@ -343,6 +328,8 @@ def iqae(run_values, task_log):
     task_log(f'QAE Input data:\n')
     task_log(f'QAE epsilon: {epsilon}')
     task_log(f'QAE alpha: {alpha}\n')
+    task_log(f'QAE confidence_interval_method: {confidence_interval_method}\n')
+    task_log(f'QAE min_power_increase_ratio: {min_power_increase_ratio}\n')
 
     task_log(f'QAE Processing:\n')    
     task_log(f'QAE iteration_number: {iteration_number}')    

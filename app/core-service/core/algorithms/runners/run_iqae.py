@@ -8,9 +8,10 @@ from qiskit import execute
 from iqae import iqae
 
 
-RUN_VALUES = {'bernoulli_probability': '0.2', 
-              'precision': '5'}
-
+RUN_VALUES = {'bernoulli_probability': '0.3', 
+              'epsilon': '0.01',
+              'alpha': '0.05',
+              'confidence_interval_method': 'clopper_pearson',}
 
 # Circuit
 
