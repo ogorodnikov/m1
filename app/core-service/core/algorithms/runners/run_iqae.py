@@ -17,7 +17,6 @@ RUN_VALUES = {'bernoulli_probability': '0.3',
 
 circuit = iqae(run_values=RUN_VALUES, task_log=print)
 
-print(f'QAE circuit {circuit}')
 
 # Run
 
