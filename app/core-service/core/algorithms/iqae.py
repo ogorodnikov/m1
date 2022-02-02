@@ -56,18 +56,17 @@ def clopper_pearson_confidence_interval(positive_counts, shots, alpha_confidence
 
 
 def find_next_power(power, is_upper_half_circle, theta_interval, min_ratio):
-    
-    # initialize variables
-    theta_lower, theta_upper = theta_interval
-    old_scaling = 4 * power + 2  # current scaling factor, called K := (4k + 2)
 
-    # the largest feasible scaling factor K cannot be larger than K_max,
-    # which is bounded by the length of the current confidence interval
-    max_scaling = int(1 / (2 * (theta_upper - theta_lower)))
-    scaling = max_scaling - (max_scaling - 2) % 4  # bring into the form 4 * k_max + 2
+    theta_lower, theta_upper = theta_interval
+    
+    old_scaling_factor = 4 * power + 2
+    
+    max_scaling_factor = int(1 / (2 * (theta_upper - theta_lower)))
+    
+    scaling = max_scaling_factor - (max_scaling_factor - 2) % 4
 
     # find the largest feasible scaling factor K_next, and thus k_next
-    while scaling >= min_ratio * old_scaling:
+    while scaling >= min_ratio * old_scaling_factor:
         theta_min = scaling * theta_lower - int(scaling * theta_lower)
         theta_max = scaling * theta_upper - int(scaling * theta_upper)
 
@@ -195,12 +194,12 @@ def iqae(run_values, task_log):
     
     theta_interval = theta_intervals[-1]
     theta_lower, theta_upper = theta_interval
-    theta_delta = theta_upper - theta_lower
+    theta_difference = theta_upper - theta_lower
     
     
     # Iterations
     
-    while theta_delta > epsilon / pi:
+    while theta_difference > epsilon / pi:
         
         iteration_number += 1
         
@@ -278,7 +277,7 @@ def iqae(run_values, task_log):
         theta_upper = (int(scaling * last_theta_upper) + theta_max) / scaling
         theta_lower = (int(scaling * last_theta_lower) + theta_min) / scaling
 
-        theta_delta = theta_upper - theta_lower
+        theta_difference = theta_upper - theta_lower
         
         theta_interval = [theta_lower, theta_upper]
         
