@@ -254,9 +254,9 @@ class Runner:
             if not skip_statevector:
                 self.handle_statevector(run_result, qubit_count, task_id)
 
-            self.log(f'RUNNER run_result: {run_result}', task_id)
-            self.log(f'RUNNER counts:', task_id)
-            [self.log(f'{state}: {count}', task_id) for state, count in sorted(counts.items())]
+            # self.log(f'RUNNER run_result: {run_result}', task_id)
+            # self.log(f'RUNNER counts:', task_id)
+            # [self.log(f'{state}: {count}', task_id) for state, count in sorted(counts.items())]
             
             result = {'Counts': counts}
             
