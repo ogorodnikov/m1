@@ -31,6 +31,7 @@ from .algorithms.shor import shor, shor_post_processing
 from .algorithms.counting import counting, counting_post_processing
 from .algorithms.bb84 import bb84, bb84_post_processing
 from .algorithms.qae import qae, qae_post_processing
+from .algorithms.iqae import iqae, iqae_post_processing
 
 
 class Runner:
@@ -47,14 +48,16 @@ class Runner:
                         'shor': shor,
                         'counting': counting,
                         'bb84': bb84,
-                        'qae': qae,}
+                        'qae': qae,
+                        'iqae': iqae,}
                    
     post_processing = {'simon': simon_post_processing,
                        'qpe': qpe_post_processing,
                        'shor': shor_post_processing,
                        'counting': counting_post_processing,
                        'bb84': bb84_post_processing,
-                       'qae': qae_post_processing,}
+                       'qae': qae_post_processing,
+                       'iqae': iqae_post_processing,}
                        
     DEFAULT_TASK_TIMEOUT = 300
 
