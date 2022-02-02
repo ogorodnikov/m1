@@ -357,3 +357,6 @@ def iqae_post_processing(run_data, task_log):
     task_log(f'QAE Results:\n') 
     task_log(f'QAE epsilon_estimated: {epsilon_estimated}')
     task_log(f'QAE amplitude_estimated: {amplitude_estimated}')
+    
+    
+    return {'Estimated Amplitude': amplitude_estimated}
