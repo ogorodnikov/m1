@@ -55,36 +55,37 @@ def clopper_pearson_confidence_interval(positive_counts, shots, alpha_confidence
     return clopper_pearson_confidence_interval
 
 
-def find_next_power(k, upper_half_circle, theta_interval, min_ratio):
+def find_next_power(power, is_upper_half_circle, theta_interval, min_ratio):
     
     # initialize variables
-    theta_l, theta_u = theta_interval
-    old_scaling = 4 * k + 2  # current scaling factor, called K := (4k + 2)
+    theta_lower, theta_upper = theta_interval
+    old_scaling = 4 * power + 2  # current scaling factor, called K := (4k + 2)
 
     # the largest feasible scaling factor K cannot be larger than K_max,
     # which is bounded by the length of the current confidence interval
-    max_scaling = int(1 / (2 * (theta_u - theta_l)))
+    max_scaling = int(1 / (2 * (theta_upper - theta_lower)))
     scaling = max_scaling - (max_scaling - 2) % 4  # bring into the form 4 * k_max + 2
 
     # find the largest feasible scaling factor K_next, and thus k_next
     while scaling >= min_ratio * old_scaling:
-        theta_min = scaling * theta_l - int(scaling * theta_l)
-        theta_max = scaling * theta_u - int(scaling * theta_u)
+        theta_min = scaling * theta_lower - int(scaling * theta_lower)
+        theta_max = scaling * theta_upper - int(scaling * theta_upper)
 
         if theta_min <= theta_max <= 0.5 and theta_min <= 0.5:
             # the extrapolated theta interval is in the upper half-circle
-            upper_half_circle = True
-            return int((scaling - 2) / 4), upper_half_circle
+            is_upper_half_circle = True
+            return int((scaling - 2) / 4), is_upper_half_circle
 
         elif theta_max >= 0.5 and theta_max >= theta_min >= 0.5:
             # the extrapolated theta interval is in the upper half-circle
-            upper_half_circle = False
-            return int((scaling - 2) / 4), upper_half_circle
+            is_upper_half_circle = False
+            return int((scaling - 2) / 4), is_upper_half_circle
 
         scaling -= 4
+        
+    power = int(power)
 
-    # if we do not find a feasible k, return the old one
-    return int(k), upper_half_circle
+    return power, is_upper_half_circle
 
 
 def build_iqae_circuit(state_preparation,
@@ -186,7 +187,7 @@ def iqae(run_values, task_log):
     amplitude_intervals = [[0.0, 1.0]]
     oracle_queries_count = 0
     one_shots_counts = []
-    upper_half_circle = True
+    is_upper_half_circle = True
 
     iteration_number = 0
     
@@ -205,9 +206,9 @@ def iqae(run_values, task_log):
         
         last_power = powers[-1]
 
-        power, upper_half_circle = find_next_power(
+        power, is_upper_half_circle = find_next_power(
             last_power,
-            upper_half_circle,
+            is_upper_half_circle,
             theta_interval,
             min_ratio=min_ratio,
         )
@@ -262,7 +263,7 @@ def iqae(run_values, task_log):
 
         # Theta
         
-        if upper_half_circle:
+        if is_upper_half_circle:
             theta_min = acos(1 - 2 * amplitude_min) / 2 / pi
             theta_max = acos(1 - 2 * amplitude_max) / 2 / pi
         else:
