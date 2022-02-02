@@ -271,19 +271,22 @@ def iqae(run_values, task_log):
 
         scaling = 4 * power + 2
         
-        theta_u = (int(scaling * theta_intervals[-1][1]) + theta_max_i) / scaling
-        theta_l = (int(scaling * theta_intervals[-1][0]) + theta_min_i) / scaling
-
-        theta_delta = theta_u - theta_l
+        last_theta_interval = theta_intervals[-1]
+        last_theta_lower, last_theta_upper = last_theta_interval
         
-        theta_interval = [theta_l, theta_u]
+        theta_upper = (int(scaling * last_theta_upper) + theta_max_i) / scaling
+        theta_lower = (int(scaling * last_theta_lower) + theta_min_i) / scaling
+
+        theta_delta = theta_upper - theta_lower
+        
+        theta_interval = [theta_lower, theta_upper]
         
         theta_intervals.append(theta_interval)
 
         # Amplitude
         
-        a_upper = sin(2 * pi * theta_u) ** 2
-        a_lower = sin(2 * pi * theta_l) ** 2
+        a_upper = sin(2 * pi * theta_upper) ** 2
+        a_lower = sin(2 * pi * theta_lower) ** 2
         
         a_interval = [a_lower, a_upper]
         a_intervals.append(a_interval)
