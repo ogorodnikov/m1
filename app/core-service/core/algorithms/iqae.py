@@ -12,7 +12,7 @@ from qiskit.providers import BaseBackend, Backend
 from qiskit.utils import QuantumInstance
 
 
-
+### Service functions
 
 def chernoff_confidence_interval(current_estimate, shots_count, max_rounds, alpha_confidence_level):
     
@@ -119,7 +119,37 @@ def build_iqae_circuit(state_preparation,
 
     return iqae_circuit
     
+
+class BernoulliCircuit(QuantumCircuit):
     
+    QUBIT_COUNT = 1
+
+    def __init__(self, probability, circuit_type):
+        
+        super().__init__(1)
+        
+        self.theta_p = 2 * asin(probability ** 0.5)
+        
+        if circuit_type == 'diffuser':
+            self.theta_p *= 2
+            
+        self.ry(self.theta_p, 0)
+        
+        self.name = 'Bernoulli ' + circuit_type.capitalize()
+        
+
+    def build_power_circuit(self, power):
+        
+        bernoulli_power_circuit = QuantumCircuit(1)
+        bernoulli_power_circuit.name=f'{self.name} ** {power}'
+        bernoulli_power_circuit.ry(power * self.theta_p, 0)
+        
+        return bernoulli_power_circuit
+    
+    power = build_power_circuit
+        
+
+### Main functions
 
 def iqae(run_values, task_log):
     
@@ -141,13 +171,15 @@ def iqae(run_values, task_log):
     
     # Bernoulli Circuits
     
-    theta_p = 2 * asin(bernoulli_probability ** 0.5)
+    # theta_p = 2 * asin(bernoulli_probability ** 0.5)
     
-    bernoulli_operator = QuantumCircuit(1)
-    bernoulli_operator.ry(theta_p, 0)
+    bernoulli_operator = BernoulliCircuit(bernoulli_probability, circuit_type='operator')
+    bernoulli_diffuser = BernoulliCircuit(bernoulli_probability, circuit_type='diffuser')
     
-    bernoulli_diffuser = QuantumCircuit(1)
-    bernoulli_diffuser.ry(2 * theta_p, 0)
+    # bernoulli_operator.ry(theta_p, 0)
+    
+    # bernoulli_diffuser = QuantumCircuit(1)
+    # bernoulli_diffuser.ry(2 * theta_p, 0)
     
     controlled_bernoulli_diffuser = bernoulli_diffuser.control()
     controlled_bernoulli_diffuser.name = 'Controlled Bernoulli Diffuser'
