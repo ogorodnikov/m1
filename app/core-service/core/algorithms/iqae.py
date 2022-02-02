@@ -56,6 +56,7 @@ def clopper_pearson_confidence_interval(positive_counts, shots, alpha_confidence
 
 
 def find_next_power(power, is_upper_half_circle, theta_interval, min_ratio):
+    
 
     theta_lower, theta_upper = theta_interval
     
@@ -63,26 +64,27 @@ def find_next_power(power, is_upper_half_circle, theta_interval, min_ratio):
     
     max_scaling_factor = int(1 / (2 * (theta_upper - theta_lower)))
     
-    scaling = max_scaling_factor - (max_scaling_factor - 2) % 4
+    scaling_factor = max_scaling_factor - (max_scaling_factor - 2) % 4
+    
 
-    # find the largest feasible scaling factor K_next, and thus k_next
-    while scaling >= min_ratio * old_scaling_factor:
-        theta_min = scaling * theta_lower - int(scaling * theta_lower)
-        theta_max = scaling * theta_upper - int(scaling * theta_upper)
-
+    while scaling_factor >= min_ratio * old_scaling_factor:
+        
+        theta_min = scaling_factor * theta_lower - int(scaling_factor * theta_lower)
+        theta_max = scaling_factor * theta_upper - int(scaling_factor * theta_upper)
+        
         if theta_min <= theta_max <= 0.5 and theta_min <= 0.5:
-            # the extrapolated theta interval is in the upper half-circle
+            
             is_upper_half_circle = True
-            return int((scaling - 2) / 4), is_upper_half_circle
+            power = int((scaling_factor - 2) / 4)
+            break
 
         elif theta_max >= 0.5 and theta_max >= theta_min >= 0.5:
-            # the extrapolated theta interval is in the upper half-circle
+            
             is_upper_half_circle = False
-            return int((scaling - 2) / 4), is_upper_half_circle
+            power = int((scaling_factor - 2) / 4)
+            break
 
-        scaling -= 4
-        
-    power = int(power)
+        scaling_factor -= 4
 
     return power, is_upper_half_circle
 
