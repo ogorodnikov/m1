@@ -128,14 +128,14 @@ class BernoulliCircuit(QuantumCircuit):
         
         super().__init__(1)
         
+        self.name = 'Bernoulli ' + circuit_type.capitalize()
+        
         self.theta_p = 2 * asin(probability ** 0.5)
         
         if circuit_type == 'diffuser':
             self.theta_p *= 2
             
         self.ry(self.theta_p, 0)
-        
-        self.name = 'Bernoulli ' + circuit_type.capitalize()
         
 
     def build_power_circuit(self, power):
@@ -171,24 +171,13 @@ def iqae(run_values, task_log):
     
     # Bernoulli Circuits
     
-    # theta_p = 2 * asin(bernoulli_probability ** 0.5)
-    
     bernoulli_operator = BernoulliCircuit(bernoulli_probability, circuit_type='operator')
     bernoulli_diffuser = BernoulliCircuit(bernoulli_probability, circuit_type='diffuser')
-    
-    # bernoulli_operator.ry(theta_p, 0)
-    
-    # bernoulli_diffuser = QuantumCircuit(1)
-    # bernoulli_diffuser.ry(2 * theta_p, 0)
     
     controlled_bernoulli_diffuser = bernoulli_diffuser.control()
     controlled_bernoulli_diffuser.name = 'Controlled Bernoulli Diffuser'
     
-    bernoulli_operator.name = 'Bernoulli Operator'
-    bernoulli_diffuser.name = 'Bernoulli Diffuser'
-    controlled_bernoulli_diffuser.name = 'CBD'
-    
-    
+
     # Problem
     
     state_preparation = bernoulli_operator
