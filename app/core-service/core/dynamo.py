@@ -561,7 +561,7 @@ class Dynamo:
                   'type': 'quantum',
                   'description': 'Estimates amplitude of quantum state using carefully calculated powers of Grover iterations.\n' +
                                  'Does not use Quantum Phase Estimation and Inverse Quantum Fourier Transform parts.\n' +
-                                 'Produces much more compact Quantum Circuit compared to Canonical QAE',
+                                 'Produces much more compact Quantum Circuit compared to Canonical QAE.',
                   'wiki_link': 'https://qiskit.org/documentation/finance/tutorials/00_amplitude_estimation.html#Quantum-Amplitude-Estimation',
                   'qiskit_link': 'https://qiskit.org/documentation/finance/tutorials/00_amplitude_estimation.html#Quantum-Amplitude-Estimation',
                   'image': b'1010',
