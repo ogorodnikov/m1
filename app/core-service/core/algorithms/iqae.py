@@ -335,7 +335,7 @@ def iqae_post_processing(run_data, task_log):
     
     # Logs
     
-    task_log(f'QAE IQAE Circuit:\n{iqae_circuit}\n')    
+    task_log(f'\nQAE IQAE Circuit:\n{iqae_circuit}\n')    
     
     task_log(f'QAE Input data:\n')
     task_log(f'QAE epsilon: {epsilon}')
