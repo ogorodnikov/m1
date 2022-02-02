@@ -55,7 +55,7 @@ def clopper_pearson_confidence_interval(positive_counts, shots, alpha_confidence
     return clopper_pearson_confidence_interval
 
 
-def find_next_power(power, is_upper_half_circle, theta_interval, min_ratio):
+def find_next_power(power, is_upper_half_circle, theta_interval, min_power_increase_ratio):
     
 
     theta_lower, theta_upper = theta_interval
@@ -67,7 +67,7 @@ def find_next_power(power, is_upper_half_circle, theta_interval, min_ratio):
     scaling_factor = max_scaling_factor - (max_scaling_factor - 2) % 4
     
 
-    while scaling_factor >= min_ratio * old_scaling_factor:
+    while scaling_factor >= min_power_increase_ratio * old_scaling_factor:
         
         theta_min = scaling_factor * theta_lower - int(scaling_factor * theta_lower)
         theta_max = scaling_factor * theta_upper - int(scaling_factor * theta_upper)
@@ -189,35 +189,41 @@ def iqae(run_values, task_log):
     # Parameters
     
     confint_method = "clopper_pearson"
-    min_ratio = 2
+    min_power_increase_ratio = 2
     
-    accuracy = 0.01
-    width_of_cofidence_interval = 0.05
+    epsilon = 0.01
+    alpha = 0.05
 
-    epsilon = epsilon_target = accuracy
-    alpha = width_of_cofidence_interval
+    # epsilon = epsilon_target = accuracy
+    # alpha = width_of_cofidence_interval
+    
+    
+    # Simulator
     
     shots = 1024
     backend = Aer.get_backend("aer_simulator")
-    quantum_instance = QuantumInstance(backend)
+    simulator = QuantumInstance(backend)
 
         
     # Initialization
-    
+
+    iteration_number = 0
+    oracle_queries_count = 0
+
     powers = [0]
     multiplication_factors = []
+    one_shots_counts = []
+    
     theta_intervals = [[0, 1 / 4]]
     amplitude_intervals = [[0.0, 1.0]]
-    oracle_queries_count = 0
-    one_shots_counts = []
-    is_upper_half_circle = True
-    
+
     good_qubits = [0]
     is_good_state = lambda x: all(bit == "1" for bit in x)
 
-    iteration_number = 0
+    is_upper_half_circle = True
     
-    max_rounds = int(log(min_ratio * pi / 8 / epsilon) / log(min_ratio)) + 1
+    max_rounds = int(log(min_power_increase_ratio * pi / 8 / epsilon) / 
+                     log(min_power_increase_ratio)) + 1
     
     theta_interval = theta_intervals[-1]
     theta_lower, theta_upper = theta_interval
@@ -236,7 +242,7 @@ def iqae(run_values, task_log):
             last_power,
             is_upper_half_circle,
             theta_interval,
-            min_ratio=min_ratio,
+            min_power_increase_ratio=min_power_increase_ratio,
         )
 
         powers.append(power)
@@ -251,7 +257,7 @@ def iqae(run_values, task_log):
                                           power,
                                           measurement=True)
                                      
-        result = quantum_instance.execute(iqae_circuit)
+        result = simulator.execute(iqae_circuit)
         
         counts = result.get_counts()
 
@@ -336,7 +342,6 @@ def iqae(run_values, task_log):
     
     task_log(f'QAE Input data:\n')
     task_log(f'QAE epsilon: {epsilon}')
-    task_log(f'QAE accuracy: {accuracy}')
     task_log(f'QAE alpha: {alpha}\n')
 
     task_log(f'QAE Processing:\n')    
