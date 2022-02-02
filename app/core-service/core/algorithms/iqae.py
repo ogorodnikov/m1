@@ -180,10 +180,11 @@ def iqae(run_values, task_log):
 
     # Problem
     
-    state_preparation = bernoulli_operator
-    grover_operator = bernoulli_diffuser
-    objective_qubits = [0]
-    is_good_state = lambda x: all(bit == "1" for bit in x)
+    # state_preparation = bernoulli_operator
+    # grover_operator = bernoulli_diffuser
+    # objective_qubits = [0]
+    # good_qubits = [0]
+    # is_good_state = lambda x: all(bit == "1" for bit in x)
     
     # Parameters
     
@@ -210,6 +211,9 @@ def iqae(run_values, task_log):
     oracle_queries_count = 0
     one_shots_counts = []
     is_upper_half_circle = True
+    
+    good_qubits = [0]
+    is_good_state = lambda x: all(bit == "1" for bit in x)
 
     iteration_number = 0
     
@@ -241,9 +245,9 @@ def iqae(run_values, task_log):
         
         multiplication_factors.append(multiplication_factor)
 
-        iqae_circuit = build_iqae_circuit(state_preparation,
-                                          grover_operator,
-                                          objective_qubits,
+        iqae_circuit = build_iqae_circuit(bernoulli_operator,
+                                          bernoulli_diffuser,
+                                          good_qubits,
                                           power,
                                           measurement=True)
                                      
