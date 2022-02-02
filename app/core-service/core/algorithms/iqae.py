@@ -240,73 +240,34 @@ def iqae(run_values, task_log):
         oracle_queries_count += shots * k
         
 
-        # Round '1' counts
-        
-        same_k_count = 1
-        
-        iteration_shots = shots
-        iteration_one_counts = one_counts
-        
-        # if iteration_number > 0:
-            
-        #     last_different_power_index = iteration_number - same_k_count
-        #     last_different_power = powers[last_different_power_index]
-        #     current_power = powers[iteration_number]
-            
-        #     task_log(f'QAE powers: {powers}')
-        #     task_log(f'QAE one_shots_counts: {one_shots_counts}')
-        #     task_log(f'QAE iteration_number: {iteration_number}')
-        #     task_log(f'QAE iteration_one_counts: {iteration_one_counts}')
-            
-        #     task_log(f'QAE same_k_count: {same_k_count}')
-        #     task_log(f'QAE last_different_power_index: {last_different_power_index}')
-        #     task_log(f'QAE last_different_power: {last_different_power}')
-        #     task_log(f'QAE current_power: {current_power}')
-            
-        #     while (last_different_power == current_power
-        #           and iteration_number >= same_k_count + 1):
-                
-        #         same_k_count += 1
-                
-        #         last_different_one_shot_counts = one_shots_counts[-same_k_count]
-                
-        #         iteration_shots += shots                
-        #         iteration_one_counts += last_different_one_shot_counts
-                
-        #         last_different_power_index = iteration_number - same_k_count
-        #         last_different_power = powers[last_different_power_index]
-        #         current_power = powers[iteration_number]
-                
-        #         task_log(f'QAE     same_k_count: {same_k_count}')
-        #         task_log(f'QAE     iteration_shots: {iteration_shots}')
-        #         task_log(f'QAE     last_different_one_shot_counts: {last_different_one_shot_counts}')
-        #         task_log(f'QAE     iteration_one_counts: {iteration_one_counts}')
-
-        # Ai
+        # Amplitude
 
         if confint_method == "chernoff":
             
-            a_i_min, a_i_max = chernoff_confidence_interval(probability_of_measuring_one,
-                                                            shots,
-                                                            max_rounds,
-                                                            alpha)
+            amplitudes = chernoff_confidence_interval(probability_of_measuring_one,
+                                                      shots,
+                                                      max_rounds,
+                                                      alpha)
             
         elif confint_method == "clopper_pearson":
             
             alpha_confidence_level = alpha / max_rounds
             
-            a_i_min, a_i_max = clopper_pearson_confidence_interval(one_counts, 
-                                                                   shots,
-                                                                   alpha_confidence_level)
+            amplitudes = clopper_pearson_confidence_interval(one_counts, 
+                                                             shots,
+                                                             alpha_confidence_level)
+                                                                   
+        amplitude_min, amplitude_max = amplitudes
+        
 
         # Theta
         
         if upper_half_circle:
-            theta_min_i = acos(1 - 2 * a_i_min) / 2 / pi
-            theta_max_i = acos(1 - 2 * a_i_max) / 2 / pi
+            theta_min_i = acos(1 - 2 * amplitude_min) / 2 / pi
+            theta_max_i = acos(1 - 2 * amplitude_max) / 2 / pi
         else:
-            theta_min_i = 1 - acos(1 - 2 * a_i_max) / 2 / pi
-            theta_max_i = 1 - acos(1 - 2 * a_i_min) / 2 / pi
+            theta_min_i = 1 - acos(1 - 2 * amplitude_max) / 2 / pi
+            theta_max_i = 1 - acos(1 - 2 * amplitude_min) / 2 / pi
 
         scaling = 4 * k + 2
         
