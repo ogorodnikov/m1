@@ -55,7 +55,7 @@ def clopper_pearson_confidence_interval(positive_counts, shots, alpha_confidence
     return clopper_pearson_confidence_interval
 
 
-def find_next_k(k, upper_half_circle, theta_interval, min_ratio):
+def find_next_power(k, upper_half_circle, theta_interval, min_ratio):
     
     # initialize variables
     theta_l, theta_u = theta_interval
@@ -167,7 +167,7 @@ def iqae(run_values, task_log):
     confint_method = "clopper_pearson"
     min_ratio = 2
     
-    accuracy = 0.0001
+    accuracy = 0.01
     width_of_cofidence_interval = 0.05
 
     epsilon = epsilon_target = accuracy
@@ -203,25 +203,25 @@ def iqae(run_values, task_log):
         
         iteration_number += 1
         
-        last_k = powers[-1]
+        last_power = powers[-1]
 
-        k, upper_half_circle = find_next_k(
-            last_k,
+        power, upper_half_circle = find_next_power(
+            last_power,
             upper_half_circle,
             theta_interval,
             min_ratio=min_ratio,
         )
 
-        powers.append(k)
+        powers.append(power)
         
-        multiplication_factor = (2 * k + 1) / (2 * last_k + 1)
+        multiplication_factor = (2 * power + 1) / (2 * last_power + 1)
         
         multiplication_factors.append(multiplication_factor)
 
         iqae_circuit = build_iqae_circuit(state_preparation,
                                           grover_operator,
                                           objective_qubits,
-                                          k,
+                                          power,
                                           measurement=True)
                                      
         result = quantum_instance.execute(iqae_circuit)
@@ -237,7 +237,7 @@ def iqae(run_values, task_log):
 
         one_shots_counts.append(one_counts)
 
-        oracle_queries_count += shots * k
+        oracle_queries_count += shots * power
         
 
         # Amplitude
@@ -269,7 +269,7 @@ def iqae(run_values, task_log):
             theta_min_i = 1 - acos(1 - 2 * amplitude_max) / 2 / pi
             theta_max_i = 1 - acos(1 - 2 * amplitude_min) / 2 / pi
 
-        scaling = 4 * k + 2
+        scaling = 4 * power + 2
         
         theta_u = (int(scaling * theta_intervals[-1][1]) + theta_max_i) / scaling
         theta_l = (int(scaling * theta_intervals[-1][0]) + theta_min_i) / scaling
