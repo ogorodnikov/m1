@@ -287,7 +287,7 @@ def iqae(run_values, task_log):
         if confint_method == "chernoff":
             
             a_i_min, a_i_max = chernoff_confidence_interval(probability_of_measuring_one,
-                                                            iteration_shots,
+                                                            shots,
                                                             max_rounds,
                                                             alpha)
             
@@ -295,8 +295,8 @@ def iqae(run_values, task_log):
             
             alpha_confidence_level = alpha / max_rounds
             
-            a_i_min, a_i_max = clopper_pearson_confidence_interval(iteration_one_counts, 
-                                                                   iteration_shots,
+            a_i_min, a_i_max = clopper_pearson_confidence_interval(one_counts, 
+                                                                   shots,
                                                                    alpha_confidence_level)
 
         # Theta
