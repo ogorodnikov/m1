@@ -196,6 +196,9 @@ def iqae(run_values, task_log):
     theta_lower, theta_upper = theta_interval
     theta_delta = theta_upper - theta_lower
     
+    
+    # Iterations
+    
     while theta_delta > epsilon / pi:
         
         iteration_number += 1
@@ -231,30 +234,36 @@ def iqae(run_values, task_log):
         counts_total = sum(counts.values())
         
         probability_of_measuring_one = one_counts / counts_total
-        
 
         one_shots_counts.append(one_counts)
 
         oracle_queries_count += shots * k
+        
 
-        # if on the previous iterations we have K_{i-1} == K_i, we sum these samples up
-        j = 1  # number of times we stayed fixed at the same K
-        round_shots = shots
-        round_one_counts = one_counts
+        # Round '1' counts
+        
+        same_k_count = 1
+        
+        iteration_shots = shots
+        iteration_one_counts = one_counts
+        
         if iteration_number > 1:
+            
             while (
-                powers[iteration_number - j] == powers[iteration_number]
-                and iteration_number >= j + 1
+                powers[iteration_number - same_k_count] == powers[iteration_number]
+                and iteration_number >= same_k_count + 1
             ):
-                j = j + 1
-                round_shots += shots
-                round_one_counts += one_shots_counts[-j]
+                
+                same_k_count += 1
+                iteration_shots += shots
+                iteration_one_counts += one_shots_counts[-same_k_count]
 
         # Ai
 
         if confint_method == "chernoff":
+            
             a_i_min, a_i_max = chernoff_confidence_interval(probability_of_measuring_one,
-                                                            round_shots,
+                                                            iteration_shots,
                                                             max_rounds,
                                                             alpha)
             
@@ -262,8 +271,8 @@ def iqae(run_values, task_log):
             
             alpha_confidence_level = alpha / max_rounds
             
-            a_i_min, a_i_max = clopper_pearson_confidence_interval(round_one_counts, 
-                                                                   round_shots,
+            a_i_min, a_i_max = clopper_pearson_confidence_interval(iteration_one_counts, 
+                                                                   iteration_shots,
                                                                    alpha_confidence_level)
 
         # Theta
@@ -310,6 +319,8 @@ def iqae(run_values, task_log):
     
     # Logs
     
+    task_log(f'QAE epsilon: {epsilon}')
+    task_log(f'QAE accuracy: {accuracy}')
     task_log(f'QAE alpha: {alpha}')
     
     task_log(f'QAE oracle_queries_count: {oracle_queries_count}')
