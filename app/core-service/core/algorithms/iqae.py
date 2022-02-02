@@ -183,7 +183,7 @@ def iqae(run_values, task_log):
     powers = [0]
     multiplication_factors = []
     theta_intervals = [[0, 1 / 4]]
-    a_intervals = [[0.0, 1.0]]
+    amplitude_intervals = [[0.0, 1.0]]
     oracle_queries_count = 0
     one_shots_counts = []
     upper_half_circle = True
@@ -240,87 +240,89 @@ def iqae(run_values, task_log):
         oracle_queries_count += shots * power
         
 
-        # Amplitude
+        # Amplitude range
 
         if confint_method == "chernoff":
             
-            amplitudes = chernoff_confidence_interval(probability_of_measuring_one,
-                                                      shots,
-                                                      max_rounds,
-                                                      alpha)
+            amplitude_range = chernoff_confidence_interval(probability_of_measuring_one,
+                                                           shots,
+                                                           max_rounds,
+                                                           alpha)
             
         elif confint_method == "clopper_pearson":
             
             alpha_confidence_level = alpha / max_rounds
             
-            amplitudes = clopper_pearson_confidence_interval(one_counts, 
-                                                             shots,
-                                                             alpha_confidence_level)
+            amplitude_range = clopper_pearson_confidence_interval(one_counts, 
+                                                                  shots,
+                                                                  alpha_confidence_level)
                                                                    
-        amplitude_min, amplitude_max = amplitudes
+        amplitude_min, amplitude_max = amplitude_range
         
 
         # Theta
         
         if upper_half_circle:
-            theta_min_i = acos(1 - 2 * amplitude_min) / 2 / pi
-            theta_max_i = acos(1 - 2 * amplitude_max) / 2 / pi
+            theta_min = acos(1 - 2 * amplitude_min) / 2 / pi
+            theta_max = acos(1 - 2 * amplitude_max) / 2 / pi
         else:
-            theta_min_i = 1 - acos(1 - 2 * amplitude_max) / 2 / pi
-            theta_max_i = 1 - acos(1 - 2 * amplitude_min) / 2 / pi
+            theta_min = 1 - acos(1 - 2 * amplitude_max) / 2 / pi
+            theta_max = 1 - acos(1 - 2 * amplitude_min) / 2 / pi
 
         scaling = 4 * power + 2
         
         last_theta_interval = theta_intervals[-1]
         last_theta_lower, last_theta_upper = last_theta_interval
         
-        theta_upper = (int(scaling * last_theta_upper) + theta_max_i) / scaling
-        theta_lower = (int(scaling * last_theta_lower) + theta_min_i) / scaling
+        theta_upper = (int(scaling * last_theta_upper) + theta_max) / scaling
+        theta_lower = (int(scaling * last_theta_lower) + theta_min) / scaling
 
         theta_delta = theta_upper - theta_lower
         
         theta_interval = [theta_lower, theta_upper]
         
         theta_intervals.append(theta_interval)
+        
 
         # Amplitude
         
-        a_upper = sin(2 * pi * theta_upper) ** 2
-        a_lower = sin(2 * pi * theta_lower) ** 2
+        amplitude_upper = sin(2 * pi * theta_upper) ** 2
+        amplitude_lower = sin(2 * pi * theta_lower) ** 2
         
-        a_interval = [a_lower, a_upper]
-        a_intervals.append(a_interval)
+        amplitude_interval = [amplitude_lower, amplitude_upper]
+        amplitude_intervals.append(amplitude_interval)
         
         task_log(f'QAE iqae_circuit:\n{iqae_circuit}\n')
 
 
     # Estimate
 
-    confidence_interval = a_interval
-    
+    confidence_interval = amplitude_interval
     confidence_interval_lower, confidence_interval_upper = confidence_interval
-
-    estimation = sum(confidence_interval) / 2
 
     epsilon_estimated = (confidence_interval_upper - confidence_interval_lower) / 2
     
+    amplitude_estimated = sum(confidence_interval) / 2
+
     
     # Logs
     
+    task_log(f'QAE Input data:\n')
     task_log(f'QAE epsilon: {epsilon}')
     task_log(f'QAE accuracy: {accuracy}')
-    task_log(f'QAE alpha: {alpha}')
-    
+    task_log(f'QAE alpha: {alpha}\n')
+
+    task_log(f'QAE Processing:\n')    
+    task_log(f'QAE iteration_number: {iteration_number}')    
     task_log(f'QAE oracle_queries_count: {oracle_queries_count}')
     task_log(f'QAE one_shots_counts: {one_shots_counts}')
-    task_log(f'QAE iteration_number: {iteration_number}')
-    
-    task_log(f'QAE confidence_interval: {confidence_interval}')
-    task_log(f'QAE a_intervals: {a_intervals}')
-    task_log(f'QAE theta_intervals: {theta_intervals}')
-    
-    task_log(f'QAE powers: {powers}')
     task_log(f'QAE multiplication_factors: {multiplication_factors}')
+    task_log(f'QAE powers: {powers}\n')
+    
+    task_log(f'QAE theta_intervals: {theta_intervals}')    
+    task_log(f'QAE amplitude_intervals: {amplitude_intervals}')
+    task_log(f'QAE confidence_interval: {confidence_interval}\n')
 
+    task_log(f'QAE Results:\n') 
     task_log(f'QAE epsilon_estimated: {epsilon_estimated}')
-    task_log(f'QAE estimation: {estimation}')
+    task_log(f'QAE amplitude_estimated: {amplitude_estimated}')
