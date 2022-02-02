@@ -153,6 +153,14 @@ class BernoulliCircuit(QuantumCircuit):
 
 def iqae(run_values, task_log):
     
+    dummy_circuit = QuantumCircuit(1)
+    dummy_circuit.measure_all()
+    
+    return dummy_circuit
+    
+    
+def iqae_post_processing(run_data, task_log):
+    
     """
     Create Iterative Quantum Amplitude Estimation (IQAE) circuit
     
@@ -161,6 +169,8 @@ def iqae(run_values, task_log):
     """
     
     # Input data
+    
+    run_values = run_data.get('Run Values')
     
     input_bernoulli_probability = run_values.get('bernoulli_probability')
     input_epsilon = run_values.get('epsilon')
