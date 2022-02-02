@@ -555,6 +555,22 @@ class Dynamo:
                                  {'name': 'precision', 'default_value': '3'}],
                   'likes': 246,
                   'enabled': True},
+
+                 {'id': 'iqae',
+                  'name': 'Iterative Quantum Amplitude Estimation',
+                  'type': 'quantum',
+                  'description': 'Estimates amplitude of quantum state using carefully calculated powers of Grover iterations.\n' +
+                                 'Does not use Quantum Phase Estimation and Inverse Quantum Fourier Transform parts.\n' +
+                                 'Produces much more compact Quantum Circuit compared to Canonical QAE',
+                  'wiki_link': 'https://qiskit.org/documentation/finance/tutorials/00_amplitude_estimation.html#Quantum-Amplitude-Estimation',
+                  'qiskit_link': 'https://qiskit.org/documentation/finance/tutorials/00_amplitude_estimation.html#Quantum-Amplitude-Estimation',
+                  'image': b'1010',
+                  'parameters': [{'name': 'bernoulli_probability', 'default_value': '0.3'},
+                                 {'name': 'epsilon', 'default_value': '0.01'},
+                                 {'name': 'alpha', 'default_value': '0.05'},
+                                 {'name': 'confidence_interval_method', 'default_value': 'clopper_pearson'}],
+                  'likes': 816,
+                  'enabled': True},
                   
                  ]
         
