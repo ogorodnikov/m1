@@ -15,6 +15,7 @@ from core.algorithms.shor import shor, shor_post_processing
 from core.algorithms.counting import counting, counting_post_processing
 from core.algorithms.bb84 import bb84, bb84_post_processing
 from core.algorithms.qae import qae, qae_post_processing
+from core.algorithms.iqae import iqae, iqae_post_processing
 
 
 test_data = {
@@ -47,8 +48,13 @@ test_data = {
            'sample_indices': '0, 2'},
            
     qae: {'bernoulli_probability': '0.2', 'precision': '5'},
-    
+    iqae: {'bernoulli_probability': '0.3', 
+           'epsilon': '0.01', 
+           'alpha': '0.05', 
+           'confidence_interval_method': 'clopper_pearson'},
+
 }
+
 
 
 post_processing = {simon: simon_post_processing,
@@ -56,7 +62,8 @@ post_processing = {simon: simon_post_processing,
                    shor: shor_post_processing,
                    counting: counting_post_processing,
                    bb84: bb84_post_processing,
-                   qae: qae_post_processing}
+                   qae: qae_post_processing,
+                   iqae: iqae_post_processing,}
 
 
 @pytest.mark.parametrize("runner_function, run_values", test_data.items())
@@ -92,4 +99,9 @@ def test_run_data():
                            'alice_bits': '10101', 'alice_bases': 'XXXZX', 
                            'eve_bases': 'XZZZX', 'bob_bases': 'XXXZZ', 
                            'sample_indices': '0',
+                           
+                            'bernoulli_probability': '0.3', 
+                            'epsilon': '0.01', 
+                            'alpha': '0.05', 
+                            'confidence_interval_method': 'clopper_pearson'
             }}
