@@ -203,6 +203,42 @@ Resources:
         GroupSet:
         - !Ref NATSecurityGroup
       SourceDestCheck: false
+        
+# # Old NAT Instances
+  
+#   NATInstanceOne:
+#     Type: AWS::EC2::Instance
+#     DependsOn: PublicRoute
+#     Properties:
+#       Tags:
+#       - Key: Name
+#         Value: m1-public1-nat-instance
+#       ImageId: !Ref NATAMI
+#       InstanceType: t2.micro
+#       NetworkInterfaces:
+#       - DeviceIndex: 0
+#         SubnetId: !Ref PublicSubnetOne
+#         AssociatePublicIpAddress: true
+#         GroupSet:
+#         - !Ref NATSecurityGroup
+#       SourceDestCheck: false
+
+#   NATInstanceTwo:
+#     Type: AWS::EC2::Instance
+#     DependsOn: PublicRoute
+#     Properties:
+#       Tags:
+#       - Key: Name
+#         Value: m1-public2-nat-instance
+#       ImageId: !Ref NATAMI
+#       InstanceType: t2.micro
+#       NetworkInterfaces:
+#       - DeviceIndex: 0
+#         SubnetId: !Ref PublicSubnetTwo
+#         AssociatePublicIpAddress: true
+#         GroupSet:
+#         - !Ref NATSecurityGroup
+#       SourceDestCheck: false
   
   # NATInstanceOne:
   #   Type: AWS::EC2::Instance
