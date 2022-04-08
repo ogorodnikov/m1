@@ -26,9 +26,9 @@ Parameters:
     
   NATAMI:
     Type: String
-    Default: ami-001e4628006fd3582
+    Default: ami-003acd4f8da7e06f9
 
-  Old_NATAMI:
+  OldNATAMI:
     Type: String
     Default: ami-00a9d4a05375b2763
 
@@ -188,13 +188,11 @@ Resources:
         AssociatePublicIpAddress: true
         GroupSet:
         - !Ref NATSecurityGroup
-        
       BlockDeviceMappings:
       - DeviceName: /dev/xvda
         Ebs:
           VolumeSize: 8
-          DeleteOnTermination: true
-          
+          # DeleteOnTermination: true
       SourceDestCheck: false
 
   # NATInstanceTwo:
@@ -223,7 +221,7 @@ Resources:
 #       Tags:
 #       - Key: Name
 #         Value: m1-public1-nat-instance
-#       ImageId: !Ref Old_NATAMI
+#       ImageId: !Ref OldNATAMI
 #       InstanceType: t2.micro
 #       NetworkInterfaces:
 #       - DeviceIndex: 0
@@ -240,7 +238,7 @@ Resources:
       Tags:
       - Key: Name
         Value: m1-public2-nat-instance
-      ImageId: !Ref Old_NATAMI
+      ImageId: !Ref OldNATAMI
       InstanceType: t2.micro
       NetworkInterfaces:
       - DeviceIndex: 0
@@ -337,7 +335,8 @@ Resources:
     Properties:
       RouteTableId: !Ref PrivateRouteTableOne
       DestinationCidrBlock: 0.0.0.0/0
-      InstanceId: !Ref NATInstanceOne
+      InstanceId: !Ref NATInstanceTwo
+    # InstanceId: !Ref NATInstanceOne
   
   PrivateRouteTableOneAssociation:
     Type: AWS::EC2::SubnetRouteTableAssociation
@@ -460,10 +459,10 @@ Outputs:
     Export:
       Name: !Sub ${AWS::StackName}:PublicSubnetTwo
       
-  NATInstanceOne:
-    Value: !Ref NATInstanceOne
-    Export:
-      Name: !Sub ${AWS::StackName}:NATInstanceOne      
+  # NATInstanceOne:
+  #   Value: !Ref NATInstanceOne
+  #   Export:
+  #     Name: !Sub ${AWS::StackName}:NATInstanceOne      
 
   NATInstanceTwo:
     Value: !Ref NATInstanceTwo
