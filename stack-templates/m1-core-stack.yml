@@ -181,7 +181,7 @@ Resources:
       - Key: Name
         Value: m1-public1-nat-instance
       ImageId: !Ref NATAMI
-      InstanceType: t4g.nano
+      InstanceType: t2.nano
       NetworkInterfaces:
       - DeviceIndex: 0
         SubnetId: !Ref PublicSubnetOne
@@ -203,7 +203,7 @@ Resources:
   #     - Key: Name
   #       Value: m1-public2-nat-instance
   #     ImageId: !Ref NATAMI
-  #     InstanceType: t4g.nano
+  #     InstanceType: t2.nano
   #     NetworkInterfaces:
   #     - DeviceIndex: 0
   #       SubnetId: !Ref PublicSubnetTwo
@@ -335,8 +335,7 @@ Resources:
     Properties:
       RouteTableId: !Ref PrivateRouteTableOne
       DestinationCidrBlock: 0.0.0.0/0
-      InstanceId: !Ref NATInstanceTwo
-    # InstanceId: !Ref NATInstanceOne
+      InstanceId: !Ref NATInstanceOne
   
   PrivateRouteTableOneAssociation:
     Type: AWS::EC2::SubnetRouteTableAssociation
@@ -357,7 +356,8 @@ Resources:
     Properties:
       RouteTableId: !Ref PrivateRouteTableTwo
       DestinationCidrBlock: 0.0.0.0/0
-      InstanceId: !Ref NATInstanceTwo
+      # InstanceId: !Ref NATInstanceTwo
+      InstanceId: !Ref NATInstanceOne
   
   PrivateRouteTableTwoAssociation:
     Type: AWS::EC2::SubnetRouteTableAssociation
