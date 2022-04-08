@@ -195,27 +195,27 @@ Resources:
           VolumeType: gp2
       SourceDestCheck: false
 
-  NATInstanceTwo:
-    Type: AWS::EC2::Instance
-    DependsOn: PublicRoute
-    Properties:
-      Tags:
-      - Key: Name
-        Value: m1-public2-nat-instance
-      ImageId: !Ref NATAMI
-      InstanceType: t3a.nano
-      NetworkInterfaces:
-      - DeviceIndex: 0
-        SubnetId: !Ref PublicSubnetTwo
-        AssociatePublicIpAddress: true
-        GroupSet:
-        - !Ref NATSecurityGroup
-      BlockDeviceMappings:
-      - DeviceName: /dev/xvda
-        Ebs:
-          VolumeSize: 8
-          VolumeType: gp2
-      SourceDestCheck: false
+  # NATInstanceTwo:
+  #   Type: AWS::EC2::Instance
+  #   DependsOn: PublicRoute
+  #   Properties:
+  #     Tags:
+  #     - Key: Name
+  #       Value: m1-public2-nat-instance
+  #     ImageId: !Ref NATAMI
+  #     InstanceType: t3a.nano
+  #     NetworkInterfaces:
+  #     - DeviceIndex: 0
+  #       SubnetId: !Ref PublicSubnetTwo
+  #       AssociatePublicIpAddress: true
+  #       GroupSet:
+  #       - !Ref NATSecurityGroup
+  #     BlockDeviceMappings:
+  #     - DeviceName: /dev/xvda
+  #       Ebs:
+  #         VolumeSize: 8
+  #         VolumeType: gp2
+  #     SourceDestCheck: false
         
 # # NAT Instances from Old AMI
   
@@ -363,7 +363,12 @@ Resources:
     Properties:
       RouteTableId: !Ref PrivateRouteTableTwo
       DestinationCidrBlock: 0.0.0.0/0
-      InstanceId: !Ref NATInstanceTwo
+      # Price-efficient workaround:
+      # PrivateRouteTwo points to only NAT
+      # InstanceId: !Ref NATInstanceOne
+      # Instead of
+      # InstanceId: !Ref NATInstanceTwo
+      InstanceId: !Ref NATInstanceOne
 
   PrivateRouteTableTwoAssociation:
     Type: AWS::EC2::SubnetRouteTableAssociation
@@ -470,10 +475,10 @@ Outputs:
     Export:
       Name: !Sub ${AWS::StackName}:NATInstanceOne      
 
-  NATInstanceTwo:
-    Value: !Ref NATInstanceTwo
-    Export:
-      Name: !Sub ${AWS::StackName}:NATInstanceTwo
+  # NATInstanceTwo:
+  #   Value: !Ref NATInstanceTwo
+  #   Export:
+  #     Name: !Sub ${AWS::StackName}:NATInstanceTwo
       
   CoreLoadBalancer:
     Value: !Ref CoreLoadBalancer
