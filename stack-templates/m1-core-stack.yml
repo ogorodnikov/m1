@@ -28,9 +28,9 @@ Parameters:
     Type: String
     Default: ami-003acd4f8da7e06f9
 
-  OldNATAMI:
-    Type: String
-    Default: ami-00a9d4a05375b2763
+  # OldNATAMI:
+  #   Type: String
+  #   Default: ami-00a9d4a05375b2763
 
 Resources:
 
@@ -181,7 +181,7 @@ Resources:
       - Key: Name
         Value: m1-public1-nat-instance
       ImageId: !Ref NATAMI
-      InstanceType: t2.nano
+      InstanceType: t3a.nano
       NetworkInterfaces:
       - DeviceIndex: 0
         SubnetId: !Ref PublicSubnetOne
@@ -192,25 +192,30 @@ Resources:
       - DeviceName: /dev/xvda
         Ebs:
           VolumeSize: 8
-          # DeleteOnTermination: true
+          VolumeType: gp2
       SourceDestCheck: false
 
-  # NATInstanceTwo:
-  #   Type: AWS::EC2::Instance
-  #   DependsOn: PublicRoute
-  #   Properties:
-  #     Tags:
-  #     - Key: Name
-  #       Value: m1-public2-nat-instance
-  #     ImageId: !Ref NATAMI
-  #     InstanceType: t2.nano
-  #     NetworkInterfaces:
-  #     - DeviceIndex: 0
-  #       SubnetId: !Ref PublicSubnetTwo
-  #       AssociatePublicIpAddress: true
-  #       GroupSet:
-  #       - !Ref NATSecurityGroup
-  #     SourceDestCheck: false
+  NATInstanceTwo:
+    Type: AWS::EC2::Instance
+    DependsOn: PublicRoute
+    Properties:
+      Tags:
+      - Key: Name
+        Value: m1-public2-nat-instance
+      ImageId: !Ref NATAMI
+      InstanceType: t3a.nano
+      NetworkInterfaces:
+      - DeviceIndex: 0
+        SubnetId: !Ref PublicSubnetTwo
+        AssociatePublicIpAddress: true
+        GroupSet:
+        - !Ref NATSecurityGroup
+      BlockDeviceMappings:
+      - DeviceName: /dev/xvda
+        Ebs:
+          VolumeSize: 8
+          VolumeType: gp2
+      SourceDestCheck: false
         
 # Old NAT Instances
   
@@ -231,22 +236,22 @@ Resources:
 #         - !Ref NATSecurityGroup
 #       SourceDestCheck: false
 
-  NATInstanceTwo:
-    Type: AWS::EC2::Instance
-    DependsOn: PublicRoute
-    Properties:
-      Tags:
-      - Key: Name
-        Value: m1-public2-nat-instance
-      ImageId: !Ref OldNATAMI
-      InstanceType: t2.micro
-      NetworkInterfaces:
-      - DeviceIndex: 0
-        SubnetId: !Ref PublicSubnetTwo
-        AssociatePublicIpAddress: true
-        GroupSet:
-        - !Ref NATSecurityGroup
-      SourceDestCheck: false
+#   NATInstanceTwo:
+#     Type: AWS::EC2::Instance
+#     DependsOn: PublicRoute
+#     Properties:
+#       Tags:
+#       - Key: Name
+#         Value: m1-public2-nat-instance
+#       ImageId: !Ref OldNATAMI
+#       InstanceType: t2.micro
+#       NetworkInterfaces:
+#       - DeviceIndex: 0
+#         SubnetId: !Ref PublicSubnetTwo
+#         AssociatePublicIpAddress: true
+#         GroupSet:
+#         - !Ref NATSecurityGroup
+#       SourceDestCheck: false
   
   # NATInstanceOne:
   #   Type: AWS::EC2::Instance
@@ -356,9 +361,8 @@ Resources:
     Properties:
       RouteTableId: !Ref PrivateRouteTableTwo
       DestinationCidrBlock: 0.0.0.0/0
-      # InstanceId: !Ref NATInstanceTwo
-      InstanceId: !Ref NATInstanceOne
-  
+      InstanceId: !Ref NATInstanceTwo
+
   PrivateRouteTableTwoAssociation:
     Type: AWS::EC2::SubnetRouteTableAssociation
     Properties:
@@ -459,10 +463,10 @@ Outputs:
     Export:
       Name: !Sub ${AWS::StackName}:PublicSubnetTwo
       
-  # NATInstanceOne:
-  #   Value: !Ref NATInstanceOne
-  #   Export:
-  #     Name: !Sub ${AWS::StackName}:NATInstanceOne      
+  NATInstanceOne:
+    Value: !Ref NATInstanceOne
+    Export:
+      Name: !Sub ${AWS::StackName}:NATInstanceOne      
 
   NATInstanceTwo:
     Value: !Ref NATInstanceTwo
