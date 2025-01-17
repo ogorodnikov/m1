@@ -43,7 +43,10 @@ echo 'Pushing Version tag to Github'
 
 cd ~/environment/m1/
 
+git tag --delete $VERSION
 git tag $VERSION
+
+git push --delete origin $VERSION
 git push origin tag $VERSION
 
 
