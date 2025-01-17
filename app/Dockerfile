@@ -4,7 +4,7 @@ FROM public.ecr.aws/lts/ubuntu:latest
 RUN echo Updating existing packages, installing and upgrading python and pip
 
 RUN add-apt-repository universe && \
-    apt-get update && \\
+    apt-get update && \
     apt-get install -y \
     python3-pip \
     python3-dev \
