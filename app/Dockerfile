@@ -16,7 +16,7 @@ RUN python3 -m venv /m1_venv
 ENV PATH="/m1_venv/bin:$PATH"
 
 RUN pip install --upgrade pip 
-RUN pip install distutils setuptools wheel
+RUN pip install setuptools wheel
 
 RUN echo Copying the M1 Core Service into service directory
 
