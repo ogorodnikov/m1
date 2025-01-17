@@ -5,16 +5,9 @@ RUN echo Updating existing packages, installing and upgrading python and pip
 
 RUN apt-get update && \
     apt-get install -y \
-    software-properties-common \
-    && apt-get clean
-
-RUN add-apt-repository universe && \
-    apt-get update && \
-    apt-get install -y \
     python3-pip \
     python3-dev \
     python3-venv \
-    python3-distutils \
     build-essential \
     libhdf5-dev \
     && apt-get clean
@@ -22,7 +15,8 @@ RUN add-apt-repository universe && \
 RUN python3 -m venv /m1_venv
 ENV PATH="/m1_venv/bin:$PATH"
 
-RUN pip install --upgrade pip setuptools wheel
+RUN pip install --upgrade pip 
+RUN pip install distutils setuptools wheel
 
 RUN echo Copying the M1 Core Service into service directory
 
