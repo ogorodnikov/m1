@@ -91,8 +91,12 @@ class Runner:
     
     def start(self):
 
-        self.ibmq_provider = IBMQ.enable_account(self.qiskit_token)
-        
+        try:
+            self.ibmq_provider = IBMQ.enable_account(self.qiskit_token)
+
+        except Exception as exception:
+            self.log(f'RUNNER IBMQ connection exception: {exception}')
+
         self.worker_active_flag.set()
         
         self.queue_pool = ProcessPoolExecutor(max_workers=self.queue_workers_count,
