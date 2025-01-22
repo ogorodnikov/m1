@@ -12,8 +12,6 @@ from multiprocessing import Event
 from multiprocessing import Process
 from concurrent.futures import ProcessPoolExecutor
 
-
-from qiskit import execute
 from qiskit_aer import AerSimulator
 from qiskit_ibm_runtime import QiskitRuntimeService
 from qiskit.visualization import plot_bloch_multivector
@@ -308,7 +306,7 @@ class Runner:
 
     def execute_task(self, task_id, circuit, backend):
         
-        job = execute(circuit, backend=backend, shots=1024)
+        job = backend.run(circuit, backend=backend, shots=1024)
         
         self.monitor_job(job, task_id)
 
