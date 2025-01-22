@@ -96,14 +96,14 @@ def build_diffuser(qubit_count):
         diffuser_circuit.x(qubit)
         
     for qubit in range(1, qubit_count):
-        diffuser_circuit.i(qubit)
+        diffuser_circuit.id(qubit)
 
     diffuser_circuit.h(0)
     diffuser_circuit.mcx(list(range(1, qubit_count)), 0)
     diffuser_circuit.h(0)
     
     for qubit in range(1, qubit_count):
-        diffuser_circuit.i(qubit)
+        diffuser_circuit.id(qubit)
 
     for qubit in range(qubit_count):
         diffuser_circuit.x(qubit)
