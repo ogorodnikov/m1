@@ -248,7 +248,9 @@ def iqae_post_processing(run_data, task_log):
                                           power,
                                           measurement=True)
 
-        job = simulator.run(iqae_circuit, shots=shots)
+        transpiled_circuit = qiskit.transpile(iqae_circuit, simulator)
+
+        job = simulator.run(transpiled_circuit, shots=shots)
 
         counts = job.result().get_counts()
 
