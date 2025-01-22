@@ -1,6 +1,6 @@
 from math import pi
 
-from qiskit import QuantumCircuit, Aer
+from qiskit import QuantumCircuit
 
 from core.algorithms.qft import create_qft_circuit
 
