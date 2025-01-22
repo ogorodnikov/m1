@@ -12,10 +12,10 @@ from multiprocessing import Event
 from multiprocessing import Process
 from concurrent.futures import ProcessPoolExecutor
 
-from qiskit import IBMQ
+
 from qiskit import execute
 from qiskit_aer import AerSimulator
-from qiskit.providers.ibmq import least_busy
+from qiskit_ibm_runtime import QiskitRuntimeService
 from qiskit.visualization import plot_bloch_multivector
 
 from .algorithms.egcd import egcd
@@ -76,7 +76,7 @@ class Runner:
         self.queue_workers_count = int(os.environ.get('QUEUE_WORKERS_PER_RUNNER'))
 
         self.simulator_backend = AerSimulator()
-        self.ibmq_provider = None
+        self.ibmq_service = None
         
         self.log(f'RUNNER initiated: {self}')
         
@@ -92,10 +92,11 @@ class Runner:
     def start(self):
 
         try:
-            self.ibmq_provider = IBMQ.enable_account(self.qiskit_token)
+            QiskitRuntimeService.save_account(token=self.qiskit_token)
+            self.ibmq_service = QiskitRuntimeService()
 
         except Exception as exception:
-            self.log(f'RUNNER IBMQ connection exception: {exception}')
+            self.log(f'RUNNER IBMQ Runtime Service exception: {exception}')
 
         self.worker_active_flag.set()
         
