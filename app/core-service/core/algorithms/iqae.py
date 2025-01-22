@@ -8,9 +8,6 @@ from qiskit import ClassicalRegister
 
 from qiskit_aer import AerSimulator
 
-from qiskit.providers import BaseBackend, Backend
-from qiskit.utils import QuantumInstance
-
 
 ### Service functions
 
