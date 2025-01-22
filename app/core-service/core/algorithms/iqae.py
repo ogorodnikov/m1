@@ -6,7 +6,7 @@ from qiskit import QuantumCircuit
 from qiskit import QuantumRegister
 from qiskit import ClassicalRegister
 
-from qiskit import Aer
+from qiskit_aer import AerSimulator
 
 from qiskit.providers import BaseBackend, Backend
 from qiskit.utils import QuantumInstance
@@ -196,8 +196,7 @@ def iqae_post_processing(run_data, task_log):
     # Simulator
     
     shots = 1024
-    backend = Aer.get_backend("aer_simulator")
-    simulator = QuantumInstance(backend)
+    simulator = AerSimulator()
 
         
     # Initialization
@@ -252,7 +251,7 @@ def iqae_post_processing(run_data, task_log):
                                           power,
                                           measurement=True)
                                      
-        result = simulator.execute(iqae_circuit)
+        result = simulator.run(iqae_circuit, shots=shots)
         
         counts = result.get_counts()
 
