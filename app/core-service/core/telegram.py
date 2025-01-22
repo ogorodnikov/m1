@@ -26,6 +26,7 @@ class Bot(TeleBot):
         
         self.logger = getLogger(__name__)
 
+        print("self.domain:", self.domain)
         print("self.telegram_token:", self.telegram_token)
 
         super().__init__(self.telegram_token, *args, 
