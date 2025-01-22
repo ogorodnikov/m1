@@ -8,14 +8,12 @@ from datetime import timedelta
 class Config:
     
     def __init__(self):
-        
+
         load_dotenv()
 
-        self.REGION = os.getenv('REGION')
-        os.environ['AWS_DEFAULT_REGION'] = self.REGION
-
         self.elb_client = boto3.client('elbv2')
-        
+
+        self.REGION = os.getenv('REGION')
         self.DOMAIN = os.getenv('DOMAIN')
         self.VERSION = os.getenv('VERSION')
         self.SECRET_KEY = os.getenv('SECRET_KEY')
