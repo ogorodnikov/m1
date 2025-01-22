@@ -12,8 +12,8 @@ class Config:
         load_dotenv()
         
         self.REGION = os.getenv('REGION')
-        print("self.REGION:", self.REGION)
-        os.environ['AWS_DEFAULT_REGION'] = self.REGION
+        # print("self.REGION:", self.REGION)
+        # os.environ['AWS_DEFAULT_REGION'] = self.REGION
         self.elb_client = boto3.client('elbv2')
         
         self.DOMAIN = os.getenv('DOMAIN')
