@@ -99,7 +99,7 @@ def build_diffuser(qubit_count):
         diffuser_circuit.i(qubit)
 
     diffuser_circuit.h(0)
-    diffuser_circuit.mct(list(range(1, qubit_count)), 0)
+    diffuser_circuit.mcx(list(range(1, qubit_count)), 0)
     diffuser_circuit.h(0)
     
     for qubit in range(1, qubit_count):
@@ -231,7 +231,7 @@ def grover_sudoku(run_values, task_log):
     
         circuit.append(sudoku_oracle, range(cell_qubits_count + pair_qubits_count))
         
-        circuit.mct(pair_qubits, output_qubit)
+        circuit.mcx(pair_qubits, output_qubit)
         
         circuit.append(sudoku_oracle, range(cell_qubits_count + pair_qubits_count))
         
