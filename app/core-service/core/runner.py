@@ -12,9 +12,9 @@ from multiprocessing import Event
 from multiprocessing import Process
 from concurrent.futures import ProcessPoolExecutor
 
-from qiskit import Aer
 from qiskit import IBMQ
 from qiskit import execute
+from qiskit_aer import AerSimulator
 from qiskit.providers.ibmq import least_busy
 from qiskit.visualization import plot_bloch_multivector
 
@@ -75,7 +75,7 @@ class Runner:
         self.backend_avoid_list = os.environ.get('BACKEND_AVOID_STRING').split()
         self.queue_workers_count = int(os.environ.get('QUEUE_WORKERS_PER_RUNNER'))
 
-        self.simulator_backend = Aer.get_backend('aer_simulator')
+        self.simulator_backend = AerSimulator()
         self.ibmq_provider = None
         
         self.log(f'RUNNER initiated: {self}')
