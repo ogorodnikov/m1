@@ -32,7 +32,7 @@ def build_diffuser(qubits_count):
         diffuser_circuit.id(qubit)
 
     diffuser_circuit.h(0)
-    diffuser_circuit.mct(list(range(1, qubits_count)), 0)
+    diffuser_circuit.mcx(list(range(1, qubits_count)), 0)
     diffuser_circuit.h(0)
     
     for qubit in range(1, qubits_count):
