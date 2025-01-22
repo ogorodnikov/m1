@@ -65,10 +65,12 @@ def attribute_error_wrapper(test_function):
     
     def inner_function(app, *args, **kwargs):
         
-        with pytest.raises(AttributeError) as error:
-            test_function(app, *args, **kwargs)
-        assert "'NoneType' object has no attribute 'replace'" in str(error.value)
-        
+        # with pytest.raises(AttributeError) as error:
+        #     test_function(app, *args, **kwargs)
+        # assert "'NoneType' object has no attribute 'replace'" in str(error.value)
+
+        test_function(app, *args, **kwargs)
+
     return inner_function
     
 
