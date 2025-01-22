@@ -5,6 +5,7 @@ from core.app import FlaskApp
 from core.app import create_app
 
 from core.main import Main
+from core.config import Config
 from core.dynamo import Dynamo
 from core.runner import Runner
 from core.routes import Routes
@@ -183,8 +184,11 @@ def test_admin_commands(app, command):
 
 @pytest.fixture(scope="module")
 def app():
-    
+
+    config = Config()
+
     test_app = create_app()
+    test_app.config.from_object(config)
     test_app.testing = True
     test_app.secret_key = 'test_key'
     
