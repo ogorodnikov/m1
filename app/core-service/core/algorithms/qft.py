@@ -2,7 +2,6 @@ from math import pi
 from itertools import combinations_with_replacement
 
 from qiskit import QuantumCircuit
-from qiskit import Aer
 
 
 def create_qft_circuit(qubits_count,
