@@ -247,10 +247,10 @@ def iqae_post_processing(run_data, task_log):
                                           good_qubits,
                                           power,
                                           measurement=True)
-                                     
-        result = simulator.run(iqae_circuit, shots=shots)
-        
-        counts = result.get_counts()
+
+        job = simulator.run(iqae_circuit, shots=shots)
+
+        counts = job.result().get_counts()
 
         one_counts = sum(state_counts for state, state_counts in counts.items()
                          if is_good_state(state))
