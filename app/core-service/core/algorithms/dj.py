@@ -53,7 +53,7 @@ def build_truth_table_oracle(truth_table) -> QuantumCircuit:
             if state_digit == '0':
                 oracle.x(state_digit_index)
                 
-        oracle.mct(list(input_qubits), output_qubit)
+        oracle.mcx(list(input_qubits), output_qubit)
         
         for state_digit_index, state_digit in enumerate(state):
             if state_digit == '0':
