@@ -90,7 +90,10 @@ class Runner:
     def start(self):
 
         try:
-            QiskitRuntimeService.save_account(token=self.qiskit_token)
+            QiskitRuntimeService.save_account(
+                token=self.qiskit_token,
+                channel='ibm_quantum')
+
             self.ibmq_service = QiskitRuntimeService()
 
         except Exception as exception:
