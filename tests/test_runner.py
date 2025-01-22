@@ -11,10 +11,10 @@ from core.dynamo import Dynamo
 
 
 def test_start_stop(runner, monkeypatch, stub):
-    
-    monkeypatch.setattr('core.runner.IBMQ.enable_account', stub)
-    monkeypatch.setattr('core.runner.IBMQ.disable_account', stub)
-    
+
+    monkeypatch.setattr('core.runner.ibmq_service.save_account', stub)
+    monkeypatch.setattr('core.runner.ibmq_service.delete_account', stub)
+
     monkeypatch.setattr('core.runner.Runner.queue_worker_loop', stub)
     
     runner.start()
