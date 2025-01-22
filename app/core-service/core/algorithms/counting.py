@@ -45,13 +45,13 @@ def build_diffuser(qubits_count):
     circuit.h(all_qubits)
     circuit.x(all_qubits)
         
-    # circuit.i(controlling_qubits)
+    # circuit.id(controlling_qubits)
 
     circuit.h(controlled_qubit)
-    circuit.mct(controlling_qubits, controlled_qubit)
+    circuit.mcx(controlling_qubits, controlled_qubit)
     circuit.h(controlled_qubit)
     
-    # circuit.i(controlling_qubits)
+    # circuit.id(controlling_qubits)
 
     circuit.x(all_qubits)
     circuit.h(all_qubits)
