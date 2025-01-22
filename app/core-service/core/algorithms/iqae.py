@@ -2,6 +2,7 @@ from math import pi, sin, asin, acos, log, log2, sqrt
 
 from scipy.stats import beta
 
+from qiskit import transpile
 from qiskit import QuantumCircuit
 from qiskit import QuantumRegister
 from qiskit import ClassicalRegister
@@ -248,7 +249,7 @@ def iqae_post_processing(run_data, task_log):
                                           power,
                                           measurement=True)
 
-        transpiled_circuit = qiskit.transpile(iqae_circuit, simulator)
+        transpiled_circuit = transpile(iqae_circuit, simulator)
 
         job = simulator.run(transpiled_circuit, shots=shots)
 
