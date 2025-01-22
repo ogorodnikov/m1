@@ -1,6 +1,6 @@
 from itertools import combinations
 
-from qiskit import ClassicalRegister, QuantumRegister, QuantumCircuit, execute
+from qiskit import ClassicalRegister, QuantumRegister, QuantumCircuit
 from qiskit.tools.monitor import job_monitor
 
 
