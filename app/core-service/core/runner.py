@@ -74,7 +74,16 @@ class Runner:
         self.queue_workers_count = int(os.environ.get('QUEUE_WORKERS_PER_RUNNER'))
 
         self.simulator_backend = AerSimulator()
-        self.ibmq_service = None
+
+        QiskitRuntimeService.save_account(
+            channel='ibm_quantum',
+            token=self.qiskit_token)
+
+        try:
+            self.ibmq_service = QiskitRuntimeService()
+
+        except Exception as exception:
+            self.log(f'RUNNER IBMQ Runtime Service exception: {exception}')
         
         self.log(f'RUNNER initiated: {self}')
         
@@ -88,16 +97,6 @@ class Runner:
         
     
     def start(self):
-
-        try:
-            QiskitRuntimeService.save_account(
-                token=self.qiskit_token,
-                channel='ibm_quantum')
-
-            self.ibmq_service = QiskitRuntimeService()
-
-        except Exception as exception:
-            self.log(f'RUNNER IBMQ Runtime Service exception: {exception}')
 
         self.worker_active_flag.set()
         
@@ -115,8 +114,6 @@ class Runner:
         
 
     def stop(self):
-        
-        self.ibmq_provider = IBMQ.disable_account()
         
         self.worker_active_flag.clear()
         
