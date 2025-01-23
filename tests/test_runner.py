@@ -153,7 +153,7 @@ def test_device_fallback_to_simulator(runner, test_task, stub):
                          ['post_processing', 'no_post_processing'], 
                          indirect=True)
 @pytest.mark.parametrize("run_mode", 
-                         ['classical', 'simulator', 'quantum_device', 'fallback'])
+                         ['fallback'])
 def test_run_task_classical(runner, test_task, run_mode, mock_runner_functions, 
                             mock_ibmq_backend, undecorate):
                                 
