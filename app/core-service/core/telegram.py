@@ -358,4 +358,10 @@ class Bot(TeleBot):
     def echo_handler(self, message):
         
         self.log(f'BOT echo_handler message.json: {message.json}')
+
+        print("message:", message)
+        print("message.json:", message.json)
+        print("message.text:", message.text)
+        print("self.reply_to:", self.reply_to)
+
         self.reply_to(message, message.text, disable_notification=True)
