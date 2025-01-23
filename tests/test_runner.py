@@ -84,7 +84,7 @@ def test_execute_task(runner, monkeypatch, stub, test_job):
     
     # monkeyp/atch.setattr("core.runner.execute", lambda *_, **__: test_job)
 
-    monkeypatch.setattr("core.runner.IBMBackend.run", lambda *_, **__: test_job)
+    monkeypatch.setattr("qiskit_ibm_runtime.ibm_backend.IBMBackend.run", lambda *_, **__: test_job)
     monkeypatch.setattr("core.runner.AerSimulator.run", lambda *_, **__: test_job)
 
     monkeypatch.setattr("core.runner.Runner.monitor_job", stub)
