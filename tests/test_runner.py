@@ -155,8 +155,9 @@ def set_mocks(mock, mock_env, get_test_task, stub):
     mock_env('BACKEND_AVOID_STRING', '')
     mock_env('QUEUE_WORKERS_PER_RUNNER', '1')
 
+
 @pytest.fixture
-def runner():
+def runner(stub):
 
     runner = Runner(db=Dynamo())
 
