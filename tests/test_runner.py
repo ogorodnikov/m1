@@ -78,20 +78,20 @@ def test_run_task_classical(runner, test_task, run_mode, mock_runner_functions,
     test_task['run_values']['run_mode'] = run_mode
     
     runner.run_task(**test_task)
-    
+
 
 def test_execute_task(runner, monkeypatch, stub, test_job):
-    
+
     # monkeyp/atch.setattr("core.runner.execute", lambda *_, **__: test_job)
 
-    monkeypatch.setattr("qiskit_ibm_runtime.ibm_backend.IBMBackend.run", lambda *_, **__: test_job)
-    monkeypatch.setattr("core.runner.AerSimulator.run", lambda *_, **__: test_job)
+    class MockBackend:
+        def run(self): return test_job
 
     monkeypatch.setattr("core.runner.Runner.monitor_job", stub)
-    
-    runner.execute_task(task_id=None, circuit=None, backend=None)
-    
-    
+
+    runner.execute_task(task_id=None, circuit=None, backend=MockBackend())
+
+
 def test_monitor_job(runner, test_job):
     runner.monitor_job(job=test_job, task_id=None, interval=0)
 
