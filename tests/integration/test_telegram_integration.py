@@ -5,7 +5,11 @@ from telebot import types
 from core.telegram import Bot
 
 from test_telegram import user
+from test_telegram import chat
+from test_telegram import message
+from test_telegram import callback
 from test_telegram import test_algorithm
+from test_telegram import sticker_message
 
 from test_telegram import test_algorithm_data
 
@@ -22,23 +26,23 @@ def test_send_message(telegram_bot):
     assert message_response.message_id
     
     
-def test_start_handler(telegram_bot, test_message):
-    telegram_bot.start_handler(test_message)
+def test_start_handler(telegram_bot, message):
+    telegram_bot.start_handler(message)
     
 
-def test_algorithms_handler(telegram_bot, test_message, test_callback):
-    telegram_bot.algorithms_handler(test_message)
-    telegram_bot.algorithms_handler(test_callback)
+def test_algorithms_handler(telegram_bot, message, callback):
+    telegram_bot.algorithms_handler(message)
+    telegram_bot.algorithms_handler(callback)
     
 
 callback_prefixes = ['like_', 'open_', 'run_classical_', 'run_on_simulator_',
                      'run_on_quantum_device_', 'get_algorithms']
 
 @pytest.mark.parametrize("prefix", callback_prefixes)
-def test_callback_handler(telegram_bot, test_callback, prefix):
+def test_callback_handler(telegram_bot, callback, prefix):
     
-    test_callback.data = f"{prefix}test_algorithm"
-    telegram_bot.callback_handler(test_callback)
+    callback.data = f"{prefix}test_algorithm"
+    telegram_bot.callback_handler(callback)
 
     
 @pytest.mark.parametrize("algorithm_type", ['classical', 'quantum'])
@@ -49,21 +53,21 @@ def test_open_algorithm(telegram_bot, test_algorithm, algorithm_type):
     telegram_bot.open_algorithm(TEST_CHAT_ID, test_algorithm)
 
 
-def test_collect_parameters(telegram_bot, test_message):
+def test_collect_parameters(telegram_bot, message):
     
     kwargs = {'collected_name': 'test_parameter',
               'parameters': [{'name': 'test_parameter', 
                               'value': 'test_parameter_value'}]}
                               
-    telegram_bot.collect_parameters(test_message, **kwargs)
+    telegram_bot.collect_parameters(message, **kwargs)
     
     
-def test_sticker_handler(telegram_bot, test_sticker_message):
-    telegram_bot.sticker_handler(test_sticker_message)
+def test_sticker_handler(telegram_bot, sticker_message):
+    telegram_bot.sticker_handler(sticker_message)
     
 
-def test_echo_handler(telegram_bot, test_message):
-    telegram_bot.echo_handler(test_message)
+def test_echo_handler(telegram_bot, message):
+    telegram_bot.echo_handler(message)
 
 
 ###   Fixtures   ###
@@ -107,48 +111,3 @@ def telegram_bot(run_config):
 @pytest.fixture(scope="module")
 def test_chat():
     yield types.Chat(id=TEST_CHAT_ID, type='private')
-
-
-@pytest.fixture(scope="module")
-def test_message(user, test_chat):
-    
-    options = {'text': 'Test Chat Message fixture :)'}
-    
-    test_message = types.Message(
-        message_id=1, from_user=user, date=None, chat=test_chat, 
-        content_type='text', options=options, json_string=""
-    )
-    
-    yield test_message
-    
-
-@pytest.fixture(scope="module")
-def test_callback(user, test_chat, test_message):
-
-    test_callback = types.CallbackQuery(
-        id=1, from_user=user, message=test_message, 
-        data="", chat_instance=test_chat,
-        json_string="")
-
-    yield test_callback
-    
-
-@pytest.fixture(scope="module")
-def test_sticker_message(user, test_chat):
-    
-    sticker_file_id = Bot.BUBO_CELEBRATE_STICKER_FILE_ID
-
-    sticker = types.Sticker(
-        file_id=sticker_file_id, file_unique_id=1,
-        type="regular", width=1, height=1,
-        is_animated=False, is_video=False,
-    )
-    
-    options = {'sticker': sticker}
-    
-    test_sticker_message = types.Message(
-        message_id=1, from_user=user, date=None, chat=test_chat, 
-        content_type='sticker', json_string="", options=options
-    )
-    
-    yield test_sticker_message
