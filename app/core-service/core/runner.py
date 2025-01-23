@@ -235,6 +235,7 @@ class Runner:
         self.log(f'RUNNER run_values: {run_values}')
         self.log(f'RUNNER runner_function: {runner_function}')
 
+        print("RUN task:", task)
         print("RUN run_mode:", run_mode)
         print("RUN self.ibmq_service:", self.ibmq_service)
         print("RUN 'self.ibmq_service is None and run_mode == 'quantum_device'':", 
