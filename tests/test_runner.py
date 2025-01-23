@@ -116,12 +116,14 @@ def test_plot_statevector_figure(runner, monkeypatch, stub, test_run_result):
     runner.plot_statevector_figure(statevector=test_statevector, task_id=None)
     
 
-def test_get_least_busy_backend_ok(runner, monkeypatch, stub, test_provider):
-    
-    monkeypatch.setattr("core.runner.Runner.ibmq_service.least_busy", stub)
-    
+def test_get_least_busy_backend_ok(runner, mock, stub, test_provider):
+
+    # monkeypatch.setattr("core.runner.Runner.ibmq_service.least_busy", stub)
+
+    mock(Runner, "ibmq_service.least_busy", stub)
+
     test_provider.backends_list = 'test_backends'
-    
+
     runner.get_least_busy_backend(test_provider, qubit_count=0)
     
 
