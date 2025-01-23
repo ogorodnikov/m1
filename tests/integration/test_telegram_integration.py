@@ -5,7 +5,6 @@ from telebot import types
 from core.telegram import Bot
 
 from test_telegram import user
-from test_telegram import sticker_message
 from test_telegram import test_algorithm
 
 from test_telegram import test_algorithm_data
@@ -59,8 +58,8 @@ def test_collect_parameters(telegram_bot, test_message):
     telegram_bot.collect_parameters(test_message, **kwargs)
     
     
-def test_sticker_handler(telegram_bot, sticker_message):
-    telegram_bot.sticker_handler(sticker_message)
+def test_sticker_handler(telegram_bot, test_sticker_message):
+    telegram_bot.sticker_handler(test_sticker_message)
     
 
 def test_echo_handler(telegram_bot, test_message):
@@ -132,3 +131,24 @@ def test_callback(user, test_chat, test_message):
         json_string="")
 
     yield test_callback
+    
+
+@pytest.fixture(scope="module")
+def test_sticker_message(user, test_chat):
+    
+    sticker_file_id = Bot.BUBO_CELEBRATE_STICKER_FILE_ID
+
+    sticker = types.Sticker(
+        file_id=sticker_file_id, file_unique_id=1,
+        type="regular", width=1, height=1,
+        is_animated=False, is_video=False,
+    )
+    
+    options = {'sticker': sticker}
+    
+    test_sticker_message = types.Message(
+        message_id=1, from_user=user, date=None, chat=test_chat, 
+        content_type='sticker', json_string="", options=options
+    )
+    
+    yield test_sticker_message
