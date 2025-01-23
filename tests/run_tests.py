@@ -27,7 +27,7 @@ def run_tests():
     
     # pytest.main([test_path + '/integration/', '-v', '-x', '--durations=0'])
     
-    pytest.main([test_path, '-v', '-x', '--ff', '--ignore-glob=**/integration/*', '--durations=0'])
+    # pytest.main([test_path, '-v', '-x', '--ff', '--ignore-glob=**/integration/*', '--durations=0'])
 
     # '-W ignore::DeprecationWarning'
     
@@ -38,7 +38,7 @@ def run_tests():
     # pytest.main([test_path + '/test_facebook.py', '-v', '-x'])
     # pytest.main([test_path + '/test_main.py', '-v', '-x'])
     # pytest.main([test_path + '/test_routes.py', '-v', '-x'])
-    # pytest.main([test_path + '/test_runner.py', '-v', '-x', '-m not slow'])
+    pytest.main([test_path + '/test_runner.py', '-v', '-x', '-m not slow'])
     # pytest.main([test_path + '/test_telegram.py', '-v', '-x'])
     
     # pytest.main([test_path + '/integration/test_telegram_integration.py', '-v', '-x'])
