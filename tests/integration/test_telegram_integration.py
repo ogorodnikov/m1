@@ -6,7 +6,6 @@ from core.telegram import Bot
 
 from test_telegram import user
 from test_telegram import sticker_message
-from test_telegram import callback
 from test_telegram import test_algorithm
 
 from test_telegram import test_algorithm_data
@@ -28,19 +27,19 @@ def test_start_handler(telegram_bot, test_message):
     telegram_bot.start_handler(test_message)
     
 
-def test_algorithms_handler(telegram_bot, test_message, callback):
+def test_algorithms_handler(telegram_bot, test_message, test_callback):
     telegram_bot.algorithms_handler(test_message)
-    telegram_bot.algorithms_handler(callback)
+    telegram_bot.algorithms_handler(test_callback)
     
 
 callback_prefixes = ['like_', 'open_', 'run_classical_', 'run_on_simulator_',
                      'run_on_quantum_device_', 'get_algorithms']
 
 @pytest.mark.parametrize("prefix", callback_prefixes)
-def test_callback_handler(telegram_bot, callback, prefix):
+def test_callback_handler(telegram_bot, test_callback, prefix):
     
-    callback.data = f"{prefix}test_algorithm"
-    telegram_bot.callback_handler(callback)
+    test_callback.data = f"{prefix}test_algorithm"
+    telegram_bot.callback_handler(test_callback)
 
     
 @pytest.mark.parametrize("algorithm_type", ['classical', 'quantum'])
@@ -122,3 +121,14 @@ def test_message(user, test_chat):
     )
     
     yield test_message
+    
+
+@pytest.fixture(scope="module")
+def test_callback(user, test_chat, test_message):
+
+    test_callback = types.CallbackQuery(
+        id=1, from_user=user, message=test_message, 
+        data="", chat_instance=test_chat,
+        json_string="")
+
+    yield test_callback
