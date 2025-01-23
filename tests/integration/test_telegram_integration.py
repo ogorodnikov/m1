@@ -5,7 +5,7 @@ from telebot import types
 from core.telegram import Bot
 
 from test_telegram import user
-from test_telegram import chat
+# from test_telegram import chat
 from test_telegram import message
 from test_telegram import sticker_message
 from test_telegram import callback
@@ -107,8 +107,8 @@ def telegram_bot(run_config):
     telegram_bot.stop()
     
 
-# ###   Type fixtures override   ###
+###   Type fixtures override   ###
 
-# @pytest.fixture(scope="module")
-# def chat():
-#     yield types.Chat(id=TEST_CHAT_ID, type='private')
+@pytest.fixture(scope="module")
+def chat():
+    yield types.Chat(id=TEST_CHAT_ID, type='private')
