@@ -120,7 +120,7 @@ def test_get_least_busy_backend_ok(runner, stub):
     
     class MockIBMQService:
         least_busy = stub
-        backends = lambda *-, **__: [1, 2]
+        backends = lambda *_, **__: [1, 2]
 
     runner.get_least_busy_backend(MockIBMQService(), qubit_count=0, 
                                   backend_avoid_list=[])
