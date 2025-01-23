@@ -118,16 +118,12 @@ def test_plot_statevector_figure(runner, monkeypatch, stub, test_run_result):
 
 def test_get_least_busy_backend_ok(runner, monkeypatch, stub, test_provider):
 
-    monkeypatch.setattr("qiskit_ibm_runtime.qiskit_runtime_service.QiskitRuntimeService.least_busy", stub)
-
-    # class MockIBMQService: 
-    #     least_busy = stub
-
-    # mock(Runner, "ibmq_service", MockIBMQService())
+    monkeypatch.setattr("qiskit_ibm_runtime.qiskit_runtime_service." +
+                        "QiskitRuntimeService.least_busy", stub)
 
     test_provider.backends_list = 'test_backends'
 
-    runner.get_least_busy_backend(test_provider, qubit_count=0)
+    runner.get_least_busy_backend(test_provider, qubit_count=0, avoid_list=[])
     
 
 def test_get_least_busy_backend_exception(runner, monkeypatch, stub, test_provider):
