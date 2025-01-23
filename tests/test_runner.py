@@ -10,167 +10,140 @@ from core.runner import Runner
 from core.dynamo import Dynamo
 
 
-# def test_start_stop(runner, monkeypatch, stub):
+def test_start_stop(runner, monkeypatch, stub):
 
-#     monkeypatch.setattr('core.runner.QiskitRuntimeService.save_account', stub)
-#     monkeypatch.setattr('core.runner.QiskitRuntimeService.delete_account', stub)
+    monkeypatch.setattr('core.runner.QiskitRuntimeService.save_account', stub)
+    monkeypatch.setattr('core.runner.QiskitRuntimeService.delete_account', stub)
 
-#     monkeypatch.setattr('core.runner.Runner.queue_worker_loop', stub)
+    monkeypatch.setattr('core.runner.Runner.queue_worker_loop', stub)
     
-#     runner.start()
-#     assert os.environ.get('RUNNER_STATE') == 'Running'
+    runner.start()
+    assert os.environ.get('RUNNER_STATE') == 'Running'
     
-#     runner.stop()
-#     assert os.environ.get('RUNNER_STATE') == 'Stopped'
+    runner.stop()
+    assert os.environ.get('RUNNER_STATE') == 'Stopped'
 
 
-# def test_run_algorithm(runner, monkeypatch, stub):
-#     runner.run_algorithm(None, None)
+def test_run_algorithm(runner, monkeypatch, stub):
+    runner.run_algorithm(None, None)
     
 
-# def test_exception_decorator(runner):
+def test_exception_decorator(runner):
     
-#     def raise_exception(*args, **kwargs):
-#         raise UserWarning
+    def raise_exception(*args, **kwargs):
+        raise UserWarning
         
-#     decorated_raise_exception = Runner.exception_decorator(raise_exception)
+    decorated_raise_exception = Runner.exception_decorator(raise_exception)
     
-#     decorated_raise_exception(runner, task_id='test_task_id')
+    decorated_raise_exception(runner, task_id='test_task_id')
         
 
-# def test_queue_worker_loop(runner, monkeypatch, stub, undecorate):
+def test_queue_worker_loop(runner, monkeypatch, stub, undecorate):
     
-#     monkeypatch.setattr('core.runner.time.sleep', stub)
+    monkeypatch.setattr('core.runner.time.sleep', stub)
     
-#     runner.worker_active_flag.set()
+    runner.worker_active_flag.set()
     
-#     def clear_worker_active_flag():
-#         runner.worker_active_flag.clear()
+    def clear_worker_active_flag():
+        runner.worker_active_flag.clear()
     
-#     test_timer = Timer(interval=0.001, function=clear_worker_active_flag)
-#     test_timer.start()
+    test_timer = Timer(interval=0.001, function=clear_worker_active_flag)
+    test_timer.start()
     
-#     runner.queue_worker_loop()
+    runner.queue_worker_loop()
     
     
-# def test_get_next_task(runner, undecorate):
-#     runner.get_next_task()
+def test_get_next_task(runner, undecorate):
+    runner.get_next_task()
     
 
-# def test_process_next_task(runner, test_task, undecorate):
-#     runner.process_next_task(test_task)
+def test_process_next_task(runner, test_task, undecorate):
+    runner.process_next_task(test_task)
 
 
-# def test_process_next_task_timeout(runner, test_task, undecorate):
+def test_process_next_task_timeout(runner, test_task, undecorate):
     
-#     with pytest.raises(TimeoutError, match=r"Task timeout: 0 seconds"):
-#         runner.process_next_task(test_task, task_timeout=0)
+    with pytest.raises(TimeoutError, match=r"Task timeout: 0 seconds"):
+        runner.process_next_task(test_task, task_timeout=0)
         
         
-# @pytest.mark.parametrize("mock_runner_functions", 
-#                          ['post_processing', 'no_post_processing'], 
-#                          indirect=True)
-# @pytest.mark.parametrize("run_mode", 
-#                          ['classical', 'simulator', 'quantum_device'])
-# def test_run_task_classical(runner, test_task, run_mode, mock_runner_functions, 
-#                             mock_ibmq_backend, undecorate):
-                                
-#     test_task['run_values']['run_mode'] = run_mode
-    
-#     runner.run_task(**test_task)
-
-
-# def test_execute_task(runner, monkeypatch, stub, test_job):
-
-#     class MockBackend:
-#         def run(self, *args, **kwargs): return test_job
-
-#     monkeypatch.setattr("core.runner.Runner.monitor_job", stub)
-
-#     runner.execute_task(task_id=None, circuit=None, backend=MockBackend())
-
-
-# def test_monitor_job(runner, test_job):
-#     runner.monitor_job(job=test_job, task_id=None, interval=0)
-
-    
-# def test_handle_statevector(runner, monkeypatch, stub, test_run_result):
-    
-#     monkeypatch.setattr(Runner, "plot_statevector_figure", stub)
-    
-#     runner.handle_statevector(run_result=test_run_result, qubit_count=0, task_id=None)
-
-
-# @pytest.mark.filterwarnings("ignore::PendingDeprecationWarning")
-# @pytest.mark.filterwarnings("ignore::::69")
-# def test_plot_statevector_figure(runner, monkeypatch, stub, test_run_result):
-    
-#     class MockFigure:
-#         savefig = stub
-    
-#     monkeypatch.setattr('core.runner.plot_bloch_multivector', 
-#                         lambda statevector: MockFigure())
-                        
-#     test_statevector = test_run_result.get_statevector(decimals=0)
-    
-#     runner.plot_statevector_figure(statevector=test_statevector, task_id=None)
-    
-
-# def test_get_least_busy_backend_ok(runner):
-
-#     runner.get_least_busy_backend(runner.ibmq_service, qubit_count=0, 
-#                                   backend_avoid_list=[])
-
-
-# def test_get_least_busy_backend_exception(runner, stub):
-
-#     runner.ibmq_service.backends = stub
-
-#     with pytest.raises(ValueError):
-#         runner.get_least_busy_backend(runner.ibmq_service, qubit_count=0,
-#                                       backend_avoid_list=[])
-
-
-def test_device_fallback_to_simulator(runner, test_task, stub):
-
-    test_task['run_values']['run_mode'] = 'quantum_device'
-
-    runner.ibmq_service = None
-    
-    run_values = test_task.get('run_values')
-    run_mode = run_values.get('run_mode')
-    
-    print("test_task:", test_task)
-    print("run_mode:", run_mode)
-    print("runner.ibmq_service:", runner.ibmq_service)
-    print("'runner.ibmq_service is None and run_mode == 'quantum_device'':",
-          runner.ibmq_service is None and run_mode == 'quantum_device')
-    
-    runner.run_task(**test_task)
-    
-    
 @pytest.mark.parametrize("mock_runner_functions", 
                          ['post_processing', 'no_post_processing'], 
                          indirect=True)
 @pytest.mark.parametrize("run_mode", 
-                         ['fallback'])
+                         ['classical', 'simulator', 'quantum_device', 'fallback'])
 def test_run_task_classical(runner, test_task, run_mode, mock_runner_functions, 
                             mock_ibmq_backend, undecorate):
-                                
+
     if run_mode == 'fallback':
-        
+
         runner.ibmq_service = None
         run_mode = 'quantum_device'
-                                
+                 
     test_task['run_values']['run_mode'] = run_mode
     
     runner.run_task(**test_task)
+
+
+def test_execute_task(runner, monkeypatch, stub, test_job):
+
+    class MockBackend:
+        def run(self, *args, **kwargs): return test_job
+
+    monkeypatch.setattr("core.runner.Runner.monitor_job", stub)
+
+    runner.execute_task(task_id=None, circuit=None, backend=MockBackend())
+
+
+def test_monitor_job(runner, test_job):
+    runner.monitor_job(job=test_job, task_id=None, interval=0)
+
+    
+def test_handle_statevector(runner, monkeypatch, stub, test_run_result):
+    
+    monkeypatch.setattr(Runner, "plot_statevector_figure", stub)
+    
+    runner.handle_statevector(run_result=test_run_result, qubit_count=0, task_id=None)
+
+
+@pytest.mark.filterwarnings("ignore::PendingDeprecationWarning")
+@pytest.mark.filterwarnings("ignore::::69")
+def test_plot_statevector_figure(runner, monkeypatch, stub, test_run_result):
+    
+    class MockFigure:
+        savefig = stub
+    
+    monkeypatch.setattr('core.runner.plot_bloch_multivector', 
+                        lambda statevector: MockFigure())
+                        
+    test_statevector = test_run_result.get_statevector(decimals=0)
+    
+    runner.plot_statevector_figure(statevector=test_statevector, task_id=None)
     
 
-# def test_run_task_classical(runner, test_task, mock_runner_functions,
-#                             mock_ibmq_backend, undecorate):
-                                
+def test_get_least_busy_backend_ok(runner):
+
+    runner.get_least_busy_backend(runner.ibmq_service, qubit_count=0, 
+                                  backend_avoid_list=[])
+
+
+def test_get_least_busy_backend_exception(runner, stub):
+
+    runner.ibmq_service.backends = stub
+
+    with pytest.raises(ValueError):
+        runner.get_least_busy_backend(runner.ibmq_service, qubit_count=0,
+                                      backend_avoid_list=[])
+
+
+# def test_device_fallback_to_simulator(runner, test_task, stub):
+
 #     test_task['run_values']['run_mode'] = 'quantum_device'
+
+#     runner.ibmq_service = None
+    
+#     run_values = test_task.get('run_values')
+#     run_mode = run_values.get('run_mode')
     
 #     runner.run_task(**test_task)
 
