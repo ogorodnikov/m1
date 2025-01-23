@@ -123,8 +123,9 @@ def test_get_least_busy_backend_ok(runner, monkeypatch, stub, test_provider):
 
     test_provider.backends_list = 'test_backends'
 
-    runner.get_least_busy_backend(test_provider, qubit_count=0, avoid_list=[])
-    
+    runner.get_least_busy_backend(test_provider, qubit_count=0, 
+                                  backend_avoid_list=[])
+
 
 def test_get_least_busy_backend_exception(runner, monkeypatch, stub, test_provider):
     
