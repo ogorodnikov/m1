@@ -136,8 +136,13 @@ def test_device_fallback_to_simulator(runner, test_task, stub):
     test_task['run_values']['run_mode'] = 'quantum_device'
 
     runner.ibmq_service = None
-
+    
+    print("test_task:", test_task)
+    print("runner.ibmq_service:", runner.ibmq_service)
+    
     runner.run_task(**test_task)
+    
+    raise
 
 
 ###   Fixtures   ###
