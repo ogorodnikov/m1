@@ -143,7 +143,8 @@ def set_mocks(mock, mock_env, get_test_task, stub):
     mock(Dynamo, "move_figure_to_s3", stub)
     
     mock(Dynamo, "get_next_task", get_test_task)
-    
+
+    mock_env('QISKIT_TOKEN', '1234')    
     mock_env('TASK_TIMEOUT', '300')
     mock_env('BACKEND_AVOID_STRING', '')
     mock_env('QUEUE_WORKERS_PER_RUNNER', '1')
