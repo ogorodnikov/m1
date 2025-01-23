@@ -270,9 +270,11 @@ class Runner:
             circuit = runner_function(run_values, task_log_callback)
             qubit_count = circuit.num_qubits       
                 
-            self.log(f'RUNNER ibmq_provider: {self.ibmq_provider}', task_id)
+            self.log(f'RUNNER ibmq_service: {self.ibmq_service}', task_id)
             
-            backend = self.get_least_busy_backend(self.ibmq_provider, qubit_count)
+            backend = self.get_least_busy_backend(self.ibmq_service,
+                                                  qubit_count,
+                                                  self.backend_avoid_list)
             
             self.log(f'RUNNER backend: {backend}', task_id)
             
@@ -307,7 +309,7 @@ class Runner:
 
     def execute_task(self, task_id, circuit, backend):
         
-        job = backend.run(circuit, backend=backend, shots=1024)
+        job = backend.run(circuit, shots=1024)
         
         self.monitor_job(job, task_id)
 
@@ -373,19 +375,20 @@ class Runner:
         
         self.db.move_figure_to_s3(from_path=temporary_figure_path, 
                                   to_path=s3_figure_path)
-                                  
-        
-    def get_least_busy_backend(self, provider, qubit_count):
+
+
+    @staticmethod
+    def get_least_busy_backend(ibmq_service, qubit_count, backend_avoid_list):
     
         backend_filter = lambda backend: (not backend.configuration().simulator 
                                           and backend.configuration().n_qubits >= qubit_count
                                           and backend.status().operational
-                                          and backend.name() not in self.backend_avoid_list)
+                                          and backend.name() not in backend_avoid_list)
                                           
-        filtered_backends = provider.backends(filters=backend_filter)
+        filtered_backends = ibmq_service.backends(filters=backend_filter)
         
         if filtered_backends:
-            return least_busy(filtered_backends)
+            return ibmq_service.least_busy(filtered_backends)
         
         else:
             raise ValueError(f"No IBMQ backends match specified qubit_count: {qubit_count}")
