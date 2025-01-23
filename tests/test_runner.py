@@ -82,7 +82,11 @@ def test_run_task_classical(runner, test_task, run_mode, mock_runner_functions,
 
 def test_execute_task(runner, monkeypatch, stub, test_job):
     
-    monkeypatch.setattr("core.runner.execute", lambda *_, **__: test_job)
+    # monkeyp/atch.setattr("core.runner.execute", lambda *_, **__: test_job)
+
+    monkeypatch.setattr("core.runner.IBMBackend.run", lambda *_, **__: test_job)
+    monkeypatch.setattr("core.runner.AerSimulator.run", lambda *_, **__: test_job)
+
     monkeypatch.setattr("core.runner.Runner.monitor_job", stub)
     
     runner.execute_task(task_id=None, circuit=None, backend=None)
