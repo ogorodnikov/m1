@@ -72,8 +72,7 @@ def test_process_next_task_timeout(runner, test_task, undecorate):
                          indirect=True)
 @pytest.mark.parametrize("run_mode", 
                          ['classical', 'simulator', 'quantum_device'])
-def test_run_task_classical(runner, test_task, run_mode, mock_runner_functions, 
-                            mock_ibmq_backend, undecorate):
+def test_run_task_classical(runner, test_task, run_mode, mock_runner_functions):
                                 
     test_task['run_values']['run_mode'] = run_mode
     
@@ -129,6 +128,15 @@ def test_get_least_busy_backend_exception(runner, stub):
     with pytest.raises(ValueError):
         runner.get_least_busy_backend(runner.ibmq_service, qubit_count=0,
                                       backend_avoid_list=[])
+
+
+def test_device_fallback_to_simulator(runner, test_task, stub):
+
+    test_task['run_values']['run_mode'] = 'quantum_device'
+
+    runner.ibmq_service = None
+
+    runner.run_task(**test_task)
 
 
 ###   Fixtures   ###
