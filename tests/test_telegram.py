@@ -126,7 +126,7 @@ def test_echo_handler(bot, message):
 @pytest.fixture(scope="module", autouse=True)
 def set_mocks(mock, mock_env, user, stub, test_algorithm):
     
-    mock_env('TELEGRAM_TOKEN', 'test_token:1234')
+    mock_env('TELEGRAM_TOKEN', '1234:5678')
     
     mock("core.telegram.Bot.get_me", lambda self: user)
     
