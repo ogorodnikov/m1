@@ -240,14 +240,14 @@ class Runner:
         print("RUN self.ibmq_service:", self.ibmq_service)
         print("RUN 'self.ibmq_service is None and run_mode == 'quantum_device'':", 
               self.ibmq_service is None and run_mode == 'quantum_device')
-              
-        raise
 
         if self.ibmq_service is None and run_mode == 'quantum_device':
 
             self.log(f'RUNNER no IBMQ Service - falling back to Simulator')
 
             run_mode = 'simulator'
+            
+            raise
 
 
         if run_mode == 'classical':
