@@ -190,8 +190,9 @@ def sticker_message(user, chat):
     sticker_file_id = Bot.BUBO_CELEBRATE_STICKER_FILE_ID
 
     sticker = types.Sticker(
-        file_id=sticker_file_id, file_unique_id=1, 
-        width=1, height=1, is_animated=False
+        file_id=sticker_file_id, file_unique_id=1,
+        type="regular", width=1, height=1,
+        is_animated=False, is_video=False,
     )
     
     options = {'sticker': sticker}
