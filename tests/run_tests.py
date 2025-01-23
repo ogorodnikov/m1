@@ -30,8 +30,10 @@ def run_tests():
     pytest.main([test_path, '-v', '-x', '--ff', 
                  '--ignore-glob=**/integration/*', 
                  '--durations=0',
-                 '-W ignore::DeprecationWarning'])
-    
+                 '-W ignore::DeprecationWarning',
+                 '-W ignore::PendingDeprecationWarning',      
+                 ])
+    PendingDeprecationWarning
     # pytest.main([test_path + '/test_algorithms.py', '-v', '-x'])
     # pytest.main([test_path + '/test_app.py', '-v', '-x'])    
     # pytest.main([test_path + '/test_cognito.py', '-v', '-x'])
