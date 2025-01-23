@@ -157,7 +157,16 @@ def set_mocks(mock, mock_env, get_test_task, stub):
 
 @pytest.fixture
 def runner():
-    return Runner(db=Dynamo())
+
+    runner = Runner(db=Dynamo())
+
+    class MockIBMQService:
+        least_busy = stub
+        backends = lambda *_, **__: ['backend_1', 'backend_2']
+
+    runner.ibmq_service = MockIBMQService()
+
+    return runner
 
 
 @pytest.fixture(scope="module")
