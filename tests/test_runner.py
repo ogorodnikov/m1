@@ -82,10 +82,8 @@ def test_run_task_classical(runner, test_task, run_mode, mock_runner_functions,
 
 def test_execute_task(runner, monkeypatch, stub, test_job):
 
-    # monkeyp/atch.setattr("core.runner.execute", lambda *_, **__: test_job)
-
     class MockBackend:
-        def run(self): return test_job
+        def run(self, *args, **kwargs): return test_job
 
     monkeypatch.setattr("core.runner.Runner.monitor_job", stub)
 
