@@ -208,8 +208,8 @@ def sticker_message(user, chat):
 def callback(user, chat, message):
 
     callback = types.CallbackQuery(
-        id=1, from_user=user, message=message, data="", chat_instance=chat
-    )
+        id=1, from_user=user, message=message, data="", chat_instance=chat,
+        json_string="")
 
     yield callback
 
