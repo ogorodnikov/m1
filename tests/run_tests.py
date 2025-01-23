@@ -27,9 +27,10 @@ def run_tests():
     
     # pytest.main([test_path + '/integration/', '-v', '-x', '--durations=0'])
     
-    pytest.main([test_path, '-v', '-x', '--ff', '--ignore-glob=**/integration/*', '--durations=0'])
-
-    # '-W ignore::DeprecationWarning'
+    pytest.main([test_path, '-v', '-x', '--ff', 
+                 '--ignore-glob=**/integration/*', 
+                 '--durations=0',
+                 '-W ignore::DeprecationWarning'])
     
     # pytest.main([test_path + '/test_algorithms.py', '-v', '-x'])
     # pytest.main([test_path + '/test_app.py', '-v', '-x'])    
