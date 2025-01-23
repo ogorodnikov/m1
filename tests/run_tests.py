@@ -38,7 +38,7 @@ def run_tests():
     # pytest.main([test_path + '/test_main.py', '-v', '-x'])
     # pytest.main([test_path + '/test_routes.py', '-v', '-x'])
     # pytest.main([test_path + '/test_runner.py', '-v', '-x', '-m not slow'])
-    pytest.main([test_path + '/test_telegram.py', '-v', '-x', '-W ignore::DeprecationWarning'])
+    # pytest.main([test_path + '/test_telegram.py', '-v', '-x', '-W ignore::DeprecationWarning'])
     
     pytest.main([test_path + '/integration/test_telegram_integration.py', '-v', '-x', 
                  '-W ignore::DeprecationWarning'])

@@ -174,7 +174,7 @@ def chat():
 @pytest.fixture(scope="module")
 def message(user, chat):
     
-    options = {'text': 'test_telegram message fixture :)'}
+    options = {'text': 'Test Message fixture :)'}
     
     message = types.Message(
         message_id=1, from_user=user, date=None, chat=chat, 
