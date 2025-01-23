@@ -9,7 +9,6 @@ from test_telegram import message
 from test_telegram import sticker_message
 from test_telegram import callback
 from test_telegram import test_algorithm
-from test_telegram import set_mocks
 
 from test_telegram import test_algorithm_data
 
@@ -107,8 +106,8 @@ def telegram_bot(run_config):
     telegram_bot.stop()
     
 
-###   Type fixtures override   ###
+# ###   Type fixtures override   ###
 
-@pytest.fixture(scope="module")
-def chat():
-    yield types.Chat(id=TEST_CHAT_ID, type='private')
+# @pytest.fixture(scope="module")
+# def chat():
+#     yield types.Chat(id=TEST_CHAT_ID, type='private')
