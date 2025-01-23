@@ -72,7 +72,8 @@ def test_process_next_task_timeout(runner, test_task, undecorate):
                          indirect=True)
 @pytest.mark.parametrize("run_mode", 
                          ['classical', 'simulator', 'quantum_device'])
-def test_run_task_classical(runner, test_task, run_mode, mock_runner_functions):
+def test_run_task_classical(runner, test_task, run_mode, mock_runner_functions, 
+                            mock_ibmq_backend, undecorate):
                                 
     test_task['run_values']['run_mode'] = run_mode
     
