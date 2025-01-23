@@ -129,19 +129,11 @@ def set_mocks(mock, mock_env, user, stub, test_algorithm):
     mock_env('TELEGRAM_TOKEN', '1234:5678')
     
     mock("core.telegram.Bot.get_me", lambda self: user)
-    
-    def error_stub(*args, **kwargs):
-
-        print("Telebot Test Error Stub")
-        print("args:", args)
-        print("kwargs:", kwargs)
-
-        raise ValueError("Test Error Stub")
 
     mock("core.telegram.Bot.send_message", stub)
     mock("core.telegram.Bot.send_sticker", stub)
-    mock("core.telegram.Bot.reply_to", error_stub)
-    
+    mock("core.telegram.Bot.reply_to", stub)
+
     mock(Runner, "__init__", stub)
     mock(Runner, "run_algorithm", stub)
     
