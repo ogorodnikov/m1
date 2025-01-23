@@ -132,7 +132,7 @@ def set_mocks(mock, mock_env, user, stub, test_algorithm):
     
     mock("core.telegram.Bot.send_message", stub)
     mock("core.telegram.Bot.send_sticker", stub)
-    mock("core.telegram.Bot.reply_to", stub)
+    mock("core.telegram.Bot.reply_to", lambda message: message)
     
     mock(Runner, "__init__", stub)
     mock(Runner, "run_algorithm", stub)
