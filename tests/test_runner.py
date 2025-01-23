@@ -118,7 +118,7 @@ def test_plot_statevector_figure(runner, monkeypatch, stub, test_run_result):
 
 def test_get_least_busy_backend_ok(runner, monkeypatch, stub, test_provider):
     
-    monkeypatch.setattr("core.runner.least_busy", stub)
+    monkeypatch.setattr("core.runner.Runner.ibmq_service.least_busy", stub)
     
     test_provider.backends_list = 'test_backends'
     
