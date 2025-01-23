@@ -120,7 +120,10 @@ def test_get_least_busy_backend_ok(runner, mock, stub, test_provider):
 
     # monkeypatch.setattr("core.runner.Runner.ibmq_service.least_busy", stub)
 
-    mock(Runner, "ibmq_service.least_busy", stub)
+    class MockIBMQService: 
+        least_busy = stub
+
+    mock(Runner, "ibmq_service", MockIBMQService())
 
     test_provider.backends_list = 'test_backends'
 
