@@ -136,18 +136,6 @@ def test_get_least_busy_backend_exception(runner, stub):
                                       backend_avoid_list=[])
 
 
-# def test_device_fallback_to_simulator(runner, test_task, stub):
-
-#     test_task['run_values']['run_mode'] = 'quantum_device'
-
-#     runner.ibmq_service = None
-    
-#     run_values = test_task.get('run_values')
-#     run_mode = run_values.get('run_mode')
-    
-#     runner.run_task(**test_task)
-
-
 ###   Fixtures   ###
 
 @pytest.fixture(scope="module", autouse=True)
