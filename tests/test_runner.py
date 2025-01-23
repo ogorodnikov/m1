@@ -149,7 +149,7 @@ def test_device_fallback_to_simulator(runner, test_task, stub):
     runner.run_task(**test_task)
     
 
-def test_run_task_classical(runner, test_task, 
+def test_run_task_classical(runner, test_task, mock_runner_functions,
                             mock_ibmq_backend, undecorate):
                                 
     test_task['run_values']['run_mode'] = 'quantum_device'
