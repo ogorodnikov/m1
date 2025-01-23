@@ -5,8 +5,6 @@ from telebot import types
 from core.telegram import Bot
 
 from test_telegram import user
-# from test_telegram import chat
-from test_telegram import message
 from test_telegram import sticker_message
 from test_telegram import callback
 from test_telegram import test_algorithm
@@ -26,12 +24,12 @@ def test_send_message(telegram_bot):
     assert message_response.message_id
     
     
-def test_start_handler(telegram_bot, message):
-    telegram_bot.start_handler(message)
+def test_start_handler(telegram_bot, test_message):
+    telegram_bot.start_handler(test_message)
     
 
-def test_algorithms_handler(telegram_bot, message, callback):
-    telegram_bot.algorithms_handler(message)
+def test_algorithms_handler(telegram_bot, test_message, callback):
+    telegram_bot.algorithms_handler(test_message)
     telegram_bot.algorithms_handler(callback)
     
 
@@ -53,21 +51,21 @@ def test_open_algorithm(telegram_bot, test_algorithm, algorithm_type):
     telegram_bot.open_algorithm(TEST_CHAT_ID, test_algorithm)
 
 
-def test_collect_parameters(telegram_bot, message):
+def test_collect_parameters(telegram_bot, test_message):
     
     kwargs = {'collected_name': 'test_parameter',
               'parameters': [{'name': 'test_parameter', 
                               'value': 'test_parameter_value'}]}
                               
-    telegram_bot.collect_parameters(message, **kwargs)
+    telegram_bot.collect_parameters(test_message, **kwargs)
     
     
 def test_sticker_handler(telegram_bot, sticker_message):
     telegram_bot.sticker_handler(sticker_message)
     
 
-def test_echo_handler(telegram_bot, message):
-    telegram_bot.echo_handler(message)
+def test_echo_handler(telegram_bot, test_message):
+    telegram_bot.echo_handler(test_message)
 
 
 ###   Fixtures   ###
@@ -90,7 +88,6 @@ class MockRunner:
         task_id = 1
         return task_id
 
-        
 
 @pytest.fixture(scope="module")
 def telegram_bot(run_config):
@@ -110,5 +107,18 @@ def telegram_bot(run_config):
 ###   Type fixtures override   ###
 
 @pytest.fixture(scope="module")
-def chat():
+def test_chat():
     yield types.Chat(id=TEST_CHAT_ID, type='private')
+
+
+@pytest.fixture(scope="module")
+def test_message(user, test_chat):
+    
+    options = {'text': 'Test Chat Message fixture :)'}
+    
+    test_message = types.Message(
+        message_id=1, from_user=user, date=None, chat=test_chat, 
+        content_type='text', options=options, json_string=""
+    )
+    
+    yield test_message
