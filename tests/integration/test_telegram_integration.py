@@ -5,6 +5,7 @@ from telebot import types
 from core.telegram import Bot
 
 from test_telegram import user
+from test_telegram import chat
 from test_telegram import message
 from test_telegram import sticker_message
 from test_telegram import callback
