@@ -364,4 +364,6 @@ class Bot(TeleBot):
         print("message.text:", message.text)
         print("self.reply_to:", self.reply_to)
 
-        self.reply_to(message, message.text, disable_notification=True)
+        # self.reply_to(message, message.text, disable_notification=True)
+
+        self.send_message(message.chat.id, message, disable_notification=True)
