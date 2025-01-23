@@ -9,6 +9,7 @@ from test_telegram import message
 from test_telegram import sticker_message
 from test_telegram import callback
 from test_telegram import test_algorithm
+from test_telegram import set_mocks
 
 from test_telegram import test_algorithm_data
 
