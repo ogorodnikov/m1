@@ -147,6 +147,18 @@ def test_device_fallback_to_simulator(runner, test_task, stub):
           runner.ibmq_service is None and run_mode == 'quantum_device')
     
     runner.run_task(**test_task)
+    
+
+@pytest.mark.parametrize("mock_runner_functions", 
+                         ['post_processing', 'no_post_processing'], 
+                         indirect=True)
+@pytest.mark.parametrize("run_mode", ['quantum_device'])
+def test_run_task_classical(runner, test_task, run_mode, mock_runner_functions, 
+                            mock_ibmq_backend, undecorate):
+                                
+    test_task['run_values']['run_mode'] = run_mode
+    
+    runner.run_task(**test_task)
 
 
 ###   Fixtures   ###
