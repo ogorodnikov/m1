@@ -120,18 +120,21 @@ def test_get_least_busy_backend_ok(runner, stub):
     
     class MockIBMQService:
         least_busy = stub
-        backends = lambda *_, **__: [1, 2]
+        backends = lambda *_, **__: ['backend_1', 'backend_2']
 
     runner.get_least_busy_backend(MockIBMQService(), qubit_count=0, 
                                   backend_avoid_list=[])
 
 
-def test_get_least_busy_backend_exception(runner, monkeypatch, stub, test_provider):
-    
-    monkeypatch.setattr("core.runner.least_busy", stub)
-    
+def test_get_least_busy_backend_exception(runner, stub, test_provider):
+
+    class MockIBMQService:
+        least_busy = stub
+        backends = stub
+
     with pytest.raises(ValueError):
-        runner.get_least_busy_backend(test_provider, qubit_count=0)
+        runner.get_least_busy_backend(MockIBMQService(), qubit_count=0,
+                                      backend_avoid_list=[])
 
 
 ###   Fixtures   ###
