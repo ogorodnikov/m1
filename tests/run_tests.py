@@ -27,8 +27,9 @@ def run_tests():
     
     # pytest.main([test_path + '/integration/', '-v', '-x', '--durations=0'])
     
-    # pytest.main([test_path, '-v', '-x', '--ff', '--ignore-glob=**/integration/*', '--durations=0'])
+    pytest.main([test_path, '-v', '-x', '--ff', '--ignore-glob=**/integration/*', '--durations=0'])
 
+    # '-W ignore::DeprecationWarning'
     
     # pytest.main([test_path + '/test_algorithms.py', '-v', '-x'])
     # pytest.main([test_path + '/test_app.py', '-v', '-x'])    
@@ -38,10 +39,9 @@ def run_tests():
     # pytest.main([test_path + '/test_main.py', '-v', '-x'])
     # pytest.main([test_path + '/test_routes.py', '-v', '-x'])
     # pytest.main([test_path + '/test_runner.py', '-v', '-x', '-m not slow'])
-    # pytest.main([test_path + '/test_telegram.py', '-v', '-x', '-W ignore::DeprecationWarning'])
+    # pytest.main([test_path + '/test_telegram.py', '-v', '-x'])
     
-    pytest.main([test_path + '/integration/test_telegram_integration.py', '-v', '-x', 
-                 '-W ignore::DeprecationWarning'])
+    # pytest.main([test_path + '/integration/test_telegram_integration.py', '-v', '-x'])
     # pytest.main([test_path + '/integration/test_routes_integration.py', '-v', '-x'])
     # pytest.main([test_path + '/integration/test_runner_integration.py', '-v', '-x'])
     # pytest.main([test_path + '/integration/test_cognito_integration.py', '-v', '-x'])    
