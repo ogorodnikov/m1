@@ -85,6 +85,7 @@ class Runner:
 
         except Exception as exception:
             self.log(f'RUNNER IBMQ Runtime Service exception: {exception}')
+            self.ibmq_service = None
         
         self.log(f'RUNNER initiated: {self}')
         
@@ -232,9 +233,15 @@ class Runner:
 
         self.log(f'RUNNER run_mode: {run_mode}')
         self.log(f'RUNNER run_values: {run_values}')
-        self.log(f'RUNNER runner_function: {runner_function}') 
-        
-        
+        self.log(f'RUNNER runner_function: {runner_function}')
+
+        if self.ibmq_service is None and run_mode == 'quantum_device':
+
+            self.log(f'RUNNER no IBMQ Service - falling back to Simulator')
+
+            run_mode = 'simulator'
+
+
         if run_mode == 'classical':
             
             run_result = runner_function(run_values, task_log_callback)
