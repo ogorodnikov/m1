@@ -126,7 +126,7 @@ def test_get_least_busy_backend_ok(runner, stub):
                                   backend_avoid_list=[])
 
 
-def test_get_least_busy_backend_exception(runner, stub, test_provider):
+def test_get_least_busy_backend_exception(runner, stub):
 
     class MockIBMQService:
         least_busy = stub
@@ -256,17 +256,3 @@ def test_job(test_run_result):
             
             
     return TestJob()
-    
-
-@pytest.fixture
-def test_provider():
-
-    class TestProvider:
-        
-        def __init__(self):
-            self.backends_list = None
-        
-        def backends(self, filters):
-            return self.backends_list
-
-    return TestProvider()
