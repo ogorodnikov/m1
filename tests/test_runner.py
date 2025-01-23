@@ -116,24 +116,18 @@ def test_plot_statevector_figure(runner, monkeypatch, stub, test_run_result):
     runner.plot_statevector_figure(statevector=test_statevector, task_id=None)
     
 
-def test_get_least_busy_backend_ok(runner, stub):
-    
-    class MockIBMQService:
-        least_busy = stub
-        backends = lambda *_, **__: ['backend_1', 'backend_2']
+def test_get_least_busy_backend_ok(runner):
 
-    runner.get_least_busy_backend(MockIBMQService(), qubit_count=0, 
+    runner.get_least_busy_backend(runner.ibmq_service, qubit_count=0, 
                                   backend_avoid_list=[])
 
 
 def test_get_least_busy_backend_exception(runner, stub):
 
-    class MockIBMQService:
-        least_busy = stub
-        backends = stub
+    runner.ibmq_service.backends = stub
 
     with pytest.raises(ValueError):
-        runner.get_least_busy_backend(MockIBMQService(), qubit_count=0,
+        runner.get_least_busy_backend(runner.ibmq_service, qubit_count=0,
                                       backend_avoid_list=[])
 
 
