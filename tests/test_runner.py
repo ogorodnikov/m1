@@ -5,6 +5,7 @@ import pytest
 from threading import Timer
 
 from qiskit import QuantumCircuit
+from qiskit_aer import AerSimulator
 
 from core.runner import Runner
 from core.dynamo import Dynamo
@@ -87,12 +88,14 @@ def test_run_task_classical(runner, test_task, run_mode, mock_runner_functions,
 
 def test_execute_task(runner, monkeypatch, stub, test_job):
 
-    class MockBackend:
-        def run(self, *args, **kwargs): return test_job
+    test_backend = AerSimulator()
+
+    test_circuit = QuantumCircuit(2)
+    test_circuit.measure_all()
 
     monkeypatch.setattr("core.runner.Runner.monitor_job", stub)
 
-    runner.execute_task(task_id=None, circuit=None, backend=MockBackend())
+    runner.execute_task(task_id=None, circuit=test_circuit, backend=test_backend)
 
 
 def test_monitor_job(runner, test_job):
