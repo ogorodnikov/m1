@@ -29,6 +29,8 @@ RUN pip list
 
 RUN echo "Running tests"
 
+RUN python tests/run_tests.py
+
 RUN echo "Starting Flask"
 
 ENTRYPOINT ["python3"]
