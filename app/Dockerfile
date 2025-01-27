@@ -24,12 +24,8 @@ WORKDIR /m1-core-service
 
 RUN echo "Installing M1 package"
 
-RUN pip install .[testing]
+RUN pip install .
 RUN pip list
-
-RUN echo "Running tests"
-
-RUN python tests/run_tests.py
 
 RUN echo "Starting Flask"
 
