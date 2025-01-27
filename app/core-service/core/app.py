@@ -48,12 +48,12 @@ class FlaskApp(Flask):
 
         self.clear_figures_folder()
 
-        print(f'APP termination_handler signal {termination_signal}, {frame}')
+        print(f"APP termination_handler signal {termination_signal}, {frame}")
 
     @staticmethod
     def exit_application(test_mode=False):
 
-        print('APP exit_application')
+        print("APP exit_application")
 
         # noinspection PyProtectedMember
         os._exit(0) if not test_mode else None
