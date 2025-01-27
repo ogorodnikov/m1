@@ -3,7 +3,7 @@ import sys
 import pytest
 import coverage
 
-CORE_PATH = ['..',]
+CORE_PATH = ['..', 'app', 'core-service']
 
 
 def add_core_package_to_path():
