@@ -253,9 +253,5 @@ def test_job(test_run_result):
             
         def queue_position(self):
             pass
-        
-        def result(self):
-            return test_run_result
-            
             
     return TestJob()
