@@ -8,7 +8,6 @@ RUN apt-get update && \
     python3-dev \
     python3-pip \
     python3-venv \
-    git \
     && apt-get clean
 
 RUN echo `python3 --version`
