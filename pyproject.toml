@@ -1,0 +1,49 @@
+[build-system]
+
+    requires = ["setuptools"]
+    build-backend = "setuptools.build_meta"
+
+[project]
+
+    name = "m1"
+    description = "M1 Project runs quantum algorithms."
+    readme = "README.md"
+    authors = [{ name = "Mykhailo Ohorodnikov", email = "mykhailo.ohorodnikov@gmail.com" }]
+    license = { file = "LICENSE" }
+    version = "1.18"
+    requires-python = ">= 3.10"
+    dependencies = [
+        "qiskit <= 1.2.4",
+        "qiskit_ibm_runtime <= 0.32.0",
+        "rustworkx >= 0.14.2"
+    ]
+    keywords = [
+        "m1",
+        "quantum",
+        "quantum computing",
+        "quantum algorithm",
+    ]
+    classifiers = [
+        "Programming Language :: Python :: 3",
+        "Operating System :: OS Independent",
+        "License :: OSI Approved :: MIT License",
+    ]
+
+[project.urls]
+    Homepage = "https://github.com/ogorodnikov/m1#readme"
+
+[project.optional-dependencies]
+
+    testing = ["pytest >= 7.4.3",
+               "coverage >= 7.3.2",
+               "qiskit-aer <= 0.15.1"]
+
+[tool.setuptools.packages.find]
+
+    include = ["m1"]
+
+[tool.pytest.ini_options]
+
+    filterwarnings = [
+        "ignore::DeprecationWarning",
+        "ignore::PendingDeprecationWarning"]
