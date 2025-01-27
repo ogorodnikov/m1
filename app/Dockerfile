@@ -26,6 +26,7 @@ WORKDIR /m1-core-service
 RUN echo "Installing M1 package"
 
 RUN pip install 'm1 @ git+https://github.com/ogorodnikov/m1.git'
+RUN pip list
 
 RUN echo "Starting Flask"
 
