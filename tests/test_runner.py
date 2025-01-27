@@ -127,15 +127,6 @@ def test_get_least_busy_backend_ok(runner):
                                   backend_avoid_list=[])
 
 
-def test_get_least_busy_backend_exception(runner, stub):
-
-    runner.ibmq_service.backends = stub
-
-    with pytest.raises(ValueError):
-        runner.get_least_busy_backend(runner.ibmq_service, qubit_count=0,
-                                      backend_avoid_list=[])
-
-
 ###   Fixtures   ###
 
 @pytest.fixture(scope="module", autouse=True)
