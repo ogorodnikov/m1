@@ -1,7 +1,4 @@
-from pip import main
 from core.main import Main
-
-main(['list'])
 
 main = Main()
 
