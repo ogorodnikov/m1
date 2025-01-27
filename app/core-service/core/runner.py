@@ -391,12 +391,8 @@ class Runner:
         backend_filter = lambda backend: (not backend.configuration().simulator 
                                           and backend.configuration().n_qubits >= qubit_count
                                           and backend.status().operational
-                                          and backend.name() not in backend_avoid_list)
-                                          
-        filtered_backends = ibmq_service.backends(filters=backend_filter)
-        
-        if filtered_backends:
-            return ibmq_service.least_busy(filtered_backends)
-        
-        else:
-            raise ValueError(f"No IBMQ backends match specified qubit_count: {qubit_count}")
+                                          and backend.name not in backend_avoid_list)
+
+        filtered_backend = ibmq_service.least_busy(filters=backend_filter)
+
+        return filtered_backend
