@@ -262,8 +262,9 @@ class Runner:
             
             self.log(f'RUNNER backend: {self.simulator_backend}', task_id)
             
-            counts = self.execute_task(task_id, circuit, self.simulator_backend)
-            
+            run_result = self.execute_task(task_id, circuit, self.simulator_backend)
+            counts = run_result.get_counts()
+
             if not skip_statevector:
                 self.handle_statevector(run_result, qubit_count, task_id)
 
@@ -287,7 +288,8 @@ class Runner:
             
             self.log(f'RUNNER backend: {backend}', task_id)
             
-            counts = self.execute_task(task_id, circuit, backend)
+            run_result = self.execute_task(task_id, circuit, backend)
+            counts = run_result.get_counts()
 
             self.log(f'RUNNER run_result: {run_result}', task_id)
             self.log(f'RUNNER counts:', task_id)
@@ -332,9 +334,9 @@ class Runner:
 
         self.monitor_job(job, task_id)
 
-        counts = job.result()[0].data.meas.get_counts()
+        run_result = job.result()[0].data.meas
 
-        return counts
+        return run_result
         
         
     def monitor_job(self, job, task_id, interval=1):
