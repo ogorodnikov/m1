@@ -12,7 +12,9 @@ from multiprocessing import Event
 from multiprocessing import Process
 from concurrent.futures import ProcessPoolExecutor
 
+from qiskit import transpile
 from qiskit_aer import AerSimulator
+from qiskit_ibm_runtime import SamplerV2
 from qiskit_ibm_runtime import QiskitRuntimeService
 from qiskit.visualization import plot_bloch_multivector
 
@@ -260,8 +262,7 @@ class Runner:
             
             self.log(f'RUNNER backend: {self.simulator_backend}', task_id)
             
-            run_result = self.execute_task(task_id, circuit, self.simulator_backend)
-            counts = run_result.get_counts()
+            counts = self.execute_task(task_id, circuit, self.simulator_backend)
             
             if not skip_statevector:
                 self.handle_statevector(run_result, qubit_count, task_id)
@@ -286,8 +287,7 @@ class Runner:
             
             self.log(f'RUNNER backend: {backend}', task_id)
             
-            run_result = self.execute_task(task_id, circuit, backend)
-            counts = run_result.get_counts()
+            counts = self.execute_task(task_id, circuit, backend)
 
             self.log(f'RUNNER run_result: {run_result}', task_id)
             self.log(f'RUNNER counts:', task_id)
@@ -316,12 +316,25 @@ class Runner:
         
 
     def execute_task(self, task_id, circuit, backend):
-        
-        job = backend.run(circuit, shots=1024)
-        
+
+        transpiled_circuit = transpile(circuit, backend)
+
+        transpiled_circuit_printout = transpiled_circuit.draw(
+            fold=-1, idle_wires=False)
+
+        self.log(f'RUNNER transpiled circuit: \n{transpiled_circuit_printout}\n', task_id)
+
+        sampler = SamplerV2(mode=backend)
+
+        pub = [transpiled_circuit, None, 1024]
+
+        job = sampler.run([pub])
+
         self.monitor_job(job, task_id)
 
-        return job.result()
+        counts = job.result()[0].data.meas.get_counts()
+
+        return counts
         
         
     def monitor_job(self, job, task_id, interval=1):
