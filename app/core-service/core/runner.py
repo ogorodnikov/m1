@@ -333,6 +333,9 @@ class Runner:
         job = sampler.run([pub])
 
         self.monitor_job(job, task_id)
+        
+        self.log(f'RUNNER job.result(): \n{job.result()}\n', task_id)
+        self.log(f'RUNNER job.result()[0].data: \n{job.result()[0].data}\n', task_id)
 
         run_result = job.result()[0].data.meas
 
