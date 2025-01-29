@@ -137,13 +137,13 @@ class Runner:
         return task_id
 
         
-    def exception_decorator(function):
+    def exception_decorator(wrapped_function):
         
-        @wraps(function)
+        @wraps(wrapped_function)
         def wrapper(self, *args, **kwargs):
 
             try:
-                return function(self, *args, **kwargs)
+                return wrapped_function(self, *args, **kwargs)
                 
             except Exception as exception:
 
