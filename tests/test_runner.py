@@ -88,22 +88,14 @@ def test_run_task_classical(runner, test_task, run_mode, mock_runner_functions,
 
 def test_execute_task(runner, monkeypatch, stub, test_job):
 
-    # from core.algorithms.bernvaz import bernvaz
-
-    # monkeypatch.setattr("core.runner.Runner.log", print)
-
     test_backend = AerSimulator()
 
     test_circuit = QuantumCircuit(2, 2)
-    
+
     test_circuit.x(0)
     test_circuit.cx(0, 1)
 
     test_circuit.measure([0, 1], [0, 1])
-    
-    # test_circuit = bernvaz({'secret': '1010'}, print)
-
-    # monkeypatch.setattr("core.runner.Runner.monitor_job", stub)
 
     runner.execute_task(task_id=None, circuit=test_circuit, backend=test_backend)
 
