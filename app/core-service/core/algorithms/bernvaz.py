@@ -4,7 +4,6 @@ from qiskit import QuantumCircuit
 def bernvaz(run_values, task_log):
     
     secret = run_values.get('secret')
-    
     task_id = run_values.get('task_id')
 
     hidden_qubit_count = len(secret)
@@ -38,5 +37,7 @@ def bernvaz(run_values, task_log):
     task_log(f"BERVAZ run_values: {run_values}")
     task_log(f"BERVAZ secret: {secret}")
     task_log(f"BERVAZ circuit: \n{circuit}\n")
-    
+    task_log(f"BERVAZ circuit.qregs: \n{circuit.qregs}\n")
+    task_log(f"BERVAZ circuit.cregs: \n{circuit.cregs}\n")
+        
     return circuit

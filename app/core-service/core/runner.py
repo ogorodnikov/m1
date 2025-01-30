@@ -337,9 +337,11 @@ class Runner:
         self.log(f'RUNNER job.result(): \n{job.result()}\n', task_id)
         self.log(f'RUNNER job.result()[0].data: \n{job.result()[0].data}\n', task_id)
 
-        run_result = job.result()[0].data.meas
+        first_pub_result = job.result()[0]
 
-        return run_result
+        first_register, first_result = dict(first_pub_result.data).popitem()
+
+        return first_result
         
         
     def monitor_job(self, job, task_id, interval=1):
