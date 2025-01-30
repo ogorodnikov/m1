@@ -16,6 +16,8 @@ from qiskit import transpile
 from qiskit_aer import AerSimulator
 from qiskit_ibm_runtime import SamplerV2
 from qiskit_ibm_runtime import QiskitRuntimeService
+
+from qiskit.quantum_info import Statevector
 from qiskit.visualization import plot_bloch_multivector
 
 from .algorithms.egcd import egcd
@@ -365,10 +367,13 @@ class Runner:
             time.sleep(interval)
             
             
-    def handle_statevector(self, run_result, qubit_count, task_id):
+    def handle_statevector(self, circuit, task_id):
         
-        statevector = run_result.get_statevector(decimals=3)
-            
+        state_circuit = circuit.copy()
+        state_circuit.remove_final_measurements()
+
+        statevector = Statevector(state_circuit)
+
         self.log(f'RUNNER statevector:', task_id)
             
         for state_index, probability_amplitude in enumerate(statevector):
@@ -376,7 +381,7 @@ class Runner:
             if not probability_amplitude:
                 continue
                 
-            state = f'{state_index:0{qubit_count}b}'
+            state = f'{state_index:0{circuit.num_qubits}b}'
                 
             self.log(f'{state}: {probability_amplitude}', task_id)
 

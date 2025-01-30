@@ -107,8 +107,15 @@ def test_monitor_job(runner, test_job):
 def test_handle_statevector(runner, monkeypatch, stub, test_run_result):
     
     monkeypatch.setattr(Runner, "plot_statevector_figure", stub)
+
+    monkeypatch.setattr(Runner, "log", print)
     
-    runner.handle_statevector(run_result=test_run_result, qubit_count=0, task_id=None)
+    circuit = QuantumCircuit(2)
+    circuit.h(0)
+    circuit.cx(0, 1)
+    circuit.measure_all()
+
+    runner.handle_statevector(circuit=circuit, task_id=None)
 
 
 @pytest.mark.filterwarnings("ignore::PendingDeprecationWarning")
