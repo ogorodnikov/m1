@@ -86,16 +86,9 @@ def test_run_task_classical(runner, test_task, run_mode, mock_runner_functions,
     runner.run_task(**test_task)
 
 
-def test_execute_task(runner, monkeypatch, stub, test_job):
+def test_execute_task(runner, test_circuit, monkeypatch, stub):
 
     test_backend = AerSimulator()
-
-    test_circuit = QuantumCircuit(2, 2)
-
-    test_circuit.x(0)
-    test_circuit.cx(0, 1)
-
-    test_circuit.measure([0, 1], [0, 1])
 
     runner.execute_task(task_id=None, circuit=test_circuit, backend=test_backend)
 
@@ -104,18 +97,11 @@ def test_monitor_job(runner, test_job):
     runner.monitor_job(job=test_job, task_id=None, interval=0)
 
     
-def test_handle_statevector(runner, monkeypatch, stub, test_run_result):
+def test_handle_statevector(runner, test_circuit, monkeypatch, stub):
     
     monkeypatch.setattr(Runner, "plot_statevector_figure", stub)
 
-    monkeypatch.setattr(Runner, "log", print)
-    
-    circuit = QuantumCircuit(2)
-    circuit.h(0)
-    circuit.cx(0, 1)
-    circuit.measure_all()
-
-    runner.handle_statevector(circuit=circuit, task_id=None)
+    runner.handle_statevector(circuit=test_circuit, task_id=None)
 
 
 @pytest.mark.filterwarnings("ignore::PendingDeprecationWarning")
@@ -230,6 +216,19 @@ def mock_ibmq_backend(monkeypatch, test_run_result, stub):
     monkeypatch.setattr(Runner, "get_least_busy_backend", stub)                 
     monkeypatch.setattr(Runner, "execute_task", lambda *_, **__: test_run_result)
     monkeypatch.setattr(Runner, "handle_statevector", stub)
+
+
+@pytest.fixture
+def test_circuit():
+
+    test_circuit = QuantumCircuit(2, 2)
+
+    test_circuit.x(0)
+    test_circuit.cx(0, 1)
+
+    test_circuit.measure([0, 1], [0, 1])
+
+    return test_circuit
 
 
 @pytest.fixture
