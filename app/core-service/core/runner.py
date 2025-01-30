@@ -268,7 +268,7 @@ class Runner:
             counts = run_result.get_counts()
 
             if not skip_statevector:
-                self.handle_statevector(run_result, qubit_count, task_id)
+                self.handle_statevector(circuit, task_id)
 
             # self.log(f'RUNNER run_result: {run_result}', task_id)
             # self.log(f'RUNNER counts:', task_id)
@@ -348,7 +348,9 @@ class Runner:
         max_interval = 4
         
         while True:
-            
+
+            self.log(f'RUNNER job.status(): {job.status()}', task_id)
+
             status = job.status().name
             status_update = f"job status: {status}"
             
