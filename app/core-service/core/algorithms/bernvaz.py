@@ -37,7 +37,5 @@ def bernvaz(run_values, task_log):
     task_log(f"BERVAZ run_values: {run_values}")
     task_log(f"BERVAZ secret: {secret}")
     task_log(f"BERVAZ circuit: \n{circuit}\n")
-    task_log(f"BERVAZ circuit.qregs: \n{circuit.qregs}\n")
-    task_log(f"BERVAZ circuit.cregs: \n{circuit.cregs}\n")
         
     return circuit
