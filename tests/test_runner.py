@@ -93,7 +93,10 @@ def test_execute_task(runner, test_circuit, monkeypatch, stub):
     runner.execute_task(task_id=None, circuit=test_circuit, backend=test_backend)
 
 
-def test_monitor_job(runner, test_job):
+def test_monitor_job(runner, test_job, monkeypatch):
+
+    monkeypatch.setattr(Runner, "log", print)
+
     runner.monitor_job(job=test_job, task_id=None, interval=0)
 
     

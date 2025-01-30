@@ -257,7 +257,6 @@ class Runner:
         elif run_mode == 'simulator':
             
             circuit = runner_function(run_values, task_log_callback)
-            qubit_count = circuit.num_qubits
             
             if not skip_statevector:
                 circuit.save_statevector()
@@ -343,27 +342,29 @@ class Runner:
         return first_result
         
         
-    def monitor_job(self, job, task_id, interval=1):
-        
-        max_interval = 4
-        
+    def monitor_job(self, job, task_id, interval=1, max_interval=4):
+
         while True:
 
-            self.log(f'RUNNER job.status(): {job.status()}', task_id)
+            self.log(f'RUNNER job_id: {job.job_id()}', task_id)
 
-            status = job.status().name
-            status_update = f"job status: {status}"
-            
+            if hasattr(job.status(), 'name'):
+                status = job.status().name
+            else:
+                status = job.status()
+
+            status_update = f"RUNNER job status: {status}"
+
             if status == 'QUEUED':
-                position = job.queue_position()
+                position = job.metrics()['position_in_queue']
                 status_update += f" at position {position}"
-                
-            self.log(f'RUNNER {status_update}', task_id)
+
+            self.log(status_update, task_id)
             
-            if status in ('QUEUED', 'RUNNING'):
-                interval = min(interval*2, max_interval)
+            if status in ['QUEUED', 'RUNNING']:
+                interval = min(interval * 2, max_interval)
             
-            if status in ('DONE', 'CANCELLED', 'ERROR'):
+            if status in ['DONE', 'CANCELLED', 'ERROR']:
                 break
             
             time.sleep(interval)
