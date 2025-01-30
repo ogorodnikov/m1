@@ -342,22 +342,22 @@ class Runner:
         return first_result
         
         
-    def monitor_job(self, job, task_id, interval=1, max_interval=4):
+    def monitor_job(self, job, task_id, interval=1, max_interval=8):
+        
+        self.log(f'RUNNER job_id: {job.job_id()}', task_id)
 
         while True:
-
-            self.log(f'RUNNER job_id: {job.job_id()}', task_id)
 
             if hasattr(job.status(), 'name'):
                 status = job.status().name
             else:
                 status = job.status()
-                
-            self.log(f"RUNNER job status: {status}", task_id)
 
             if status == 'QUEUED':
                 position = job.metrics()['position_in_queue']
-                self.log(f"RUNNER position in queue: {position}", task_id)
+                status += f", position in queue: {position}"
+                
+            self.log(f"RUNNER job status: {status}", task_id)
             
             if status in ['QUEUED', 'RUNNING']:
                 interval = min(interval * 2, max_interval)
