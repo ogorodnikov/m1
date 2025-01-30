@@ -1,4 +1,4 @@
-FROM python:3.12-slim
+FROM public.ecr.aws/docker/library/python:3.12-slim
 
 RUN python3 -m venv /m1_venv && \
     pip install --upgrade pip
