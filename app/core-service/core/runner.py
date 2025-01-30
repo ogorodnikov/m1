@@ -352,22 +352,24 @@ class Runner:
                 status = job.status().name
             else:
                 status = job.status()
-
-            status_update = f"RUNNER job status: {status}"
+                
+            self.log(f"RUNNER job status: {status}", task_id)
 
             if status == 'QUEUED':
                 position = job.metrics()['position_in_queue']
-                status_update += f" at position {position}"
-
-            self.log(status_update, task_id)
+                self.log(f"RUNNER position in queue: {position}", task_id)
             
             if status in ['QUEUED', 'RUNNING']:
                 interval = min(interval * 2, max_interval)
             
             if status in ['DONE', 'CANCELLED', 'ERROR']:
                 break
-            
+
             time.sleep(interval)
+
+        if hasattr(job, 'metrics'):
+
+            self.log(f'RUNNER job metrics: {job.metrics()}', task_id)
             
             
     def handle_statevector(self, circuit, task_id):

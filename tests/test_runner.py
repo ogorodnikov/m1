@@ -250,19 +250,30 @@ def test_run_result():
 @pytest.fixture
 def test_job(test_run_result):
 
-    class Status:
+    # class Status:
         
-        def __init__(self, name):
-            self.name = name
+    #     def __init__(self, name):
+    #         self.name = name
         
     class TestJob:
+
+        # status_queue = [Status('DONE'), Status('QUEUED')]
         
-        status_queue = [Status('DONE'), Status('QUEUED')]
+        status_queue = ['DONE', 'DONE', 'QUEUED', 'QUEUED']
         
         def status(self):
-            return __class__.status_queue.pop()
             
-        def queue_position(self):
-            pass
+            status = __class__.status_queue.pop()
             
+            print("POP status:", status)
+            
+            return status
+
+
+        def job_id(self):
+            return 1234     
+            
+        def metrics(self):
+            return {'position_in_queue': 1}
+
     return TestJob()
