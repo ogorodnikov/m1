@@ -95,8 +95,6 @@ def test_execute_task(runner, test_circuit, monkeypatch, stub):
 
 def test_monitor_job(runner, test_job, monkeypatch):
 
-    monkeypatch.setattr(Runner, "log", print)
-
     runner.monitor_job(job=test_job, task_id=None, interval=0)
 
     
@@ -250,25 +248,12 @@ def test_run_result():
 @pytest.fixture
 def test_job(test_run_result):
 
-    # class Status:
-        
-    #     def __init__(self, name):
-    #         self.name = name
-        
     class TestJob:
 
-        # status_queue = [Status('DONE'), Status('QUEUED')]
-        
         status_queue = ['DONE', 'DONE', 'QUEUED', 'QUEUED']
         
         def status(self):
-            
-            status = __class__.status_queue.pop()
-            
-            print("POP status:", status)
-            
-            return status
-
+            return self.status_queue.pop()
 
         def job_id(self):
             return 1234     
