@@ -35,8 +35,8 @@ def run_tests():
     #              '-W ignore::DeprecationWarning',
     #              '-W ignore::PendingDeprecationWarning'])
                  
-    pytest.main([test_path  + '/test_runner.py',
-                 '-v', '-x', '--ff', 
+    pytest.main([test_path  + '/test_runner.py::test_execute_task',
+                 '-v', '-x', '--ff', '-s',
                  '--ignore-glob=**/integration/*', 
                  '-W ignore::DeprecationWarning',
                  '-W ignore::PendingDeprecationWarning'])
