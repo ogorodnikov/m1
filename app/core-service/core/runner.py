@@ -62,6 +62,7 @@ class Runner:
                        'iqae': iqae_post_processing,}
                        
     DEFAULT_TASK_TIMEOUT = 300
+    SHOTS_COUNT = 1024
 
     def __init__(self, db):
         
@@ -326,7 +327,7 @@ class Runner:
 
         sampler = SamplerV2(mode=backend)
 
-        pub = [transpiled_circuit, None, 1024]
+        pub = [transpiled_circuit, None, SHOTS_COUNT]
 
         job = sampler.run([pub])
 
